@@ -222,7 +222,7 @@ FILES_CHANGED:
 ACCEPTANCE_CHECK: pass | fail
 FAILED_CONDITIONS:
   - {失敗した受け入れ条件（あれば）}
-NEXT: tester | suspended
+NEXT: test-designer | suspended
 ```
 
 `STATUS: suspended` はセッション中断時に使用する。この場合 `NEXT: suspended` とし、PM はユーザーに再開を促す。

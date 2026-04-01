@@ -135,7 +135,7 @@ model: opus
 ---
 
 ### 次のステップ
-→ CRITICAL がある場合: `developer` で修正 → `tester` → `reviewer` の順に再実行
+→ CRITICAL がある場合: `developer` で修正 → `test-designer` → `tester` → `reviewer` の順に再実行
 → WARNING のみの場合: 修正推奨。対応後に `reviewer` を再実行
 → SUGGESTION のみ / 指摘なし: ✅ マージ可能
 ```

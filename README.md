@@ -7,15 +7,15 @@ Claude Code のカスタムエージェント定義集です。
 
 ```
 [新規開発（UIあり）]
-  planner → designer → architect → developer → tester → reviewer
-       ↑                                                         |
-       └──────────────── PM が全体を管理 ────────────────────┘
+  planner → designer → architect → developer → test-designer → tester → reviewer
+       ↑                                                                        |
+       └──────────────────────── PM が全体を管理 ──────────────────────────┘
 
 [新規開発（UIなし）]
-  planner → architect → developer → tester → reviewer
+  planner → architect → developer → test-designer → tester → reviewer
 
 [既存プロジェクトへの変更]
-  analyst → architect → developer → tester → reviewer
+  analyst → architect → developer → test-designer → tester → reviewer
 ```
 
 各フェーズの完了ごとにユーザーの承認を得てから次へ進みます。
@@ -28,7 +28,8 @@ Claude Code のカスタムエージェント定義集です。
 | **designer** | UI仕様・デザインプロンプトを作成 | `UI_SPEC.md` |
 | **architect** | 仕様から技術設計書を作成 | `ARCHITECTURE.md` |
 | **developer** | 設計に従いコードを実装 | 実装コード, `TASK.md` |
-| **tester** | テストを作成・実行 | テストコード, テストレポート |
+| **test-designer** | テスト計画を策定 | `TEST_PLAN.md` |
+| **tester** | テストコードを作成・実行 | テストコード, テストレポート |
 | **reviewer** | コード品質・仕様適合をレビュー | レビューレポート |
 | **PM** | フロー全体を管理・承認ゲート制御 | — |
 | **analyst** | バグ/機能追加/リファクタの方針決定 | `ISSUE.md`, GitHub issue |
@@ -75,7 +76,8 @@ Claude Code 上で以下のように使用します。
 「UIを設計して」         → designer
 「設計書を作って」       → architect
 「実装して」             → developer
-「テストを書いて」       → tester
+「テスト計画を作って」   → test-designer
+「テストを実行して」     → tester
 「レビューして」         → reviewer
 「バグを修正したい」     → analyst
 ```
@@ -90,8 +92,9 @@ waterfall-agents/
     ├── planner.md                  # 仕様策定
     ├── designer.md                 # UIデザイン
     ├── architect.md                # アーキテクチャ設計
-    ├── developer.md             # 実装
-    ├── tester.md                  # テスト
+    ├── developer.md                # 実装
+    ├── test-designer.md            # テスト設計
+    ├── tester.md                   # テスト実行
     ├── reviewer.md                # レビュー
     ├── PM.md      # オーケストレーター
     └── analyst.md                 # Issue対応
@@ -101,7 +104,7 @@ waterfall-agents/
 
 - **承認ゲート**: 各フェーズ完了時にユーザー承認を必須化し、自律エージェントの暴走を防止
 - **セッション中断・再開**: `TASK.md` による状態管理で、長時間タスクの途中再開が可能
-- **自動差し戻し**: テスト失敗やレビューCRITICAL指摘時に自動でimplementフェーズへ差し戻し（最大3回）
+- **自動差し戻し**: テスト失敗時はtest-designerが原因分析後developerへ差し戻し、レビューCRITICAL指摘時も自動差し戻し（最大3回）
 - **多言語対応**: Python (FastAPI) をデフォルトとしつつ、他言語プロジェクトにも対応
 - **ドキュメント駆動**: SPEC.md → ARCHITECTURE.md → コードの一方向フローでトレーサビリティを確保
 
