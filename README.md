@@ -6,10 +6,13 @@ Claude Code のカスタムエージェント定義集です。
 ## フロー概要
 
 ```
-[新規開発]
+[新規開発（UIあり）]
+  planner → designer → architect → developer → tester → reviewer
+       ↑                                                         |
+       └──────────────── PM が全体を管理 ────────────────────┘
+
+[新規開発（UIなし）]
   planner → architect → developer → tester → reviewer
-       ↑                                                              |
-       └──────────── PM が全体を管理 ─────────────┘
 
 [既存プロジェクトへの変更]
   analyst → architect → developer → tester → reviewer
@@ -21,7 +24,8 @@ Claude Code のカスタムエージェント定義集です。
 
 | エージェント | 役割 | 主な成果物 |
 |---|---|---|
-| **planner** | 要件から仕様書を策定 | `SPEC.md`, `UI_SPEC.md` |
+| **planner** | 要件から仕様書を策定 | `SPEC.md` |
+| **designer** | UI仕様・デザインプロンプトを作成 | `UI_SPEC.md` |
 | **architect** | 仕様から技術設計書を作成 | `ARCHITECTURE.md` |
 | **developer** | 設計に従いコードを実装 | 実装コード, `TASK.md` |
 | **tester** | テストを作成・実行 | テストコード, テストレポート |
@@ -68,6 +72,7 @@ Claude Code 上で以下のように使用します。
 
 ```
 「仕様を作って」         → planner
+「UIを設計して」         → designer
 「設計書を作って」       → architect
 「実装して」             → developer
 「テストを書いて」       → tester
@@ -83,7 +88,8 @@ waterfall-agents/
 ├── README.md
 └── agents/
     ├── planner.md                  # 仕様策定
-    ├── architect.md             # アーキテクチャ設計
+    ├── designer.md                 # UIデザイン
+    ├── architect.md                # アーキテクチャ設計
     ├── developer.md             # 実装
     ├── tester.md                  # テスト
     ├── reviewer.md                # レビュー
