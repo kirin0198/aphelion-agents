@@ -101,6 +101,111 @@ agents/
 
 ---
 
+## ハンドオフファイル仕様
+
+領域間の接続に使用するハンドオフファイルの共通フォーマット。
+各ファイルは次の領域の PM が起動時に読み込み、前提条件が満たされているかを検証する。
+
+### DISCOVERY_RESULT.md
+
+Discovery PM の最終出力。Delivery PM の `spec-designer` への入力となる。
+
+```markdown
+# Discovery Result: {プロジェクト名}
+
+> 作成日: {YYYY-MM-DD}
+> Discovery プラン: {Minimal | Light | Standard | Full}
+
+## プロジェクト概要
+{1〜3行の要約}
+
+## 成果物の性質
+PRODUCT_TYPE: {service | tool | library | cli}
+
+## 要件サマリー
+{構造化された要件の要約}
+
+## スコープ（確定している場合）
+- MVP: {最小スコープ}
+- IN: {含むもの}
+- OUT: {含まないもの}
+
+## 技術リスク・制約（調査済みの場合）
+{PoCの結果、外部依存の制約等}
+
+## 未解決事項
+{Delivery で解決すべき残課題}
+```
+
+### DELIVERY_RESULT.md
+
+Delivery PM の最終出力。Operations PM への入力となる（service の場合）。
+
+```markdown
+# Delivery Result: {プロジェクト名}
+
+> 作成日: {YYYY-MM-DD}
+> Delivery プラン: {Minimal | Light | Standard | Full}
+> PRODUCT_TYPE: {service | tool}
+
+## 成果物
+- SPEC.md: {あり/なし}
+- ARCHITECTURE.md: {あり/なし}
+- UI_SPEC.md: {あり/なし/該当なし}
+- TEST_PLAN.md: {あり/なし}
+- 実装コード: {ファイル数}
+- README.md: {あり/なし}
+
+## 技術スタック
+{確定した技術スタックの要約}
+
+## テスト結果
+- 合計: {N} / 成功: {N} / 失敗: {N}
+
+## セキュリティ監査結果
+- CRITICAL: {N} / WARNING: {N}
+
+## Operations への引き継ぎ（service の場合）
+{デプロイに必要な情報、環境変数一覧、DB要件等}
+```
+
+### OPS_RESULT.md
+
+Operations PM の最終出力。デプロイ準備状態の最終確認に使用する。
+
+```markdown
+# Operations Result: {プロジェクト名}
+
+> 作成日: {YYYY-MM-DD}
+> Operations プラン: {Light | Standard | Full}
+
+## 成果物一覧
+| ファイル | 内容 | 状態 |
+|---------|------|------|
+| Dockerfile | コンテナ定義 | あり/なし |
+| docker-compose.yml | コンテナ構成 | あり/なし |
+| .github/workflows/ci.yml | CI/CD | あり/なし |
+| .env.example | 環境変数テンプレート | あり/なし |
+| DB_OPS.md | DB運用ガイド | あり/なし |
+| OBSERVABILITY.md | 可観測性設計 | あり/なし |
+| OPS_PLAN.md | 運用計画書 | あり |
+
+## デプロイ準備状態
+- [ ] Dockerfile / docker-compose 作成済み
+- [ ] CI/CD パイプライン構築済み
+- [ ] 環境変数テンプレート作成済み
+- [ ] DB運用ガイド作成済み（該当する場合）
+- [ ] 可観測性設計完了（該当する場合）
+- [ ] デプロイ手順書作成済み
+- [ ] ロールバック手順策定済み
+- [ ] インシデント対応プレイブック作成済み
+
+## 未対応事項
+{残タスクがあれば記載}
+```
+
+---
+
 ## 言語ルール
 
 - コード・変数名・コミットメッセージ: **英語**
