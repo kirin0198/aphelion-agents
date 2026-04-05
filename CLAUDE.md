@@ -67,6 +67,15 @@ agents/
     └── ops-planner.md
 ```
 
+### エージェント定義の同期
+
+`agents/` が**ソースオブトゥルース**であり、`.claude/agents/` はデプロイ用のフラットコピーである。
+
+- エージェント定義を変更したら `agents/` 側を編集する
+- 編集後は `bash scripts/sync-agents.sh` で `.claude/agents/` に同期する
+- `bash scripts/verify-sync.sh` でドリフトがないことを確認する
+- PM.md は同期時に `{phase}-PM.md`（例: `discovery-PM.md`）にリネームされる
+
 ---
 
 ## トリアージシステム
