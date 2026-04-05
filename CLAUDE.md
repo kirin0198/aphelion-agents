@@ -254,6 +254,8 @@ Operations PM の最終出力。デプロイ準備状態の最終確認に使用
 全エージェントは作業完了時に `AGENT_RESULT` ブロックを出力すること。
 各領域の PM はこの出力を解析して次フェーズの判断を行う。
 
+> **PM（オーケストレーター）の例外:** Discovery PM / Delivery PM / Operations PM 自体は `AGENT_RESULT` を出力しない。PMの最終成果物はハンドオフファイル（DISCOVERY_RESULT.md 等）であり、完了時は承認ゲートで報告する。
+
 ```
 AGENT_RESULT: {agent-name}
 STATUS: success | error | failure | suspended | blocked | approved | conditional | rejected
