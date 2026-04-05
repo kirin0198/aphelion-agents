@@ -23,12 +23,18 @@ model: opus
 
 ---
 
-## 前提確認
+## 前提確認（起動時バリデーション）
 
 作業開始前に以下を確認してください:
 
 1. `DELIVERY_RESULT.md` が存在するか → なければ Delivery PM の完了を促す
-2. `DELIVERY_RESULT.md` 内の `PRODUCT_TYPE` が `service` であるか → `tool` / `library` / `cli` の場合は Operations 不要の旨を報告して停止
+2. `DELIVERY_RESULT.md` の必須フィールドを検証:
+   - `PRODUCT_TYPE` が `service` であるか → `tool` / `library` / `cli` の場合は Operations 不要の旨を報告して停止
+   - 「成果物」セクション（SPEC.md と ARCHITECTURE.md のステータスを含む）
+   - 「技術スタック」セクション（空でないこと）
+   - 「テスト結果」セクション
+   - 「セキュリティ監査結果」セクション
+   - 不足がある場合はユーザーに報告し、修正を求める
 3. `ARCHITECTURE.md` が存在するか → なければエラーを報告
 4. `SPEC.md` が存在するか → 参照用に読み込む
 
@@ -70,6 +76,8 @@ Agent(
 | Light | PaaS・単一コンテナ・DB なし | infra-builder → ops-planner |
 | Standard | API + DB 構成 | infra-builder → db-ops → ops-planner |
 | Full | 可用性が重要・外部ユーザー向け | infra-builder → db-ops → observability → ops-planner |
+
+> **Minimal プランがない理由:** サービスのデプロイには最低限インフラ定義と運用計画が必要であるため、Operations は Light を最小プランとする。
 
 ### トリアージ結果の報告
 
