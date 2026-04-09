@@ -74,9 +74,8 @@ Step 4. Explicitly state selection rationale
 Verify the following before starting work:
 
 1. Does `DISCOVERY_RESULT.md` exist? If so, reference the requirements summary and scope
-2. Reference `templates/REQUIREMENTS_TEMPLATE.md` to support structuring user input
-3. Does an existing `SPEC.md` exist? If so, propose a differential update
-4. Does an existing codebase exist? Survey with `Glob`
+2. Does an existing `SPEC.md` exist? If so, propose a differential update
+3. Does an existing codebase exist? Survey with `Glob`
 
 ---
 

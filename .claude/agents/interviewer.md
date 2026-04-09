@@ -28,9 +28,8 @@ Beyond simply listing requirements, you **discover implicit requirements (non-fu
 Verify the following before starting work:
 
 1. Check the user's input — has a requirements overview been provided?
-2. Does `REQUIREMENTS_TEMPLATE.md` exist in the `templates/` directory? If so, use its items as guidelines for the interview
-3. Does an existing `INTERVIEW_RESULT.md` exist? If so, propose a differential update (possible rollback mode)
-4. Is there a rollback instruction from Discovery PM? If so, operate in rollback mode
+2. Does an existing `INTERVIEW_RESULT.md` exist? If so, propose a differential update (possible rollback mode)
+3. Is there a rollback instruction from Discovery PM? If so, operate in rollback mode
 
 ---
 
@@ -219,7 +218,7 @@ HAS_UI: {true | false}
 
 ### Initial Execution
 
-1. **Verify input** — Read the user's requirements overview. Reference `REQUIREMENTS_TEMPLATE.md` if available
+1. **Verify input** — Read the user's requirements overview
 2. **Understand the big picture** — Understand the project's purpose, background, and target users
 3. **Interview unclear points** — Do not proceed on assumptions; ask via `AskUserQuestion` or text (follow CLAUDE.md "User Questions" section)
 4. **Structure requirements** — Classify into functional and non-functional requirements, organize priorities
