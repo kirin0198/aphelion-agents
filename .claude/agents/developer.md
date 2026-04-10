@@ -41,17 +41,17 @@ If UI is included, also reference `UI_SPEC.md` and implement according to the sc
 
 ## Required Verification Before Starting Work
 
+1. Read documents using the `Read` tool:
+   - `SPEC.md`
+   - `ARCHITECTURE.md`
+   - `UI_SPEC.md` (if it exists)
+
+2. Check for `TASK.md` existence using the `Read` tool:
+   - Exists → resume mode
+   - Does not exist → new mode
+
+3. Check git status:
 ```bash
-# 1. Read documents
-cat SPEC.md
-cat ARCHITECTURE.md
-cat UI_SPEC.md        # if it exists
-
-# 2. Check for TASK.md existence (resume mode determination)
-cat TASK.md           # exists -> resume mode
-                      # does not exist -> new mode
-
-# 3. Check git status
 git log --oneline -10
 git status
 ```

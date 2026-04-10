@@ -34,10 +34,9 @@ In that case, perform the following:
 
 ## Mandatory Checks Before Starting
 
-```bash
-cat TEST_PLAN.md       # Review test plan and test cases (Minimal mode if not present)
-cat ARCHITECTURE.md    # Review test strategy and tools
-```
+Read the following documents using the `Read` tool:
+- `TEST_PLAN.md` — Review test plan and test cases (Minimal mode if not present)
+- `ARCHITECTURE.md` — Review test strategy and tools
 
 If documents are missing:
 - `TEST_PLAN.md` is missing and not in Minimal plan -> prompt execution of `test-designer`

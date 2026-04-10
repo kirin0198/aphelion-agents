@@ -29,13 +29,13 @@ Analyze the content of an issue and perform the following:
 
 ## Mandatory Checks Before Starting
 
-```bash
-# Understand existing documents
-cat SPEC.md           # Current spec
-cat ARCHITECTURE.md   # Current design
-cat UI_SPEC.md        # If UI is included
+1. Read existing documents using the `Read` tool:
+   - `SPEC.md` — Current spec
+   - `ARCHITECTURE.md` — Current design
+   - `UI_SPEC.md` — If UI is included
 
-# Check gh CLI availability
+2. Check gh CLI availability:
+```bash
 gh --version
 gh auth status
 gh repo view --json nameWithOwner
