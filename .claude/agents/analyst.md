@@ -7,7 +7,7 @@ description: |
   - When told "I want to add a feature" or "there's a new requirement"
   - When told "I want to refactor" or "I want to clean up the code"
   - When making changes to a project with existing SPEC.md or ARCHITECTURE.md
-  Output: ISSUE.md (approach document, individual file per issue) + SPEC.md/UI_SPEC.md incremental updates (if needed) + GitHub issue
+  Output: GitHub issue (approach document) + SPEC.md/UI_SPEC.md incremental updates (if needed)
 tools: Read, Write, Edit, Bash, Glob, Grep
 model: opus
 ---
@@ -160,21 +160,17 @@ After obtaining approval, execute the following.
 
 ---
 
-## ISSUE.md File Management
-
-- When handling multiple issues, manage them individually as `ISSUE-{sequential number}.md` (e.g., `ISSUE-001.md`)
-- For a single issue, `ISSUE.md` is acceptable
-- If existing `ISSUE.md` / `ISSUE-XXX.md` files exist, do not overwrite them; create with a new sequential number
-
----
-
 ## Step 5: GitHub Issue Creation (gh CLI)
+
+All analysis results and approach details are recorded in the GitHub Issue body.
+No local ISSUE.md file is created.
 
 ### When Remote Repository Does Not Exist
 
 If `gh repo view` returns an error:
-1. Skip GitHub issue creation
-2. Record `URL: (ローカルリポジトリのためスキップ)` in the "GitHub Issue" section of ISSUE.md
+1. Notify the user that GitHub Issue creation will be skipped
+2. Record `GITHUB_ISSUE: skipped (no remote)` in the AGENT_RESULT block
+3. All analysis details are still included in AGENT_RESULT's ARCHITECT_BRIEF
 
 ### Label Mapping
 
@@ -186,16 +182,38 @@ If `gh repo view` returns an error:
 
 If the label does not exist in the repository, omit `--label`.
 
+### Issue Body Template
+
+```markdown
+## 種別
+{バグ修正 / 機能追加 / リファクタリング}
+
+## 分析結果
+{原因・要件・課題の整理}
+
+## 対応方針
+{具体的に何をするか}
+
+## ドキュメント変更
+- SPEC.md: {変更なし / UC-XXX を更新 / UC-XXX を追加}
+- UI_SPEC.md: {変更なし / SCR-XXX を追加}
+- ARCHITECTURE.md: {変更なし / architect が更新}
+
+## architect への引き継ぎ
+{設計変更・追加の概要}
+```
+
 ### Execution Command
 
 ```bash
 gh issue create \
   --title "{issue summary}" \
-  --body "{issue body}" \
+  --body "$(cat <<'EOF'
+{issue body from template above}
+EOF
+)" \
   --label "{label}"
 ```
-
-Append the created issue URL to the end of `ISSUE.md`.
 
 ---
 
@@ -221,6 +239,6 @@ NEXT: architect
 - [ ] The issue has been classified into one of the 3 types
 - [ ] Analysis results and approach have been presented to the user and approval obtained
 - [ ] Necessary documents have been incrementally updated
-- [ ] A GitHub issue has been created via gh CLI (or skip reason recorded)
+- [ ] A GitHub issue has been created via gh CLI (or skip reason recorded in AGENT_RESULT)
 - [ ] The required output block has been produced
 - [ ] Handoff information for architect (ARCHITECT_BRIEF) has been clearly stated
