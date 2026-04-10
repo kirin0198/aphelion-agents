@@ -59,6 +59,7 @@ Agent definitions are stored in `.claude/agents/` (the standard Claude Code loca
 ├── doc-writer.md
 ├── releaser.md
 ├── analyst.md
+├── codebase-analyzer.md    # Standalone (existing project onboarding)
 ├── operations-flow.md      # Operations Flow (orchestrator)
 ├── infra-builder.md
 ├── db-ops.md
@@ -91,6 +92,8 @@ Agent definitions are stored in `.claude/agents/` (the standard Claude Code loca
 `security-auditor` **must run on all plans**. `ux-designer` runs only for projects with UI.
 
 > **About analyst:** `analyst` is a side-entry agent outside the triage flow. It is triggered by bug reports, feature requests, or refactoring requests for existing projects. After completion, Delivery Flow joins from Phase 3 (architect).
+
+> **About codebase-analyzer:** `codebase-analyzer` is a standalone agent for existing projects that lack SPEC.md / ARCHITECTURE.md. It reverse-engineers these documents from the codebase, enabling the project to join the standard workflow via `analyst` → `delivery-flow`.
 
 ### Operations Flow Triage
 
