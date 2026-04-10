@@ -1,6 +1,6 @@
 # Telescope Agents
 
-Claude Code のカスタムエージェント定義集です。
+マルチプラットフォーム対応の AI コーディングエージェント定義集です。
 プロジェクトの全工程を **Discovery（要件探索）→ Delivery（設計・実装）→ Operations（デプロイ・運用）** の3領域に分割し、26の専門エージェントが自動化します。
 
 **[English README](README.md)**
@@ -15,19 +15,44 @@ Discovery Flow ──[DISCOVERY_RESULT.md]──▶ Delivery Flow ──[DELIVER
 
 ---
 
+## 対応プラットフォーム
+
+| プラットフォーム | サブエージェント連携 | 状態 |
+|---------------|-------------------|------|
+| **Claude Code** | フル対応（Agent tool） | 正規ソース |
+| **GitHub Copilot** | フル対応（agent tool） | ソースから生成 |
+| **OpenAI Codex** | Skills のみ | ソースから生成 |
+
+Claude Code ファイル（`.claude/`）が正規ソースです。Copilot / Codex ファイルは `scripts/generate.py` で生成されます。
+
+---
+
 ## Quick Start
 
-**前提:** [Claude Code](https://docs.anthropic.com/en/docs/claude-code) がインストール済みであること
+### Claude Code
 
 ```bash
-# 1. .claude/ ディレクトリをプロジェクトにコピー
+# .claude/ ディレクトリをプロジェクトにコピー
 cp -r .claude /path/to/your-project/
-
-# 2. プロジェクトディレクトリで Claude Code を起動
 cd /path/to/your-project && claude
 
-# 3. スラッシュコマンドで開始
+# スラッシュコマンドで開始
 /discovery-flow TODOアプリを作りたい
+```
+
+### GitHub Copilot
+
+```bash
+# Copilot ファイルをプロジェクトの .github/ にコピー
+cp -r platforms/copilot/* /path/to/your-project/.github/
+```
+
+### OpenAI Codex
+
+```bash
+# AGENTS.md と skills をプロジェクトルートにコピー
+cp platforms/codex/AGENTS.md /path/to/your-project/
+cp -r platforms/codex/skills/ /path/to/your-project/
 ```
 
 フローオーケストレーターがプロジェクト規模を自動判定し、必要なエージェントだけを起動します。
@@ -121,6 +146,7 @@ cd /path/to/your-project && claude
 ## 主な特徴
 
 - **3領域分離** — Discovery / Delivery / Operations を独立セッションで管理し、コンテキスト圧迫を防止
+- **マルチプラットフォーム** — Claude Code（正規）、GitHub Copilot、OpenAI Codex
 - **トリアージ適応** — プロジェクト規模に応じて Minimal〜Full を自動選択
 - **承認ゲート** — 各フェーズ完了時にユーザー承認を必須化
 - **セキュリティ必須** — security-auditor は全プランで実行（OWASP Top 10 + 依存脆弱性スキャン）
@@ -134,13 +160,41 @@ cd /path/to/your-project && claude
 ## ファイル構成
 
 ```
-.claude/
-├── CLAUDE.md              # 全エージェント共通ルール
-├── agents/*.md            # エージェント定義（26ファイル）
-└── commands/*.md          # スラッシュコマンド定義
+.claude/                         # Claude Code（正規ソース）
+├── CLAUDE.md                    # 全エージェント共通ルール
+├── orchestrator-rules.md        # オーケストレーター専用ルール
+├── agents/*.md                  # エージェント定義（26ファイル）
+└── commands/*.md                # スラッシュコマンド定義
+
+platforms/
+├── copilot/                     # GitHub Copilot（生成物）
+│   ├── copilot-instructions.md  # → .github/copilot-instructions.md
+│   └── agents/*.md              # → .github/agents/*.md
+└── codex/                       # OpenAI Codex（生成物）
+    ├── AGENTS.md                # → プロジェクトルート
+    └── skills/                  # → プロジェクトルート
 ```
 
-エージェント定義の詳細は [.claude/CLAUDE.md](.claude/CLAUDE.md) を参照してください。
+### プラットフォームファイルの再生成
+
+```bash
+python3 scripts/generate.py                    # 全プラットフォーム生成
+python3 scripts/generate.py --platform copilot # Copilot のみ
+python3 scripts/generate.py --platform codex   # Codex のみ
+python3 scripts/generate.py --clean            # 生成物を削除
+```
+
+---
+
+## プラットフォーム比較
+
+| 機能 | Claude Code | GitHub Copilot | OpenAI Codex |
+|------|------------|----------------|-------------|
+| グローバル指示 | `.claude/CLAUDE.md` | `.github/copilot-instructions.md` | `AGENTS.md` |
+| エージェント定義 | `.claude/agents/*.md` | `.github/agents/*.md` | N/A（単一エージェント） |
+| スキル/コマンド | `.claude/commands/*.md` | — | `skills/*/SKILL.md` |
+| サブエージェント | あり（Agent tool） | あり（agent tool） | なし |
+| フルオーケストレーション | 可能 | 可能 | 不可 |
 
 ---
 
