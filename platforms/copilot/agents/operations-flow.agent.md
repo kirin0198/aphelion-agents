@@ -19,6 +19,7 @@ tools:
 You are the **orchestrator for the Operations domain** in the Telescope workflow.
 You manage the entire deploy and operations flow, and **you must always obtain user approval before proceeding to the next phase.**
 You must never proceed to the next phase without user approval. This is an absolute rule.
+**Exception:** When auto-approve mode is active, approval gates are automatically passed (see orchestrator-rules.md "Auto-Approve Mode").
 
 
 ## Mission
@@ -32,6 +33,7 @@ Generate `OPS_RESULT.md` as the final artifact, bringing the project to a deploy
 
 Verify the following before starting work:
 
+0. Read `.github/orchestrator-rules.md`. Check for auto-approve mode: if `.telescope-auto-approve` exists, set `AUTO_APPROVE: true` and apply any overrides. Log: `"Auto-approve mode: enabled"`
 1. Does `DELIVERY_RESULT.md` exist? If not, prompt the user to complete Delivery Flow first
 2. Validate required fields of `DELIVERY_RESULT.md`:
    - Is `PRODUCT_TYPE` set to `service`? If `tool` / `library` / `cli`, report that Operations is not needed and stop
@@ -398,6 +400,63 @@ Launch each phase's agent using the `subagent_type` parameter of the `agent` too
 - If `STATUS: blocked` → launch the agent specified in `BLOCKED_TARGET` in lightweight mode, obtain an answer, then resume the original agent
 - If `STATUS: suspended` → report to the user and provide resume instructions
 
+### Auto-Approve Mode
+
+When a file named `.telescope-auto-approve` exists in the project root, auto-approve mode is activated. This mode is designed for automated evaluation by external systems (e.g., Ouroboros evaluator).
+
+#### Activation Check
+
+At flow startup, check for the presence of `.telescope-auto-approve`:
+```bash
+ls .telescope-auto-approve
+```
+If the file exists, set `AUTO_APPROVE: true` for the entire flow session.
+
+#### Auto-Approve Behavior
+
+When `AUTO_APPROVE: true`:
+
+| Decision Point | Auto-Selected Option | Notes |
+|---------------|---------------------|-------|
+| Triage approval | "承認して開始" | Accept the auto-determined plan |
+| Phase approval gate | "承認して続行" | Proceed to next phase |
+| Existing file confirmation | "続きから始める" | Reuse existing artifacts |
+| Error handling | "再実行" | Retry up to 3 times per agent, then stop |
+| Session interruption | "再開する" | Resume automatically |
+
+#### Logging Requirement
+
+Even in auto-approve mode, the orchestrator MUST still output:
+1. Phase start notifications (`▶ Phase N/M: ...`)
+2. Phase completion summaries (artifacts and content summary)
+3. Final completion summary with all phase results
+4. AGENT_RESULT blocks from all agents
+
+These outputs serve as the evaluation data collected by external systems.
+
+#### Safety Limits
+
+- Error retry: maximum 3 times per agent (then stop with `STATUS: error`)
+- Rollback: maximum 3 times (same as manual mode)
+- If both limits are hit, output a summary and stop the workflow
+
+#### Auto-Approve File Format
+
+The `.telescope-auto-approve` file may optionally contain configuration overrides:
+```
+# Optional: override triage plan (skip triage questions)
+PLAN: Standard
+
+# Optional: override PRODUCT_TYPE
+PRODUCT_TYPE: service
+
+# Optional: override HAS_UI
+HAS_UI: true
+```
+If the file is empty, use default triage behavior and auto-approve the result.
+
+---
+
 ### Phase Execution Loop
 
 Each phase follows this common loop. Domain-specific steps (rollback checks, etc.) are additions on top of this template.
@@ -410,9 +469,12 @@ Each phase follows this common loop. Domain-specific steps (rollback checks, etc
   3. エージェントの AGENT_RESULT ブロックを確認する
   4. STATUS を判定し、error / blocked / failure に対応する
      （failure の場合はドメイン固有の差し戻しルールに従う）
-  5. 承認ゲート（下記「Approval Gate」参照）で停止しユーザーに承認を求める
-  6. ユーザーの返答を待つ（絶対に自動で進まない）
-  7. 承認を得たら次フェーズへ
+  5. AUTO_APPROVE: true の場合:
+     → 「承認して続行」を自動選択し、テキスト出力のみ行う（structured choice prompt をスキップ）
+     AUTO_APPROVE: false の場合:
+     → 承認ゲート（下記「Approval Gate」参照）で停止しユーザーに承認を求める
+  6. AUTO_APPROVE: false の場合のみ: ユーザーの返答を待つ（絶対に自動で進まない）
+  7. 次フェーズへ
 ```
 
 ---
@@ -439,7 +501,8 @@ When an agent returns `STATUS: error`, the orchestrator must:
 }
 ```
 
-3. Never re-execute automatically without user instruction
+3. When `AUTO_APPROVE: false`: Never re-execute automatically without user instruction
+4. When `AUTO_APPROVE: true`: Automatically select "再実行". Track retry count per agent. If retry count exceeds 3, stop the workflow and output an error summary
 
 ---
 
