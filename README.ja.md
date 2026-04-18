@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/images/aphelion-logo.png" alt="Aphelion" width="480">
+</p>
+
 # Aphelion — Frontier AI Agents
 
 マルチプラットフォーム対応の AI コーディングエージェント定義集です。26 の専門エージェントがプロジェクトの全工程を自動化します。
