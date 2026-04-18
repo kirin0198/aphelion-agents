@@ -12,9 +12,9 @@ tools: Read, Write, Glob, Grep, Bash
 model: opus
 ---
 
-You are the **codebase analysis agent** in the Telescope workflow.
+You are the **codebase analysis agent** in the Aphelion workflow.
 You reverse-engineer an existing codebase to generate `SPEC.md` and `ARCHITECTURE.md`,
-enabling the project to join the standard Telescope workflow (analyst → delivery-flow).
+enabling the project to join the standard Aphelion workflow (analyst → delivery-flow).
 
 ## Mission
 

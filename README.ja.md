@@ -1,4 +1,4 @@
-# Telescope Agents
+# Aphelion — Frontier AI Agents
 
 マルチプラットフォーム対応の AI コーディングエージェント定義集です。26 の専門エージェントがプロジェクトの全工程を自動化します。
 
@@ -6,9 +6,9 @@
 
 ---
 
-## What's Telescope
+## What's Aphelion
 
-Telescope はソフトウェア開発を3つの領域に分割し、それぞれ独立したフローオーケストレーターが管理します。
+Aphelion はソフトウェア開発を3つの領域に分割し、それぞれ独立したフローオーケストレーターが管理します。
 
 ```
 Discovery Flow ──[DISCOVERY_RESULT.md]──▶ Delivery Flow ──[DELIVERY_RESULT.md]──▶ Operations Flow
@@ -30,9 +30,9 @@ Claude Code ファイル（`.claude/`）が正規ソースです。Copilot / Cod
 
 ---
 
-## Why Telescope
+## Why Aphelion
 
-AI コーディングエージェントは強力ですが、単一セッションではプロジェクト全体を扱いきれません。コンテキストウィンドウが溢れ、品質ゲートが省略され、フェーズ間の構造的な引き継ぎがありません。Telescope はライフサイクルを独立した領域に分割し、専門エージェント・承認ゲート・ドキュメント駆動のハンドオフでこれらの課題を解決します。
+AI コーディングエージェントは強力ですが、単一セッションではプロジェクト全体を扱いきれません。コンテキストウィンドウが溢れ、品質ゲートが省略され、フェーズ間の構造的な引き継ぎがありません。Aphelion はライフサイクルを独立した領域に分割し、専門エージェント・承認ゲート・ドキュメント駆動のハンドオフでこれらの課題を解決します。
 
 ---
 
@@ -176,7 +176,7 @@ python3 scripts/generate.py --clean            # 生成物を削除
 | サブエージェント | あり（Agent tool） | あり（agent tool） | なし |
 | フルオーケストレーション | 可能 | 可能 | 不可 |
 
-> Telescope は開発時ワークフローであり、CI/CD ランタイムではありません。`infra-builder` が GitHub Actions 等のパイプライン定義を生成します。
+> Aphelion は開発時ワークフローであり、CI/CD ランタイムではありません。`infra-builder` が GitHub Actions 等のパイプライン定義を生成します。
 
 ---
 

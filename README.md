@@ -1,4 +1,4 @@
-# Telescope Agents
+# Aphelion — Frontier AI Agents
 
 A multi-platform collection of AI coding agent definitions that automates the entire project lifecycle with 26 specialized agents.
 
@@ -6,9 +6,9 @@ A multi-platform collection of AI coding agent definitions that automates the en
 
 ---
 
-## What's Telescope
+## What's Aphelion
 
-Telescope divides software development into three domains, each managed by an independent flow orchestrator:
+Aphelion divides software development into three domains, each managed by an independent flow orchestrator:
 
 ```
 Discovery Flow ──[DISCOVERY_RESULT.md]──▶ Delivery Flow ──[DELIVERY_RESULT.md]──▶ Operations Flow
@@ -30,9 +30,9 @@ Claude Code files (`.claude/`) are the canonical source. Copilot and Codex files
 
 ---
 
-## Why Telescope
+## Why Aphelion
 
-AI coding agents are powerful, but a single agent session struggles with full project lifecycles — context windows overflow, quality gates get skipped, and there's no structured handoff between phases. Telescope solves this by splitting the lifecycle into isolated domains with specialized agents, mandatory approval gates, and document-driven handoffs that preserve traceability across sessions.
+AI coding agents are powerful, but a single agent session struggles with full project lifecycles — context windows overflow, quality gates get skipped, and there's no structured handoff between phases. Aphelion solves this by splitting the lifecycle into isolated domains with specialized agents, mandatory approval gates, and document-driven handoffs that preserve traceability across sessions.
 
 ---
 
@@ -176,7 +176,7 @@ python3 scripts/generate.py --clean            # Remove generated files
 | Sub-agent support | Yes (Agent tool) | Yes (agent tool) | No |
 | Full orchestration | Yes | Yes | No |
 
-> Telescope is a development-time workflow, not a CI/CD runtime. `infra-builder` generates pipeline definitions for GitHub Actions, etc.
+> Aphelion is a development-time workflow, not a CI/CD runtime. `infra-builder` generates pipeline definitions for GitHub Actions, etc.
 
 ---
 

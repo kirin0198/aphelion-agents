@@ -1,6 +1,6 @@
-# CLAUDE.md — Telescope Workflow Overview
+# CLAUDE.md — Aphelion Workflow Overview
 
-This file provides a high-level overview of the Telescope workflow.
+This file provides a high-level overview of the Aphelion workflow.
 Behavioral rules are defined in `.claude/rules/` (auto-loaded).
 Agent-specific rules are documented in the individual files under `.claude/agents/`.
 
@@ -8,9 +8,9 @@ Agent-specific rules are documented in the individual files under `.claude/agent
 
 ---
 
-## Telescope Workflow Model
+## Aphelion Workflow Model
 
-Telescope divides the entire project lifecycle into three domains — **Discovery (requirements exploration) → Delivery (design & implementation) → Operations (deploy & operations)** — each managed by an independent orchestrator (flow).
+Aphelion divides the entire project lifecycle into three domains — **Discovery (requirements exploration) → Delivery (design & implementation) → Operations (deploy & operations)** — each managed by an independent orchestrator (flow).
 
 ### Design Principles
 

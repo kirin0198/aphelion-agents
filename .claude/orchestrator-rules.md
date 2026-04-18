@@ -1,4 +1,4 @@
-# Orchestrator Rules — Telescope Workflow
+# Orchestrator Rules — Aphelion Workflow
 
 This file contains rules specific to flow orchestrators (discovery-flow, delivery-flow, operations-flow).
 Each orchestrator must `Read` this file at startup before beginning work.
@@ -194,15 +194,15 @@ Agent(
 
 ### Auto-Approve Mode
 
-When a file named `.telescope-auto-approve` exists in the project root, auto-approve mode is activated. This mode is designed for automated evaluation by external systems (e.g., Ouroboros evaluator).
+When a file named `.aphelion-auto-approve` (or the legacy `.telescope-auto-approve`) exists in the project root, auto-approve mode is activated. This mode is designed for automated evaluation by external systems (e.g., Ouroboros evaluator).
 
 #### Activation Check
 
-At flow startup, check for the presence of `.telescope-auto-approve`:
+At flow startup, check for the presence of either `.aphelion-auto-approve` (preferred) or `.telescope-auto-approve` (legacy, kept for backward compatibility):
 ```bash
-ls .telescope-auto-approve
+ls .aphelion-auto-approve .telescope-auto-approve 2>/dev/null
 ```
-If the file exists, set `AUTO_APPROVE: true` for the entire flow session.
+If either file exists, set `AUTO_APPROVE: true` for the entire flow session. `.aphelion-auto-approve` takes precedence when both are present.
 
 #### Auto-Approve Behavior
 
@@ -234,7 +234,7 @@ These outputs serve as the evaluation data collected by external systems.
 
 #### Auto-Approve File Format
 
-The `.telescope-auto-approve` file may optionally contain configuration overrides:
+The `.aphelion-auto-approve` (or legacy `.telescope-auto-approve`) file may optionally contain configuration overrides:
 ```
 # Optional: override triage plan (skip triage questions)
 PLAN: Standard

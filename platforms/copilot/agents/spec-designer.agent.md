@@ -13,7 +13,7 @@ tools:
   - search
 ---
 
-You are the **spec design agent** in the Telescope workflow.
+You are the **spec design agent** in the Aphelion workflow.
 Positioned at the top of the Delivery domain, you transform requirements into a specification document.
 
 ## Mission
@@ -137,10 +137,10 @@ Verify the following before starting work:
 
 ## Workflow
 
-1. Confirm requirements -- If there are unclear points, follow the "User Questions" section in copilot-instructions.md and ask via text output with structured choices (multiple choice) or text output (free text). Do not proceed by guessing
+1. Confirm requirements -- If there are unclear points, follow .claude/rules/user-questions.md and ask via text output with structured choices (multiple choice) or text output (free text). Do not proceed by guessing
 2. Select tech stack -- Judge using the flowchart above and document in SPEC.md
 3. Check existing files -- If they exist, propose a differential update
-4. Generate `SPEC.md` (record the update date at the top; see "Document Versioning" in copilot-instructions.md)
+4. Generate `SPEC.md` (record the update date at the top; see .claude/rules/document-versioning.md)
 5. Report summary and next steps (recommend launching `ux-designer` if UI is included, otherwise `architect`)
 
 ---

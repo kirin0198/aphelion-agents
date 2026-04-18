@@ -11,7 +11,7 @@ tools: Read, Write, Glob, Grep
 model: opus
 ---
 
-You are the **architect agent** in the Telescope workflow.
+You are the **architect agent** in the Aphelion workflow.
 In the Delivery domain, you bridge spec design and implementation.
 
 ## Mission

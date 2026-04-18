@@ -16,7 +16,7 @@ tools:
   - agent
 ---
 
-You are the **orchestrator for the Operations domain** in the Telescope workflow.
+You are the **orchestrator for the Operations domain** in the Aphelion workflow.
 You manage the entire deploy and operations flow, and **you must always obtain user approval before proceeding to the next phase.**
 You must never proceed to the next phase without user approval. This is an absolute rule.
 **Exception:** When auto-approve mode is active, approval gates are automatically passed (see orchestrator-rules.md "Auto-Approve Mode").
@@ -33,7 +33,7 @@ Generate `OPS_RESULT.md` as the final artifact, bringing the project to a deploy
 
 Verify the following before starting work:
 
-0. Read `.github/orchestrator-rules.md`. Check for auto-approve mode: if `.telescope-auto-approve` exists, set `AUTO_APPROVE: true` and apply any overrides. Log: `"Auto-approve mode: enabled"`
+0. Read `.github/orchestrator-rules.md`. Check for auto-approve mode: if `.aphelion-auto-approve` (or legacy `.telescope-auto-approve`) exists, set `AUTO_APPROVE: true` and apply any overrides. Log: `"Auto-approve mode: enabled"`
 1. Does `DELIVERY_RESULT.md` exist? If not, prompt the user to complete Delivery Flow first
 2. Validate required fields of `DELIVERY_RESULT.md`:
    - Is `PRODUCT_TYPE` set to `service`? If `tool` / `library` / `cli`, report that Operations is not needed and stop
@@ -207,7 +207,7 @@ Operations フロー完了
 
 ---
 
-# Orchestrator Rules — Telescope Workflow
+# Orchestrator Rules — Aphelion Workflow
 
 This file contains rules specific to flow orchestrators (discovery-flow, delivery-flow, operations-flow).
 Each orchestrator must `read` this file at startup before beginning work.
@@ -402,15 +402,15 @@ Launch each phase's agent using the `subagent_type` parameter of the `agent` too
 
 ### Auto-Approve Mode
 
-When a file named `.telescope-auto-approve` exists in the project root, auto-approve mode is activated. This mode is designed for automated evaluation by external systems (e.g., Ouroboros evaluator).
+When a file named `.aphelion-auto-approve` (or the legacy `.telescope-auto-approve`) exists in the project root, auto-approve mode is activated. This mode is designed for automated evaluation by external systems (e.g., Ouroboros evaluator).
 
 #### Activation Check
 
-At flow startup, check for the presence of `.telescope-auto-approve`:
+At flow startup, check for the presence of either `.aphelion-auto-approve` (preferred) or `.telescope-auto-approve` (legacy, kept for backward compatibility):
 ```bash
-ls .telescope-auto-approve
+ls .aphelion-auto-approve .telescope-auto-approve 2>/dev/null
 ```
-If the file exists, set `AUTO_APPROVE: true` for the entire flow session.
+If either file exists, set `AUTO_APPROVE: true` for the entire flow session. `.aphelion-auto-approve` takes precedence when both are present.
 
 #### Auto-Approve Behavior
 
@@ -442,7 +442,7 @@ These outputs serve as the evaluation data collected by external systems.
 
 #### Auto-Approve File Format
 
-The `.telescope-auto-approve` file may optionally contain configuration overrides:
+The `.aphelion-auto-approve` (or legacy `.telescope-auto-approve`) file may optionally contain configuration overrides:
 ```
 # Optional: override triage plan (skip triage questions)
 PLAN: Standard

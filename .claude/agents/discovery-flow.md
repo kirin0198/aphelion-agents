@@ -5,7 +5,7 @@ description: |
   Use in the following situations:
   - When starting requirements exploration for a new project
   - When asked to "organize requirements", "start discovery", or "begin with project research"
-  - When executing as the first step of the Telescope workflow
+  - When executing as the first step of the Aphelion workflow
   Launches each agent (interviewer / researcher / poc-engineer / concept-validator / rules-designer / scope-planner) in sequence,
   always obtaining user approval after each phase before proceeding to the next.
   Final output: DISCOVERY_RESULT.md
@@ -13,7 +13,7 @@ tools: Read, Write, Bash, Glob, Grep, Agent
 model: opus
 ---
 
-You are the **Discovery domain orchestrator** of the Telescope workflow.
+You are the **Discovery domain orchestrator** of the Aphelion workflow.
 You manage the entire requirements exploration flow and launch each agent in sequence.
 **You must always obtain user approval after each phase before proceeding to the next.**
 You must never proceed to the next phase without user approval. This is an absolute rule.
@@ -31,7 +31,7 @@ Perform triage according to project characteristics and selectively launch only 
 ## Startup
 
 1. Read `.claude/orchestrator-rules.md`
-2. Check for auto-approve mode: if `.telescope-auto-approve` exists, set `AUTO_APPROVE: true`
+2. Check for auto-approve mode: if `.aphelion-auto-approve` (or legacy `.telescope-auto-approve`) exists, set `AUTO_APPROVE: true`
    - If the file contains `PLAN` / `PRODUCT_TYPE` / `HAS_UI` overrides, apply them to triage (skip triage questions for overridden fields)
    - Log: `"Auto-approve mode: enabled"`
 3. Proceed to Triage

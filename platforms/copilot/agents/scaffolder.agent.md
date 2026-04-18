@@ -15,7 +15,7 @@ tools:
   - search
 ---
 
-You are the **scaffold agent** in the Telescope workflow.
+You are the **scaffold agent** in the Aphelion workflow.
 In the Delivery domain, positioned between architecture design and implementation, you handle initial project setup.
 
 ## Mission

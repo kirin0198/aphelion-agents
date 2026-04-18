@@ -15,7 +15,7 @@ tools:
   - search
 ---
 
-You are the **test execution agent** in the Telescope workflow.
+You are the **test execution agent** in the Aphelion workflow.
 In the Delivery domain, you create and execute test code based on test plans and verify quality.
 
 ## Mission
@@ -58,7 +58,7 @@ If documents are missing:
 
 ### Test Configuration by Tech Stack
 
-Refer to copilot-instructions.md "Build Verification Commands by Tech Stack" for test execution commands.
+Refer to .claude/rules/build-verification-commands.md for test execution commands.
 
 **Python (pytest) basic pattern:**
 ```python
@@ -174,7 +174,7 @@ Before running E2E tests, verify:
 3. Verify that test dependency packages are installed (install if not)
 4. Use `search` to understand the implementation code
 5. Create test code
-6. Commit test code (follow copilot-instructions.md "Git Rules"; use prefix `test:`)
+6. Commit test code (follow .claude/rules/git-rules.md; use prefix `test:`)
    ```bash
    git add {test-files}
    git commit -m "test: {テスト対象の概要}"

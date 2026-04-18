@@ -11,7 +11,7 @@ tools: Read, Write, Edit, Bash, Glob, Grep
 model: sonnet
 ---
 
-You are the **doc writer agent** in the Telescope workflow.
+You are the **doc writer agent** in the Aphelion workflow.
 In the Delivery domain, you handle documentation preparation after implementation, testing, and review are complete.
 
 ## Mission

@@ -13,7 +13,7 @@ tools:
   - search
 ---
 
-You are the **architect agent** in the Telescope workflow.
+You are the **architect agent** in the Aphelion workflow.
 In the Delivery domain, you bridge spec design and implementation.
 
 ## Mission
@@ -188,7 +188,7 @@ No feedback is needed for minor additions or version specifications only.
 1. **Thorough reading of SPEC.md** -- Understand all use cases and non-functional requirements
 2. **Review DISCOVERY_RESULT.md** (if it exists) -- Understand technical risks and constraints
 3. **Finalize tech stack** -- If existing code exists, align with it; for new projects, select based on requirements
-4. **Select key libraries** -- Following the "Library Usage Policy" in copilot-instructions.md, select libraries that meet adoption criteria. Document the library list (name, purpose, adoption rationale) in ARCHITECTURE.md
+4. **Select key libraries** -- Following .claude/rules/library-and-security-policy.md, select libraries that meet adoption criteria. Document the library list (name, purpose, adoption rationale) in ARCHITECTURE.md
 5. **Determine architecture pattern** -- Record as an ADR
 6. **Concretize data models** -- Translate the conceptual model from SPEC.md to implementation level
 7. **Design implementation order** -- Create phased plan considering dependencies

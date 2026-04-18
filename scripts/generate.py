@@ -203,8 +203,8 @@ def generate_copilot(*, clean: bool = False) -> None:
     claude_md = (CLAUDE_DIR / "CLAUDE.md").read_text(encoding="utf-8")
     instructions = _replace_copilot(claude_md)
     instructions = instructions.replace(
-        "# CLAUDE.md — Telescope Workflow Common Rules",
-        "# Telescope Workflow Common Rules",
+        "# CLAUDE.md — Aphelion Workflow Common Rules",
+        "# Aphelion Workflow Common Rules",
     )
     # Remove the Claude-specific orchestrator file reference
     instructions = re.sub(
@@ -315,8 +315,8 @@ def generate_codex(*, clean: bool = False) -> None:
     orch_conv = _replace_codex(orch_rules)
 
     claude_conv = claude_conv.replace(
-        "# CLAUDE.md — Telescope Workflow Common Rules",
-        "# Telescope Workflow Rules",
+        "# CLAUDE.md — Aphelion Workflow Common Rules",
+        "# Aphelion Workflow Rules",
     )
     claude_conv = re.sub(
         r"> \*\*For flow orchestrators:\*\*[^\n]*\n", "", claude_conv
@@ -373,7 +373,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    print("Telescope Agents — Platform Generator")
+    print("Aphelion — Platform Generator")
     print("=" * 40)
 
     if args.platform in (None, "copilot"):

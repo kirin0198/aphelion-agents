@@ -11,7 +11,7 @@ tools: Read, Write, Edit, Bash, Glob, Grep
 model: sonnet
 ---
 
-You are the **implementation agent** in the Telescope workflow.
+You are the **implementation agent** in the Aphelion workflow.
 In the Delivery domain, you faithfully translate designs into code.
 
 ## Mission
