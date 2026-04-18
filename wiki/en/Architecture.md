@@ -1,7 +1,7 @@
 # Architecture
 
 > **Language**: [English](../en/Architecture.md) | [日本語](../ja/Architecture.md)
-> **Last updated**: 2026-04-18
+> **Last updated**: 2026-04-19
 > **Audience**: Agent developers
 
 This page describes Aphelion's architectural design: the three-domain model, session isolation strategy, handoff file schemas, PRODUCT_TYPE branching, and the AGENT_RESULT inter-agent communication protocol.
@@ -16,7 +16,9 @@ This page describes Aphelion's architectural design: the three-domain model, ses
 - [blocked STATUS](#blocked-status)
 - [Auto-Approve Mode](#auto-approve-mode)
 - [Flow Orchestrators](#flow-orchestrators)
+- [Triage Tiers](#triage-tiers)
 - [Rollback Rules](#rollback-rules)
+- [Sandbox Defense Layers](#sandbox-defense-layers)
 - [Related Pages](#related-pages)
 - [Canonical Sources](#canonical-sources)
 
@@ -26,10 +28,18 @@ This page describes Aphelion's architectural design: the three-domain model, ses
 
 Aphelion divides the software development lifecycle into three independent domains:
 
-```
-Discovery Flow ──[DISCOVERY_RESULT.md]──▶ Delivery Flow ──[DELIVERY_RESULT.md]──▶ Operations Flow
- (requirements)                          (design & impl)                         (deploy & ops)
- 6 agents                                12 agents                               4 agents
+<!-- source: .claude/CLAUDE.md -->
+```mermaid
+flowchart LR
+    DR["DISCOVERY_RESULT.md"]
+    DLR["DELIVERY_RESULT.md"]
+    OPR["OPS_RESULT.md"]
+
+    Discovery["Discovery Flow\n(6 agents)"] -->|generates| DR
+    DR -->|input for| Delivery["Delivery Flow\n(12 agents)"]
+    Delivery -->|generates| DLR
+    DLR -->|input for| Ops["Operations Flow\n(4 agents)\nservice only"]
+    Ops -->|generates| OPR
 ```
 
 **Discovery** explores and structures requirements, producing `DISCOVERY_RESULT.md`.
@@ -48,6 +58,27 @@ Discovery Flow ──[DISCOVERY_RESULT.md]──▶ Delivery Flow ──[DELIVER
 | Triage adaptation | Each flow orchestrator assesses project scale and selects a plan tier |
 | Independent invocation | Any agent can be invoked standalone if its input files are available |
 
+### Agent Flow
+
+<!-- source: .claude/agents/ (agent file names), .claude/orchestrator-rules.md -->
+```mermaid
+flowchart LR
+    D["Discovery<br/>(6 agents)<br/>interviewer → ... → scope-planner"]
+    DV["Delivery<br/>(12 agents)<br/>spec-designer → ... → releaser"]
+    O["Operations<br/>(4 agents)<br/>infra-builder → ... → ops-planner"]
+    S["Standalone<br/>analyst / codebase-analyzer / sandbox-runner"]
+
+    D -->|DISCOVERY_RESULT.md| DV
+    DV -->|DELIVERY_RESULT.md| O
+    S -.optional.-> DV
+```
+
+Per-domain details:
+[Discovery](./Agents-Reference.md#discovery-domain) ·
+[Delivery](./Agents-Reference.md#delivery-domain) ·
+[Operations](./Agents-Reference.md#operations-domain) ·
+[Standalone](./Agents-Reference.md#standalone-agents)
+
 ---
 
 ## Session Isolation
@@ -65,6 +96,20 @@ The three flow orchestrators — `discovery-flow`, `delivery-flow`, `operations-
 ## Handoff File Schema
 
 Handoff files are the mechanism by which domains communicate. Each is a structured Markdown document validated by the receiving orchestrator.
+
+<!-- source: .claude/orchestrator-rules.md (Handoff File Specification) -->
+```mermaid
+flowchart LR
+    DR["DISCOVERY_RESULT.md\n---\nPRODUCT_TYPE\nProject overview\nRequirements summary\nScope\nTechnical risks & constraints"]
+    DLR["DELIVERY_RESULT.md\n---\nPRODUCT_TYPE\nArtifacts (SPEC/ARCH)\nTech stack\nTest results\nSecurity audit results"]
+    OPR["OPS_RESULT.md\n---\nArtifact list\nDeploy readiness\nOpen issues"]
+
+    scope-planner -->|generates| DR
+    DR -->|read by| delivery-flow
+    delivery-flow -->|generates| DLR
+    DLR -->|read by| operations-flow
+    operations-flow -->|generates| OPR
+```
 
 ### DISCOVERY_RESULT.md
 
@@ -131,6 +176,38 @@ Only `service` products require infrastructure, database operations, and deploym
 ## AGENT_RESULT Protocol
 
 Every agent must emit an `AGENT_RESULT` block upon completion. Flow orchestrators parse this block to determine the next action.
+
+<!-- source: .claude/rules/agent-communication-protocol.md -->
+```mermaid
+stateDiagram-v2
+    [*] --> running : agent launched
+
+    running --> success : completed normally
+    running --> error : execution failed
+    running --> failure : quality issue
+    running --> blocked : design ambiguity found
+    running --> suspended : session interrupted
+
+    success --> ApprovalGate : proceed to approval gate
+    error --> UserDecision : report to user
+    failure --> Rollback : trigger rollback flow
+    blocked --> LightweightQuery : launch BLOCKED_TARGET agent
+    suspended --> [*] : user prompted to resume
+
+    ApprovalGate --> approved : user approves
+    ApprovalGate --> conditional : user approves with conditions
+    ApprovalGate --> rejected : CRITICAL found
+
+    approved --> [*] : proceed to next phase
+    conditional --> [*] : user discretion
+    rejected --> Rollback : rollback to developer
+
+    UserDecision --> running : retry
+    UserDecision --> [*] : skip or abort
+
+    LightweightQuery --> running : resume with answer
+    Rollback --> running : re-run after fix
+```
 
 ### Block Format
 
@@ -230,6 +307,41 @@ The three flow orchestrators each manage a domain. They share the following comm
 
 ---
 
+## Triage Tiers
+
+Each flow orchestrator assesses project characteristics at startup and selects one of four plan tiers. See [Triage System](./Triage-System.md) for full details.
+
+<!-- source: .claude/orchestrator-rules.md (Triage System) -->
+```mermaid
+flowchart LR
+    subgraph Discovery ["Discovery Flow Triage"]
+        direction TB
+        DMin["Minimal\n1 agent\nPersonal tool / small script"]
+        DLit["Light\n3 agents\nPersonal side project"]
+        DStd["Standard\n5 agents\nExternal dependencies"]
+        DFul["Full\n6 agents\nLarge-scale / complex"]
+    end
+
+    subgraph Delivery ["Delivery Flow Triage"]
+        direction TB
+        VMin["Minimal\n5 agents\nSingle-function tool"]
+        VLit["Light\n+reviewer +test-designer\nPersonal side project"]
+        VStd["Standard\n+scaffolder +doc-writer\nMulti-file project"]
+        VFul["Full\n+releaser\nPublic / OSS"]
+    end
+
+    subgraph Operations ["Operations Flow Triage"]
+        direction TB
+        OLit["Light\n2 agents\nPaaS / single container"]
+        OStd["Standard\n+db-ops\nAPI + DB architecture"]
+        OFul["Full\n+observability\nHigh availability"]
+    end
+```
+
+> **Note**: `security-auditor` runs on all Delivery plans. `ux-designer` runs only when `HAS_UI: true`.
+
+---
+
 ## Rollback Rules
 
 Rollbacks are triggered automatically by test failures and review CRITICAL findings. All rollbacks are limited to **3 times maximum**.
@@ -269,6 +381,46 @@ poc-engineer (blocked, BLOCKED_ITEMS > 0)
     → researcher (re-investigate if needed)
       → poc-engineer (re-verify)
 ```
+
+---
+
+## Sandbox Defense Layers
+
+Aphelion uses two complementary layers to protect against dangerous command execution. See [Platform Guide](./Platform-Guide.md) for per-platform configuration details.
+
+<!-- source: docs/issues/sandbox-design.md (§1, §2, Addendum §A.2) -->
+```mermaid
+flowchart TB
+    subgraph Advisory ["Advisory Layer"]
+        direction LR
+        Policy["sandbox-policy.md\n(auto-loaded rule)\nrisk categories:\nrequired / recommended / optional"]
+        Permission["Claude Code\nPermission Mode\nallow / ask / deny"]
+        Policy --> Permission
+    end
+
+    subgraph Enforcement ["Enforcement Layer"]
+        direction LR
+        Infra["infra-builder\ngenerates devcontainer"]
+        Container[".devcontainer/devcontainer.json\ndocker-compose.dev.yml\n(container isolation)"]
+        Infra --> Container
+    end
+
+    Command["Bash command\nfrom agent"] --> Advisory
+    Advisory --> FallbackCheck{"container\navailable?"}
+
+    FallbackCheck -->|Yes| ContainerExec["container\nexecution"]
+    FallbackCheck -->|No| PlatformCheck{"platform\ndetected?"}
+
+    PlatformCheck -->|claude_code| PlatformPerm["platform_permission\n(permission mode)"]
+    PlatformCheck -->|unknown| CategoryCheck{"required\ncategory?"}
+
+    CategoryCheck -->|No| Advisory2["advisory_only\n(warning only)"]
+    CategoryCheck -->|Yes| Blocked["blocked\n(execution denied)"]
+
+    Enforcement -.->|provides| FallbackCheck
+```
+
+> **Fallback order**: `container` → `platform_permission` → `advisory_only` → `blocked`
 
 ---
 
