@@ -184,6 +184,22 @@ python3 scripts/generate.py --clean            # 生成物を削除
 
 ---
 
+## ドキュメント
+
+エージェントスキーマ、ルール説明、トリアージロジック、プラットフォーム内部の詳細は **[Wiki](wiki/ja/Home.md)** を参照してください。
+
+| ページ | 説明 |
+|-------|-----|
+| [はじめに](wiki/ja/Getting-Started.md) | 全プラットフォームのセットアップ、初回実行ウォークスルー、利用シナリオ |
+| [アーキテクチャ](wiki/ja/Architecture.md) | 3ドメインモデル、ハンドオフファイル、AGENT_RESULTプロトコル |
+| [トリアージシステム](wiki/ja/Triage-System.md) | プランティア、エージェント選択ロジック、HAS_UI条件 |
+| [エージェントリファレンス](wiki/ja/Agents-Reference.md) | 全26エージェント — 入力・出力・NEXT条件 |
+| [ルールリファレンス](wiki/ja/Rules-Reference.md) | 全8行動ルール — スコープとインタラクション |
+| [プラットフォームガイド](wiki/ja/Platform-Guide.md) | Copilot/Codexの差異、ジェネレーター使用方法、移植ガイド |
+| [コントリビューティング](wiki/ja/Contributing.md) | エージェント追加方法、バイリンガル同期ポリシー、PRチェックリスト |
+
+---
+
 ## Features
 
 - **3領域分離** — Discovery / Delivery / Operations を独立セッションで管理し、コンテキスト圧迫を防止

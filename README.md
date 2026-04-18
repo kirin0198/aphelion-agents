@@ -184,6 +184,22 @@ python3 scripts/generate.py --clean            # Remove generated files
 
 ---
 
+## Documentation
+
+For detailed agent schemas, rule explanations, triage logic, and platform internals, see the **[Wiki](wiki/en/Home.md)**.
+
+| Page | Description |
+|------|-------------|
+| [Getting Started](wiki/en/Getting-Started.md) | Setup for all platforms, first-run walkthrough, usage scenarios |
+| [Architecture](wiki/en/Architecture.md) | 3-domain model, handoff files, AGENT_RESULT protocol |
+| [Triage System](wiki/en/Triage-System.md) | Plan tiers, agent selection logic, HAS_UI conditions |
+| [Agents Reference](wiki/en/Agents-Reference.md) | All 26 agents — inputs, outputs, NEXT conditions |
+| [Rules Reference](wiki/en/Rules-Reference.md) | All 8 behavioral rules — scope and interactions |
+| [Platform Guide](wiki/en/Platform-Guide.md) | Copilot/Codex differences, generator usage, porting guide |
+| [Contributing](wiki/en/Contributing.md) | How to add agents, bilingual sync policy, PR checklist |
+
+---
+
 ## Features
 
 - **3-domain separation** — Discovery / Delivery / Operations run in independent sessions to prevent context bloat

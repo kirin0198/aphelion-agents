@@ -1,0 +1,227 @@
+# Triage System
+
+> **Language**: [English](../en/Triage-System.md) | [日本語](../ja/Triage-System.md)
+> **Last updated**: 2026-04-18
+> **Audience**: New users / Agent developers
+
+The Triage System automatically assesses project characteristics at flow start and selects the minimum set of agents needed. This page explains the 4-tier selection logic, conditions, and per-domain agent matrices.
+
+## Table of Contents
+
+- [Overview](#overview)
+- [How Triage Works](#how-triage-works)
+- [Discovery Flow Triage](#discovery-flow-triage)
+- [Delivery Flow Triage](#delivery-flow-triage)
+- [Operations Flow Triage](#operations-flow-triage)
+- [Mandatory Agents (Always Run)](#mandatory-agents-always-run)
+- [Conditional Agents (HAS_UI)](#conditional-agents-has_ui)
+- [Triage Assessment Questions](#triage-assessment-questions)
+- [Overriding Triage](#overriding-triage)
+- [Related Pages](#related-pages)
+- [Canonical Sources](#canonical-sources)
+
+---
+
+## Overview
+
+Aphelion's Triage System ensures that the right level of rigor is applied based on project characteristics:
+
+- A **personal CLI tool** gets Minimal — just enough to ship
+- A **public OSS library** gets Full — the complete quality pipeline
+- Everything else falls somewhere in between
+
+The triage happens at the start of each flow. The orchestrator interviews the user (or reads `DISCOVERY_RESULT.md`) and selects from 4 plan tiers: **Minimal**, **Light**, **Standard**, or **Full**.
+
+---
+
+## How Triage Works
+
+1. The flow orchestrator interviews the user using `AskUserQuestion` on project characteristics (or reads `DISCOVERY_RESULT.md`)
+2. The orchestrator presents the selected plan and agent list as text output
+3. The orchestrator asks for approval via `AskUserQuestion`
+4. Once approved, agents are launched in sequence
+
+**Assessment dimensions:**
+- Project scale (personal script → team project → large-scale)
+- External dependencies and integrations
+- Domain complexity (regulatory, compliance)
+- Public/private status
+- `PRODUCT_TYPE` (service / tool / library / cli)
+- `HAS_UI` (whether a user interface is involved)
+
+---
+
+## Discovery Flow Triage
+
+| Plan | Trigger Condition | Agents Launched |
+|------|-----------------|----------------|
+| **Minimal** | Personal tool / small script | `interviewer` |
+| **Light** | Personal side project / multiple features | `interviewer` → `rules-designer` → `scope-planner` |
+| **Standard** | External dependencies / existing system integration | `interviewer` → `researcher` → `poc-engineer` → `rules-designer` → `scope-planner` |
+| **Full** | Regulated / large-scale / complex | `interviewer` → `researcher` → `poc-engineer` → `concept-validator`* → `rules-designer` → `scope-planner` |
+
+*`concept-validator` only runs if `HAS_UI: true`
+
+### Discovery Phase Sequence by Plan
+
+**Minimal:**
+```
+Phase 1: Requirements interview  → interviewer  → approval
+→ discovery-flow generates DISCOVERY_RESULT.md directly
+```
+
+**Light:**
+```
+Phase 1: Requirements interview  → interviewer    → approval
+Phase 2: Rule design             → rules-designer → approval
+Phase 3: Scope planning          → scope-planner  → approval → done
+```
+
+**Standard:**
+```
+Phase 1: Requirements interview  → interviewer    → approval
+Phase 2: Domain research         → researcher     → approval
+Phase 3: Technical PoC           → poc-engineer   → approval
+Phase 4: Rule design             → rules-designer → approval
+Phase 5: Scope planning          → scope-planner  → approval → done
+```
+
+**Full:**
+```
+Phase 1: Requirements interview  → interviewer       → approval
+Phase 2: Domain research         → researcher        → approval
+Phase 3: Technical PoC           → poc-engineer      → approval
+Phase 4: Concept validation      → concept-validator → approval  [HAS_UI: true only]
+Phase 5: Rule design             → rules-designer    → approval
+Phase 6: Scope planning          → scope-planner     → approval → done
+```
+
+---
+
+## Delivery Flow Triage
+
+| Plan | Trigger Condition | Agents Launched |
+|------|-----------------|----------------|
+| **Minimal** | Single-function tool | `spec-designer` → `architect` → `developer` → `tester`* → `security-auditor` |
+| **Light** | Personal side project | + `ux-designer`† + `test-designer` + `e2e-test-designer`† + `reviewer` |
+| **Standard** | Multi-file project | + `scaffolder` + `doc-writer` |
+| **Full** | Public project / OSS | + `releaser` |
+
+*In Minimal plan, `tester` integrates test design (TEST_PLAN.md may not be pre-generated)
+†Only when `HAS_UI: true`
+
+### Delivery Phase Sequence (Standard Example)
+
+```
+Phase 1:  Spec design         → spec-designer      → approval
+Phase 2:  UI design           → ux-designer         → approval  [HAS_UI: true only]
+Phase 3:  Architecture design → architect          → approval
+Phase 4:  Project init        → scaffolder         → approval
+Phase 5:  Implementation      → developer          → approval
+Phase 6:  Test design         → test-designer      → approval
+Phase 7:  E2E test design     → e2e-test-designer  → approval  [HAS_UI: true only]
+Phase 8:  Test execution      → tester             → approval
+Phase 9:  Code review         → reviewer           → approval
+Phase 10: Security audit      → security-auditor   → approval
+Phase 11: Documentation       → doc-writer         → approval → done
+```
+
+### Side Entry: analyst
+
+`analyst` is not selected through triage — it is a side entry triggered by bug reports, feature requests, or refactoring requests for **existing projects**. After `analyst` completes, `delivery-flow` joins from Phase 3 (architect).
+
+---
+
+## Operations Flow Triage
+
+Operations Flow only runs for `PRODUCT_TYPE: service`. There is no Minimal plan — at minimum, infrastructure definitions and an operations plan are required.
+
+| Plan | Trigger Condition | Agents Launched |
+|------|-----------------|----------------|
+| **Light** | PaaS / single container / no DB | `infra-builder` → `ops-planner` |
+| **Standard** | API + DB architecture | `infra-builder` → `db-ops` → `ops-planner` |
+| **Full** | High availability / external user-facing | `infra-builder` → `db-ops` → `observability` → `ops-planner` |
+
+### Operations Assessment Criteria
+
+1. **DB presence**: Whether ARCHITECTURE.md data model and tech stack include a database
+2. **User-facing service**: Whether it is an API / Web service accessed by external users
+3. **Availability requirements**: Whether uptime requirements or SLAs are specified in SPEC.md
+
+---
+
+## Mandatory Agents (Always Run)
+
+Certain agents run on **all plans** regardless of triage outcome:
+
+| Agent | Domain | Why Mandatory |
+|-------|--------|--------------|
+| `security-auditor` | Delivery | Security audit cannot be omitted. OWASP Top 10 + dependency scans run even on Minimal |
+
+The `security-auditor` mandate is defined in [.claude/rules/library-and-security-policy.md](../../.claude/rules/library-and-security-policy.md):
+
+> `security-auditor` **must run on all Delivery plans (including Minimal)**.
+
+---
+
+## Conditional Agents (HAS_UI)
+
+Some agents only run when a user interface is involved:
+
+| Agent | Condition | Domain |
+|-------|-----------|--------|
+| `concept-validator` | Full plan AND `HAS_UI: true` | Discovery |
+| `ux-designer` | Any plan AND `HAS_UI: true` | Delivery |
+| `e2e-test-designer` | Light/Standard/Full AND `HAS_UI: true` | Delivery |
+
+`HAS_UI` is determined by `interviewer` (Discovery) or `spec-designer` (Delivery direct entry) based on whether the project includes a web UI, mobile app, or desktop GUI.
+
+---
+
+## Triage Assessment Questions
+
+The discovery-flow orchestrator asks the following in two rounds (via `AskUserQuestion`):
+
+**Round 1 (4 questions):**
+1. Project scale: personal script / personal side project / team project / large-scale
+2. UI type: CLI / API only / Web UI / Mobile
+3. External API dependencies: none / present
+4. Existing system integration: new / integration with existing
+
+**Round 2 (2 questions):**
+5. Domain complexity: simple / moderate / complex (regulated)
+6. PRODUCT_TYPE: service / tool / library / cli
+
+---
+
+## Overriding Triage
+
+### Manual Override at Approval Gate
+
+After the orchestrator presents the triage result, users can select "プランを変更" at the approval gate to manually override the plan.
+
+### Auto-Approve Mode Override
+
+The `.aphelion-auto-approve` file can contain plan overrides that skip triage questions:
+
+```
+PLAN: Standard
+PRODUCT_TYPE: service
+HAS_UI: true
+```
+
+---
+
+## Related Pages
+
+- [Architecture](./Architecture.md)
+- [Agents Reference](./Agents-Reference.md)
+- [Getting Started](./Getting-Started.md)
+
+## Canonical Sources
+
+- [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — Triage plans, conditions, and agent sequences per domain
+- [.claude/agents/discovery-flow.md](../../.claude/agents/discovery-flow.md) — Discovery triage implementation
+- [.claude/agents/delivery-flow.md](../../.claude/agents/delivery-flow.md) — Delivery triage implementation
+- [.claude/agents/operations-flow.md](../../.claude/agents/operations-flow.md) — Operations triage implementation
+- [.claude/rules/library-and-security-policy.md](../../.claude/rules/library-and-security-policy.md) — security-auditor mandatory rule
