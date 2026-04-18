@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/images/aphelion-logo.png" alt="Aphelion" width="480">
+</p>
+
 # Aphelion — Frontier AI Agents
 
 A multi-platform collection of AI coding agent definitions that automates the entire project lifecycle with 26 specialized agents.
