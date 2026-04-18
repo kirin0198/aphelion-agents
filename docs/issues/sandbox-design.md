@@ -1,10 +1,11 @@
 # Sandbox 機能 設計メモ
 
-> 参照元: `docs/issues/sandbox.md`（analyst 版 1.0 / 2026-04-18）
+> 参照元: `docs/issues/sandbox.md`（analyst 版 1.0 / 2026-04-18、Addendum 2026-04-18）
 > 作成日: 2026-04-18
 > 作成者: architect (agentId inherited)
 > 更新履歴:
 >   - 2026-04-18: 初版作成（sandbox-runner / sandbox-policy / Platform-Guide 拡張の設計確定）
+>   - 2026-04-18: Addendum 追記（案 5 (infra-builder 拡張) による devcontainer 生成採用、ADR-006〜009、Phase 6〜9 追加）
 
 ## 目的
 
@@ -464,3 +465,264 @@ automatically by orchestrators or explicitly delegated from any Bash-owning agen
 - developer は本メモの §5 フェーズ順で実装を進める
 - 各フェーズ完了時に TASK.md を更新し、コミット単位を守る
 - Phase 5 完了後に scripts/generate.py の再生成要否を判断し、必要なら別 issue を起票
+
+---
+
+## Addendum (2026-04-18): Case 5 adoption — infra-builder 拡張による devcontainer 生成
+
+> 参照元: `docs/issues/sandbox.md` §A (Addendum 2026-04-18)
+> architect 決定日: 2026-04-18
+> 前提: §1〜§8 の初版設計（ADR-001〜005）を**変更せず**、その上に追加する増築設計である。
+
+### A.1 背景（要約）
+
+初版設計の `sandbox-policy` は **advisory の域を越えない**。Claude Code の permission mode が `auto`/`allow` 相当で動作している場合、`required` カテゴリに該当するコマンドも素通りし、実行環境の汚染・破壊・秘密情報流出のリスクが残る。
+
+この限界を解消するため、`infra-builder` の責務を拡張し、プロジェクト単位で `.devcontainer/devcontainer.json` と `docker-compose.dev.yml` を**生成**する。実行時は `sandbox-runner` が devcontainer 経由実行を最優先とし、不可能な場合のみ既存の `platform_permission` にフォールバックする。
+
+### A.2 論点 1: isolation mode への `container` 追加
+
+#### 決定
+- `sandbox-policy.md` §4 "Sandbox Modes" に `container` を**正式追加**する。
+- sandbox-runner の Output `sandbox_mode` enum を次のとおり拡張する:
+  - **旧**: `platform_permission | advisory_only | blocked | bypassed`
+  - **新**: `container | platform_permission | advisory_only | blocked | bypassed`
+- AGENT_RESULT の `SANDBOX_MODE` 値にも `container` を追加。
+
+#### 優先順位（同時利用可能時）
+`container` > `platform_permission` > `advisory_only` > `blocked`
+
+理由:
+- `container` は実体的な隔離境界を持つため、同じコマンドでも advisory より強い保証を提供できる。
+- `platform_permission` は container が利用不可のときの実行可能な次善策であり、policy の宣言的判定を活かせる。
+- `advisory_only` は警告のみで実行を止めない。最後のフォールバック。
+- `blocked` は「判定不能なので実行しない」の終端。フォールバックしきれない場合に到達する。
+
+#### フォールバック順（確定）
+```
+[container 利用可？] ── Yes ──▶ container で実行
+        │
+        No (Docker なし / devcontainer 未生成)
+        ▼
+[platform 検出済？] ── Yes ──▶ platform_permission で実行（permission mode 尊重）
+        │
+        No (unknown platform)
+        ▼
+[category が required 以外？] ── Yes ──▶ advisory_only で警告しつつ実行
+        │
+        No (required category)
+        ▼
+blocked（実行拒否、ユーザーに通知）
+```
+
+#### policy §3 決定ツリーへの差し込み位置
+初版 §2.3 の `claude_code` 分岐の**前**に「container 利用可能性チェック」を挿入する。
+既存の permission mode 判定ロジックは container が選べなかった場合のパスとしてそのまま残す。
+
+### A.3 論点 2: triage プラン別の devcontainer 生成可否
+
+#### 決定（§5 triage 表に列を追加）
+
+| Plan | sandbox-runner 配置 | devcontainer 生成 | devcontainer 起動モード | 備考 |
+|------|--------------------|-------------------|------------------------|------|
+| **Minimal** | 登場させない | **スキップ** | N/A | policy の advisory のみ。infra-builder も Minimal では generate しない |
+| **Light** | 明示委譲のみ | **生成** | **任意起動（ユーザー判断）** | 開発者が必要と判断したときに `devcontainer open` する |
+| **Standard** | 自動挿入 | **生成** | **必須起動**（`required` 分類の Bash コマンドは devcontainer 経由のみ） | Docker daemon 不可ならフォールバック |
+| **Full** | Standard 同等 + 監査転記 | **生成** | **必須起動 + audit log**（devcontainer 出入り記録） | `security-auditor` が audit log を SECURITY_AUDIT.md に転記 |
+
+#### 理由
+- Minimal はそもそも sandbox-runner を登場させない（初版 §1.5 と整合）。devcontainer も不要。
+- Light は「明示委譲のみ」の哲学と合わせ、devcontainer も「必要になったら起動」の任意扱いに留める。
+- Standard で初めて「required カテゴリは container 経由でないと実行不可」という強制力を発揮する。
+- Full は Standard に audit log 転記を追加するのみ。生成物自体は Standard と同じ。
+
+#### §5 表の更新方針（developer 向けメモ）
+初版 §1.5 Triage 配置表に `devcontainer 生成` 列と `devcontainer 起動モード` 列を追加する。物理ファイル（sandbox-policy.md）でも同等の表に揃える。
+
+### A.4 論点 3: infra-builder の責務境界
+
+#### ディレクトリ分離規則（確定）
+
+| 系統 | ルート配置 | 具体成果物 |
+|------|-----------|-----------|
+| **本番 infra（既存責務）** | リポジトリルートまたは `infra/` | `Dockerfile`, `docker-compose.yml`, `.github/workflows/*.yml`, Terraform 等 |
+| **sandbox infra（新責務）** | `.devcontainer/`, リポジトリルート | `.devcontainer/devcontainer.json`, `docker-compose.dev.yml` |
+
+規則:
+- sandbox infra は**リポジトリルートの `.devcontainer/` 配下**または**ルート直下の `*.dev.yml` サフィックス**に限定。
+- 本番 infra 側から sandbox infra を参照してはならない（本番ビルドが開発依存を引き込むのを防ぐため）。
+- sandbox infra 側から本番 infra を参照するのは**推奨しない**。必要な場合でも `extends` / `include` による読み取りのみ。
+
+#### 命名規則
+
+| 目的 | 許可される名前 | 禁止事項 |
+|------|---------------|---------|
+| Compose（本番） | `docker-compose.yml`, `compose.yml`, `docker-compose.prod.yml` | `.dev` サフィックス付与禁止 |
+| Compose（開発/sandbox） | `docker-compose.dev.yml`, `compose.dev.yml` | 同名ファイルとの衝突禁止 |
+| Devcontainer | `.devcontainer/devcontainer.json` | 他ディレクトリへの配置禁止 |
+
+`docker-compose.dev.yml` は以下のいずれかを選べる:
+1. **独立**（推奨、初期値）: prod の compose を参照しない自己完結ファイル。
+2. **extends / include**: prod の compose の特定サービスを extends する。この場合でも prod 側は dev を知らない。
+
+#### 参照方向（サマリ）
+- `sandbox infra → prod infra` の読み取り: **推奨しない**（独立が望ましい）。必要なら `extends` までに留め、書き込みは禁止。
+- `prod infra → sandbox infra`: **禁止**。
+
+#### infra-builder AGENT_RESULT の拡張
+
+既存フィールドに加え、以下を追加する:
+
+```
+AGENT_RESULT: infra-builder
+STATUS: success | failure | error
+...
+DEVCONTAINER_GENERATED: true | false
+DEV_COMPOSE_GENERATED: true | false
+SANDBOX_INFRA_PATH: .devcontainer/, docker-compose.dev.yml  # 生成した場合のパス一覧
+NEXT: ...
+```
+
+- `DEVCONTAINER_GENERATED`: `.devcontainer/devcontainer.json` を生成または更新した場合 `true`。
+- `DEV_COMPOSE_GENERATED`: `docker-compose.dev.yml` を生成または更新した場合 `true`。
+- `SANDBOX_INFRA_PATH`: 生成パスの明示（auditor / sandbox-runner が参照）。
+
+triage 連動:
+- Minimal: 両フィールド常に `false`。
+- Light / Standard / Full: 少なくとも `DEVCONTAINER_GENERATED: true`。`docker-compose.dev.yml` はプロジェクトが Compose を使う場合のみ `true`。
+
+### A.5 論点 4: sandbox-runner の実行経路選択ロジック
+
+#### devcontainer 検出手順（逐次実行）
+
+1. **devcontainer 定義の存在確認**
+   - `.devcontainer/devcontainer.json` がリポジトリに存在するか。存在しなければ step-4 へ。
+2. **Docker daemon 生存確認**
+   - `docker info` を 5 秒タイムアウトで実行。非 0 終了または timeout なら step-4 へ。
+3. **両方 OK → `container` モード採択**
+   - 以降の実行は devcontainer / `docker-compose.dev.yml` 経由で行う。
+4. **フォールバック → `platform_permission` に降格**
+   - Claude Code 検出時: permission mode に従って `ask`/`deny`/`allow`。
+   - unknown platform: `blocked` へさらに降格。
+   - AGENT_RESULT に `FALLBACK_REASON` を必ず記録する（後述）。
+
+#### 入出力マッピング
+
+| 項目 | 規則 |
+|------|------|
+| マウント範囲 | **ワーキングディレクトリのみ**（`caller_agent` の cwd 直下）を `rw` でバインド。親ディレクトリはマウントしない。 |
+| 除外パス | `.env`, `.env.*`, `credentials/`, `*.secret`, `.git/config` は `.dockerignore` 同等で除外。`allow_write_paths` に明示されていても除外を優先。 |
+| 環境変数 | 既定では**ホストの全環境変数を引き継がない**。`caller_agent` が指定した `env_allowlist`（将来の Input 拡張候補）のみ伝搬。当面は空配列を既定とする。 |
+| ネットワーク | **既定 `--network=none`**。`allow_network: true` の場合のみ `bridge` を許可。`external_net` カテゴリの検出時はさらにユーザー確認を要求。 |
+| タイムアウト | Input の `timeout_sec`（既定 60 / 上限 600）を `docker run` の内部タイムアウトに適用。container 起動時間は含めない。 |
+| 標準入出力 | stdout / stderr は container から取得しそのまま Output に転記。バイナリは base64 化せず切り詰め（既定 1 MB / 各ストリーム）。 |
+
+#### フォールバック挙動と AGENT_RESULT への記録
+
+`container` を採択できなかった場合、AGENT_RESULT に次のフィールドを追加する:
+
+```
+AGENT_RESULT: sandbox-runner
+STATUS: success | failure | blocked | error
+SANDBOX_MODE: platform_permission | advisory_only | blocked   # container 以外のいずれか
+FALLBACK_REASON: docker_unavailable | devcontainer_missing | docker_info_timeout | daemon_error | platform_unknown
+...
+```
+
+対応表:
+
+| 状況 | FALLBACK_REASON | 降格先 SANDBOX_MODE |
+|------|----------------|--------------------|
+| `.devcontainer/devcontainer.json` が無い | `devcontainer_missing` | `platform_permission`（platform 検出時）or `advisory_only` |
+| `docker info` が非 0 終了 | `docker_unavailable` | 同上 |
+| `docker info` が 5 秒でタイムアウト | `docker_info_timeout` | 同上 |
+| Docker daemon は動作するがエラーを返す | `daemon_error` | 同上 |
+| platform 検出ができない | `platform_unknown` | `blocked`（required カテゴリ時）or `advisory_only` |
+
+container 経由で**成功**した場合は `FALLBACK_REASON` を**省略**する（存在しない = フォールバック未発生）。
+
+### A.6 追加 ADR
+
+#### ADR-006: isolation modes に `container` を追加
+
+- **状況**: 初版の `platform_permission | advisory_only | blocked | bypassed` のみでは advisory 限界を超えられない。案 5 (infra-builder 拡張) により devcontainer による実体的隔離を採択できる。
+- **決定**: `sandbox_mode` enum に `container` を追加し、優先順位を `container > platform_permission > advisory_only > blocked` とする。
+- **理由**: 実体的な隔離境界を最優先しつつ、devcontainer 不可時に既存経路へ自然に降格できる。ADR-002（特定技術に縛らない）とは、devcontainer が業界標準仕様である点で整合する。
+- **却下した代替案**:
+  - container を platform_permission より後段に置く案: container が使える状況では必ず container を使うべきで、permission mode 側を先に呼ぶ動機がない。
+  - `bypassed` を container より優先する案: bypassed は非該当カテゴリの素通り用であり、優先順位比較の対象外。
+
+#### ADR-007: triage プラン別の devcontainer 生成ポリシー
+
+- **状況**: devcontainer 生成は全プランで必須か、プランごとに段階化するかの 2 択。
+- **決定**: §A.3 の表のとおり Minimal=skip / Light=generate only / Standard=generate+enforce / Full=generate+enforce+audit に段階化する。
+- **理由**: Minimal は「policy だけで advisory」の設計哲学を崩さない。Standard で初めて強制力を発揮させることで、triage の段階性と整合する。
+- **却下した代替案**:
+  - 全プラン生成+起動必須: Minimal の軽量性を破壊する。
+  - Light で必須起動: 明示委譲のみの Light で強制すると、Standard との差別化が消える。
+
+#### ADR-008: infra-builder における sandbox infra と prod infra の分離
+
+- **状況**: sandbox infra を本番 infra と同一ディレクトリに混在させるか、物理的に分けるか。
+- **決定**: sandbox infra は `.devcontainer/` と `*.dev.yml` サフィックスに限定し、prod 側から sandbox を参照しない。
+- **理由**: 本番ビルドに開発依存が混入するのを構造的に防ぐ。AGENT_RESULT の `DEVCONTAINER_GENERATED` / `DEV_COMPOSE_GENERATED` により、生成の有無が明示的にトレースできる。
+- **却下した代替案**:
+  - 全 infra を `infra/` 配下に置く案: devcontainer は `.devcontainer/` という VS Code 等の慣習に従うべきで、別ディレクトリに置くと外部ツールの自動認識が効かない。
+  - 命名で区別せずコメントのみで区別: レビュー時に見落としやすく保守性が低い。
+
+#### ADR-009: sandbox-runner の execution path selection と fallback
+
+- **状況**: devcontainer 検出に失敗したとき、エラー終了させるか platform_permission に降格させるか。
+- **決定**: 降格方式を採用。失敗した検出内容を `FALLBACK_REASON` として AGENT_RESULT に必ず記録する。
+- **理由**: 「必須起動」プラン（Standard/Full）でも、ユーザー環境に Docker が無いだけで全 Bash コマンドが詰まるのは運用上許容できない。降格により可用性を確保しつつ、降格履歴を残すことで後続の `security-auditor` が監査可能になる。
+- **却下した代替案**:
+  - 降格せず即 blocked: Standard 以上で Docker を持たない環境が実質使用不能になる。
+  - 降格理由を記録しない: 後から「なぜ container で動かなかったか」を再現できず、audit 要件を満たせない。
+
+### A.7 実装フェーズ追加（Phase 6〜9）
+
+初版 Phase 1〜5 は**変更せず**、その後に Phase 6〜9 を追加する。各フェーズで 1 コミットを原則とする。
+
+#### Phase 6: infra-builder 拡張（devcontainer 生成テンプレ追加）
+- **成果物**: `.claude/agents/infra-builder.md` の責務拡張（sandbox infra 生成項を追加）、AGENT_RESULT スキーマに `DEVCONTAINER_GENERATED` / `DEV_COMPOSE_GENERATED` / `SANDBOX_INFRA_PATH` 追加
+- **内容**: §A.4 の分離規則、命名規則、triage 連動、出力拡張
+- **commit**: `feat: extend infra-builder to generate devcontainer/dev-compose (TASK-006)`
+- **理由**: §A.2〜A.3 の container モードと triage ポリシーが参照する「誰が生成するか」を先に確定させる。
+
+#### Phase 7: sandbox-policy.md に `container` mode 追記 + §5 triage 表更新
+- **成果物**: `.claude/rules/sandbox-policy.md` の Sandbox Modes 節（§4 相当）に `container` 追加、決定ツリーに container 分岐差し込み、triage 表に「devcontainer 生成」「起動モード」列を追加
+- **内容**: §A.2 の優先順位、§A.3 の triage 表
+- **commit**: `feat: add container isolation mode to sandbox-policy (TASK-007)`
+- **理由**: runner 実装の前に policy 側の enum と決定ツリーを確定させる（initial Phase 1〜2 の関係と同じ）。
+
+#### Phase 8: sandbox-runner.md に execution path selection 追記
+- **成果物**: `.claude/agents/sandbox-runner.md` の Workflow / Output / AGENT_RESULT 節に container 経路と fallback 挙動を追記
+- **内容**: §A.5 の検出手順、マウント規則、`FALLBACK_REASON` フィールド、Output の `sandbox_mode` enum 拡張
+- **commit**: `feat: add container execution path and fallback to sandbox-runner (TASK-008)`
+- **理由**: policy が container を宣言した後に、実行側で具体的な経路選択を記述する。
+
+#### Phase 9: wiki (en+ja) の Platform-Guide と Agents-Reference 更新
+- **成果物**:
+  - `wiki/en/Platform-Guide.md` / `wiki/ja/Platform-Guide.md`: "Sandbox & Permission Modes" 節に container モード記述を追加、比較表に `container via devcontainer` 行を追加
+  - `wiki/en/Agents-Reference.md` / `wiki/ja/Agents-Reference.md`: infra-builder 節に sandbox infra 生成責務を追記、sandbox-runner 節に container mode / fallback を追記
+  - `wiki/en/Rules-Reference.md` / `wiki/ja/Rules-Reference.md`: sandbox-policy の Sandbox Modes に `container` 記述を追加
+- **commit**: `docs: document container mode and devcontainer generation in wiki (TASK-009)`
+- **理由**: 初版 Phase 5 が wiki 一括更新だった方針を踏襲し、Addendum 分もまとめて wiki 反映する。
+
+**検証方針（Phase 6〜9 共通）:**
+- markdown のみの変更のため、syntax check は不要。
+- 各 Phase で `scripts/generate.py` の再生成要否を判定し、必要なら別コミット or 別 issue で対応（初版の Phase 5 末尾と同じ方針）。
+
+### A.8 既存設計との整合（変更なし事項）
+
+- 初版 ADR-001〜005 はすべて**そのまま有効**。
+- §1〜§7 の本文は**変更しない**。変更が必要な事項はすべて本 Addendum 内の表・ADR として新規に書き下す。
+- 対象エージェント 10 種への 1 行参照（§4.1）は initial Phase 4 のままで、Addendum による追加改訂は**不要**。policy 側が container を追加しても参照側の書き方は変わらない。
+- Minimal プランのスコープ外方針（Minimal では sandbox-runner を登場させない）は ADR-007 と整合し、container も同様に Minimal でスキップ。
+
+### A.9 次アクション（Addendum 後）
+
+- 次エージェント: **developer**
+- developer は初版 §5 の Phase 1〜5 に加え、本 Addendum §A.7 の Phase 6〜9 を**連番で続けて**実行する。
+- 既存 PR #7（ブランチ `feat/add-sandbox`）にコミット追加で対応し、新ブランチは作らない。
+- 各 Phase 完了時に TASK.md を更新し、1 Phase 1 コミットの原則を維持する。
