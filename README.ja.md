@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/images/aphelion-logo.png" alt="Aphelion" width="480">
+  <img src="docs/images/aphelion-header.png" alt="Aphelion" width="480">
 </p>
 
 # Aphelion — Frontier AI Agents
