@@ -14,10 +14,17 @@ A multi-platform collection of AI coding agent definitions that automates the en
 
 Aphelion divides software development into three domains, each managed by an independent flow orchestrator:
 
-```
-Discovery Flow ──[DISCOVERY_RESULT.md]──▶ Delivery Flow ──[DELIVERY_RESULT.md]──▶ Operations Flow
- (requirements)                         (design & impl)                        (deploy & ops)
- 6 agents                               12 agents                              4 agents
+```mermaid
+flowchart LR
+    DR["DISCOVERY_RESULT.md"]
+    DLR["DELIVERY_RESULT.md"]
+    OPR["OPS_RESULT.md"]
+
+    Discovery["Discovery Flow\n(6 agents)"] -->|generates| DR
+    DR -->|input for| Delivery["Delivery Flow\n(12 agents)"]
+    Delivery -->|generates| DLR
+    DLR -->|input for| Ops["Operations Flow\n(4 agents)\nservice only"]
+    Ops -->|generates| OPR
 ```
 
 User approval is required at each phase completion before proceeding. Non-`service` types (`tool` / `library` / `cli`) skip Operations.

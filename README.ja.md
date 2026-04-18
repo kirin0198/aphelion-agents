@@ -14,10 +14,17 @@
 
 Aphelion はソフトウェア開発を3つの領域に分割し、それぞれ独立したフローオーケストレーターが管理します。
 
-```
-Discovery Flow ──[DISCOVERY_RESULT.md]──▶ Delivery Flow ──[DELIVERY_RESULT.md]──▶ Operations Flow
- (要件探索)                             (設計・実装)                            (デプロイ・運用)
- 6 agents                               12 agents                              4 agents
+```mermaid
+flowchart LR
+    DR["DISCOVERY_RESULT.md"]
+    DLR["DELIVERY_RESULT.md"]
+    OPR["OPS_RESULT.md"]
+
+    Discovery["Discovery Flow\n(6 agents)"] -->|generates| DR
+    DR -->|input for| Delivery["Delivery Flow\n(12 agents)"]
+    Delivery -->|generates| DLR
+    DLR -->|input for| Ops["Operations Flow\n(4 agents)\nservice only"]
+    Ops -->|generates| OPR
 ```
 
 各フェーズ完了ごとにユーザーの承認を得てから次へ進みます。`service` 以外（`tool` / `library` / `cli`）は Operations をスキップします。
