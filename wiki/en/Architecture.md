@@ -77,14 +77,13 @@ flowchart LR
     D -->|DISCOVERY_RESULT.md| DV
     DV -->|DELIVERY_RESULT.md| O
     S -.optional.-> DV
-
-    click D "./Agents-Reference.md#discovery-domain" "Discovery agents"
-    click DV "./Agents-Reference.md#delivery-domain" "Delivery agents"
-    click O "./Agents-Reference.md#operations-domain" "Operations agents"
-    click S "./Agents-Reference.md#standalone-agents" "Standalone agents"
 ```
 
-> See [Agents Reference](./Agents-Reference.md) for the full agent list and per-agent details.
+Per-domain details:
+[Discovery](./Agents-Reference.md#discovery-domain) ·
+[Delivery](./Agents-Reference.md#delivery-domain) ·
+[Operations](./Agents-Reference.md#operations-domain) ·
+[Standalone](./Agents-Reference.md#standalone-agents)
 
 ---
 

@@ -80,14 +80,13 @@ flowchart LR
     D -->|DISCOVERY_RESULT.md| DV
     DV -->|DELIVERY_RESULT.md| O
     S -.optional.-> DV
-
-    click D "./Agents-Reference.md#discovery-domain" "Discovery agents"
-    click DV "./Agents-Reference.md#delivery-domain" "Delivery agents"
-    click O "./Agents-Reference.md#operations-domain" "Operations agents"
-    click S "./Agents-Reference.md#standalone-agents" "Standalone agents"
 ```
 
-> 各エージェントの詳細は [Agents Reference](./Agents-Reference.md) を参照してください。
+ドメインごとの詳細:
+[Discovery](./Agents-Reference.md#discovery-domain) ·
+[Delivery](./Agents-Reference.md#delivery-domain) ·
+[Operations](./Agents-Reference.md#operations-domain) ·
+[Standalone](./Agents-Reference.md#standalone-agents)
 
 ---
 
