@@ -43,12 +43,6 @@ flowchart LR
     Ops -->|generates| OPR
 ```
 
-```
-Discovery Flow ──[DISCOVERY_RESULT.md]──▶ Delivery Flow ──[DELIVERY_RESULT.md]──▶ Operations Flow
- (要件探索)                              (設計・実装)                            (デプロイ・運用)
- 6 agents                                12 agents                               4 agents
-```
-
 **Discovery** は要件を探索・構造化し、`DISCOVERY_RESULT.md` を生成します。
 
 **Delivery** は設計・実装・テスト・レビューを行い、`DELIVERY_RESULT.md` を生成します。

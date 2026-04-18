@@ -42,12 +42,6 @@ flowchart LR
     Ops -->|generates| OPR
 ```
 
-```
-Discovery Flow ──[DISCOVERY_RESULT.md]──▶ Delivery Flow ──[DELIVERY_RESULT.md]──▶ Operations Flow
- (requirements)                          (design & impl)                         (deploy & ops)
- 6 agents                                12 agents                               4 agents
-```
-
 **Discovery** explores and structures requirements, producing `DISCOVERY_RESULT.md`.
 
 **Delivery** designs, implements, tests, and reviews, producing `DELIVERY_RESULT.md`.
