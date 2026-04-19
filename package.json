@@ -1,0 +1,9 @@
+{
+  "name": "aphelion-agents",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "node scripts/generate.mjs",
+    "sync-wiki": "node scripts/sync-wiki.mjs"
+  }
+}

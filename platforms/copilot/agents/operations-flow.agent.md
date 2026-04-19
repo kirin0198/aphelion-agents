@@ -236,6 +236,8 @@ Each orchestrator must `read` this file at startup before beginning work.
 
 `security-auditor` **must run on all plans**. `ux-designer` runs only for projects with UI.
 
+> **sandbox-runner placement**: In Standard and above, `sandbox-runner` is automatically inserted by the orchestrator when a `required`-tier command (per `sandbox-policy.md`) is detected. In Light, only explicit delegation from the calling agent is permitted. In Minimal, `sandbox-runner` is not used — policy violations trigger an advisory warning to the user only.
+
 > **About analyst:** `analyst` is a side-entry agent outside the triage flow. It is triggered by bug reports, feature requests, or refactoring requests for existing projects. After completion, Delivery Flow joins from Phase 3 (architect).
 
 > **About codebase-analyzer:** `codebase-analyzer` is a standalone agent for existing projects that lack SPEC.md / ARCHITECTURE.md. It reverse-engineers these documents from the codebase, enabling the project to join the standard workflow via `analyst` → `delivery-flow`.
@@ -249,6 +251,54 @@ Each orchestrator must `read` this file at startup before beginning work.
 | Full | High availability required | + observability |
 
 > **Why no Minimal plan:** Deploying `PRODUCT_TYPE: service` requires at minimum infrastructure definitions (infra-builder) and an operations plan (ops-planner), so Operations uses Light as the minimum plan.
+
+> **sandbox-runner placement in Operations Flow**: At Standard and above, `sandbox-runner` is placed before `db-ops`, `releaser`, and `observability`. This ensures that destructive DB operations and deployment commands pass through risk classification before execution.
+
+---
+
+## Sandbox Runner Auto-insertion
+
+This section defines how flow orchestrators insert `sandbox-runner` automatically when they detect a `required`-tier command per `sandbox-policy.md`.
+
+### Trigger Conditions
+
+The orchestrator inserts `sandbox-runner` **before** an agent's Bash execution when:
+1. The current plan is **Standard or Full**.
+2. The command to be executed matches a `required`-tier category in `sandbox-policy.md`:
+   - `destructive_fs`, `prod_db`, `privilege_escalation`, `secret_access`
+3. `recommended`-tier (`external_net`) is also auto-inserted at Standard and above (the calling agent may still skip it with a recorded reason).
+
+### Double-Execution Prevention
+
+To avoid running `sandbox-runner` twice for the same command, the orchestrator tracks a per-task insertion flag: `sandbox_inserted_for_task_id`. If this flag is already set for the current task, skip auto-insertion and proceed with the previously obtained clearance.
+
+### Standalone Agent Fallback
+
+`codebase-analyzer` and other agents invoked directly by the user (outside a flow orchestrator) cannot receive auto-insertion. In this case:
+- Fall back to **explicit delegation**: the agent itself must call `sandbox-runner` for `required`-tier commands.
+- If `sandbox-runner` is not available (Minimal plan, standalone context), the agent displays a warning and asks the user for explicit confirmation.
+
+### Invocation Format
+
+When auto-inserting, the orchestrator calls `sandbox-runner` via the `agent` tool:
+
+```
+@sandbox-runner (,
+  prompt: "Execute the following command on behalf of {agent_name}:
+           command: {command}
+           working_directory: {cwd}
+           timeout_sec: 60
+           risk_hint: {detected_category}
+           reason: Auto-inserted by orchestrator for {agent_name} task {task_id}
+           caller_agent: {agent_name}",
+  description: "sandbox check for {agent_name}"
+)
+```
+
+Parse the returned `AGENT_RESULT` block:
+- `STATUS: success` or `DECISION: allowed` / `asked_and_allowed` → proceed with the next agent
+- `STATUS: blocked` or `DECISION: denied` → report to user, do not continue the blocked agent's execution
+- `STATUS: error` → follow Common Error Handling
 
 ---
 

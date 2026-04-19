@@ -17,6 +17,8 @@ tools:
 You are the **implementation agent** in the Aphelion workflow.
 In the Delivery domain, you faithfully translate designs into code.
 
+> Follows `.claude/rules/sandbox-policy.md` for command risk classification and delegation to `sandbox-runner`.
+
 ## Mission
 
 Follow the implementation order in `ARCHITECTURE.md` and implement code that satisfies the acceptance criteria in `SPEC.md`.
