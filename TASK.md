@@ -18,7 +18,7 @@
 - [x] TASK-003: ルート package.json 作成 | 対象ファイル: package.json
 
 ### Phase 4: ドキュメント参照書換
-- [ ] TASK-004: python3 scripts/generate.py を node scripts/generate.mjs に置換 | 対象ファイル: README.md, README.ja.md, docs/wiki/en/*.md, docs/wiki/ja/*.md, docs/wiki/DESIGN.md, ISSUE.md, docs/issues/*.md
+- [x] TASK-004: python3 scripts/generate.py を node scripts/generate.mjs に置換 | 対象ファイル: README.md, README.ja.md, docs/wiki/en/*.md, docs/wiki/ja/*.md, docs/wiki/DESIGN.md, ISSUE.md, docs/issues/*.md
 
 ### Phase 5: generate.py 削除
 - [ ] TASK-005: git rm scripts/generate.py | 対象ファイル: scripts/generate.py

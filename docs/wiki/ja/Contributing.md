@@ -26,13 +26,13 @@
 
 | 種類 | 必要な変更 |
 |-----|---------|
-| 新しいエージェント | `.claude/agents/{name}.md` + Agents-Reference（en+ja）+ generate.py（新しいエージェントの場合） |
+| 新しいエージェント | `.claude/agents/{name}.md` + Agents-Reference（en+ja）+ generate.mjs（新しいエージェントの場合） |
 | エージェントの変更 | `.claude/agents/{name}.md` + Agents-Referenceのエントリ（en+ja） |
 | 新しいルール | `.claude/rules/{name}.md` + Rules-Reference（en+ja） |
 | ルールの変更 | `.claude/rules/{name}.md` + Rules-Referenceのエントリ（en+ja） |
 | オーケストレータールールの変更 | `.claude/orchestrator-rules.md` + Architecture.md / Triage-System.md（en+ja） |
 | Wikiページの更新 | `wiki/en/{page}.md` + `wiki/ja/{page}.md`（同一PR） |
-| プラットフォームジェネレーターの変更 | `scripts/generate.py` + `platforms/`の再生成 |
+| プラットフォームジェネレーターの変更 | `scripts/generate.mjs` + `platforms/`の再生成 |
 
 ---
 
@@ -57,7 +57,7 @@
 
 4. **エージェントが新しいフローオーケストレーターの場合**、新しいエージェントをトリアージまたはフェーズシーケンスに含めるよう`.claude/orchestrator-rules.md`を更新します。
 
-5. **プラットフォームファイルを再生成します**：`python scripts/generate.py`を実行して`platforms/copilot/`と`platforms/codex/`を更新します。
+5. **プラットフォームファイルを再生成します**：`node scripts/generate.mjs`を実行して`platforms/copilot/`と`platforms/codex/`を更新します。
 
 6. **Agents-Referenceの分割しきい値**：エージェントの合計数が40を超える場合、またはAgents-Reference.md内のいずれかのセクションが300行を超える場合は、エージェントごとの`wiki/en/agents/{name}.md`ファイルへの分割とAgents-Reference.mdをリスト+リンクハブに変換することを検討してください。これは将来の決定事項です — まずissueを開いて議論してください。
 
@@ -71,7 +71,7 @@
 
    > Agents-Referenceの同期維持は必須です。Wikiエントリを更新せずにエージェント定義を更新すると、レビュアーが修正を要求します。
 
-3. **プラットフォームファイルを再生成します**：`python scripts/generate.py`を実行して変更を`platforms/copilot/`と`platforms/codex/`に伝播させます。
+3. **プラットフォームファイルを再生成します**：`node scripts/generate.mjs`を実行して変更を`platforms/copilot/`と`platforms/codex/`に伝播させます。
 
 ---
 
@@ -145,7 +145,7 @@ Wikiは英語を正規とするバイリンガルです。以下のルールはP
 `.claude/agents/`、`.claude/rules/`、または`.claude/orchestrator-rules.md`のファイルを変更するときは、プラットフォームファイルを再生成してください：
 
 ```bash
-python scripts/generate.py
+node scripts/generate.mjs
 ```
 
 生成されたファイルを正規の変更とともにステージします：
@@ -169,7 +169,7 @@ PRを開く前に確認してください：
 - [ ] 変更したWikiページの`> Last updated:`行を更新済み
 - [ ] 対応する`wiki/ja/`ページの`> EN canonical:`行を更新済み
 - [ ] エージェント/ルールが変更された場合、Agents-ReferenceまたはRules-Referenceのエントリを更新済み
-- [ ] 正規が変更された場合、プラットフォームファイルを再生成済み（`python scripts/generate.py`）
+- [ ] 正規が変更された場合、プラットフォームファイルを再生成済み（`node scripts/generate.mjs`）
 - [ ] 生成された`platforms/`ファイルを正規の変更とともにステージ済み
 
 ---
@@ -185,5 +185,5 @@ PRを開く前に確認してください：
 
 - [.claude/agents/](../../.claude/agents/) — エージェント定義ファイル（正規）
 - [.claude/rules/](../../.claude/rules/) — ルールファイル（正規）
-- [scripts/generate.py](../../scripts/generate.py) — プラットフォームファイルジェネレーター
+- [scripts/generate.mjs](../../scripts/generate.mjs) — プラットフォームファイルジェネレーター
 - [wiki/DESIGN.md](../DESIGN.md) — Wiki情報アーキテクチャ設計

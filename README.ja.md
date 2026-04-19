@@ -39,7 +39,7 @@ flowchart LR
 | **GitHub Copilot** | フル対応（agent tool） | ソースから生成 |
 | **OpenAI Codex** | Skills のみ | ソースから生成 |
 
-Claude Code ファイル（`.claude/`）が正規ソースです。Copilot / Codex ファイルは `scripts/generate.py` で生成されます。
+Claude Code ファイル（`.claude/`）が正規ソースです。Copilot / Codex ファイルは `scripts/generate.mjs` で生成されます。
 
 ---
 
@@ -173,10 +173,10 @@ platforms/
 プラットフォームファイルの再生成:
 
 ```bash
-python3 scripts/generate.py                    # 全プラットフォーム生成
-python3 scripts/generate.py --platform copilot # Copilot のみ
-python3 scripts/generate.py --platform codex   # Codex のみ
-python3 scripts/generate.py --clean            # 生成物を削除
+node scripts/generate.mjs                    # 全プラットフォーム生成
+node scripts/generate.mjs --platform copilot # Copilot のみ
+node scripts/generate.mjs --platform codex   # Codex のみ
+node scripts/generate.mjs --clean            # 生成物を削除
 ```
 
 ### プラットフォーム比較

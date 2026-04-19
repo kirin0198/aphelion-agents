@@ -37,7 +37,7 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 | [Triage System](./Triage-System.md) | 4-tier plan selection logic, per-domain agent matrices, mandatory agents | All users |
 | [Agents Reference](./Agents-Reference.md) | All 27 agents: responsibility, inputs, outputs, NEXT conditions | Agent developers |
 | [Rules Reference](./Rules-Reference.md) | All 9 behavior rules: scope, auto-load, interactions | Agent developers |
-| [Platform Guide](./Platform-Guide.md) | Claude Code / Copilot / Codex differences, generate.py pipeline | Platform porters |
+| [Platform Guide](./Platform-Guide.md) | Claude Code / Copilot / Codex differences, generate.mjs pipeline | Platform porters |
 | [Contributing](./Contributing.md) | Adding agents, rules, platforms; bilingual sync workflow | Agent developers |
 
 ---

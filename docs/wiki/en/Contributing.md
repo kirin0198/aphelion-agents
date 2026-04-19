@@ -25,13 +25,13 @@ This page covers how to contribute to Aphelion: adding or modifying agents, upda
 
 | Type | Changes required |
 |------|----------------|
-| New agent | `.claude/agents/{name}.md` + Agents-Reference (en+ja) + generate.py (if new agent) |
+| New agent | `.claude/agents/{name}.md` + Agents-Reference (en+ja) + generate.mjs (if new agent) |
 | Modify agent | `.claude/agents/{name}.md` + Agents-Reference entry (en+ja) |
 | New rule | `.claude/rules/{name}.md` + Rules-Reference (en+ja) |
 | Modify rule | `.claude/rules/{name}.md` + Rules-Reference entry (en+ja) |
 | Orchestrator rules change | `.claude/orchestrator-rules.md` + Architecture.md / Triage-System.md (en+ja) |
 | Wiki page update | `wiki/en/{page}.md` + `wiki/ja/{page}.md` (same PR) |
-| Platform generator change | `scripts/generate.py` + regenerate `platforms/` |
+| Platform generator change | `scripts/generate.mjs` + regenerate `platforms/` |
 
 ---
 
@@ -56,7 +56,7 @@ This page covers how to contribute to Aphelion: adding or modifying agents, upda
 
 4. **If the agent is a new flow orchestrator**, update `.claude/orchestrator-rules.md` to include the new agent in the triage or phase sequence.
 
-5. **Regenerate platform files**: Run `python scripts/generate.py` to update `platforms/copilot/` and `platforms/codex/`.
+5. **Regenerate platform files**: Run `node scripts/generate.mjs` to update `platforms/copilot/` and `platforms/codex/`.
 
 6. **Agents-Reference split threshold**: If the total agent count exceeds 40, or any single section in `Agents-Reference.md` exceeds 300 lines, consider splitting into `wiki/en/agents/{name}.md` per-agent files and converting `Agents-Reference.md` into a list + link hub. This is a future decision — open an issue to discuss first.
 
@@ -70,7 +70,7 @@ This page covers how to contribute to Aphelion: adding or modifying agents, upda
 
    > Keeping Agents-Reference synchronized is mandatory. If you update an agent definition without updating the wiki entry, reviewers will request a correction.
 
-3. **Regenerate platform files**: Run `python scripts/generate.py` to propagate the change to `platforms/copilot/` and `platforms/codex/`.
+3. **Regenerate platform files**: Run `node scripts/generate.mjs` to propagate the change to `platforms/copilot/` and `platforms/codex/`.
 
 ---
 
@@ -144,7 +144,7 @@ The wiki is bilingual with English as canonical. The following rules are enforce
 Whenever you modify files in `.claude/agents/`, `.claude/rules/`, or `.claude/orchestrator-rules.md`, regenerate the platform files:
 
 ```bash
-python scripts/generate.py
+node scripts/generate.mjs
 ```
 
 Stage the generated files alongside your canonical changes:
@@ -168,7 +168,7 @@ Before opening a PR, verify:
 - [ ] `> Last updated:` line updated in modified wiki pages
 - [ ] `> EN canonical:` line updated in corresponding `wiki/ja/` pages
 - [ ] Agents-Reference or Rules-Reference entry updated (if agent/rule changed)
-- [ ] Platform files regenerated (`python scripts/generate.py`) if canonical changed
+- [ ] Platform files regenerated (`node scripts/generate.mjs`) if canonical changed
 - [ ] Generated `platforms/` files staged alongside canonical changes
 
 ---
@@ -184,5 +184,5 @@ Before opening a PR, verify:
 
 - [.claude/agents/](../../.claude/agents/) — Agent definition files (canonical)
 - [.claude/rules/](../../.claude/rules/) — Rule files (canonical)
-- [scripts/generate.py](../../scripts/generate.py) — Platform file generator
+- [scripts/generate.mjs](../../scripts/generate.mjs) — Platform file generator
 - [wiki/DESIGN.md](../DESIGN.md) — Wiki information architecture design
