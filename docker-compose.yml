@@ -5,6 +5,13 @@
 #   docker compose run --rm --service-ports site-dev      # hot-reload dev at http://localhost:4321
 #   docker compose run --rm site-build                    # one-shot production build into ./site/dist
 #   docker compose run --rm --service-ports site-preview  # preview the built site at http://localhost:4321
+#
+# Note: `docker compose run` by default does NOT publish container ports.
+# For services exposing dev/preview servers (site-dev, site-preview),
+# add `--service-ports` so the container's port 4321 is mapped to the host:
+#   docker compose run --rm --service-ports site-dev
+# Without --service-ports, the server starts but is unreachable from the host
+# (including WSL-to-Windows scenarios).
 
 services:
   site-dev:
