@@ -33,7 +33,7 @@ services:
       - site-node-modules:/app/site/node_modules
     ports:
       - "4321:4321"
-    command: sh -c "npm ci && npm run preview"
+    command: sh -c "npm ci && npm run build && npm run preview"
 
 volumes:
   site-node-modules:
