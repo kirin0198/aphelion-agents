@@ -193,17 +193,17 @@ python3 scripts/generate.py --clean            # Remove generated files
 
 ## Documentation
 
-For detailed agent schemas, rule explanations, triage logic, and platform internals, see the **[Wiki](wiki/en/Home.md)**.
+For detailed agent schemas, rule explanations, triage logic, and platform internals, see the **[Wiki](docs/wiki/en/Home.md)**.
 
 | Page | Description |
 |------|-------------|
-| [Getting Started](wiki/en/Getting-Started.md) | Setup for all platforms, first-run walkthrough, usage scenarios |
-| [Architecture](wiki/en/Architecture.md) | 3-domain model, handoff files, AGENT_RESULT protocol |
-| [Triage System](wiki/en/Triage-System.md) | Plan tiers, agent selection logic, HAS_UI conditions |
-| [Agents Reference](wiki/en/Agents-Reference.md) | All 27 agents — inputs, outputs, NEXT conditions |
-| [Rules Reference](wiki/en/Rules-Reference.md) | All 8 behavioral rules — scope and interactions |
-| [Platform Guide](wiki/en/Platform-Guide.md) | Copilot/Codex differences, generator usage, porting guide |
-| [Contributing](wiki/en/Contributing.md) | How to add agents, bilingual sync policy, PR checklist |
+| [Getting Started](docs/wiki/en/Getting-Started.md) | Setup for all platforms, first-run walkthrough, usage scenarios |
+| [Architecture](docs/wiki/en/Architecture.md) | 3-domain model, handoff files, AGENT_RESULT protocol |
+| [Triage System](docs/wiki/en/Triage-System.md) | Plan tiers, agent selection logic, HAS_UI conditions |
+| [Agents Reference](docs/wiki/en/Agents-Reference.md) | All 27 agents — inputs, outputs, NEXT conditions |
+| [Rules Reference](docs/wiki/en/Rules-Reference.md) | All 8 behavioral rules — scope and interactions |
+| [Platform Guide](docs/wiki/en/Platform-Guide.md) | Copilot/Codex differences, generator usage, porting guide |
+| [Contributing](docs/wiki/en/Contributing.md) | How to add agents, bilingual sync policy, PR checklist |
 
 ---
 

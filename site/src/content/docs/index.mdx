@@ -1,0 +1,46 @@
+---
+title: Aphelion
+description: Multi-platform AI coding agent workflow — Discovery, Delivery, Operations in three independent domains.
+template: splash
+hero:
+  tagline: A structured multi-platform AI coding workflow for Claude Code, GitHub Copilot, and OpenAI Codex.
+  actions:
+    - text: Get Started
+      link: /en/getting-started/
+      icon: right-arrow
+    - text: Architecture
+      link: /en/architecture/
+      icon: document
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Explore the Documentation
+
+<CardGrid stagger>
+	<Card title="Getting Started" icon="rocket">
+		Platform-specific setup, first-run walkthrough, and usage scenarios.
+		[→ Getting Started](/en/getting-started/)
+	</Card>
+	<Card title="Architecture" icon="puzzle">
+		Three-domain model, handoff files, session isolation, and AGENT_RESULT protocol.
+		[→ Architecture](/en/architecture/)
+	</Card>
+	<Card title="Triage System" icon="list-format">
+		Four-tier plan selection logic and per-domain agent matrices.
+		[→ Triage System](/en/triage-system/)
+	</Card>
+	<Card title="Agents Reference" icon="open-book">
+		All 27 agents: responsibilities, inputs, outputs, and NEXT conditions.
+		[→ Agents Reference](/en/agents-reference/)
+	</Card>
+	<Card title="Rules Reference" icon="setting">
+		All behavior rules with scope, auto-load, and customization notes.
+		[→ Rules Reference](/en/rules-reference/)
+	</Card>
+	<Card title="Platform Guide" icon="laptop">
+		Claude Code, GitHub Copilot, and OpenAI Codex differences and limitations.
+		[→ Platform Guide](/en/platform-guide/)
+	</Card>
+</CardGrid>

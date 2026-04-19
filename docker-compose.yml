@@ -1,0 +1,39 @@
+# Local-only build stack for the Aphelion wiki site.
+# Not used by Cloudflare Pages (which runs its own Node 22 environment).
+#
+# Usage from the repo root:
+#   docker compose run --rm --service-ports site-dev      # hot-reload dev at http://localhost:4321
+#   docker compose run --rm site-build                    # one-shot production build into ./site/dist
+#   docker compose run --rm --service-ports site-preview  # preview the built site at http://localhost:4321
+
+services:
+  site-dev:
+    image: node:22-alpine
+    working_dir: /app/site
+    volumes:
+      - ./:/app
+      - site-node-modules:/app/site/node_modules
+    ports:
+      - "4321:4321"
+    command: sh -c "npm ci && npm run dev"
+
+  site-build:
+    image: node:22-alpine
+    working_dir: /app/site
+    volumes:
+      - ./:/app
+      - site-node-modules:/app/site/node_modules
+    command: sh -c "npm ci && npm run build"
+
+  site-preview:
+    image: node:22-alpine
+    working_dir: /app/site
+    volumes:
+      - ./:/app
+      - site-node-modules:/app/site/node_modules
+    ports:
+      - "4321:4321"
+    command: sh -c "npm ci && npm run build && npm run preview"
+
+volumes:
+  site-node-modules:

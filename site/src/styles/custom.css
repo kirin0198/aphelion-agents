@@ -1,0 +1,34 @@
+/*
+ * custom.css — Aphelion ブランドカラー
+ *
+ * ロゴ (docs/images/aphelion-logo.png) から目視サンプリングした暫定色。
+ * ロゴの主要色:
+ *   - パープル/バイオレット（軌道リング）: ~#7b3fe4
+ *   - オレンジ/アンバー（惑星・炎）:        ~#f97316
+ *   - 深黒背景:                            ~#0a0a0f
+ *
+ * Starlight CSS 変数リファレンス:
+ * https://starlight.astro.build/guides/css-and-tailwind/#css-variables
+ */
+
+/* --- Light Mode --- */
+:root[data-theme='light'] {
+  /* アクセント: パープル系 */
+  --sl-color-accent-low:  #e9d9fa;  /* 薄紫（accent 背景） */
+  --sl-color-accent:      #7b3fe4;  /* 中紫（ボタン・リンク） */
+  --sl-color-accent-high: #4a1fa8;  /* 濃紫（ホバー） */
+
+  /* テキストアクセント */
+  --sl-color-text-accent: #5a28c8;
+}
+
+/* --- Dark Mode --- */
+:root[data-theme='dark'] {
+  /* アクセント: パープル〜オレンジのグラデーションからサンプリング */
+  --sl-color-accent-low:  #2a1460;  /* 深紫（accent 背景） */
+  --sl-color-accent:      #9b5ff0;  /* 明紫（ボタン・リンク） */
+  --sl-color-accent-high: #c08eff;  /* 薄紫（ホバー・ハイライト） */
+
+  /* テキストアクセント */
+  --sl-color-text-accent: #c08eff;
+}

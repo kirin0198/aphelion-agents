@@ -1,0 +1,28 @@
+---
+// Starlight の Head コンポーネントを override して mermaid 初期化スクリプトを注入する。
+// mermaid は npm パッケージとして管理し、Astro がクライアントバンドルに含める。
+// CDN への外部依存を排除し、SRI なし読み込みによる XSS リスクを解消する。
+import Default from '@astrojs/starlight/components/Head.astro';
+---
+
+<Default {...Astro.props}><slot /></Default>
+
+<script>
+  // mermaid を npm バンドルから初期化する。
+  // startOnLoad: true により <pre class="mermaid"> 要素を自動描画する。
+  // theme は Starlight の data-theme 属性に追従する (light / dark 切替対応)。
+  import mermaid from 'mermaid';
+
+  function initMermaid() {
+    const theme =
+      document.documentElement.dataset.theme === 'dark' ? 'dark' : 'default';
+    mermaid.initialize({ startOnLoad: false, theme, securityLevel: 'strict' });
+    mermaid.run();
+  }
+
+  // ページ初回ロード時に初期化
+  initMermaid();
+
+  // Starlight は View Transitions を使用するため、ページ遷移後も再実行する
+  document.addEventListener('astro:page-load', initMermaid);
+</script>

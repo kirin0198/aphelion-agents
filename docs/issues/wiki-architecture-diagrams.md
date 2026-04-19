@@ -9,7 +9,7 @@
 
 ## 1. ユーザー要件
 
-`wiki/en/Architecture.md` および `wiki/ja/Architecture.md` は現在テキスト中心で、一部に ASCII アートによるフロー図が含まれている。読者（エージェント開発者）が Aphelion の 3 ドメインモデル、エージェント連携、トリアージ、ハンドオフ、AGENT_RESULT ライフサイクル、sandbox 防御レイヤーを短時間で把握できるよう、**GitHub Markdown ネイティブで描画可能な図**を Architecture.md に追加したい。
+`docs/wiki/en/Architecture.md` および `docs/wiki/ja/Architecture.md` は現在テキスト中心で、一部に ASCII アートによるフロー図が含まれている。読者（エージェント開発者）が Aphelion の 3 ドメインモデル、エージェント連携、トリアージ、ハンドオフ、AGENT_RESULT ライフサイクル、sandbox 防御レイヤーを短時間で把握できるよう、**GitHub Markdown ネイティブで描画可能な図**を Architecture.md に追加したい。
 
 ---
 
@@ -17,8 +17,8 @@
 
 - **種別**: 機能追加（ドキュメント拡充）
 - **ラベル**: `enhancement`, `documentation`
-- **対象ドキュメント**: `wiki/en/Architecture.md`, `wiki/ja/Architecture.md`
-- **対象ではないドキュメント**: `wiki/*/Agents-Reference.md`, `Rules-Reference.md`, `Triage-System.md` 等（今回はスコープ外）
+- **対象ドキュメント**: `docs/wiki/en/Architecture.md`, `docs/wiki/ja/Architecture.md`
+- **対象ではないドキュメント**: `docs/wiki/*/Agents-Reference.md`, `Rules-Reference.md`, `Triage-System.md` 等（今回はスコープ外）
 
 ---
 
@@ -62,7 +62,7 @@
 - **表現内容**:
   - Minimal / Light / Standard / Full の 4 ティア
   - 各ティアに含まれるエージェント数と分岐条件（プロジェクト規模・複雑度）
-  - 詳細は `wiki/*/Triage-System.md` に委譲する旨を注記
+  - 詳細は `docs/wiki/*/Triage-System.md` に委譲する旨を注記
 
 ### 図 4: ハンドオフファイルのデータフロー
 
@@ -144,7 +144,7 @@
 
 - 2 コミット分割（en / ja）または 1 コミット一括は developer の判断に委ねる
 - commit prefix は `docs:` を使用
-- `git add -A` は禁止。`git add wiki/en/Architecture.md wiki/ja/Architecture.md` のように個別ステージ
+- `git add -A` は禁止。`git add docs/wiki/en/Architecture.md docs/wiki/ja/Architecture.md` のように個別ステージ
 
 ---
 
@@ -166,7 +166,7 @@
   - `.claude/CLAUDE.md`
   - `.claude/orchestrator-rules.md`
   - `.claude/rules/agent-communication-protocol.md`
-  - `wiki/en/Architecture.md`, `wiki/ja/Architecture.md`
+  - `docs/wiki/en/Architecture.md`, `docs/wiki/ja/Architecture.md`
 
 ---
 
@@ -205,5 +205,5 @@ flowchart LR
 
 ### 変更ファイル
 
-- `wiki/en/Architecture.md` — 図2を新 Mermaid ソースに置き換え
-- `wiki/ja/Architecture.md` — 同一 Mermaid ソースを適用（前後の説明文は日本語）
+- `docs/wiki/en/Architecture.md` — 図2を新 Mermaid ソースに置き換え
+- `docs/wiki/ja/Architecture.md` — 同一 Mermaid ソースを適用（前後の説明文は日本語）
