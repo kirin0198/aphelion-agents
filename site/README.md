@@ -6,7 +6,7 @@ Astro Starlight site for Aphelion workflow documentation (Cloudflare Pages deplo
 
 ```bash
 cd site
-node ../scripts/sync-wiki.mjs  # sync wiki/*/*.md -> src/content/docs/*/*.md
+node ../scripts/sync-wiki.mjs  # sync docs/wiki/*/*.md -> src/content/docs/*/*.md
 npm run dev
 ```
 
@@ -53,14 +53,14 @@ site/
     ├── content/
     │   ├── config.ts        # Starlight content collection definition
     │   └── docs/            # output target of sync-wiki.mjs
-    │       ├── en/*.md      # synced from wiki/en/
-    │       └── ja/*.md      # synced from wiki/ja/
+    │       ├── en/*.md      # synced from docs/wiki/en/
+    │       └── ja/*.md      # synced from docs/wiki/ja/
     └── styles/
         └── custom.css       # logo-derived CSS variables (light/dark)
 ```
 
 ## Related
 
-- Wiki SSOT: `../wiki/en/` and `../wiki/ja/`
+- Wiki SSOT: `../docs/wiki/en/` and `../docs/wiki/ja/`
 - Sync script: `../scripts/sync-wiki.mjs` (created by developer phase)
 - Logo source: `../docs/images/aphelion-logo.png`

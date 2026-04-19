@@ -6,7 +6,7 @@
 
 ## ユーザー要件
 
-- `wiki/` ディレクトリ配下（`wiki/en/*.md`, `wiki/ja/*.md`）を Single Source of Truth (SSOT) とし、Aphelion プロジェクトのドキュメントサイトとして Cloudflare Pages 上で公開したい。
+- `docs/wiki/` ディレクトリ配下（`docs/wiki/en/*.md`, `docs/wiki/ja/*.md`）を Single Source of Truth (SSOT) とし、Aphelion プロジェクトのドキュメントサイトとして Cloudflare Pages 上で公開したい。
 - 公開物はデザインが整った静的サイトであること。ロゴ（`docs/images/aphelion-logo.png`）をヘッダーに配置し、ロゴから抽出したカラースキームを採用する。
 - 英語 / 日本語の i18n 切替、全文検索、Mermaid 図の表示など、開発者向けドキュメントサイトに必要な機能を備える。
 - 初期リリースでは最小機能（MVP）を優先し、Hero セクションやカスタムコンポーネントなど装飾系は別 issue で段階的に追加する。
@@ -15,21 +15,21 @@
 
 **feature**（機能追加）
 
-既存 SCOPE には含まれていない新規のドキュメント公開サイト（`site/`）を追加する。既存の `wiki/` は変更しない。
+既存 SCOPE には含まれていない新規のドキュメント公開サイト（`site/`）を追加する。既存の `docs/wiki/` は変更しない。
 
 ## 決定事項（ユーザー承認済み）
 
 | 項目 | 決定 |
 |------|------|
 | SSG | **Astro Starlight** |
-| wiki 利用方式 | **ビルド時コピー + frontmatter 自動付与**。SSOT は `wiki/` のまま。`scripts/sync-wiki.mjs` が `wiki/en/*.md`, `wiki/ja/*.md` を `site/src/content/docs/` へ変換・コピーする |
+| wiki 利用方式 | **ビルド時コピー + frontmatter 自動付与**。SSOT は `docs/wiki/` のまま。`scripts/sync-wiki.mjs` が `docs/wiki/en/*.md`, `docs/wiki/ja/*.md` を `site/src/content/docs/` へ変換・コピーする |
 | カラースキーム | **ロゴから抽出し CSS 変数化**。`docs/images/aphelion-logo.png` から主要色をサンプリングし、`site/src/styles/custom.css` 内で CSS 変数として定義。light / dark 両対応 |
 | 初期スコープ | **段階リリース**。MVP を先に公開し、Hero セクションなどのカスタムコンポーネントは別 issue で後続対応 |
 
 ## MVP スコープ（今回 issue で実装）
 
 1. **Astro Starlight プロジェクトのセットアップ** — `site/` 配下に `npm create astro@latest -- --template starlight` で雛型生成
-2. **同期スクリプト** — `scripts/sync-wiki.mjs` を作成。`wiki/en/*.md`, `wiki/ja/*.md` を `site/src/content/docs/en/`, `site/src/content/docs/ja/` にコピーし、Starlight 互換の frontmatter (`title`, `description`) を自動付与
+2. **同期スクリプト** — `scripts/sync-wiki.mjs` を作成。`docs/wiki/en/*.md`, `docs/wiki/ja/*.md` を `site/src/content/docs/en/`, `site/src/content/docs/ja/` にコピーし、Starlight 互換の frontmatter (`title`, `description`) を自動付与
 3. **ロゴ配置** — `docs/images/aphelion-logo.png` を `site/src/assets/logo.png` として配置し、Starlight の `logo` 設定でヘッダーに表示
 4. **カラースキーム** — ロゴから主要色をサンプリングし、`site/src/styles/custom.css` に CSS 変数化（primary / accent / bg / text）。light / dark 両対応
 5. **i18n** — Starlight の locale 機能で en / ja 切替（`locales: { en: { label: 'English', lang: 'en' }, ja: { label: '日本語', lang: 'ja' } }`）
@@ -51,7 +51,7 @@
 
 ```
 aphelion-agents/
-├── wiki/                              # SSOT（変更禁止 / 今回スコープ外）
+├── docs/wiki/                              # SSOT（変更禁止 / 今回スコープ外）
 │   ├── en/*.md
 │   └── ja/*.md
 ├── site/                              # 新規: Astro Starlight プロジェクト
@@ -66,14 +66,14 @@ aphelion-agents/
 │   │   ├── content/
 │   │   │   ├── config.ts              # Starlight content collection 定義
 │   │   │   └── docs/                  # sync-wiki.mjs による出力先
-│   │   │       ├── en/*.md            # wiki/en からのコピー（frontmatter 付与済み）
-│   │   │       └── ja/*.md            # wiki/ja からのコピー（frontmatter 付与済み）
+│   │   │       ├── en/*.md            # docs/wiki/en からのコピー（frontmatter 付与済み）
+│   │   │       └── ja/*.md            # docs/wiki/ja からのコピー（frontmatter 付与済み）
 │   │   └── styles/
 │   │       └── custom.css             # ロゴ由来の CSS 変数
 │   └── dist/                          # ビルド成果物（.gitignore）
 ├── scripts/
 │   ├── generate.py                    # 既存: .claude → platforms 同期
-│   └── sync-wiki.mjs                  # 新規: wiki/ → site/src/content/docs/ 変換
+│   └── sync-wiki.mjs                  # 新規: docs/wiki/ → site/src/content/docs/ 変換
 └── docs/
     └── issues/
         └── wiki-cloudflare-pages.md   # 本ファイル
@@ -99,7 +99,7 @@ aphelion-agents/
 
 ## scripts/sync-wiki.mjs の仕様
 
-**入力:** `wiki/en/*.md`, `wiki/ja/*.md`
+**入力:** `docs/wiki/en/*.md`, `docs/wiki/ja/*.md`
 **出力:** `site/src/content/docs/en/*.md`, `site/src/content/docs/ja/*.md`
 
 **変換ルール:**
@@ -136,7 +136,7 @@ aphelion-agents/
 
 ### developer の担当（scaffolder 完了後）
 
-1. `sync-wiki.mjs` の動作確認とテスト（`wiki/` の全ファイルがエラーなく `site/src/content/docs/` 配下にコピーされ、`npm run build` が成功する）
+1. `sync-wiki.mjs` の動作確認とテスト（`docs/wiki/` の全ファイルがエラーなく `site/src/content/docs/` 配下にコピーされ、`npm run build` が成功する）
 2. Starlight サイドバーの明示定義または自動生成設定の調整
 3. Pagefind 検索の有効化確認
 4. Cloudflare Pages 用ビルドコマンドでローカル再現
@@ -156,7 +156,7 @@ aphelion-agents/
 
 ## スコープ外の明示
 
-- `wiki/` 配下の変更（SSOT として今回は一切触らない）
+- `docs/wiki/` 配下の変更（SSOT として今回は一切触らない）
 - `platforms/copilot/`, `platforms/codex/` への影響調整（独立）
 - `scripts/generate.py` との統合（両スクリプトは独立稼働。`generate.py` は `.claude → platforms`、`sync-wiki.mjs` は `wiki → site`）
 - Hero セクション / カスタムコンポーネント / アニメーション

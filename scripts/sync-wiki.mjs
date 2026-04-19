@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // sync-wiki.mjs
-// wiki/en/*.md と wiki/ja/*.md を site/src/content/docs/{en,ja}/ にコピーし、
+// docs/wiki/en/*.md と docs/wiki/ja/*.md を site/src/content/docs/{en,ja}/ にコピーし、
 // Starlight 互換の frontmatter (title, description) を自動付与するスクリプト。
 // Node.js 20+ ESM。外部依存なし。
 
@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename);
 
 // リポジトリルートを基準にパスを解決
 const REPO_ROOT = path.resolve(__dirname, '..');
-const WIKI_DIR = path.join(REPO_ROOT, 'wiki');
+const WIKI_DIR = path.join(REPO_ROOT, 'docs', 'wiki');
 const DOCS_DIR = path.join(REPO_ROOT, 'site', 'src', 'content', 'docs');
 
 /**
@@ -186,7 +186,7 @@ function processFile(srcPath, destPath) {
 }
 
 /**
- * メイン処理: wiki/{locale}/*.md をすべて処理して site/src/content/docs/{locale}/ に出力する。
+ * メイン処理: docs/wiki/{locale}/*.md をすべて処理して site/src/content/docs/{locale}/ に出力する。
  */
 function main() {
   const locales = ['en', 'ja'];
