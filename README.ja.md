@@ -6,6 +6,8 @@
 
 マルチプラットフォーム対応の AI コーディングエージェント定義集です。27 の専門エージェントがプロジェクトの全工程を自動化します。
 
+[![Wiki](https://img.shields.io/badge/Wiki-aphelion--agents.pages.dev-F38020?logo=cloudflarepages&logoColor=white&style=flat)](https://aphelion-agents.pages.dev/)
+
 **[English README](README.md)**
 
 ---
