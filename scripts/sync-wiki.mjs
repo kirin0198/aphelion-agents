@@ -3,7 +3,7 @@
 // docs/wiki/en/*.md と docs/wiki/ja/*.md を site/src/content/docs/{en,ja}/ にコピーし、
 // Starlight 互換の frontmatter (title, description) を自動付与するスクリプト。
 // docs/images/aphelion-logo.png も site/src/assets/logo.png に同期する。
-// Node.js 20+ ESM。外部依存なし。
+// Node.js 22 標準ライブラリのみで動作。
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
@@ -118,48 +118,66 @@ function slugify(filename) {
  * - 同一ロケール内: `./Foo.md` → `/{locale}/foo/`
  * - 言語切替: `../en/Foo.md` → `/en/foo/`、`../ja/Foo.md` → `/ja/foo/`
  * - wiki 外の .md (README.md / .claude/CLAUDE.md 等) → GitHub blob URL
- * - 外部 URL (http(s):// / mailto:) および画像 (!\[...]) は対象外。
+ * - 外部 URL (http(s):// / mailto:) および画像 (![...]) は対象外。
  * @param {string} body
  * @param {'en' | 'ja'} locale 現在処理中のロケール
  * @returns {string}
  */
 function rewriteLinks(body, locale) {
-  // マッチ: `](<path>)` (先頭が ! の場合は画像なので除外)
-  // capture 1: 全パス (anchor 含む可能性あり)
-  const re = /(?<!!)\]\(([^)]+\.md(?:#[^)]+)?)\)/g;
-  return body.replace(re, (whole, link) => {
+  // マッチ: `[text](path.md)` 形式のリンク。
+  // `(?<!!)\]\(` の lookbehind は `]` 直前が `!` でないことを確認するが、
+  // 画像構文 `![alt](./x.md)` では `]` 直前は alt テキストの末尾文字であり `!` ではない。
+  // そのため lookbehind では画像を除外できない。代わりに callback 内で
+  // マッチ開始位置の1文字前が `!` かどうかを確認して画像を skip する。
+  // capture 1: リンクテキスト (画像判定に使用)
+  // capture 2: 全パス (anchor / query 含む可能性あり)
+  const re = /\[([^\]]*)\]\(([^)]+\.md(?:[?#][^)]+)?)\)/g;
+  return body.replace(re, (whole, _text, link, offset) => {
+    // マッチ直前の文字が `!` なら画像リンク → 変換せずそのまま返す
+    if (offset >= 1 && body[offset - 1] === '!') {
+      return whole;
+    }
     // 外部URL / アンカー単独 は対象外
     if (/^(https?:)?\/\//.test(link) || /^mailto:/.test(link) || link.startsWith('#')) {
       return whole;
     }
 
-    // anchor 分離
-    const hashIdx = link.indexOf('#');
-    const pathPart = hashIdx >= 0 ? link.slice(0, hashIdx) : link;
-    const anchor = hashIdx >= 0 ? link.slice(hashIdx) : '';
+    // query string と anchor を分離 (.md?query#anchor の順を想定)
+    const mdEndIdx = link.indexOf('.md') + 3; // .md の直後の位置
+    const pathPart = link.slice(0, mdEndIdx);
+    const suffix = link.slice(mdEndIdx); // ?query#anchor 等
 
-    // .md を剥がしてファイル名を小文字化
-    const mdMatch = pathPart.match(/^(.*\/)?([A-Za-z][A-Za-z0-9-]*)\.md$/);
+    // query と anchor をそれぞれ抽出 (Starlight URL に anchor のみ引き継ぐ)
+    const qMatch = suffix.match(/^\?([^#]*)/);
+    const hMatch = suffix.match(/#(.+)$/);
+    // query は Starlight のルーティングでは意味を持たないが、存在する場合は保持する
+    const query = qMatch ? `?${qMatch[1]}` : '';
+    const anchor = hMatch ? `#${hMatch[1]}` : '';
+
+    // .md を剥がしてファイル名を小文字化 (kebab 正規化)
+    // ファイル名パターンを緩和: 数字・アンダースコア・ドット・ハイフンを含む名前に対応
+    const mdMatch = pathPart.match(/^(.*\/)?([A-Za-z0-9_.-]+)\.md$/);
     if (!mdMatch) return whole;
     const dir = mdMatch[1] ?? '';
-    const slug = mdMatch[2].toLowerCase();
+    // kebab-case に正規化: 大文字を小文字化し、アンダースコア・スペース等をハイフンに変換
+    const slug = mdMatch[2].toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
 
     // パターン判定
     // 1) 言語切替: ../en/X.md or ../ja/X.md
     const localeSwitch = dir.match(/(?:\.\.\/)+(en|ja)\/$/);
     if (localeSwitch) {
-      return `](/${localeSwitch[1]}/${slug}/${anchor})`;
+      return `](/${localeSwitch[1]}/${slug}/${query}${anchor})`;
     }
 
     // 2) 同一ディレクトリ (./X.md) or 暗黙同一 (X.md)
     if (dir === '' || dir === './') {
-      return `](/${locale}/${slug}/${anchor})`;
+      return `](/${locale}/${slug}/${query}${anchor})`;
     }
 
     // 3) wiki 外の .md → GitHub blob URL (大文字小文字を保持)
     // 例: ../../.claude/CLAUDE.md → https://github.com/.../blob/main/.claude/CLAUDE.md
     const cleanedDir = dir.replace(/^(?:\.\.\/)+/, '');
-    return `](${GITHUB_BLOB_BASE}${cleanedDir}${mdMatch[2]}.md${anchor})`;
+    return `](${GITHUB_BLOB_BASE}${cleanedDir}${mdMatch[2]}.md${query}${anchor})`;
   });
 }
 
