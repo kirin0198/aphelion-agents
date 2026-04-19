@@ -19,6 +19,9 @@ const DOCS_DIR = path.join(REPO_ROOT, 'site', 'src', 'content', 'docs');
 const LOGO_SRC = path.join(REPO_ROOT, 'docs', 'images', 'aphelion-logo.png');
 const LOGO_DEST = path.join(REPO_ROOT, 'site', 'src', 'assets', 'logo.png');
 
+// リポジトリ外 (wiki 外) のファイルへのリンクを置き換える先。GitHub blob URL。
+const GITHUB_BLOB_BASE = 'https://github.com/kirin0198/aphelion-agents/blob/main/';
+
 /**
  * ファイル先頭の frontmatter ブロック (---\n...\n---) を抽出する。
  * @param {string} content ファイル全文
@@ -108,22 +111,55 @@ function slugify(filename) {
 
 /**
  * Markdown 内の相対リンクを Starlight のルーティング形式に書き換える。
- * - `./Foo-Bar.md` → `./foo-bar/`
- * - `./Foo-Bar.md#anchor` → `./foo-bar/#anchor`
- * - `../en/Foo.md` → `../en/foo/`
- * - 絶対 URL (http:// / https:// / mailto:) や image 参照 (!\[...]) は対象外。
- * Starlight はファイル名を lowercase kebab-case でスラッグ化するため揃える。
+ * 出力は**絶対パス**にすることで、Astro が出力するディレクトリ型URL
+ * (`/en/home/`) 配下でもリンクが正しく解決される (`./foo.md` のような相対
+ * リンクは `/en/home/foo/` になって 404 となるため)。
+ *
+ * - 同一ロケール内: `./Foo.md` → `/{locale}/foo/`
+ * - 言語切替: `../en/Foo.md` → `/en/foo/`、`../ja/Foo.md` → `/ja/foo/`
+ * - wiki 外の .md (README.md / .claude/CLAUDE.md 等) → GitHub blob URL
+ * - 外部 URL (http(s):// / mailto:) および画像 (!\[...]) は対象外。
  * @param {string} body
+ * @param {'en' | 'ja'} locale 現在処理中のロケール
  * @returns {string}
  */
-function rewriteLinks(body) {
-  // マッチ: `](<prefix><filename>.md<optional #anchor>)`
-  // prefix はオプションで `./` `../` `../en/` `../ja/` 等
-  // filename は英数字とハイフンのみを対象 (外部URLの誤マッチを避ける)
-  const re = /\]\(((?:\.{1,2}\/)+(?:(?:en|ja)\/)?)([A-Za-z][A-Za-z0-9-]*)\.md(#[^)]+)?\)/g;
-  return body.replace(re, (_, prefix, name, anchor) => {
-    const slug = name.toLowerCase();
-    return `](${prefix}${slug}/${anchor ?? ''})`;
+function rewriteLinks(body, locale) {
+  // マッチ: `](<path>)` (先頭が ! の場合は画像なので除外)
+  // capture 1: 全パス (anchor 含む可能性あり)
+  const re = /(?<!!)\]\(([^)]+\.md(?:#[^)]+)?)\)/g;
+  return body.replace(re, (whole, link) => {
+    // 外部URL / アンカー単独 は対象外
+    if (/^(https?:)?\/\//.test(link) || /^mailto:/.test(link) || link.startsWith('#')) {
+      return whole;
+    }
+
+    // anchor 分離
+    const hashIdx = link.indexOf('#');
+    const pathPart = hashIdx >= 0 ? link.slice(0, hashIdx) : link;
+    const anchor = hashIdx >= 0 ? link.slice(hashIdx) : '';
+
+    // .md を剥がしてファイル名を小文字化
+    const mdMatch = pathPart.match(/^(.*\/)?([A-Za-z][A-Za-z0-9-]*)\.md$/);
+    if (!mdMatch) return whole;
+    const dir = mdMatch[1] ?? '';
+    const slug = mdMatch[2].toLowerCase();
+
+    // パターン判定
+    // 1) 言語切替: ../en/X.md or ../ja/X.md
+    const localeSwitch = dir.match(/(?:\.\.\/)+(en|ja)\/$/);
+    if (localeSwitch) {
+      return `](/${localeSwitch[1]}/${slug}/${anchor})`;
+    }
+
+    // 2) 同一ディレクトリ (./X.md) or 暗黙同一 (X.md)
+    if (dir === '' || dir === './') {
+      return `](/${locale}/${slug}/${anchor})`;
+    }
+
+    // 3) wiki 外の .md → GitHub blob URL (大文字小文字を保持)
+    // 例: ../../.claude/CLAUDE.md → https://github.com/.../blob/main/.claude/CLAUDE.md
+    const cleanedDir = dir.replace(/^(?:\.\.\/)+/, '');
+    return `](${GITHUB_BLOB_BASE}${cleanedDir}${mdMatch[2]}.md${anchor})`;
   });
 }
 
@@ -176,8 +212,9 @@ function serializeFrontmatter(fm) {
  * 1ファイルを処理し、出力先に書き出す。
  * @param {string} srcPath 入力ファイルのフルパス
  * @param {string} destPath 出力ファイルのフルパス
+ * @param {'en' | 'ja'} locale 現在処理中のロケール
  */
-function processFile(srcPath, destPath) {
+function processFile(srcPath, destPath, locale) {
   const raw = fs.readFileSync(srcPath, 'utf-8');
   const { frontmatter, body } = extractFrontmatter(raw);
 
@@ -200,8 +237,8 @@ function processFile(srcPath, destPath) {
   }
 
   // H1 タイトル行を本文から削除 (frontmatter.title と重複するため)
-  // リンクを Starlight 形式 (kebab-case, .md 除去, 末尾スラッシュ) に書き換え
-  const cleanedBody = rewriteLinks(removeH1(body));
+  // リンクを Starlight 形式 (絶対パス、kebab-case、.md 除去) に書き換え
+  const cleanedBody = rewriteLinks(removeH1(body), locale);
 
   // frontmatter ブロックを先頭に付与して結合
   const output = `---\n${serializeFrontmatter(frontmatter)}\n---\n\n${cleanedBody}`;
@@ -251,7 +288,7 @@ function main() {
       const srcPath = path.join(srcDir, file);
       const destFile = slugify(file);
       const destPath = path.join(destDir, destFile);
-      processFile(srcPath, destPath);
+      processFile(srcPath, destPath, /** @type {'en' | 'ja'} */ (locale));
     }
   }
 
