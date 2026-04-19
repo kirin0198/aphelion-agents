@@ -26,42 +26,42 @@ export default defineConfig({
 			sidebar: [
 				{
 					label: 'Overview',
-					link: '/en/home/',
+					link: 'home',
 					translations: { ja: '概要' },
 				},
 				{
 					label: 'Getting Started',
-					link: '/en/getting-started/',
+					link: 'getting-started',
 					translations: { ja: 'はじめる' },
 				},
 				{
 					label: 'Architecture',
-					link: '/en/architecture/',
+					link: 'architecture',
 					translations: { ja: 'アーキテクチャ' },
 				},
 				{
 					label: 'Triage System',
-					link: '/en/triage-system/',
+					link: 'triage-system',
 					translations: { ja: 'トリアージシステム' },
 				},
 				{
 					label: 'Agents Reference',
-					link: '/en/agents-reference/',
+					link: 'agents-reference',
 					translations: { ja: 'エージェントリファレンス' },
 				},
 				{
 					label: 'Rules Reference',
-					link: '/en/rules-reference/',
+					link: 'rules-reference',
 					translations: { ja: 'ルールリファレンス' },
 				},
 				{
 					label: 'Platform Guide',
-					link: '/en/platform-guide/',
+					link: 'platform-guide',
 					translations: { ja: 'プラットフォームガイド' },
 				},
 				{
 					label: 'Contributing',
-					link: '/en/contributing/',
+					link: 'contributing',
 					translations: { ja: 'コントリビューション' },
 				},
 			],
