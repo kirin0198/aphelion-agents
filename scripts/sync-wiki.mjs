@@ -107,6 +107,27 @@ function slugify(filename) {
 }
 
 /**
+ * Markdown 内の相対リンクを Starlight のルーティング形式に書き換える。
+ * - `./Foo-Bar.md` → `./foo-bar/`
+ * - `./Foo-Bar.md#anchor` → `./foo-bar/#anchor`
+ * - `../en/Foo.md` → `../en/foo/`
+ * - 絶対 URL (http:// / https:// / mailto:) や image 参照 (!\[...]) は対象外。
+ * Starlight はファイル名を lowercase kebab-case でスラッグ化するため揃える。
+ * @param {string} body
+ * @returns {string}
+ */
+function rewriteLinks(body) {
+  // マッチ: `](<prefix><filename>.md<optional #anchor>)`
+  // prefix はオプションで `./` `../` `../en/` `../ja/` 等
+  // filename は英数字とハイフンのみを対象 (外部URLの誤マッチを避ける)
+  const re = /\]\(((?:\.{1,2}\/)+(?:(?:en|ja)\/)?)([A-Za-z][A-Za-z0-9-]*)\.md(#[^)]+)?\)/g;
+  return body.replace(re, (_, prefix, name, anchor) => {
+    const slug = name.toLowerCase();
+    return `](${prefix}${slug}/${anchor ?? ''})`;
+  });
+}
+
+/**
  * 本文から H1 タイトル行を削除する (frontmatter の title と重複するため)。
  * 最初の `# タイトル` 行のみ削除。
  * @param {string} body
@@ -179,7 +200,8 @@ function processFile(srcPath, destPath) {
   }
 
   // H1 タイトル行を本文から削除 (frontmatter.title と重複するため)
-  const cleanedBody = removeH1(body);
+  // リンクを Starlight 形式 (kebab-case, .md 除去, 末尾スラッシュ) に書き換え
+  const cleanedBody = rewriteLinks(removeH1(body));
 
   // frontmatter ブロックを先頭に付与して結合
   const output = `---\n${serializeFrontmatter(frontmatter)}\n---\n\n${cleanedBody}`;
