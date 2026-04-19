@@ -12,7 +12,7 @@
 - [x] TASK-001: LICENSE ファイル追加 | 対象ファイル: LICENSE
 - [x] TASK-002: package.json をnpm publish向けに更新 | 対象ファイル: package.json
 - [x] TASK-003: 設定ファイル群追加 (tsconfig, tsup, biome, vitest) | 対象ファイル: tsconfig.json, tsup.config.ts, biome.json, vitest.config.ts
-- [ ] TASK-004: CLIエントリーポイントとソースパス解決 | 対象ファイル: src/cli.ts, src/lib/sources.ts
+- [x] TASK-004: CLIエントリーポイントとソースパス解決 | 対象ファイル: src/cli.ts, src/lib/sources.ts
 - [ ] TASK-005: init コマンド実装 | 対象ファイル: src/commands/init.ts, src/lib/copy.ts
 - [ ] TASK-006: update コマンド実装 | 対象ファイル: src/commands/update.ts
 - [ ] TASK-007: ユニットテスト追加 | 対象ファイル: src/lib/copy.test.ts, src/lib/sources.test.ts
