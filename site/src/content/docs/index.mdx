@@ -3,18 +3,51 @@ title: Aphelion
 description: Multi-platform AI coding agent workflow — Discovery, Delivery, Operations in three independent domains.
 template: splash
 hero:
-  tagline: A structured multi-platform AI coding workflow for Claude Code, GitHub Copilot, and OpenAI Codex.
+  tagline: AI coding agents for the full project lifecycle — Discovery, Delivery, Operations.
+  image:
+    file: ../../assets/logo.png
+    alt: Aphelion
   actions:
     - text: Get Started
       link: /en/getting-started/
       icon: right-arrow
-    - text: Architecture
-      link: /en/architecture/
-      icon: document
+      variant: primary
+    - text: View on GitHub
+      link: https://github.com/kirin0198/aphelion-agents
+      icon: external
+      variant: secondary
+    - text: Agents Reference
+      link: /en/agents-reference/
+      icon: open-book
       variant: minimal
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Meet the 27 Agents
+
+<CardGrid>
+	<Card title="Flow Orchestrators" icon="rocket">
+		4 top-level orchestrators: discovery-flow, delivery-flow, operations-flow, and the root triage.
+		[→ Flow Orchestrators](/en/agents-reference/#flow-orchestrators)
+	</Card>
+	<Card title="Discovery Domain" icon="magnifier">
+		6 agents that elicit, research, and prototype requirements.
+		[→ Discovery Domain](/en/agents-reference/#discovery-domain)
+	</Card>
+	<Card title="Delivery Domain" icon="puzzle">
+		12 agents that design, implement, test, review, and release.
+		[→ Delivery Domain](/en/agents-reference/#delivery-domain)
+	</Card>
+	<Card title="Operations Domain" icon="laptop">
+		4 agents that build infra, manage DB, set up observability, and plan ops.
+		[→ Operations Domain](/en/agents-reference/#operations-domain)
+	</Card>
+	<Card title="Safety & Standalone" icon="approve-check">
+		sandbox-runner for isolated execution, plus analyst and codebase-analyzer for standalone use.
+		[→ Safety Agents](/en/agents-reference/#safety-agents)
+	</Card>
+</CardGrid>
 
 ## Explore the Documentation
 
