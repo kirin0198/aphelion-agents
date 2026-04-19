@@ -8,9 +8,7 @@ import { updateCommand } from './commands/update.js';
 // Node バージョンチェック (20 未満は終了)
 const nodeVersion = process.versions.node.split('.').map(Number);
 if (nodeVersion[0] < 20) {
-  console.error(
-    `エラー: Node.js v20 以上が必要です。現在のバージョン: v${process.versions.node}`,
-  );
+  console.error(`エラー: Node.js v20 以上が必要です。現在のバージョン: v${process.versions.node}`);
   process.exit(1);
 }
 
