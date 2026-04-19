@@ -6,6 +6,8 @@
 
 A multi-platform collection of AI coding agent definitions that automates the entire project lifecycle with 27 specialized agents.
 
+[![Wiki](https://img.shields.io/badge/Wiki-aphelion--agents.pages.dev-F38020?logo=cloudflarepages&logoColor=white&style=flat)](https://aphelion-agents.pages.dev/)
+
 **[日本語版 README はこちら](README.ja.md)**
 
 ---
