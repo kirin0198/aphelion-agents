@@ -1,35 +1,26 @@
 # TASK.md
 
-> 参照元: docs/issues/consolidate-rules-no-claude-md.md (2026-04-23)
+> 参照元: docs/issues/typescript-cli.md (2026-04-19)
 
-## フェーズ: refactor/consolidate-rules-no-claude-md
-最終更新: 2026-04-23
-ステータス: 完了
+## フェーズ: Phase 1 — CLI新設 + TypeScript化
+最終更新: 2026-04-19
+ステータス: 進行中
 
 ## タスク一覧
 
 ### Phase 1
-- [x] TASK-001: .claude/CLAUDE.md を .claude/rules/aphelion-overview.md に移動 | 対象ファイル: .claude/CLAUDE.md → .claude/rules/aphelion-overview.md
-
-### Phase 2
-- [x] TASK-002: scripts/generate.mjs のパス参照更新 | 対象ファイル: scripts/generate.mjs
-
-### Phase 3
-- [x] TASK-003: rules-designer 挙動変更 | 対象ファイル: .claude/agents/rules-designer.md
-
-### Phase 4
-- [x] TASK-004: README / wiki / DESIGN.md ドキュメント更新 | 対象ファイル: README.md, README.ja.md, docs/wiki/**
-
-### Phase 5
-- [x] TASK-005: platforms 再生成 | 対象ファイル: platforms/copilot/**, platforms/codex/**
-
-### Phase 6
-- [x] TASK-006: CHANGELOG.md に Unreleased エントリ追加 | 対象ファイル: CHANGELOG.md
+- [x] TASK-001: LICENSE ファイル追加 | 対象ファイル: LICENSE
+- [ ] TASK-002: package.json をnpm publish向けに更新 | 対象ファイル: package.json
+- [ ] TASK-003: 設定ファイル群追加 (tsconfig, tsup, biome, vitest) | 対象ファイル: tsconfig.json, tsup.config.ts, biome.json, vitest.config.ts
+- [ ] TASK-004: CLIエントリーポイントとソースパス解決 | 対象ファイル: src/cli.ts, src/lib/sources.ts
+- [ ] TASK-005: init コマンド実装 | 対象ファイル: src/commands/init.ts, src/lib/copy.ts
+- [ ] TASK-006: update コマンド実装 | 対象ファイル: src/commands/update.ts
+- [ ] TASK-007: ユニットテスト追加 | 対象ファイル: src/lib/copy.test.ts, src/lib/sources.test.ts
+- [ ] TASK-008: CHANGELOG.md 追加 | 対象ファイル: CHANGELOG.md
+- [ ] TASK-009: README / wiki に npx 手順を追記 | 対象ファイル: README.md, README.ja.md, docs/wiki/en/Getting-Started.md, docs/wiki/ja/Getting-Started.md
 
 ## 直近のコミット
-2e3181a docs: add unreleased CHANGELOG entry for consolidation (TASK-006)
-f17e448 chore: regenerate platform files (TASK-005)
-387621f docs: update README and wiki for rules consolidation (TASK-004)
+（タスク完了のたびに git log --oneline -3 を記録する）
 
 ## 中断時のメモ
 （セッション中断時に状況をここに記録する）
