@@ -8,6 +8,14 @@ export default defineConfig({
 	markdown: {
 		remarkPlugins: [remarkMermaid],
 	},
+	// Starlight のヘッダー左上の "Aphelion" ロゴ / タイトルは、現在のロケールの
+	// ルート (`/en`, `/ja`) にリンクするが、このサイトにはロケールルートに
+	// コンテンツがない (Home.md は `/en/home/` に配置される) ため 404 となる。
+	// ロケールルートアクセスを Home に固定リダイレクトする。
+	redirects: {
+		'/en': '/en/home/',
+		'/ja': '/ja/home/',
+	},
 	integrations: [
 		starlight({
 			title: 'Aphelion',
