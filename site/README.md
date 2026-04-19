@@ -12,6 +12,27 @@ npm run dev
 
 Dev server starts at `http://localhost:4321`.
 
+> Node.js 22 required (`site/.nvmrc`). If your host uses a different
+> version or you hit WSL/Windows-npm path issues, use the Docker-based
+> build described below.
+
+## Docker-based build (optional)
+
+Works on any host with Docker. Cloudflare Pages does not use these files
+— they only exist to make local builds reproducible.
+
+```bash
+docker compose run --rm site-dev     # hot-reload dev at http://localhost:4321
+docker compose run --rm site-build   # one-shot production build into site/dist
+```
+
+Or build an image directly with the multi-stage `site/Dockerfile`:
+
+```bash
+docker build -f site/Dockerfile --target build -t aphelion-site-build .
+docker run --rm -v "$PWD/site/dist:/out" aphelion-site-build sh -c "cp -r /app/site/dist/. /out/"
+```
+
 ## Build
 
 ```bash
@@ -37,7 +58,7 @@ Output: `site/dist/`
 | Build command | `cd site && npm ci && npm run build` |
 | Build output directory | `site/dist` |
 | Root directory | `/` (repo root) |
-| Node.js version | 20 |
+| Node.js version | 22 |
 
 ## Directory Structure
 
