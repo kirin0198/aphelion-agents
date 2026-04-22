@@ -12,7 +12,7 @@
 - [x] TASK-001: .claude/CLAUDE.md を .claude/rules/aphelion-overview.md に移動 | 対象ファイル: .claude/CLAUDE.md → .claude/rules/aphelion-overview.md
 
 ### Phase 2
-- [ ] TASK-002: scripts/generate.mjs のパス参照更新 | 対象ファイル: scripts/generate.mjs
+- [x] TASK-002: scripts/generate.mjs のパス参照更新 | 対象ファイル: scripts/generate.mjs
 
 ### Phase 3
 - [ ] TASK-003: rules-designer 挙動変更 | 対象ファイル: .claude/agents/rules-designer.md

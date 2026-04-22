@@ -204,7 +204,7 @@ function slugify(filename) {
  *
  * - 同一ロケール内: `./Foo.md` → `/{locale}/foo/`
  * - 言語切替: `../en/Foo.md` → `/en/foo/`、`../ja/Foo.md` → `/ja/foo/`
- * - wiki 外の .md (README.md / .claude/CLAUDE.md 等) → GitHub blob URL
+ * - wiki 外の .md (README.md / .claude/rules/aphelion-overview.md 等) → GitHub blob URL
  * - 外部 URL (http(s):// / mailto:) および画像 (![...]) は対象外。
  * @param {string} body
  * @param {'en' | 'ja'} locale 現在処理中のロケール
@@ -262,7 +262,7 @@ function rewriteLinks(body, locale) {
     }
 
     // 3) wiki 外の .md → GitHub blob URL (大文字小文字を保持)
-    // 例: ../../.claude/CLAUDE.md → https://github.com/.../blob/main/.claude/CLAUDE.md
+    // 例: ../../.claude/rules/aphelion-overview.md → https://github.com/.../blob/main/.claude/rules/aphelion-overview.md
     const cleanedDir = dir.replace(/^(?:\.\.\/)+/, '');
     return `[${text}](${GITHUB_BLOB_BASE}${cleanedDir}${mdMatch[2]}.md${query}${anchor})`;
   });
