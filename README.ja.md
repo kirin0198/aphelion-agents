@@ -155,8 +155,8 @@ cp -r platforms/codex/skills/ /path/to/your-project/
 
 ```
 .claude/                         # Claude Code（正規ソース）
-├── CLAUDE.md                    # プロジェクト概要
-├── rules/*.md                   # 行動ルール（自動ロード）
+├── rules/*.md                   # 行動ルール + 概要（自動ロード）
+│   └── aphelion-overview.md     # Aphelion ワークフロー概要
 ├── orchestrator-rules.md        # オーケストレーター専用ルール
 ├── agents/*.md                  # エージェント定義（27ファイル）
 └── commands/*.md                # スラッシュコマンド定義
@@ -183,7 +183,7 @@ node scripts/generate.mjs --clean            # 生成物を削除
 
 | 機能 | Claude Code | GitHub Copilot | OpenAI Codex |
 |------|------------|----------------|-------------|
-| グローバル指示 | `.claude/CLAUDE.md` | `.github/copilot-instructions.md` | `AGENTS.md` |
+| グローバル指示 | `.claude/rules/aphelion-overview.md` | `.github/copilot-instructions.md` | `AGENTS.md` |
 | エージェント定義 | `.claude/agents/*.md` | `.github/agents/*.agent.md` | N/A（単一エージェント） |
 | スキル/コマンド | `.claude/commands/*.md` | — | `skills/*/SKILL.md` |
 | サブエージェント | あり（Agent tool） | あり（agent tool） | なし |

@@ -1,4 +1,7 @@
-# global rules — Aphelion Workflow Overview
+# Aphelion Workflow Rules
+
+> **Last updated**: 2026-04-23
+> **Auto-loaded**: Yes — placed in `.claude/rules/`, loaded by Claude Code on every session start
 
 This file provides a high-level overview of the Aphelion workflow.
 Behavioral rules are defined in `.claude/rules/` (auto-loaded).

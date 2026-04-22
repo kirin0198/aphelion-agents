@@ -336,7 +336,7 @@ Phase 5: 仕上げ
 ## 9. Canonical Sources（本設計の参照元）
 
 - `/home/ysato/git/aphelion-agents/ISSUE.md`（analyst 成果物、承認済み方針）
-- `.claude/CLAUDE.md`（Aphelion ワークフロー全体像）
+- `.claude/rules/aphelion-overview.md`（Aphelion ワークフロー全体像）
 - `.claude/agents/*.md`（26 エージェント定義、Agents-Reference の原典）
 - `.claude/rules/*.md`（8 ルール定義、Rules-Reference の原典）
 - `.claude/orchestrator-rules.md`（Triage-System の原典。存在確認は developer が行う）

@@ -28,7 +28,7 @@ This page describes Aphelion's architectural design: the three-domain model, ses
 
 Aphelion divides the software development lifecycle into three independent domains:
 
-<!-- source: .claude/CLAUDE.md -->
+<!-- source: .claude/rules/aphelion-overview.md -->
 ```mermaid
 flowchart LR
     DR["DISCOVERY_RESULT.md"]
@@ -433,6 +433,6 @@ flowchart TB
 
 ## Canonical Sources
 
-- [.claude/CLAUDE.md](../../.claude/CLAUDE.md) — Workflow model and design principles
+- [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md) — Workflow model and design principles (auto-loaded)
 - [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — Triage, handoff schema, approval gate, rollback rules
 - [.claude/rules/agent-communication-protocol.md](../../.claude/rules/agent-communication-protocol.md) — AGENT_RESULT format and STATUS definitions

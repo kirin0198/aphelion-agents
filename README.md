@@ -155,8 +155,8 @@ At flow start, project scale is assessed and agents are selected from 4 tiers au
 
 ```
 .claude/                         # Claude Code (canonical source)
-├── CLAUDE.md                    # Project overview
-├── rules/*.md                   # Behavioral rules (auto-loaded)
+├── rules/*.md                   # Behavioral rules + overview (auto-loaded)
+│   └── aphelion-overview.md     # Aphelion workflow overview
 ├── orchestrator-rules.md        # Orchestrator-specific rules
 ├── agents/*.md                  # Agent definitions (27 files)
 └── commands/*.md                # Slash command definitions
@@ -183,7 +183,7 @@ node scripts/generate.mjs --clean            # Remove generated files
 
 | Feature | Claude Code | GitHub Copilot | OpenAI Codex |
 |---------|------------|----------------|-------------|
-| Global instructions | `.claude/CLAUDE.md` | `.github/copilot-instructions.md` | `AGENTS.md` |
+| Global instructions | `.claude/rules/aphelion-overview.md` | `.github/copilot-instructions.md` | `AGENTS.md` |
 | Agent definitions | `.claude/agents/*.md` | `.github/agents/*.agent.md` | N/A (single agent) |
 | Skills / commands | `.claude/commands/*.md` | — | `skills/*/SKILL.md` |
 | Sub-agent support | Yes (Agent tool) | Yes (agent tool) | No |

@@ -42,7 +42,6 @@ Claude Codeは権威あるプラットフォームです。全エージェント
 
 ```
 .claude/
-  CLAUDE.md                # ワークフロー概要（自動ロード）
   orchestrator-rules.md    # トリアージ、承認ゲート、ロールバックルール（オンデマンド読み込み）
   agents/
     discovery-flow.md      # フローオーケストレーター
@@ -52,9 +51,10 @@ Claude Codeは権威あるプラットフォームです。全エージェント
     researcher.md
     ...                    # （合計27エージェント）
   rules/
+    aphelion-overview.md   # ワークフロー概要（自動ロード）
     agent-communication-protocol.md
     build-verification-commands.md
-    ...                    # （合計9ルール）
+    ...                    # （合計10ルール）
   commands/
     discovery-flow.md      # スラッシュコマンド定義
     delivery-flow.md
@@ -90,7 +90,7 @@ Copilotプラットフォームファイルは`scripts/generate.mjs`によって
 
 ```
 .github/
-  copilot-instructions.md  # グローバルワークフロー指示（.claude/CLAUDE.mdから）
+  copilot-instructions.md  # グローバルワークフロー指示（.claude/rules/aphelion-overview.mdから）
   orchestrator-rules.md    # オーケストレーターエージェントにインライン化
   agents/
     discovery-flow.agent.md
@@ -105,7 +105,7 @@ Copilotプラットフォームファイルは`scripts/generate.mjs`によって
 | フロントマター形式 | `---\nname: ...\ndescription: ...\ntools: Read, Write, Bash, ...` | `---\nname: ...\ndescription: ...\ntools:\n  - read\n  - edit\n  - execute\n  - ...` |
 | ツール名 | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` | `read`, `edit`, `execute`, `search` |
 | オーケストレータールール | 別ファイル（オンデマンド読み込み） | 各オーケストレーターエージェントファイルにインライン化 |
-| グローバル指示 | `.claude/CLAUDE.md`（自動ロード） | `.github/copilot-instructions.md` |
+| グローバル指示 | `.claude/rules/aphelion-overview.md`（自動ロード） | `.github/copilot-instructions.md` |
 | モデル選択 | フロントマターで指定 | Copilot自身のモデル選択（省略） |
 
 **ツール名マッピング**（generate.mjsが適用）：
@@ -270,10 +270,10 @@ node scripts/generate.mjs --clean
 2. YAMLフロントマターを変換（ツール名、`model`フィールドを削除）
 3. オーケストレーターエージェント（discovery-flow、delivery-flow、operations-flow）に`orchestrator-rules.md`の内容をインライン化
 4. `platforms/copilot/agents/{name}.agent.md`に出力を書き込む
-5. `.claude/CLAUDE.md`を`platforms/copilot/copilot-instructions.md`にコピー
+5. `.claude/rules/aphelion-overview.md`を読み込み`platforms/copilot/copilot-instructions.md`に書き出す
 
 *Codexの場合：*
-1. `.claude/CLAUDE.md`と全`.claude/rules/*.md`ファイルを`AGENTS.md`にマージ
+1. `.claude/rules/aphelion-overview.md`と全`.claude/rules/*.md`ファイルを`AGENTS.md`にマージ
 2. `orchestrator-rules.md`の全内容を追加
 3. 必要に応じて32 KBに切り詰める
 4. `.claude/commands/vuln-scan.md`と`secrets-scan.md`を`platforms/codex/skills/`フォーマットに変換

@@ -114,9 +114,9 @@ The Discovery domain (6 agents) handles requirements exploration.
 
 - **Canonical**: [.claude/agents/rules-designer.md](../../.claude/agents/rules-designer.md)
 - **Domain**: Discovery
-- **Responsibility**: Interactively determines project-specific coding conventions, Git workflow, and build commands. Generates CLAUDE.md at the project root. Runs on Light and above.
+- **Responsibility**: Interactively determines project-specific coding conventions, Git workflow, and build commands. Generates `.claude/rules/project-rules.md`. Runs on Light and above.
 - **Inputs**: INTERVIEW_RESULT.md, RESEARCH_RESULT.md (optional), POC_RESULT.md (optional)
-- **Outputs**: CLAUDE.md (project root, separate from .claude/CLAUDE.md)
+- **Outputs**: `.claude/rules/project-rules.md`
 - **AGENT_RESULT fields**: `LANGUAGE`, `FRAMEWORK`, `COMMIT_STYLE`, `BRANCH_STRATEGY`
 - **NEXT conditions**: `scope-planner`
 

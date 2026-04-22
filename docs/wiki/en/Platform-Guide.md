@@ -41,7 +41,6 @@ Claude Code is the authoritative platform. All agent definitions, rules, and orc
 
 ```
 .claude/
-  CLAUDE.md                # Workflow overview (auto-loaded)
   orchestrator-rules.md    # Triage, approval gates, rollback rules (read on-demand)
   agents/
     discovery-flow.md      # Flow orchestrators
@@ -51,9 +50,10 @@ Claude Code is the authoritative platform. All agent definitions, rules, and orc
     researcher.md
     ...                    # (27 agents total)
   rules/
+    aphelion-overview.md   # Workflow overview (auto-loaded)
     agent-communication-protocol.md
     build-verification-commands.md
-    ...                    # (9 rules total)
+    ...                    # (10 rules total)
   commands/
     discovery-flow.md      # Slash command definitions
     delivery-flow.md
@@ -89,7 +89,7 @@ The Copilot platform files are generated from Claude Code canonical agents by `s
 
 ```
 .github/
-  copilot-instructions.md  # Global workflow instructions (from .claude/CLAUDE.md)
+  copilot-instructions.md  # Global workflow instructions (from .claude/rules/aphelion-overview.md)
   orchestrator-rules.md    # Inlined into orchestrator agents
   agents/
     discovery-flow.agent.md
@@ -104,7 +104,7 @@ The Copilot platform files are generated from Claude Code canonical agents by `s
 | Frontmatter format | `---\nname: ...\ndescription: ...\ntools: Read, Write, Bash, ...` | `---\nname: ...\ndescription: ...\ntools:\n  - read\n  - edit\n  - execute\n  - ...` |
 | Tool names | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` | `read`, `edit`, `execute`, `search` |
 | Orchestrator rules | Separate file (read on-demand) | Inlined into each orchestrator agent file |
-| Global instructions | `.claude/CLAUDE.md` (auto-loaded) | `.github/copilot-instructions.md` |
+| Global instructions | `.claude/rules/aphelion-overview.md` (auto-loaded) | `.github/copilot-instructions.md` |
 | Model selection | Specified in frontmatter | Copilot's own model selection (omitted) |
 
 **Tool name mapping** (applied by generate.mjs):
@@ -269,10 +269,10 @@ node scripts/generate.mjs --clean
 2. Converts YAML frontmatter (tool names, removes `model` field)
 3. Inlines `orchestrator-rules.md` content into orchestrator agents (discovery-flow, delivery-flow, operations-flow)
 4. Writes output to `platforms/copilot/agents/{name}.agent.md`
-5. Copies `.claude/CLAUDE.md` to `platforms/copilot/copilot-instructions.md`
+5. Reads `.claude/rules/aphelion-overview.md` and writes to `platforms/copilot/copilot-instructions.md`
 
 *For Codex:*
-1. Merges `.claude/CLAUDE.md` and all `.claude/rules/*.md` files into `AGENTS.md`
+1. Reads `.claude/rules/aphelion-overview.md` and all `.claude/rules/*.md` files into `AGENTS.md`
 2. Appends the full `orchestrator-rules.md` content
 3. Truncates to 32 KB if needed
 4. Converts `.claude/commands/vuln-scan.md` and `secrets-scan.md` to `platforms/codex/skills/` format

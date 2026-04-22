@@ -194,8 +194,8 @@ function replaceCopilot(text) {
     '.github/orchestrator-rules.md',
   );
   result = result.split('.claude/agents/').join('.github/agents/');
-  result = result.split('.claude/CLAUDE.md').join('.github/copilot-instructions.md');
-  // スタンドアロンの CLAUDE.md (パス区切り文字の直前でない)
+  result = result.split('.claude/rules/aphelion-overview.md').join('.github/copilot-instructions.md');
+  // スタンドアロンの CLAUDE.md 参照 (パス区切り文字の直前でない) を置換
   result = result.replace(/(?<![/.])CLAUDE\.md/g, 'copilot-instructions.md');
 
   // Agent 呼び出しパターン
@@ -226,11 +226,11 @@ function generateCopilot({ clean = false } = {}) {
   const agentsDir = path.join(copilotDir, 'agents');
   fs.mkdirSync(agentsDir, { recursive: true });
 
-  // --- copilot-instructions.md (CLAUDE.md から) ---
-  let claudeMd = fs.readFileSync(path.join(CLAUDE_DIR, 'CLAUDE.md'), 'utf-8');
+  // --- copilot-instructions.md (aphelion-overview.md から) ---
+  let claudeMd = fs.readFileSync(path.join(CLAUDE_DIR, 'rules', 'aphelion-overview.md'), 'utf-8');
   let instructions = replaceCopilot(claudeMd);
   instructions = instructions.split(
-    '# CLAUDE.md — Aphelion Workflow Common Rules',
+    '# Aphelion Workflow Overview',
   ).join('# Aphelion Workflow Common Rules');
   // Claude 固有のオーケストレーターファイル参照を削除
   instructions = instructions.replace(
@@ -328,7 +328,7 @@ function replaceCodex(text) {
     'the orchestrator rules section below',
   );
   result = result.split('.claude/agents/').join('agents/');
-  result = result.split('.claude/CLAUDE.md').join('the global rules above');
+  result = result.split('.claude/rules/aphelion-overview.md').join('the global rules above');
   result = result.replace(/(?<![/.])CLAUDE\.md/g, 'global rules');
 
   return result;
@@ -351,8 +351,8 @@ function generateCodex({ clean = false } = {}) {
 
   fs.mkdirSync(codexDir, { recursive: true });
 
-  // --- AGENTS.md (CLAUDE.md + orchestrator-rules) ---
-  const claudeMd = fs.readFileSync(path.join(CLAUDE_DIR, 'CLAUDE.md'), 'utf-8');
+  // --- AGENTS.md (aphelion-overview.md + orchestrator-rules) ---
+  const claudeMd = fs.readFileSync(path.join(CLAUDE_DIR, 'rules', 'aphelion-overview.md'), 'utf-8');
   const orchRules = fs.readFileSync(
     path.join(CLAUDE_DIR, 'orchestrator-rules.md'),
     'utf-8',
@@ -362,7 +362,7 @@ function generateCodex({ clean = false } = {}) {
   const orchConv = replaceCodex(orchRules);
 
   claudeConv = claudeConv.split(
-    '# CLAUDE.md — Aphelion Workflow Common Rules',
+    '# Aphelion Workflow Overview',
   ).join('# Aphelion Workflow Rules');
   claudeConv = claudeConv.replace(
     /> \*\*For flow orchestrators:\*\*[^\n]*\n/g,

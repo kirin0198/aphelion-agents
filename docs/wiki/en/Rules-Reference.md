@@ -4,12 +4,13 @@
 > **Last updated**: 2026-04-18
 > **Audience**: Agent developers
 
-This page is a compact reference for all 9 behavioral rules in `.claude/rules/`. Each entry summarizes scope, auto-load behavior, interactions with other rules and agents, and the key constraint the rule enforces.
+This page is a compact reference for all 10 behavioral rules in `.claude/rules/`. Each entry summarizes scope, auto-load behavior, interactions with other rules and agents, and the key constraint the rule enforces.
 
 For full details, follow the **Canonical** link to the source file.
 
 ## Table of Contents
 
+- [aphelion-overview](#aphelion-overview)
 - [agent-communication-protocol](#agent-communication-protocol)
 - [build-verification-commands](#build-verification-commands)
 - [document-versioning](#document-versioning)
@@ -21,6 +22,16 @@ For full details, follow the **Canonical** link to the source file.
 - [user-questions](#user-questions)
 - [Related Pages](#related-pages)
 - [Canonical Sources](#canonical-sources)
+
+---
+
+## aphelion-overview
+
+- **Canonical**: [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md)
+- **Scope**: All agents and orchestrators; provides the top-level workflow context
+- **Auto-load**: Yes — placed in `.claude/rules/`, loaded by Claude Code on every session start
+- **Key constraint**: Defines the three-domain model (Discovery / Delivery / Operations), triage tiers, and agent directory location. All agents operate within this framework.
+- **Interactions**: Referenced by all flow orchestrators and agents as the authoritative workflow model
 
 ---
 
@@ -125,6 +136,6 @@ For full details, follow the **Canonical** link to the source file.
 
 ## Canonical Sources
 
-- [.claude/rules/](../../.claude/rules/) — All 9 rule files (authoritative source)
-- [.claude/CLAUDE.md](../../.claude/CLAUDE.md) — Workflow overview that references these rules
+- [.claude/rules/](../../.claude/rules/) — All 10 rule files (authoritative source)
+- [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md) — Workflow overview (now part of the rules collection)
 - [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — Orchestrator behavior that depends on agent-communication-protocol

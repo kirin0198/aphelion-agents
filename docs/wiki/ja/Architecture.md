@@ -29,7 +29,7 @@
 
 Aphelionはソフトウェア開発ライフサイクルを3つの独立したドメインに分割します：
 
-<!-- source: .claude/CLAUDE.md -->
+<!-- source: .claude/rules/aphelion-overview.md -->
 ```mermaid
 flowchart LR
     DR["DISCOVERY_RESULT.md"]
@@ -440,6 +440,6 @@ flowchart TB
 
 ## 正規ソース
 
-- [.claude/CLAUDE.md](../../.claude/CLAUDE.md) — ワークフローモデルと設計原則
+- [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md) — ワークフローモデルと設計原則（自動ロード）
 - [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — トリアージ、ハンドオフスキーマ、承認ゲート、差し戻しルール
 - [.claude/rules/agent-communication-protocol.md](../../.claude/rules/agent-communication-protocol.md) — AGENT_RESULT形式とSTATUSの定義

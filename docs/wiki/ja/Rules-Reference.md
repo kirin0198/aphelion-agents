@@ -5,12 +5,13 @@
 > **EN canonical**: 2026-04-18 of wiki/en/Rules-Reference.md
 > **Audience**: エージェント開発者
 
-このページは`.claude/rules/`にある9つの行動ルールのコンパクトなリファレンスです。各エントリはスコープ、自動ロードの動作、他ルール・エージェントとのインタラクション、ルールが強制する主要な制約をまとめています。
+このページは`.claude/rules/`にある10の行動ルールのコンパクトなリファレンスです。各エントリはスコープ、自動ロードの動作、他ルール・エージェントとのインタラクション、ルールが強制する主要な制約をまとめています。
 
 詳細については、**正規**リンクからソースファイルを参照してください。
 
 ## 目次
 
+- [aphelion-overview](#aphelion-overview)
 - [agent-communication-protocol](#agent-communication-protocol)
 - [build-verification-commands](#build-verification-commands)
 - [document-versioning](#document-versioning)
@@ -22,6 +23,16 @@
 - [user-questions](#user-questions)
 - [関連ページ](#関連ページ)
 - [正規ソース](#正規ソース)
+
+---
+
+## aphelion-overview
+
+- **正規**: [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md)
+- **スコープ**: 全エージェントとオーケストレーター；トップレベルのワークフローコンテキストを提供
+- **自動ロードの動作**: `.claude/rules/`に配置され、Claude Codeが全セッション起動時に自動ロード
+- **概要**: 3ドメインモデル（Discovery / Delivery / Operations）、トリアージ階層、エージェントディレクトリの場所を定義します。全エージェントはこのフレームワーク内で動作します。
+- **インタラクション**: 全フローオーケストレーターとエージェントが権威あるワークフローモデルとして参照
 
 ---
 
@@ -126,6 +137,6 @@
 
 ## 正規ソース
 
-- [.claude/rules/](../../.claude/rules/) — 9つのルールファイル全体（権威あるソース）
-- [.claude/CLAUDE.md](../../.claude/CLAUDE.md) — これらのルールを参照するワークフロー概要
+- [.claude/rules/](../../.claude/rules/) — 10のルールファイル全体（権威あるソース）
+- [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md) — ワークフロー概要（rules コレクションの一部に統合）
 - [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — agent-communication-protocolに依存するオーケストレーターの動作
