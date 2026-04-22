@@ -15,7 +15,7 @@
 - [x] TASK-002: scripts/generate.mjs のパス参照更新 | 対象ファイル: scripts/generate.mjs
 
 ### Phase 3
-- [ ] TASK-003: rules-designer 挙動変更 | 対象ファイル: .claude/agents/rules-designer.md
+- [x] TASK-003: rules-designer 挙動変更 | 対象ファイル: .claude/agents/rules-designer.md
 
 ### Phase 4
 - [ ] TASK-004: README / wiki / DESIGN.md ドキュメント更新 | 対象ファイル: README.md, README.ja.md, docs/wiki/**
