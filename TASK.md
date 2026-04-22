@@ -21,7 +21,7 @@
 - [x] TASK-004: README / wiki / DESIGN.md ドキュメント更新 | 対象ファイル: README.md, README.ja.md, docs/wiki/**
 
 ### Phase 5
-- [ ] TASK-005: platforms 再生成 | 対象ファイル: platforms/copilot/**, platforms/codex/**
+- [x] TASK-005: platforms 再生成 | 対象ファイル: platforms/copilot/**, platforms/codex/**
 
 ### Phase 6
 - [ ] TASK-006: CHANGELOG.md に Unreleased エントリ追加 | 対象ファイル: CHANGELOG.md
