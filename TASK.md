@@ -4,7 +4,7 @@
 
 ## フェーズ: refactor/consolidate-rules-no-claude-md
 最終更新: 2026-04-23
-ステータス: 進行中
+ステータス: 完了
 
 ## タスク一覧
 
@@ -27,7 +27,9 @@
 - [x] TASK-006: CHANGELOG.md に Unreleased エントリ追加 | 対象ファイル: CHANGELOG.md
 
 ## 直近のコミット
-（タスク完了のたびに git log --oneline -3 を記録する）
+2e3181a docs: add unreleased CHANGELOG entry for consolidation (TASK-006)
+f17e448 chore: regenerate platform files (TASK-005)
+387621f docs: update README and wiki for rules consolidation (TASK-004)
 
 ## 中断時のメモ
 （セッション中断時に状況をここに記録する）
