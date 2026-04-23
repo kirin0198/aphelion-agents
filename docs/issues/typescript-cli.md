@@ -1,177 +1,290 @@
-# Phase 1: TypeScript + CLI — publish `aphelion-agents` on npm
+# Phase 1 再策定: `npx github:...` + zero-deps `.mjs` による最小配布
 
-> 最終更新: 2026-04-19
+> 最終更新: 2026-04-23
 > 更新履歴:
->   - 2026-04-19: 初版作成 (Phase 1 スコープ確定)
+>   - 2026-04-19: 初版作成 (旧方針: npm publish + TypeScript CLI)
+>   - 2026-04-23: **npm publish 廃止、`npx github:...` + zero-deps `.mjs` に方針転換**。旧 Phase 1 実装 (TypeScript/tsup/cac/@clack/prompts/picocolors/vitest/biome) は全撤去。`init` / `update` の 2 コマンド体制を明文化。
 
-## ユーザー要件
+---
 
-Aphelion の配布経路として npm レジストリ経由の導入を追加したい。
-現状はユーザーが `cp -r` または `git clone` で `.claude/` などを取り込んでいるが、
-`npx aphelion-agents init` の 1 コマンドで導入できるようにする。
+## ユーザー要件 (再確認)
+
+本 PR の目的は **2 つだけ** である。
+
+1. **リポジトリに更新があった際の簡略化** — メンテナ側の更新反映が `git push` のみで完結すること
+2. **プロジェクト / ユーザーディレクトリへの配置簡略化** — 利用者が 1 コマンドで `.claude/` を配置・更新できること
+
+この 2 点を満たせば良く、それ以外 (npm registry への掲載、対話 UI、プラットフォーム切替、バージョンピン等) は**スコープ外**とする。
 
 ## Issue 分類
 
-**Feature Addition (機能追加)** — 新しい配布経路と CLI を追加する。
-既存の配布方法 (cp -r / git clone) は維持する (破壊的変更なし)。
+**Refactoring (方針転換)** — 既に PR `feat/typescript-cli` ブランチ上に実装済みの Phase 1 を**破棄・再策定**する。機能目的は不変だが、実装構成を大幅に簡素化する。
 
-## 4 解釈比較 (analyst 前回議論の要約)
+---
 
-| 解釈 | 内容 | 採否 |
-|------|------|------|
-| A | CLI 導入 + 既存スクリプトも同時に TS 化 | 不採用 (スコープ過大) |
-| B | CLI のみ導入、既存 `.mjs` はそのまま | Phase 1 に近いが update コマンド不足 |
-| **C** | **段階リリース: Phase 1 = CLI (init/update) のみ、Phase 2 で scripts 統合・CI・拡張** | **採用** |
-| D | テンプレートリポジトリ方式 (degit) への切替 | 不採用 (既存 UX 保持できない) |
+## 旧方針 (参考 / 却下): 4 解釈比較
 
-## 決定事項 (承認済み)
+> 以下は 2026-04-19 時点の analyst セッションで検討した解釈。判断経緯として残す。
 
-- **スコープ**: 解釈 C — 段階リリース。Phase 1 を本 issue で実装、Phase 2 は別 issue。
-- **Phase 1 CLI コマンド**: `init` + `update` (+ `--version` / `--help`)。
-- **既存 UX 保持**: `cp -r` / `git clone` 手順は削除せず、README に npx 手順を追記のみ。
-- **CI 自動 publish はしない** (Phase 1 は手動 `npm publish`)。
-- **パッケージ名**: `aphelion-agents` (無スコープ、npm registry で空き確認済)。
-- **言語**: TypeScript (strict)。
-- **Node 要件**: Node 20+。
+| 解釈 | 内容 | 旧判定 | 2026-04-23 時点の評価 |
+|------|------|--------|-----------------------|
+| A | CLI 導入 + 既存スクリプトも同時に TS 化 | 不採用 (スコープ過大) | 変わらず不採用 |
+| B | CLI のみ導入、既存 `.mjs` はそのまま | 見送り (update 不足) | 方向性は近いが TS/ビルド系が過剰 |
+| **C** | **段階リリース: Phase 1 = TS CLI (init/update)、Phase 2 で統合** | **旧採用** | **撤回**。npm publish・TS・対話 UI いずれも目的に対し過剰 |
+| D | テンプレートリポジトリ方式 (degit) | 不採用 | 変わらず不採用 (UX 保持困難) |
 
-## Phase 1 実装計画
+### 旧方針 C が破棄された理由
 
-### ディレクトリ構造 (新規追加分)
+- **目的 1 (更新の簡略化) に反する**: `npm publish` はメンテナに「push + version bump + publish」の二重作業を強いる。Phase 1 では CI 自動化も無いため、手作業負担が増える。
+- **目的 2 (配置簡略化) に対し過剰**: 対話 UI・プラットフォーム切替 (`--platform copilot/codex/all`) は「`.claude/` を置くだけ」という要件に対して機能過多。
+- **ビルドチェーンが目的に見合わない**: `tsup` / `typescript` / `vitest` / `biome` / `cac` / `@clack/prompts` / `picocolors` の 7 依存は、実質的には「ファイルを `fs.cp` でコピーするだけ」の処理量に対し過大。
+- **バージョンピン要件が無い**: 利用者側から「特定バージョンに固定したい」という要求は出ていない。必要になれば `npx github:kirin0198/aphelion-agents#vX.Y.Z` で対応可能。
 
-```
-aphelion-agents/
-├── src/
-│   ├── cli.ts                  # エントリーポイント (shebang, cac ルーティング)
-│   ├── commands/
-│   │   ├── init.ts             # init コマンド
-│   │   └── update.ts           # update コマンド
-│   └── lib/
-│       ├── copy.ts             # ファイルコピー / 上書き判断
-│       └── sources.ts          # パッケージ内ソースパス解決
-├── tsconfig.json               # strict, Node 20, ESM
-├── tsup.config.ts              # ESM + CJS + shebang
-├── biome.json                  # lint + format
-├── vitest.config.ts            # test 設定
-└── CHANGELOG.md                # 0.1.0 初回エントリ
-```
+---
 
-既存 `scripts/*.mjs` には手を入れない (Phase 2)。
+## 新方針 (Phase 1 再策定 / 承認済み)
 
-### CLI コマンド仕様
+### 配布方式
+
+- **`npx github:kirin0198/aphelion-agents <command>`** を唯一の公式導入経路とする
+- **npm registry への publish は行わない** (`package.json` は `private: true`)
+- 更新反映は **`git push` のみ** で完結 (メンテナ側の二重作業ゼロ)
+- 利用者は常に `main` ブランチの最新を取得。バージョンピンが必要な場合のみ `#vX.Y.Z` 形式で tag 参照 (これは npm の仕組みではなく npx → GitHub の標準挙動)
+
+### CLI 実装構成
+
+- **zero-dependency の `.mjs` 単一ファイル** (`bin/aphelion-agents.mjs`)
+- 使用モジュールは **Node 標準ライブラリのみ**
+  - `node:fs/promises` (`cp`, `access`, `readdir` 等)
+  - `node:path`
+  - `node:os` (`homedir`)
+  - `node:url` (`fileURLToPath`)
+- 引数パースは `process.argv` を直接処理 (サードパーティ CLI フレームワーク不使用)
+- **対話 UI なし**、**プラットフォーム切替なし**、**カラー出力ライブラリなし** (必要なら ANSI エスケープを直書き)
+- TypeScript / tsup / biome / vitest / cac / @clack/prompts / picocolors は **全て削除**
+
+### コマンド仕様
 
 | Command | 動作 |
 |---------|------|
-| `npx aphelion-agents init` | カレントディレクトリに `.claude/` をコピー。既存があれば確認プロンプト。 |
-| `npx aphelion-agents init --platform copilot` | `.github/` に Copilot 用ファイルをコピー |
-| `npx aphelion-agents init --platform codex` | `AGENTS.md` + `skills/` をコピー |
-| `npx aphelion-agents init --all` | 3 プラットフォーム同時 |
-| `npx aphelion-agents update` | インストール済みファイルを最新に更新 (diff 表示・確認後に上書き) |
-| `npx aphelion-agents --version` / `--help` | 標準 |
+| `npx github:kirin0198/aphelion-agents init` | カレントディレクトリに `.claude/` を新規配置。既にあればエラー終了 (`--force` で上書き許可) |
+| `npx github:kirin0198/aphelion-agents init --user` | `~/.claude/` (ユーザーディレクトリ) に新規配置 |
+| `npx github:kirin0198/aphelion-agents update` | カレントディレクトリの既存 `.claude/` を最新に更新。`settings.local.json` は既存があれば保護 (上書きしない) |
+| `npx github:kirin0198/aphelion-agents update --user` | `~/.claude/` を同様に更新 |
+| `npx github:kirin0198/aphelion-agents --version` | バージョン番号を表示 |
+| `npx github:kirin0198/aphelion-agents --help` | 使用法を表示 |
 
-### package.json 変更一覧
+> **`init` と `update` は別コマンド**であることをユーザーが明示的に要求している (初回配置と以降の更新で意味が異なるため、コマンド分離で意図を明確化)。
 
-- `private: true` を削除
-- `bin`: `{ "aphelion-agents": "./dist/cli.js" }`
-- `files`: `["dist", ".claude", "platforms"]`
-- `engines`: `{ "node": ">=20" }`
-- `version`: `0.1.0`
-- `type`: `module`
-- scripts 追加: `build` (tsup), `test` (vitest), `lint` (biome check), `format` (biome format)
+### 配置先の解決ロジック
 
-### 依存追加
+- **デフォルト**: `process.cwd()/.claude/`
+- **`--user` 指定時**: `os.homedir()/.claude/`
 
-**dependencies**
-- `cac` — 軽量 CLI フレームワーク
-- `@clack/prompts` — 対話 UI
-- `picocolors` — ANSI カラー
+### 保護ファイル
 
-**devDependencies**
-- `typescript`
-- `tsup`
-- `vitest`
-- `@biomejs/biome`
-- `@types/node`
+- `update` 実行時、ターゲット側に `.claude/settings.local.json` が既に存在すればそのファイルのみコピーをスキップする (ユーザーローカル設定の保護)
+- `init` ではそもそもターゲット側が存在しない前提 (存在すればエラー or `--force`)
 
-すべて採用基準 (メンテ状態・採用実績・ライセンス MIT) を満たすことを前提とする。
+### 前提条件
 
-### テスト戦略
+- **Node 20+** (Claude Code 利用者なら既に Node 入っている想定)
+- **対象 OS**: macOS / Linux (Windows は現時点で対象外だが、将来対応する可能性があるため実装は `node:path` を使い OS 非依存に書いておくこと)
 
-- `src/lib/copy.ts`: コピー先が存在する場合の分岐、保護ファイル (`.claude/settings.local.json`) のスキップ挙動をユニットテスト。`fs/promises` はモックまたは `os.tmpdir()` 下で実ファイル操作。
-- `src/lib/sources.ts`: パッケージルート解決ロジックをユニットテスト。
-- `src/commands/*`: 対話プロンプトをモック化し、オプション分岐を検証。
-- CI でのテスト自動化は Phase 2。本 Phase 1 ではローカル `npm test` で通過すれば良い。
+### 配布対象
 
-### publish 手順 (ユーザー向けドキュメント)
+- **`.claude/` のみ** (現 PR の `platforms/` (Copilot / Codex 用) は今回スコープ外)
+- プラットフォーム切替機能が必要になったら別 issue で追加する
 
-Phase 1 では手動 publish。`CONTRIBUTING.md` もしくは `CHANGELOG.md` に以下を明記する。
+---
 
-1. `npm login`
-2. `npm run build`
-3. `npm run test`
-4. `npm pack` で同梱ファイルを確認
-5. `npm publish` (初回は `--access public`)
-6. `git tag v0.1.0 && git push --tags`
+## 旧 PR からの差分 (developer 向け実装計画)
 
-### ドキュメント更新 (今 Phase)
+### 削除対象ファイル
 
-- `README.md` / `README.ja.md` の Getting Started 節に `npx aphelion-agents init` 手順を追加 (既存 cp -r / git clone も残す、bilingual)。
-- `docs/wiki/{en,ja}/Getting-Started.md` にも同様の追記。
+```
+tsconfig.json
+tsup.config.ts
+biome.json
+vitest.config.ts
+src/cli.ts
+src/commands/init.ts
+src/commands/update.ts
+src/lib/copy.ts
+src/lib/copy.test.ts
+src/lib/sources.ts
+src/lib/sources.test.ts
+package-lock.json           # zero-deps のため不要
+dist/                       # ビルド成果物。併せて .gitignore からも dist/ を削除
+```
 
-## Phase 2 スコープ (別 issue で扱う)
+`src/` ディレクトリが空になるなら `src/` 自体も削除する。
 
-- `scripts/generate.mjs` / `scripts/sync-wiki.mjs` の TypeScript 統合
-- GitHub Actions による CI (test, lint, publish 自動化)
-- `npm publish` の GitHub Release 連動
-- `aphelion-agents doctor` など追加サブコマンド
-- テンプレート以外 (例: `aphelion-agents upgrade --to <version>`)
+### 追加対象ファイル
 
-## 制約とスコープ外 (Phase 1)
+```
+bin/aphelion-agents.mjs     # ~30〜50 行、zero-deps、shebang 付き、実行権限 0755
+```
 
-- **コード実装は developer の担当**: 本 issue 作成時点では実装を行わない。
-- **`scripts/*.mjs` の書き換え禁止** (Phase 2)。
-- **スコープ付きパッケージ名 (`@kirin0198/...`) は採用しない**。
-- **npm publish を自動で走らせない** (ユーザーが手動)。
-- **LICENSE**: リポジトリルートに LICENSE ファイルが存在しない。developer は `package.json` の `license` フィールド確認と、必要に応じたルート LICENSE 追加の要否をユーザーに確認すること (採用済ライセンスが不明な場合は作業保留)。
+ファイル構造イメージ:
 
-## 受入条件 (Phase 1 完了定義)
+```
+aphelion-agents/
+├── bin/
+│   └── aphelion-agents.mjs   # 新規 (shebang: #!/usr/bin/env node)
+├── .claude/                   # 配布元 (変更なし)
+├── platforms/                 # (変更なし、今回スコープ外)
+├── scripts/                   # (変更なし)
+├── docs/                      # (変更なし)
+├── package.json               # 大幅簡素化
+├── README.md                  # npx 節を新方針に書き換え
+├── README.ja.md               # 同上
+├── CHANGELOG.md               # 0.1.0 エントリを新方針に書き換え
+├── LICENSE                    # (変更なし)
+└── TASK.md                    # 新フェーズ向けテンプレートにリセット
+```
 
-- `npm run build` でエラーなくバンドル生成される
-- `npm run test` でユニットテスト通過
-- `node dist/cli.js --help` で help が表示される
-- `node dist/cli.js init` を temp dir で実行すると `.claude/` がコピーされる
-- `README.md` / `README.ja.md` / wiki Getting-Started に npx 手順が追記されている
-- `CHANGELOG.md` に `0.1.0` エントリがある
+### 修正対象ファイル
+
+#### `package.json`
+
+- **保持**: `name`, `version`, `description`, `license`, `author`, `repository`, `homepage`
+- **変更**: `bin` を `{ "aphelion-agents": "./bin/aphelion-agents.mjs" }` に変更
+- **変更**: `files` を `["bin", ".claude"]` に簡素化 (publish しないので厳密には不要だが、`npx github:` 経由でもサイズを抑える意味で残す。もしくは削除可)
+- **変更**: `engines` は `{ "node": ">=20" }` を維持
+- **追加**: `"private": true` (npm publish 禁止の意思表示)
+- **削除**: `type: "module"` → **維持** (`.mjs` 拡張子なのでなくても動くが、明示のため残しても良い)。developer 判断。
+- **削除**: `dependencies` フィールド全体
+- **削除**: `devDependencies` フィールド全体
+- **削除**: `scripts` のうち `build`, `test`, `lint`, `format`, `prepublishOnly`
+- **保持**: `scripts` の `generate` (`node scripts/generate.mjs`), `sync-wiki` (`node scripts/sync-wiki.mjs`) — 既存スクリプトは別領域のため維持
+
+#### `README.md` / `README.ja.md`
+
+- 「Install via npx (recommended)」セクションを新コマンド形式に書き換え:
+  ```bash
+  # Initial install (into current project)
+  npx github:kirin0198/aphelion-agents init
+
+  # Install into user home (~/.claude/)
+  npx github:kirin0198/aphelion-agents init --user
+
+  # Update to latest
+  npx github:kirin0198/aphelion-agents update
+  npx github:kirin0198/aphelion-agents update --user
+  ```
+- `--platform copilot` / `--platform codex` / `--all` の記述を**削除** (機能自体が無い)
+- 「既存の `cp -r` / `git clone` 手順」節は**維持** (破壊的変更を避けるため)
+
+#### `docs/wiki/en/Getting-Started.md` / `docs/wiki/ja/Getting-Started.md`
+
+README と同様に npx 節を新方針に合わせて書き換え。
+
+#### `CHANGELOG.md`
+
+- `## 0.1.0 - 2026-04-20` エントリを**新方針に沿って書き換え**:
+  - TypeScript / tsup / cac / @clack/prompts / picocolors / vitest / biome の記述を削除
+  - 「zero-dependency `.mjs` CLI via `npx github:...`」と明記
+  - `init` / `update` (+ `--user`) の 2 コマンド構成を明記
+  - 「Publish」節 (npm login → publish 手順) を削除し、「Distribution: GitHub main branch via `npx github:...`」と明記
+- 日付は developer が commit する日に合わせて更新してよい
+
+#### `TASK.md`
+
+- 既存の Phase 1 タスクは全て完了状態だが、方針転換により**実質無効**
+- 新フェーズ向けにテンプレートにリセット (空のチェックリストに戻す)
+- `参照元: docs/issues/typescript-cli.md (2026-04-23)` に更新
+
+#### `.gitignore`
+
+- `dist/` エントリを削除 (もう生成しないため) — developer が確認
+
+### 維持対象 (変更禁止)
+
+- `.claude/` 配下 (配布元として保護)
+- `LICENSE`
+- `platforms/` (今回スコープ外)
+- `scripts/generate.mjs` / `scripts/sync-wiki.mjs`
+
+---
+
+## 受入条件 (Phase 1 再策定版 完了定義)
+
+- [ ] `bin/aphelion-agents.mjs` が存在し、shebang + 実行権限 (0755) が設定されている
+- [ ] `node bin/aphelion-agents.mjs --help` で使用法が表示される
+- [ ] `node bin/aphelion-agents.mjs --version` で `package.json` の `version` が表示される
+- [ ] temp dir で `node bin/aphelion-agents.mjs init` を実行すると、カレントディレクトリに `.claude/` がコピーされる
+- [ ] 既に `.claude/` が存在する状態で `init` を実行するとエラー終了する
+- [ ] `node bin/aphelion-agents.mjs update` を既存 `.claude/` があるディレクトリで実行すると更新される
+- [ ] `update` 時に既存の `.claude/settings.local.json` が上書きされない (保護される)
+- [ ] `--user` フラグでターゲットが `~/.claude/` に切り替わる (検証は temp HOME で可)
+- [ ] `package.json` の `dependencies` / `devDependencies` が空 (or 存在しない)
+- [ ] `package.json` に `private: true` が設定されている
+- [ ] 旧 TS 実装ファイル (`src/`, `tsconfig.json`, `tsup.config.ts`, `biome.json`, `vitest.config.ts`) が全て削除されている
+- [ ] `package-lock.json` が削除されている
+- [ ] `README.md` / `README.ja.md` / `docs/wiki/{en,ja}/Getting-Started.md` が新コマンド形式に更新されている
+- [ ] `CHANGELOG.md` の 0.1.0 エントリが新方針に沿って書き換えられている
+- [ ] `TASK.md` がテンプレート状態にリセットされている
 
 ## developer 向けブリーフ
 
-### 新規作成ファイル
-- `src/cli.ts`, `src/commands/init.ts`, `src/commands/update.ts`
-- `src/lib/copy.ts`, `src/lib/sources.ts`
-- `tsconfig.json`, `tsup.config.ts`, `biome.json`, `vitest.config.ts`
-- `CHANGELOG.md` (`## 0.1.0 - 2026-04-20` エントリ)
-
 ### 実装指針
 
-**`init` コマンドフロー**
-1. カレントディレクトリを解決
-2. `--platform` / `--all` / default (claude-code) を判別
-3. 既存 `.claude/` が存在する場合は `@clack/prompts` で「上書き / スキップ / マージ (デフォルト上書き)」を確認
-4. パッケージ内の `.claude/` から `fs/promises.cp(..., { recursive: true })` でコピー
-5. 完了メッセージ (picocolors で色付け)
+**`bin/aphelion-agents.mjs` 構造 (概念)**
 
-**`update` コマンドフロー**
-1. 既存 `.claude/` 検出 (なければエラー)
-2. パッケージ内との diff を file list で表示
-3. `@clack/prompts` で確認
-4. `.claude/` 配下のみ上書き。`.claude/settings.local.json` は保護。
+```js
+#!/usr/bin/env node
+import { cp, access, constants } from "node:fs/promises";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { homedir } from "node:os";
+
+// 1. argv パース: command (init|update), flags (--user, --force, --version, --help)
+// 2. ソースパス解決: fileURLToPath(import.meta.url) → パッケージルート → .claude/
+// 3. ターゲット解決: --user ? homedir()/.claude : cwd()/.claude
+// 4. init: ターゲット存在チェック → 無ければ cp(recursive) / あれば --force 必須
+// 5. update: ターゲット存在必須 → settings.local.json だけ退避 → cp(recursive, force:true) → 退避を戻す
+// 6. エラーメッセージは日本語 (language-rules 準拠)
+```
 
 **エラーハンドリング**
-- try/catch を徹底し、ユーザー向けメッセージは日本語 (rules準拠)。
-- Node バージョンチェック: `process.versions.node` で 20 未満なら即 exit + 説明。
 
-### 実装しないこと
+- Node バージョンチェック: `process.versions.node` の major を数値化し、20 未満なら日本語で説明メッセージを出して `process.exit(1)`
+- `try/catch` を徹底。`ENOENT` / `EEXIST` 等は個別にユーザーフレンドリーなメッセージに変換
+- 未知の command / flag は `--help` を案内して exit code 1
 
-- 既存 `scripts/generate.mjs` / `scripts/sync-wiki.mjs` の書き換え
-- GitHub Actions CI 設定
-- スコープ付きパッケージ名への変更
-- `npm publish` 自体 (ユーザーが手動で `npm login && npm publish` を実行)
+**`settings.local.json` 保護の実装パターン**
+
+Option A (推奨): `cp` の `filter` オプションで `settings.local.json` だけコピー対象から除外 (ターゲットに既存の場合のみ)
+Option B: 事前に退避 → `cp` → 退避を戻す (より明示的だが I/O 多め)
+
+どちらでも良いが、developer は選んだ方針を CHANGELOG または実装コメントに簡潔に記録すること。
+
+### 実装しないこと (再確認)
+
+- TypeScript 化、ビルドチェーンの再導入
+- 対話プロンプト (`@clack/prompts` 等)
+- プラットフォーム切替 (`--platform copilot/codex/all`)
+- `platforms/` のコピー機能
+- `npm publish` 手順ドキュメント
+- GitHub Actions CI
+- バージョンピン UI (`--version-pin` 等)
+- `scripts/generate.mjs` / `scripts/sync-wiki.mjs` の書き換え
+
+---
+
+## Phase 2 以降 (別 issue で扱う候補)
+
+- `scripts/generate.mjs` / `scripts/sync-wiki.mjs` の統合
+- プラットフォーム切替 (`--platform` オプション) の再導入、`platforms/` の配布
+- `aphelion-agents doctor` 等の診断サブコマンド
+- GitHub Actions による smoke test (PR ごとに `node bin/aphelion-agents.mjs --help` が動くか等)
+- Windows サポート (path 区切り・shebang・実行権限の扱い確認)
+
+## 制約とスコープ外 (再策定版 Phase 1)
+
+- **コード実装は developer の担当**: 本 issue 更新時点では実装を行わない
+- **既存 commit は触らない**: developer が旧実装削除 + 新実装追加をまとめてコミットする
+- **`.claude/` 配下への変更禁止** (配布元として保護)
+- **`platforms/` への変更禁止** (今回スコープ外)
+- **npm publish に関する手順・ドキュメントは残さない** (混乱回避のため完全に除去する)
