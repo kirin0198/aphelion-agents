@@ -18,7 +18,7 @@
 - [x] TASK-005: zero-deps mjs CLI 追加 (init/update + --user フラグ) | 対象ファイル: bin/aphelion-agents.mjs
 
 ### Phase 3: ドキュメント修正
-- [ ] TASK-006: README / wiki / CHANGELOG を新コマンド形式に更新 | 対象ファイル: README.md, README.ja.md, docs/wiki/en/Getting-Started.md, docs/wiki/ja/Getting-Started.md, CHANGELOG.md
+- [x] TASK-006: README / wiki / CHANGELOG を新コマンド形式に更新 | 対象ファイル: README.md, README.ja.md, docs/wiki/en/Getting-Started.md, docs/wiki/ja/Getting-Started.md, CHANGELOG.md
 - [ ] TASK-007: TASK.md リセット + .gitignore 調整 | 対象ファイル: TASK.md, .gitignore
 
 ## 直近のコミット

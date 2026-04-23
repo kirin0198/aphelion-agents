@@ -28,7 +28,7 @@ This page covers everything you need to start using Aphelion: platform-specific 
 | GitHub Copilot | GitHub Copilot extension in VS Code, JetBrains, or Neovim |
 | OpenAI Codex | Access to OpenAI Codex environment |
 
-You can install Aphelion via `npx aphelion-agents init` (no clone required), or clone the repository manually:
+You can install Aphelion via `npx github:kirin0198/aphelion-agents init` (no clone required), or clone the repository manually:
 
 ```bash
 git clone https://github.com/kirin0198/aphelion-agents.git
@@ -43,20 +43,15 @@ git clone https://github.com/kirin0198/aphelion-agents.git
 The fastest way to get started — no cloning required:
 
 ```bash
-# Claude Code (default)
-npx aphelion-agents init
+# Initial install (into current project)
+npx github:kirin0198/aphelion-agents init
 
-# GitHub Copilot
-npx aphelion-agents init --platform copilot
+# Install into user home (~/.claude/)
+npx github:kirin0198/aphelion-agents init --user
 
-# OpenAI Codex
-npx aphelion-agents init --platform codex
-
-# All platforms at once
-npx aphelion-agents init --all
-
-# Update existing installation
-npx aphelion-agents update
+# Update to latest
+npx github:kirin0198/aphelion-agents update
+npx github:kirin0198/aphelion-agents update --user
 ```
 
 ### Install via git clone (alternative)
