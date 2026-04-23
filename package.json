@@ -1,7 +1,23 @@
 {
   "name": "aphelion-agents",
+  "version": "0.1.0",
+  "description": "AI coding agent definitions for Claude Code, GitHub Copilot, and OpenAI Codex",
+  "license": "MIT",
+  "author": "kirin0198",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kirin0198/aphelion-agents.git"
+  },
+  "homepage": "https://aphelion-agents.pages.dev/",
   "private": true,
   "type": "module",
+  "bin": {
+    "aphelion-agents": "./bin/aphelion-agents.mjs"
+  },
+  "files": ["bin", ".claude"],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "generate": "node scripts/generate.mjs",
     "sync-wiki": "node scripts/sync-wiki.mjs"

@@ -51,7 +51,23 @@ AI coding agents are powerful, but a single agent session struggles with full pr
 
 ## Getting Started
 
-### Quick Start
+### Install via npx (recommended)
+
+```bash
+# Initial install (into current project)
+npx github:kirin0198/aphelion-agents init
+
+# Install into user home (~/.claude/)
+npx github:kirin0198/aphelion-agents init --user
+
+# Update to latest
+npx github:kirin0198/aphelion-agents update
+npx github:kirin0198/aphelion-agents update --user
+```
+
+### Install via git clone (alternative)
+
+Clone the repository and copy the files manually:
 
 **Claude Code:**
 

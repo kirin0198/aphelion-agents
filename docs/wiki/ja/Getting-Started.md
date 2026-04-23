@@ -29,7 +29,7 @@
 | GitHub Copilot | VS Code、JetBrains、またはNeovimのGitHub Copilot拡張機能 |
 | OpenAI Codex | OpenAI Codex環境へのアクセス |
 
-すべてのプラットフォームでAphelionリポジトリへのアクセスが必要です。まずクローンしてください：
+`npx github:kirin0198/aphelion-agents init` でインストールすることもできます（クローン不要）。または、リポジトリを手動でクローンする方法もあります：
 
 ```bash
 git clone https://github.com/kirin0198/aphelion-agents.git
@@ -38,6 +38,26 @@ git clone https://github.com/kirin0198/aphelion-agents.git
 ---
 
 ## プラットフォーム別クイックスタート
+
+### npx でインストール（推奨）
+
+クローン不要で最も手早く始められる方法です：
+
+```bash
+# プロジェクトに初回配置
+npx github:kirin0198/aphelion-agents init
+
+# ユーザーホーム (~/.claude/) に配置
+npx github:kirin0198/aphelion-agents init --user
+
+# 最新版に更新
+npx github:kirin0198/aphelion-agents update
+npx github:kirin0198/aphelion-agents update --user
+```
+
+### git clone でインストール（代替手順）
+
+リポジトリをクローンしてから手動でファイルをコピーする方法：
 
 ### Claude Code（正規ソース）
 
