@@ -1,9 +1,10 @@
 # Phase 1 再策定: `npx github:...` + zero-deps `.mjs` による最小配布
 
-> 最終更新: 2026-04-23
+> 最終更新: 2026-04-24
 > 更新履歴:
 >   - 2026-04-19: 初版作成 (旧方針: npm publish + TypeScript CLI)
 >   - 2026-04-23: **npm publish 廃止、`npx github:...` + zero-deps `.mjs` に方針転換**。旧 Phase 1 実装 (TypeScript/tsup/cac/@clack/prompts/picocolors/vitest/biome) は全撤去。`init` / `update` の 2 コマンド体制を明文化。
+>   - 2026-04-24: Phase 2 以降の候補セクションを削除 (必要になったタイミングで別 issue として改めて起票)。
 
 ---
 
@@ -272,14 +273,6 @@ Option B: 事前に退避 → `cp` → 退避を戻す (より明示的だが I/
 - `scripts/generate.mjs` / `scripts/sync-wiki.mjs` の書き換え
 
 ---
-
-## Phase 2 以降 (別 issue で扱う候補)
-
-- `scripts/generate.mjs` / `scripts/sync-wiki.mjs` の統合
-- プラットフォーム切替 (`--platform` オプション) の再導入、`platforms/` の配布
-- `aphelion-agents doctor` 等の診断サブコマンド
-- GitHub Actions による smoke test (PR ごとに `node bin/aphelion-agents.mjs --help` が動くか等)
-- Windows サポート (path 区切り・shebang・実行権限の扱い確認)
 
 ## 制約とスコープ外 (再策定版 Phase 1)
 
