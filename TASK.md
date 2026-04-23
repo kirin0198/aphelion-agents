@@ -15,14 +15,16 @@
 
 ### Phase 2: 追加
 - [x] TASK-004: package.json を npx github: 配布向けに簡素化 | 対象ファイル: package.json
-- [ ] TASK-005: zero-deps mjs CLI 追加 (init/update + --user フラグ) | 対象ファイル: bin/aphelion-agents.mjs
+- [x] TASK-005: zero-deps mjs CLI 追加 (init/update + --user フラグ) | 対象ファイル: bin/aphelion-agents.mjs
 
 ### Phase 3: ドキュメント修正
 - [ ] TASK-006: README / wiki / CHANGELOG を新コマンド形式に更新 | 対象ファイル: README.md, README.ja.md, docs/wiki/en/Getting-Started.md, docs/wiki/ja/Getting-Started.md, CHANGELOG.md
 - [ ] TASK-007: TASK.md リセット + .gitignore 調整 | 対象ファイル: TASK.md, .gitignore
 
 ## 直近のコミット
-（タスク完了のたびに git log --oneline -3 を記録する）
+8a1c259 chore: simplify package.json for npx github distribution (TASK-004)
+dc9b75c chore: remove package-lock.json (zero-deps) (TASK-003)
+9463040 chore: remove legacy TypeScript CLI sources (TASK-002)
 
 ## 中断時のメモ
 （セッション中断時に状況をここに記録する）
