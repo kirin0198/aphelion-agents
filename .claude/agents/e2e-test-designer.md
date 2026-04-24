@@ -73,26 +73,26 @@ Step 1. Map screens to use cases
   - Identify the primary user flows that span multiple screens
 
 Step 2. Derive user interaction tests
-  - For each screen's "インタラクション" table, create test cases for:
+  - For each screen's "Interactions" table, create test cases for:
     - User action triggers (click, input, navigation)
     - Expected feedback (loading states, success/error messages, toasts)
     - Form submission and server response handling
 
 Step 3. Derive validation tests
-  - For each screen's "バリデーション" table, create test cases for:
+  - For each screen's "Validation" table, create test cases for:
     - Required field enforcement
     - Format validation (email, phone, URL, etc.)
     - Error message display at the correct location
 
 Step 4. Derive state rendering tests
-  - For each screen's "状態パターン" table, create test cases for:
+  - For each screen's "State Patterns" table, create test cases for:
     - Empty state rendering (no data)
     - Loading state rendering (spinner, skeleton)
     - Error state rendering (error message, retry button)
     - Normal state rendering (data displayed correctly)
 
 Step 5. Derive navigation tests
-  - From UI_SPEC.md "画面遷移フロー", create test cases for:
+  - From UI_SPEC.md "Screen Transition Flow", create test cases for:
     - Forward navigation (link clicks, form submissions)
     - Backward navigation (browser back, breadcrumbs)
     - Deep link / direct URL access
@@ -138,75 +138,75 @@ Step 3. Document test environment requirements
 Append the following section to the existing `TEST_PLAN.md`:
 
 ```markdown
-## 7. E2E / GUI テスト設計
+## 7. E2E / GUI Test Design
 
-### E2E テスト環境
-- ツール: {Playwright / pywinauto / pyautogui}
-- ブラウザ: {Chromium, Firefox, WebKit}（Web の場合）
-- 実行モード: {headless（CI）/ headed（開発時）}
-- ベースURL: {テスト対象URL}（Web の場合）
-- 解像度: {指定解像度}（GUI の場合）
+### E2E Test Environment
+- Tool: {Playwright / pywinauto / pyautogui}
+- Browsers: {Chromium, Firefox, WebKit} (for Web)
+- Execution mode: {headless (CI) / headed (development)}
+- Base URL: {target URL} (for Web)
+- Resolution: {specified resolution} (for GUI)
 
-### E2E テスト依存パッケージ
-| パッケージ | 用途 | 備考 |
+### E2E Test Dependency Packages
+| Package | Purpose | Notes |
 |-----------|------|------|
-| {パッケージ名} | {E2Eフレームワーク等} | {バージョン指定等} |
+| {package name} | {E2E framework, etc.} | {version specification, etc.} |
 
-### E2E テストファイル構成
+### E2E Test File Structure
 ```
 tests/
-├── e2e/                     # Web E2E テスト
-│   ├── conftest.py          # 共通フィクスチャ（Python）
-│   ├── playwright.config.ts # Playwright 設定（TypeScript）
-│   ├── fixtures/            # テストデータ・ログイン状態等
+├── e2e/                     # Web E2E tests
+│   ├── conftest.py          # shared fixtures (Python)
+│   ├── playwright.config.ts # Playwright configuration (TypeScript)
+│   ├── fixtures/            # test data, login state, etc.
 │   ├── pages/               # Page Object Model
-│   │   ├── login_page.py    # ログイン画面 POM
+│   │   ├── login_page.py    # Login screen POM
 │   │   └── ...
-│   └── test_{画面名}.py     # 画面ごとのテスト
-├── gui/                     # GUI テスト（デスクトップの場合）
-│   ├── conftest.py          # アプリ起動・終了フィクスチャ
-│   ├── images/              # 画像マッチング用参照画像
-│   └── test_{操作名}.py     # 操作ごとのテスト
+│   └── test_{screen_name}.py # tests per screen
+├── gui/                     # GUI tests (for desktop)
+│   ├── conftest.py          # app launch/close fixtures
+│   ├── images/              # reference images for image matching
+│   └── test_{operation}.py  # tests per operation
 ```
 
-### E2E テストケース一覧
+### E2E Test Case List
 
-#### Web E2E テストケース
-| TC番号 | テストケース名 | 対象画面 | 操作手順 | 期待結果 | 対応UC |
+#### Web E2E Test Cases
+| TC No. | Test Case Name | Target Screen | Operation Steps | Expected Result | UC |
 |--------|-------------|---------|---------|---------|--------|
-| TC-E2E-001 | {テストケース名} | SCR-XXX | {ステップ記述} | {期待結果} | UC-XXX |
+| TC-E2E-001 | {test case name} | SCR-XXX | {step description} | {expected result} | UC-XXX |
 
-#### GUI テストケース（該当する場合）
-| TC番号 | テストケース名 | 操作対象 | 操作手順 | 期待結果 | 対応UC | 識別方式 |
+#### GUI Test Cases (if applicable)
+| TC No. | Test Case Name | Target | Operation Steps | Expected Result | UC | ID Method |
 |--------|-------------|---------|---------|---------|--------|---------|
-| TC-GUI-001 | {テストケース名} | {ウィンドウ/コントロール} | {ステップ記述} | {期待結果} | UC-XXX | {accessibility/image/coordinate} |
+| TC-GUI-001 | {test case name} | {window/control} | {step description} | {expected result} | UC-XXX | {accessibility/image/coordinate} |
 
-### Page Object Model 設計（Web E2E の場合）
+### Page Object Model Design (Web E2E)
 
-| ページクラス | 対応画面 | 主要セレクタ | 主要アクション |
+| Page Class | Target Screen | Key Selectors | Key Actions |
 |------------|---------|------------|-------------|
 | LoginPage | SCR-001 | `[data-testid=email]`, `[data-testid=password]` | `login(email, password)` |
 
-### E2E テスト実行コマンド
+### E2E Test Execution Commands
 ```bash
-# 全 E2E テスト実行
-{E2E テスト実行コマンド}
+# Run all E2E tests
+{E2E test execution command}
 
-# 特定画面のみ実行
-{特定画面のテスト実行コマンド}
+# Run specific screen only
+{specific screen test command}
 
-# デバッグモード（headed）実行
-{headed モードのコマンド}
+# Debug mode (headed) execution
+{headed mode command}
 
-# トレース付き実行（失敗時の調査用）
-{トレース有効化コマンド}
+# Execution with trace (for failure investigation)
+{trace enable command}
 ```
 
-### E2E UC-テストケース トレーサビリティマトリクス
+### E2E UC-Test Case Traceability Matrix
 
-| UC番号 | 受け入れ条件 | E2E テストケース | 対象画面 |
+| UC No. | Acceptance Criterion | E2E Test Cases | Target Screen |
 |--------|------------|---------------|---------|
-| UC-001 | {条件1} | TC-E2E-001, TC-E2E-002 | SCR-001 |
+| UC-001 | {criterion 1} | TC-E2E-001, TC-E2E-002 | SCR-001 |
 ```
 
 ---
@@ -238,23 +238,23 @@ When `tester` reports E2E test failures, perform root cause analysis:
 ### E2E Failure Analysis Report Format
 
 ```
-## E2E テスト失敗分析レポート（developer 向け）
+## E2E Test Failure Analysis Report (for developer)
 
-### 原因分類
-{テストコードバグ / テスト環境 / UI実装バグ / 仕様不備}
+### Root Cause Classification
+{test code bug / test environment / UI implementation bug / spec deficiency}
 
-### 失敗テスト: {テストケース名} (TC-E2E-XXX / TC-GUI-XXX)
-- **対応UC:** UC-XXX
-- **対象画面:** SCR-XXX
-- **テストファイル:** {パス}
-- **対象コード:** {テスト対象のファイルパス}:{行番号}
-- **操作手順の再現:** {失敗に至る操作ステップ}
-- **期待値:** {expected}
-- **実際の値:** {actual}
-- **スクリーンショット:** {失敗時のスクリーンショットパス}
-- **トレース:** {Playwright トレースファイルパス}（Web E2E の場合）
-- **原因分析:** {なぜ失敗したかの詳細分析}
-- **修正方針:** {具体的にどう修正すべきか}
+### Failed Test: {test case name} (TC-E2E-XXX / TC-GUI-XXX)
+- **Corresponding UC:** UC-XXX
+- **Target screen:** SCR-XXX
+- **Test file:** {path}
+- **Target code:** {target file path}:{line number}
+- **Operation steps to reproduce:** {operation steps that led to failure}
+- **Expected:** {expected}
+- **Actual:** {actual}
+- **Screenshot:** {path to failure screenshot}
+- **Trace:** {Playwright trace file path} (for Web E2E)
+- **Root cause analysis:** {detailed analysis of why it failed}
+- **Fix approach:** {specifically how it should be fixed}
 ```
 
 ---

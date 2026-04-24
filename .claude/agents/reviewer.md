@@ -96,67 +96,67 @@ and generate a quality report. **You do not modify code; you focus solely on pre
 ## Review Report Format
 
 ```
-## コードレビューレポート
+## Code Review Report
 
-### 対象コミット / ブランチ
-{git log --oneline -5 の出力}
+### Target Commit / Branch
+{output of git log --oneline -5}
 
-### 総合評価
-{✅ 承認 / ⚠️ 条件付き承認 / ❌ 要修正}
-
----
-
-### 🔴 CRITICAL（必須修正）
-データ損失リスク・仕様の重大な欠落・API契約違反
-
-#### [CR-001] {指摘タイトル}
-- **ファイル:** `{パス}:{行番号}`
-- **観点:** {仕様適合/設計整合/コード品質/テスト品質/API契約}
-- **問題:** {何が問題か}
-- **根拠:** SPEC.md UC-XXX / ARCHITECTURE.md セクション X
-- **修正方針:** {どう直すべきか}
+### Overall Assessment
+{✅ Approved / ⚠️ Conditionally approved / ❌ Fix required}
 
 ---
 
-### 🟡 WARNING（推奨修正）
-コード品質・保守性・テスト不足
+### 🔴 CRITICAL (must fix)
+Data loss risk / critical spec gaps / API contract violations
 
-#### [WR-001] {指摘タイトル}
-- **ファイル:** `{パス}:{行番号}`
-- **観点:** {観点}
-- **問題:** {何が問題か}
-- **修正方針:** {どう改善できるか}
-
----
-
-### 🟢 SUGGESTION（任意改善）
-より良くできる点・リファクタリング提案
-
-#### [SG-001] {指摘タイトル}
-- **ファイル:** `{パス}:{行番号}`
-- **提案:** {どう改善できるか}
+#### [CR-001] {Finding title}
+- **File:** `{path}:{line number}`
+- **Perspective:** {spec compliance / design consistency / code quality / test quality / API contract}
+- **Issue:** {what the problem is}
+- **Basis:** SPEC.md UC-XXX / ARCHITECTURE.md Section X
+- **Remediation:** {how it should be fixed}
 
 ---
 
-### 仕様適合チェック
-| UC番号 | 機能 | 実装 | 備考 |
+### 🟡 WARNING (recommended fix)
+Code quality / maintainability / insufficient test coverage
+
+#### [WR-001] {Finding title}
+- **File:** `{path}:{line number}`
+- **Perspective:** {perspective}
+- **Issue:** {what the problem is}
+- **Remediation:** {how it can be improved}
+
+---
+
+### 🟢 SUGGESTION (optional improvement)
+Areas that could be improved / refactoring proposals
+
+#### [SG-001] {Finding title}
+- **File:** `{path}:{line number}`
+- **Proposal:** {how it can be improved}
+
+---
+
+### Spec Compliance Check
+| UC No. | Feature | Implemented | Notes |
 |--------|------|------|------|
-| UC-001 | {機能名} | ✅/❌ | |
+| UC-001 | {feature name} | ✅/❌ | |
 
-### 設計整合チェック
-| 項目 | 状態 | 備考 |
+### Design Consistency Check
+| Item | Status | Notes |
 |------|------|------|
-| ディレクトリ構造 | ✅/⚠️/❌ | |
-| 命名規則 | ✅/⚠️/❌ | |
-| データモデル | ✅/⚠️/❌ | |
-| API契約 | ✅/⚠️/❌ | |
+| Directory structure | ✅/⚠️/❌ | |
+| Naming conventions | ✅/⚠️/❌ | |
+| Data model | ✅/⚠️/❌ | |
+| API contract | ✅/⚠️/❌ | |
 
 ---
 
-### 次のステップ
-→ CRITICAL がある場合: `developer` で修正 → `tester` → `reviewer` の順に再実行
-→ WARNING のみの場合: 修正推奨。対応後に `reviewer` を再実行
-→ SUGGESTION のみ / 指摘なし: ✅ 承認
+### Next Steps
+→ If CRITICAL exists: fix with `developer` → re-run in order: `tester` → `reviewer`
+→ If WARNING only: fix recommended; re-run `reviewer` after addressing
+→ SUGGESTION only / no findings: ✅ Approved
 ```
 
 ---

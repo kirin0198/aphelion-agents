@@ -84,74 +84,74 @@ Step 5. Design interactions and states
 **Important: Each screen section must be self-contained so that it can be pasted directly into an AI design tool and used as-is.**
 
 ```markdown
-# UI仕様書: {プロジェクト名}
+# UI Specification: {Project Name}
 
-> 参照元: SPEC.md ({バージョン or 最終更新日})
-> 参照元: CONCEPT_VALIDATION.md ({存在する場合})
-> 作成日: {日付}
+> Source: SPEC.md ({version or last updated date})
+> Source: CONCEPT_VALIDATION.md ({if it exists})
+> Created: {date}
 
-## 1. デザイン方針
+## 1. Design Policy
 
-### トーン & マナー
-### カラーパレット
-| 用途 | カラー | Hex | 使用箇所 |
+### Tone & Manner
+### Color Palette
+| Usage | Color | Hex | Where Used |
 |------|--------|-----|---------|
 
-### タイポグラフィ
-| 要素 | フォント | サイズ | ウェイト |
+### Typography
+| Element | Font | Size | Weight |
 |------|---------|--------|---------|
 
-### コンポーネントライブラリ
-### アイコン
+### Component Library
+### Icons
 
-## 2. 画面遷移フロー
+## 2. Screen Transition Flow
 ```
-{Mermaid 記法 または ASCII で画面遷移図}
+{Screen transition diagram using Mermaid or ASCII notation}
 ```
 
-## 3. 画面一覧
-| 画面ID | 画面名 | 対応UC | URL パス | 説明 |
+## 3. Screen List
+| Screen ID | Screen Name | Corresponding UC | URL Path | Description |
 |--------|--------|--------|---------|------|
 
-## 4. 画面詳細
+## 4. Screen Details
 
-### SCR-001: {画面名}
-**目的:** {ゴール}
-**対応UC:** UC-XXX
-**遷移元/遷移先:** {前後の画面}
-**URL パス:** /{path}
+### SCR-001: {screen name}
+**Purpose:** {goal}
+**Corresponding UC:** UC-XXX
+**Transitions from/to:** {preceding and following screens}
+**URL path:** /{path}
 
-#### レイアウト構成
+#### Layout Structure
 ```
-{ASCIIアートでワイヤーフレーム}
+{Wireframe as ASCII art}
 ```
 
-#### コンポーネント詳細
-| # | コンポーネント | 種別 | 状態 | 説明 |
+#### Component Details
+| # | Component | Type | State | Description |
 |---|--------------|------|------|------|
 
-#### インタラクション
-| トリガー | アクション | フィードバック |
+#### Interactions
+| Trigger | Action | Feedback |
 |---------|-----------|--------------|
 
-#### バリデーション（フォームがある場合）
-| フィールド | ルール | エラーメッセージ |
+#### Validation (if there is a form)
+| Field | Rule | Error Message |
 |-----------|--------|----------------|
 
-#### 状態パターン
-| 状態 | 条件 | 表示内容 |
+#### State Patterns
+| State | Condition | Display Content |
 |------|------|---------|
-| ローディング | {条件} | {表示} |
-| 空状態 | {条件} | {表示} |
-| エラー | {条件} | {表示} |
-| 通常 | {条件} | {表示} |
+| Loading | {condition} | {display} |
+| Empty state | {condition} | {display} |
+| Error | {condition} | {display} |
+| Default | {condition} | {display} |
 
-（画面数分繰り返す）
+(Repeat for each screen)
 
-## 5. 共通コンポーネント
-## 6. レスポンシブ対応方針
-## 7. アクセシビリティ要件
-## 8. アニメーション・トランジション
+## 5. Shared Components
+## 6. Responsive Design Policy
+## 7. Accessibility Requirements
+## 8. Animations / Transitions
 ```
 
 ---

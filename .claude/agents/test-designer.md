@@ -92,84 +92,84 @@ Step 4. Design test cases
 ## Output File: `TEST_PLAN.md`
 
 ```markdown
-# テスト計画書: {プロジェクト名}
+# Test Plan: {Project Name}
 
-> 参照元: SPEC.md ({バージョン or 最終更新日})
-> 参照元: ARCHITECTURE.md ({バージョン or 最終更新日})
-> 作成日: {日付}
+> Source: SPEC.md ({version or last updated date})
+> Source: ARCHITECTURE.md ({version or last updated date})
+> Created: {date}
 
-## 1. テスト方針
+## 1. Test Policy
 
-### テスト戦略
-- テストフレームワーク: {ARCHITECTURE.md のテスト戦略から引用}
-- カバレッジ目標: {目標値}
-- テスト環境: {開発DB / モック / テストサーバー等}
+### Test Strategy
+- Test framework: {quoted from ARCHITECTURE.md test strategy}
+- Coverage target: {target value}
+- Test environment: {development DB / mocks / test server, etc.}
 
-### テスト依存パッケージ
-| パッケージ | 用途 | 備考 |
+### Test Dependency Packages
+| Package | Purpose | Notes |
 |-----------|------|------|
-| {パッケージ名} | {テストフレームワーク等} | {バージョン指定等} |
+| {package name} | {test framework, etc.} | {version specification, etc.} |
 
-## 2. テストケース一覧
+## 2. Test Case List
 
-### UC-001: {ユースケース名}
+### UC-001: {use case name}
 
-#### 正常系
+#### Normal Cases
 
-| TC番号 | テストケース名 | 種別 | 入力 | 期待値 | 対象ファイル |
+| TC No. | Test Case Name | Type | Input | Expected | Target File |
 |--------|-------------|------|------|--------|------------|
-| TC-001 | {テストケース名} | 単体/統合/E2E | {入力データ} | {期待する出力・状態} | {src/xxx.py} |
+| TC-001 | {test case name} | unit/integration/E2E | {input data} | {expected output/state} | {src/xxx.py} |
 
-#### 異常系・境界値
+#### Error Cases / Boundary Values
 
-| TC番号 | テストケース名 | 種別 | 入力 | 期待値 | 対象ファイル |
+| TC No. | Test Case Name | Type | Input | Expected | Target File |
 |--------|-------------|------|------|--------|------------|
-| TC-002 | {テストケース名} | 単体/統合/E2E | {異常入力} | {期待するエラー・挙動} | {src/xxx.py} |
+| TC-002 | {test case name} | unit/integration/E2E | {invalid input} | {expected error/behavior} | {src/xxx.py} |
 
-（ユースケース数分繰り返す）
+(Repeat for each use case)
 
-### 非機能要件テスト（該当する場合）
+### Non-Functional Requirement Tests (if applicable)
 
-| TC番号 | テストケース名 | 種別 | 条件 | 基準値 | 対象 |
+| TC No. | Test Case Name | Type | Condition | Threshold | Scope |
 |--------|-------------|------|------|--------|------|
-| TC-NF-001 | {テストケース名} | パフォーマンス/セキュリティ | {条件} | {基準} | {対象} |
+| TC-NF-001 | {test case name} | performance/security | {condition} | {threshold} | {scope} |
 
-## 3. テストファイル構成
+## 3. Test File Structure
 
 ```
-{ARCHITECTURE.md のテスト戦略に基づく配置}
+{Layout based on test strategy in ARCHITECTURE.md}
 tests/
-├── conftest.py          # 共通フィクスチャ
-├── test_xxx/            # テスト対象ごとのディレクトリ
-│   ├── test_yyy.py      # テストファイル
+├── conftest.py          # shared fixtures
+├── test_xxx/            # directory per test target
+│   ├── test_yyy.py      # test file
 ...
 ```
 
-## 4. テストデータ
+## 4. Test Data
 
-### フィクスチャ・テストデータ
-| データ名 | 内容 | 使用テスト |
+### Fixtures / Test Data
+| Name | Description | Used In |
 |---------|------|----------|
-| {フィクスチャ名} | {データの概要} | TC-XXX, TC-YYY |
+| {fixture name} | {data summary} | TC-XXX, TC-YYY |
 
-## 5. 実行手順
+## 5. Execution Procedure
 
-### テスト実行コマンド
+### Test Execution Commands
 ```bash
-{全テスト実行コマンド}
-{カバレッジ付き実行コマンド}
-{特定テスト実行コマンド}
+{command to run all tests}
+{command to run with coverage}
+{command to run specific tests}
 ```
 
-### 実行順序の制約
-{テスト間の依存関係がある場合に記述}
+### Execution Order Constraints
+{Document if there are dependencies between tests}
 
-## 6. UC-テストケース トレーサビリティマトリクス
+## 6. UC-Test Case Traceability Matrix
 
-| UC番号 | 受け入れ条件 | テストケース | 種別 |
+| UC No. | Acceptance Criterion | Test Cases | Type |
 |--------|------------|------------|------|
-| UC-001 | {条件1} | TC-001, TC-002 | 単体, 統合 |
-| UC-001 | {条件2} | TC-003 | 統合 |
+| UC-001 | {criterion 1} | TC-001, TC-002 | unit, integration |
+| UC-001 | {criterion 2} | TC-003 | integration |
 ```
 
 ---
@@ -210,20 +210,20 @@ When `tester` reports test failures, test-designer performs root cause analysis 
 ### Correction Feedback Format
 
 ```
-## テスト失敗分析レポート（developer 向け）
+## Test Failure Analysis Report (for developer)
 
-### 原因分類
-{テストコードバグ / テスト環境 / 実装バグ / 仕様不備}
+### Root Cause Classification
+{test code bug / test environment / implementation bug / spec deficiency}
 
-### 失敗テスト: {テストケース名} (TC-XXX)
-- **対応UC:** UC-XXX
-- **テストファイル:** {パス}
-- **対象コード:** {テスト対象のファイルパス}:{行番号}
-- **期待値:** {expected}
-- **実際の値:** {actual}
-- **原因分析:** {なぜ失敗したかの詳細分析}
-- **修正方針:** {具体的にどう修正すべきか}
-- **影響範囲:** {修正による他テストへの影響}
+### Failed Test: {test case name} (TC-XXX)
+- **Corresponding UC:** UC-XXX
+- **Test file:** {path}
+- **Target code:** {target file path}:{line number}
+- **Expected:** {expected}
+- **Actual:** {actual}
+- **Root cause analysis:** {detailed analysis of why it failed}
+- **Fix approach:** {specifically how it should be fixed}
+- **Impact scope:** {impact of the fix on other tests}
 ```
 
 ---

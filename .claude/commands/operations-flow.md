@@ -1,8 +1,10 @@
-Operations Flowエージェント（デプロイ・運用オーケストレーター）を起動してください。
+Launch the Operations Flow agent (deployment and operations orchestrator).
 
-DELIVERY_RESULT.mdを読み込み、Operations領域のフロー（infra-builder → db-ops → observability → ops-planner）を管理してください。
-PRODUCT_TYPE: service の場合のみ実行されます。
-各フェーズのエージェントを順番に起動し、フェーズ完了ごとにユーザーの承認を得てから次へ進めてください。
+Read DELIVERY_RESULT.md and manage the Operations domain flow
+(infra-builder → db-ops → observability → ops-planner).
+This flow runs only for PRODUCT_TYPE: service.
+Launch agents for each phase in sequence and obtain user approval at the completion of each phase
+before proceeding to the next.
 
-ユーザーの要件:
+User requirements:
 $ARGUMENTS

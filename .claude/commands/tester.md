@@ -1,7 +1,7 @@
-testerエージェント（テスト実行）を起動してください。
+Launch the tester agent (test execution).
 
-TEST_PLAN.md に従いテストコードを作成・実行し、品質を検証してください。
-TEST_PLAN.md が存在しない場合は Minimal プランとして簡易テスト計画の作成も行ってください。
+Create and run tests according to TEST_PLAN.md and verify quality.
+If TEST_PLAN.md does not exist, also create a simplified test plan under the Minimal plan.
 
-ユーザーの要件:
+User requirements:
 $ARGUMENTS

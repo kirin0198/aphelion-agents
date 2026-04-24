@@ -92,57 +92,57 @@ Organize strengths, weaknesses, and improvement proposals, then summarize handof
 ## Output File: `CONCEPT_VALIDATION.md`
 
 ```markdown
-# Concept Validation: {プロジェクト名}
+# Concept Validation: {Project Name}
 
-> 参照元: INTERVIEW_RESULT.md, RESEARCH_RESULT.md, POC_RESULT.md
-> 検証日: {YYYY-MM-DD}
+> Source: INTERVIEW_RESULT.md, RESEARCH_RESULT.md, POC_RESULT.md
+> Validated: {YYYY-MM-DD}
 
-## 1. コンセプト概要
-{検証するコンセプトの説明}
+## 1. Concept Overview
+{Description of the concept being validated}
 
-## 2. ユーザーフロー
+## 2. User Flows
 
-### メインフロー
+### Main Flow
 ```
-{Mermaid または ASCII で描画}
+{Draw using Mermaid or ASCII}
 ```
 
-### サブフロー（必要に応じて）
+### Sub-flows (as needed)
 
-## 3. ワイヤーフレーム（主要画面）
+## 3. Wireframes (Primary Screens)
 
-### 画面1: {画面名}
+### Screen 1: {screen name}
 ```
-{ASCIIアートでワイヤーフレーム}
+{Wireframe as ASCII art}
 ```
-- **目的:** {この画面の目的}
-- **主要コンポーネント:** {配置するコンポーネント}
-- **検証ポイント:** {何を検証するか}
+- **Purpose:** {goal of this screen}
+- **Key components:** {components placed on this screen}
+- **Validation points:** {what is being validated}
 
-（主要画面数分繰り返す）
+(Repeat for each primary screen)
 
-## 4. UX検証結果
+## 4. UX Validation Results
 
-| # | 検証項目 | 仮説 | 評価 | 備考 |
+| # | Validation Item | Hypothesis | Evaluation | Notes |
 |---|---------|------|------|------|
-| 1 | {項目} | {仮説} | ✅/⚠️/❌ | {根拠} |
+| 1 | {item} | {hypothesis} | ✅/⚠️/❌ | {rationale} |
 
-## 5. コンセプト妥当性評価
+## 5. Concept Validity Evaluation
 
-### 強み
-- {強み}
+### Strengths
+- {strength}
 
-### 弱み・懸念
-- {懸念}
+### Weaknesses / Concerns
+- {concern}
 
-### 改善提案
-- {提案}
+### Improvement Proposals
+- {proposal}
 
-## 6. Delivery への引き継ぎ事項
-{ux-designer が参照すべきポイント}
-- デザイン方針の推奨事項
-- 特に注意すべきUX課題
-- ユーザーフロー上の重要判断
+## 6. Handoff Items to Delivery
+{Key points for ux-designer to reference}
+- Design approach recommendations
+- UX issues that require special attention
+- Key decisions in the user flow
 ```
 
 ---

@@ -126,49 +126,49 @@ Each flow orchestrator validates required fields of the handoff file at startup.
 
 **DISCOVERY_RESULT.md required fields:**
 - `PRODUCT_TYPE` (one of: service / tool / library / cli)
-- "プロジェクト概要" section (must not be empty)
-- "要件サマリー" section (must not be empty)
+- "Project Overview" section (must not be empty)
+- "Requirements Summary" section (must not be empty)
 
 **DELIVERY_RESULT.md required fields:**
 - `PRODUCT_TYPE`
-- "成果物" section (must include SPEC.md and ARCHITECTURE.md status)
-- "技術スタック" section (must not be empty)
-- "テスト結果" section
-- "セキュリティ監査結果" section
+- "Artifacts" section (must include SPEC.md and ARCHITECTURE.md status)
+- "Tech Stack" section (must not be empty)
+- "Test Results" section
+- "Security Audit Results" section
 
 **OPS_RESULT.md required fields:**
-- "成果物一覧" table
-- "デプロイ準備状態" checklist
+- "Artifacts" table
+- "Deployment Readiness" checklist
 
 ### DISCOVERY_RESULT.md
 
 Final output of Discovery Flow. Input for Delivery Flow's `spec-designer`.
 
 ```markdown
-# Discovery Result: {プロジェクト名}
+# Discovery Result: {Project Name}
 
-> 作成日: {YYYY-MM-DD}
-> Discovery プラン: {Minimal | Light | Standard | Full}
+> Created: {YYYY-MM-DD}
+> Discovery Plan: {Minimal | Light | Standard | Full}
 
-## プロジェクト概要
-{1〜3行の要約}
+## Project Overview
+{1–3 line summary}
 
-## 成果物の性質
+## Artifact Type
 PRODUCT_TYPE: {service | tool | library | cli}
 
-## 要件サマリー
-{構造化された要件の要約}
+## Requirements Summary
+{Structured requirements summary}
 
-## スコープ（確定している場合）
-- MVP: {最小スコープ}
-- IN: {含むもの}
-- OUT: {含まないもの}
+## Scope (if confirmed)
+- MVP: {minimum scope}
+- IN: {included}
+- OUT: {excluded}
 
-## 技術リスク・制約（調査済みの場合）
-{PoCの結果、外部依存の制約等}
+## Technical Risks / Constraints (if investigated)
+{PoC results, external dependency constraints, etc.}
 
-## 未解決事項
-{Delivery で解決すべき残課題}
+## Unresolved Items
+{Remaining issues to be resolved in Delivery}
 ```
 
 ### DELIVERY_RESULT.md
@@ -176,31 +176,31 @@ PRODUCT_TYPE: {service | tool | library | cli}
 Final output of Delivery Flow. Input for Operations Flow (for service type).
 
 ```markdown
-# Delivery Result: {プロジェクト名}
+# Delivery Result: {Project Name}
 
-> 作成日: {YYYY-MM-DD}
-> Delivery プラン: {Minimal | Light | Standard | Full}
+> Created: {YYYY-MM-DD}
+> Delivery Plan: {Minimal | Light | Standard | Full}
 > PRODUCT_TYPE: {service | tool}
 
-## 成果物
-- SPEC.md: {あり/なし}
-- ARCHITECTURE.md: {あり/なし}
-- UI_SPEC.md: {あり/なし/該当なし}
-- TEST_PLAN.md: {あり/なし}
-- 実装コード: {ファイル数}
-- README.md: {あり/なし}
+## Artifacts
+- SPEC.md: {present/absent}
+- ARCHITECTURE.md: {present/absent}
+- UI_SPEC.md: {present/absent/N/A}
+- TEST_PLAN.md: {present/absent}
+- Implementation code: {file count}
+- README.md: {present/absent}
 
-## 技術スタック
-{確定した技術スタックの要約}
+## Tech Stack
+{Summary of confirmed tech stack}
 
-## テスト結果
-- 合計: {N} / 成功: {N} / 失敗: {N}
+## Test Results
+- Total: {N} / Pass: {N} / Fail: {N}
 
-## セキュリティ監査結果
+## Security Audit Results
 - CRITICAL: {N} / WARNING: {N}
 
-## Operations への引き継ぎ（service の場合）
-{デプロイに必要な情報、環境変数一覧、DB要件等}
+## Handoff to Operations (for service type)
+{Information required for deployment, environment variable list, DB requirements, etc.}
 ```
 
 ### OPS_RESULT.md
@@ -208,34 +208,34 @@ Final output of Delivery Flow. Input for Operations Flow (for service type).
 Final output of Operations Flow. Used for final deployment readiness confirmation.
 
 ```markdown
-# Operations Result: {プロジェクト名}
+# Operations Result: {Project Name}
 
-> 作成日: {YYYY-MM-DD}
-> Operations プラン: {Light | Standard | Full}
+> Created: {YYYY-MM-DD}
+> Operations Plan: {Light | Standard | Full}
 
-## 成果物一覧
-| ファイル | 内容 | 状態 |
-|---------|------|------|
-| Dockerfile | コンテナ定義 | あり/なし |
-| docker-compose.yml | コンテナ構成 | あり/なし |
-| .github/workflows/ci.yml | CI/CD | あり/なし |
-| .env.example | 環境変数テンプレート | あり/なし |
-| DB_OPS.md | DB運用ガイド | あり/なし |
-| OBSERVABILITY.md | 可観測性設計 | あり/なし |
-| OPS_PLAN.md | 運用計画書 | あり |
+## Artifacts
+| File | Description | Status |
+|------|-------------|--------|
+| Dockerfile | Container definition | present/absent |
+| docker-compose.yml | Container configuration | present/absent |
+| .github/workflows/ci.yml | CI/CD | present/absent |
+| .env.example | Environment variable template | present/absent |
+| DB_OPS.md | DB operations guide | present/absent |
+| OBSERVABILITY.md | Observability design | present/absent |
+| OPS_PLAN.md | Operations plan | present |
 
-## デプロイ準備状態
-- [ ] Dockerfile / docker-compose 作成済み
-- [ ] CI/CD パイプライン構築済み
-- [ ] 環境変数テンプレート作成済み
-- [ ] DB運用ガイド作成済み（該当する場合）
-- [ ] 可観測性設計完了（該当する場合）
-- [ ] デプロイ手順書作成済み
-- [ ] ロールバック手順策定済み
-- [ ] インシデント対応プレイブック作成済み
+## Deployment Readiness
+- [ ] Dockerfile / docker-compose created
+- [ ] CI/CD pipeline configured
+- [ ] Environment variable template created
+- [ ] DB operations guide created (if applicable)
+- [ ] Observability design complete (if applicable)
+- [ ] Deployment procedure documented
+- [ ] Rollback procedure defined
+- [ ] Incident response playbook created
 
-## 未対応事項
-{残タスクがあれば記載}
+## Unresolved Items
+{List any remaining tasks}
 ```
 
 ---
@@ -282,11 +282,11 @@ When `AUTO_APPROVE: true`:
 
 | Decision Point | Auto-Selected Option | Notes |
 |---------------|---------------------|-------|
-| Triage approval | "承認して開始" | Accept the auto-determined plan |
-| Phase approval gate | "承認して続行" | Proceed to next phase |
-| Existing file confirmation | "続きから始める" | Reuse existing artifacts |
-| Error handling | "再実行" | Retry up to 3 times per agent, then stop |
-| Session interruption | "再開する" | Resume automatically |
+| Triage approval | "Approve and start" | Accept the auto-determined plan |
+| Phase approval gate | "Approve and continue" | Proceed to next phase |
+| Existing file confirmation | "Continue from here" | Reuse existing artifacts |
+| Error handling | "Retry" | Retry up to 3 times per agent, then stop |
+| Session interruption | "Resume" | Resume automatically |
 
 #### Logging Requirement
 
@@ -326,19 +326,19 @@ If the file is empty, use default triage behavior and auto-approve the result.
 Each phase follows this common loop. Domain-specific steps (rollback checks, etc.) are additions on top of this template.
 
 ```
-[Phase N 開始]
-  1. フェーズ開始をユーザーに通知する
-     「▶ Phase N/{総フェーズ数}: {エージェント名} を起動します」
-  2. 前段の成果物パスを含む指示でエージェントを起動する
-  3. エージェントの AGENT_RESULT ブロックを確認する
-  4. STATUS を判定し、error / blocked / failure に対応する
-     （failure の場合はドメイン固有の差し戻しルールに従う）
-  5. AUTO_APPROVE: true の場合:
-     → 「承認して続行」を自動選択し、テキスト出力のみ行う（AskUserQuestion をスキップ）
-     AUTO_APPROVE: false の場合:
-     → 承認ゲート（下記「Approval Gate」参照）で停止しユーザーに承認を求める
-  6. AUTO_APPROVE: false の場合のみ: ユーザーの返答を待つ（絶対に自動で進まない）
-  7. 次フェーズへ
+[Phase N Start]
+  1. Notify the user that the phase is starting:
+     "▶ Phase N/{total phases}: launching {agent name}"
+  2. Launch the agent with instructions that include the preceding artifact paths
+  3. Verify the agent's AGENT_RESULT block
+  4. Evaluate STATUS and handle error / blocked / failure
+     (for failure, follow domain-specific rollback rules)
+  5. If AUTO_APPROVE: true:
+     → Auto-select "Approve and continue" and output text only (skip AskUserQuestion)
+     If AUTO_APPROVE: false:
+     → Stop at the approval gate (see "Approval Gate" below) and request user approval
+  6. Only if AUTO_APPROVE: false: wait for the user's response (never advance automatically)
+  7. Proceed to the next phase
 ```
 
 ---
@@ -352,13 +352,13 @@ When an agent returns `STATUS: error`, the orchestrator must:
 ```json
 {
   "questions": [{
-    "question": "{エージェント名} がエラーを報告しました。どう対応しますか？",
-    "header": "エラー対応",
+    "question": "{agent name} reported an error. How would you like to proceed?",
+    "header": "Error Handling",
     "options": [
-      {"label": "再実行", "description": "同じエージェントをもう一度実行する"},
-      {"label": "修正して再実行", "description": "修正内容を指示してから再実行する"},
-      {"label": "スキップ", "description": "このエージェントをスキップして次へ進む"},
-      {"label": "中断", "description": "ワークフローを停止する"}
+      {"label": "Retry", "description": "Run the same agent again"},
+      {"label": "Retry with fix", "description": "Provide correction instructions and re-run"},
+      {"label": "Skip", "description": "Skip this agent and proceed to the next"},
+      {"label": "Abort", "description": "Stop the workflow"}
     ],
     "multiSelect": false
   }]
@@ -366,7 +366,7 @@ When an agent returns `STATUS: error`, the orchestrator must:
 ```
 
 3. When `AUTO_APPROVE: false`: Never re-execute automatically without user instruction
-4. When `AUTO_APPROVE: true`: Automatically select "再実行". Track retry count per agent. If retry count exceeds 3, stop the workflow and output an error summary
+4. When `AUTO_APPROVE: true`: Automatically select "Retry". Track retry count per agent. If retry count exceeds 3, stop the workflow and output an error summary
 
 ---
 
@@ -379,13 +379,13 @@ Common approval gate format shared by all flow orchestrators. After each phase c
 1. First, output a phase completion summary as text:
 
 ```
-Phase {N} 完了: {エージェント名}
+Phase {N} complete: {agent name}
 
-【生成された成果物】
-  - {ファイルパス}: {概要}
+[Generated Artifacts]
+  - {file path}: {summary}
 
-【内容サマリー】
-{3〜5行で要約}
+[Content Summary]
+{3–5 line summary}
 ```
 
 2. Then request approval via `AskUserQuestion`:
@@ -393,12 +393,12 @@ Phase {N} 完了: {エージェント名}
 ```json
 {
   "questions": [{
-    "question": "Phase {N} の成果物を確認しました。次のフェーズに進みますか？",
+    "question": "Phase {N} artifacts reviewed. Proceed to the next phase?",
     "header": "Phase {N}",
     "options": [
-      {"label": "承認して続行", "description": "Phase {N+1}: {次のエージェント名} に進む"},
-      {"label": "修正を指示", "description": "このフェーズの成果物を修正してから進む"},
-      {"label": "中断", "description": "ワークフローを停止する"}
+      {"label": "Approve and continue", "description": "Proceed to Phase {N+1}: {next agent name}"},
+      {"label": "Request modification", "description": "Revise this phase's artifacts before proceeding"},
+      {"label": "Abort", "description": "Stop the workflow"}
     ],
     "multiSelect": false
   }]
@@ -409,9 +409,9 @@ Phase {N} 完了: {エージェント名}
 
 | User Selection | Orchestrator Action |
 |---------------|-----------|
-| "承認して続行" | Proceed to next phase |
-| "修正を指示" | Re-execute current phase agent based on modification instructions from the Other field |
-| "中断" | Stop the workflow and provide instructions for resuming |
+| "Approve and continue" | Proceed to next phase |
+| "Request modification" | Re-execute current phase agent based on modification instructions from the Other field |
+| "Abort" | Stop the workflow and provide instructions for resuming |
 
 ---
 

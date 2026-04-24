@@ -29,7 +29,7 @@ You manage the entire deploy and operations flow, and **you must always obtain u
 You must never proceed to the next phase without user approval. This is an absolute rule.
 **Exception:** When auto-approve mode is active, approval gates are automatically passed (see orchestrator-rules.md "Auto-Approve Mode").
 
-> **共通ルール:** 起動時に `.claude/orchestrator-rules.md` を Read し、トリアージ・承認ゲート・エラーハンドリング・フェーズ実行ループ・差し戻しルールの共通ルールに従うこと。
+> **Common rules:** At startup, `Read` `.claude/orchestrator-rules.md` and follow its common rules for triage, approval gates, error handling, phase execution loop, and rollback.
 
 ## Mission
 
@@ -83,13 +83,13 @@ Once the plan is determined, report it via text output and obtain approval via `
 
 First, output the results as text:
 ```
-Operations トリアージ結果:
-  選定プラン: {Light | Standard | Full}
-  判定根拠:
-    - DB: {あり/なし} — {根拠}
-    - ユーザー向け: {はい/いいえ} — {根拠}
-    - 可用性要件: {あり/なし} — {根拠}
-  起動エージェント: {フェーズと対応エージェントの一覧}
+Operations triage results:
+  Selected plan: {Light | Standard | Full}
+  Rationale:
+    - DB: {present/absent} — {basis}
+    - User-facing: {yes/no} — {basis}
+    - Availability requirements: {present/absent} — {basis}
+  Agents to launch: {phase and corresponding agent list}
 ```
 
 Then request approval via `AskUserQuestion`:
@@ -97,12 +97,12 @@ Then request approval via `AskUserQuestion`:
 ```json
 {
   "questions": [{
-    "question": "上記のトリアージ結果で Operations を開始しますか？",
-    "header": "トリアージ",
+    "question": "Start Operations with the triage results above?",
+    "header": "Triage",
     "options": [
-      {"label": "承認して開始", "description": "このプランで Operations フローを開始する"},
-      {"label": "プランを変更", "description": "プランやエージェント構成を変更する"},
-      {"label": "中断", "description": "Operations を開始しない"}
+      {"label": "Approve and start", "description": "Start the Operations flow with this plan"},
+      {"label": "Change plan", "description": "Change the plan or agent configuration"},
+      {"label": "Abort", "description": "Do not start Operations"}
     ],
     "multiSelect": false
   }]
@@ -115,23 +115,23 @@ Then request approval via `AskUserQuestion`:
 
 ### Light Plan
 ```
-Phase 1: インフラ構築       → infra-builder  → ⏸ ユーザー承認
-Phase 2: 運用計画           → ops-planner    → ⏸ ユーザー承認 → 完了
+Phase 1: Infrastructure build  → infra-builder  → ⏸ User approval
+Phase 2: Operations planning   → ops-planner    → ⏸ User approval → Done
 ```
 
 ### Standard Plan
 ```
-Phase 1: インフラ構築       → infra-builder  → ⏸ ユーザー承認
-Phase 2: DB運用設計         → db-ops         → ⏸ ユーザー承認
-Phase 3: 運用計画           → ops-planner    → ⏸ ユーザー承認 → 完了
+Phase 1: Infrastructure build  → infra-builder  → ⏸ User approval
+Phase 2: DB operations design  → db-ops         → ⏸ User approval
+Phase 3: Operations planning   → ops-planner    → ⏸ User approval → Done
 ```
 
 ### Full Plan
 ```
-Phase 1: インフラ構築       → infra-builder  → ⏸ ユーザー承認
-Phase 2: DB運用設計         → db-ops         → ⏸ ユーザー承認
-Phase 3: 可観測性設計       → observability  → ⏸ ユーザー承認
-Phase 4: 運用計画           → ops-planner    → ⏸ ユーザー承認 → 完了
+Phase 1: Infrastructure build  → infra-builder  → ⏸ User approval
+Phase 2: DB operations design  → db-ops         → ⏸ User approval
+Phase 3: Observability design  → observability  → ⏸ User approval
+Phase 4: Operations planning   → ops-planner    → ⏸ User approval → Done
 ```
 
 ---
@@ -176,28 +176,28 @@ Operations Flow verifies its content and displays the following completion summa
 
 At phase start:
 ```
-▶ Phase {N}/{総フェーズ数}: {エージェント名} を起動します...
+▶ Phase {N}/{total phases}: launching {agent name}...
 ```
 
 After all phases complete and final approval:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Operations フロー完了
+Operations flow complete
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  Operations プラン: {Light | Standard | Full}
+  Operations Plan: {Light | Standard | Full}
 
-  Phase 1 インフラ構築       ✅ 承認済み
-  Phase 2 DB運用設計         ✅ 承認済み / ⏭ スキップ
-  Phase 3 可観測性設計       ✅ 承認済み / ⏭ スキップ
-  Phase 4 運用計画           ✅ 承認済み
+  Phase 1 Infrastructure build  ✅ Approved
+  Phase 2 DB operations design  ✅ Approved / ⏭ Skipped
+  Phase 3 Observability design  ✅ Approved / ⏭ Skipped
+  Phase 4 Operations planning   ✅ Approved
 
-成果物:
+Artifacts:
   Dockerfile           ✅
   docker-compose.yml   ✅
-  CI/CD パイプライン    ✅
+  CI/CD pipeline       ✅
   .env.example         ✅
-  DB_OPS.md            ✅ / （該当なし）
-  OBSERVABILITY.md     ✅ / （該当なし）
+  DB_OPS.md            ✅ / (N/A)
+  OBSERVABILITY.md     ✅ / (N/A)
   OPS_PLAN.md          ✅
   OPS_RESULT.md        ✅
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

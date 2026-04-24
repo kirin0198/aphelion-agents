@@ -94,53 +94,53 @@ Verify the following before starting work:
 ## Output File: `SPEC.md`
 
 ```markdown
-# 仕様書: {プロジェクト名}
+# Specification: {Project Name}
 
-> 作成日: {YYYY-MM-DD}
-> 参照元: {DISCOVERY_RESULT.md の有無}
+> Created: {YYYY-MM-DD}
+> Source: {whether DISCOVERY_RESULT.md exists}
 
-## 1. プロジェクト概要
-- 目的・背景
-- スコープ（IN / OUT）
+## 1. Project Overview
+- Purpose / Background
+- Scope (IN / OUT)
 
-## 2. 推奨技術スタック
-| 層 | 技術 | 選定理由 |
+## 2. Recommended Tech Stack
+| Layer | Technology | Selection Rationale |
 |----|------|---------|
-> ※ architect にて確定・詳細化する
+> * To be finalized and detailed by architect
 
-## 3. ユーザーストーリー
-- ペルソナ定義
-- ユースケース一覧（番号付き）
+## 3. User Stories
+- Persona definitions
+- Use case list (numbered)
 
-## 4. 機能要件
-### UC-001: {ユースケース名}
-- 概要:
-- 事前条件:
-- 正常フロー:
-- 例外フロー:
-- 受け入れ条件:
+## 4. Functional Requirements
+### UC-001: {use case name}
+- Overview:
+- Preconditions:
+- Normal flow:
+- Exception flow:
+- Acceptance criteria:
 
-（ユースケース数分繰り返す）
+(Repeat for each use case)
 
-## 5. 非機能要件
-- パフォーマンス
-- セキュリティ
-- 可用性
-- スケーラビリティ
+## 5. Non-Functional Requirements
+- Performance
+- Security
+- Availability
+- Scalability
 
-## 6. データモデル（概念レベル）
-- エンティティ一覧
-- 主要な関係性
+## 6. Data Model (Conceptual Level)
+- Entity list
+- Key relationships
 
-## 7. API概要（該当する場合）
-- エンドポイント一覧
-- 主要なリクエスト/レスポンス形式
+## 7. API Overview (if applicable)
+- Endpoint list
+- Key request/response formats
 
-## 8. 制約・前提条件
+## 8. Constraints / Preconditions
 
-## 9. 用語集
+## 9. Glossary
 
-## 10. 未解決事項（TBD）
+## 10. Unresolved Items (TBD)
 ```
 
 ---

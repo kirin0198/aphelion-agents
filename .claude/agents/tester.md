@@ -104,7 +104,7 @@ def browser_context_args():
 from playwright.sync_api import Page, expect
 
 def test_login_success(page: Page):
-    """TC-E2E-001: ログイン成功フロー"""
+    """TC-E2E-001: Login success flow"""
     page.goto("/login")
     page.fill("[data-testid=email]", "test@example.com")
     page.fill("[data-testid=password]", "password123")
@@ -141,7 +141,7 @@ def app():
     app.kill()
 
 def test_menu_file_open(app):
-    """TC-GUI-001: ファイルメニューからファイルを開く"""
+    """TC-GUI-001: Open a file from the File menu"""
     main = app.window(title="App Name")
     main.menu_select("File->Open")
     assert main.child_window(title="Open File").exists()
@@ -158,12 +158,12 @@ import time
 @pytest.fixture
 def app_process():
     proc = subprocess.Popen(["path/to/app"])
-    time.sleep(2)  # アプリ起動待ち
+    time.sleep(2)  # wait for app to start
     yield proc
     proc.terminate()
 
 def test_button_click(app_process):
-    """TC-GUI-001: メインボタンのクリック操作"""
+    """TC-GUI-001: Main button click operation"""
     location = pyautogui.locateOnScreen("tests/gui/images/button.png")
     assert location is not None
     pyautogui.click(location)
@@ -190,7 +190,7 @@ Before running E2E tests, verify:
 6. Commit test code (follow .claude/rules/git-rules.md; use prefix `test:`)
    ```bash
    git add {test-files}
-   git commit -m "test: {テスト対象の概要}"
+   git commit -m "test: {summary of test target}"
    ```
 7. Execute tests and review results
 8. Cross-reference results with the traceability matrix in `TEST_PLAN.md`
@@ -203,20 +203,20 @@ When tests fail, in addition to `FAILED_TESTS` in the `AGENT_RESULT`, output the
 The flow orchestrator includes this content in the rollback instructions to `test-designer`.
 
 ```
-## テスト失敗レポート（test-designer 向け）
+## Test Failure Report (for test-designer)
 
-### 失敗テスト: {テスト名} (TC-XXX)
-- **テストファイル:** {パス}
-- **対象コード:** {テスト対象のファイルパス}:{行番号}
-- **期待値:** {expected}
-- **実際の値:** {actual}
-- **エラー出力:** {スタックトレース等の要約}
+### Failed Test: {test name} (TC-XXX)
+- **Test file:** {path}
+- **Target code:** {target file path}:{line number}
+- **Expected:** {expected}
+- **Actual:** {actual}
+- **Error output:** {summary of stack trace, etc.}
 
-### E2E テスト失敗時の追加フィールド
-- **対象画面:** SCR-XXX
-- **スクリーンショット:** {失敗時のスクリーンショットパス}
-- **トレース:** {Playwright トレースファイルパス}（Web E2E の場合）
-- **操作手順の再現:** {失敗に至る操作ステップ}
+### Additional Fields for E2E Test Failures
+- **Target screen:** SCR-XXX
+- **Screenshot:** {path to failure screenshot}
+- **Trace:** {Playwright trace file path} (for Web E2E)
+- **Operation steps to reproduce:** {operation steps that led to failure}
 ```
 
 ---
@@ -224,32 +224,32 @@ The flow orchestrator includes this content in the rollback instructions to `tes
 ## Test Completion Report Format
 
 ```
-## テスト完了レポート
+## Test Completion Report
 
-### 実行環境
-- ツール: {使用したテストフレームワーク}
-- 実行コマンド: {コマンド}
+### Execution Environment
+- Tool: {test framework used}
+- Execution command: {command}
 
-### テスト結果サマリー
-- 合計: {N} テスト
-- 成功: {N} ✅
-- 失敗: {N} ❌
-- スキップ: {N} ⏭️
+### Test Results Summary
+- Total: {N} tests
+- Passed: {N} ✅
+- Failed: {N} ❌
+- Skipped: {N} ⏭️
 
-### テストケース別結果
-| TC番号 | テストケース名 | 対応UC | 結果 |
+### Results by Test Case
+| TC No. | Test Case Name | Corresponding UC | Result |
 |--------|-------------|--------|------|
-| TC-001 | {テスト名} | UC-XXX | ✅/❌ |
+| TC-001 | {test name} | UC-XXX | ✅/❌ |
 
-### 失敗したテストの詳細（ある場合）
-#### {テスト名} (TC-XXX)
-- **期待値:**
-- **実際の値:**
-- **エラー出力:**
+### Details of Failed Tests (if any)
+#### {test name} (TC-XXX)
+- **Expected:**
+- **Actual:**
+- **Error output:**
 
-### 次のステップ
-→ 全テスト成功の場合: `reviewer` を起動してください
-→ 失敗がある場合: `test-designer` が原因分析後、`developer` で修正してください
+### Next Steps
+→ If all tests pass: launch `reviewer`
+→ If there are failures: `test-designer` will analyze the root cause, then fix with `developer`
 ```
 
 ---

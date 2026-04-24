@@ -194,29 +194,29 @@ Create based on the "Environment Variables" section of ARCHITECTURE.md.
 
 ```env
 # ===========================================
-# アプリケーション設定
+# Application settings
 # ===========================================
-# アプリケーション名
+# Application name
 APP_NAME=
-# 実行環境 (development | staging | production)
+# Runtime environment (development | staging | production)
 APP_ENV=
-# ログレベル (DEBUG | INFO | WARNING | ERROR)
+# Log level (DEBUG | INFO | WARNING | ERROR)
 LOG_LEVEL=
 
 # ===========================================
-# データベース設定
+# Database settings
 # ===========================================
-# データベース接続URL (例: postgresql://user:pass@host:5432/dbname)
+# Database connection URL (e.g., postgresql://user:pass@host:5432/dbname)
 DATABASE_URL=
-# 接続プール最大数
+# Max connection pool size
 DATABASE_POOL_SIZE=
 
 # ===========================================
-# セキュリティ設定
+# Security settings
 # ===========================================
-# JWT シークレットキー（本番環境では必ず変更すること）
+# JWT secret key (must be changed in production)
 SECRET_KEY=
-# CORS 許可オリジン（カンマ区切り）
+# CORS allowed origins (comma-separated)
 CORS_ORIGINS=
 ```
 

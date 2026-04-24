@@ -92,24 +92,24 @@ Read the "Implementation Order" section of `ARCHITECTURE.md` and generate `TASK.
 ```markdown
 # TASK.md
 
-> 参照元: ARCHITECTURE.md ({バージョン or 最終更新日})
+> Source: ARCHITECTURE.md ({version or last updated date})
 
-## フェーズ: {フェーズ名}
-最終更新: {日時}
-ステータス: 進行中
+## Phase: {phase name}
+Last updated: {datetime}
+Status: In progress
 
-## タスク一覧
+## Task List
 
 ### Phase {N}
-- [ ] TASK-001: {タスク名} | 対象ファイル: src/...
-- [ ] TASK-002: {タスク名} | 対象ファイル: src/...
-- [ ] TASK-003: {タスク名} | 対象ファイル: src/...
+- [ ] TASK-001: {task name} | Target file: src/...
+- [ ] TASK-002: {task name} | Target file: src/...
+- [ ] TASK-003: {task name} | Target file: src/...
 
-## 直近のコミット
-（タスク完了のたびに git log --oneline -3 を記録する）
+## Recent Commits
+(Record git log --oneline -3 each time a task is completed)
 
-## 中断時のメモ
-（セッション中断時に状況をここに記録する）
+## Session Interruption Notes
+(Record the situation here when a session is interrupted)
 ```
 
 ### Resume Mode (when TASK.md exists)
@@ -120,14 +120,14 @@ Read the "Implementation Order" section of `ARCHITECTURE.md` and generate `TASK.
 4. Report the following to the user before resuming work
 
 ```
-## 再開レポート
+## Resume Report
 
-進捗状況:
-- 完了済み: TASK-001〜{N} （{N}件）
-- 次のタスク: TASK-{N+1}: {タスク名}
-- 最後のコミット: {git log の1行}
+Progress:
+- Completed: TASK-001 through TASK-{N} ({N} tasks)
+- Next task: TASK-{N+1}: {task name}
+- Last commit: {git log one-liner}
 
-TASK-{N+1} から再開します。
+Resuming from TASK-{N+1}.
 ```
 
 ### Task Completion Procedure (required, execute every time)
@@ -137,8 +137,8 @@ Each time a task is completed, always execute the following before moving to the
 ```bash
 # 1. Update TASK.md
 #    - Change completed task from [ ] to [x]
-#    - Update the "最終更新" timestamp
-#    - Update "直近のコミット"
+#    - Update the "Last updated" timestamp
+#    - Update "Recent Commits"
 
 # 2. Syntax check (see .claude/rules/build-verification-commands.md)
 #    Python: python -m py_compile {changed files}
@@ -160,10 +160,10 @@ Each time a task is completed, always execute the following before moving to the
 
 # 5. Git commit (always commit per task)
 git add {changed files}   # git add -A is prohibited (see .claude/rules/git-rules.md)
-git commit -m "{prefix}: {タスク名} (TASK-{N})
+git commit -m "{prefix}: {task name} (TASK-{N})
 
-- {実装内容の箇条書き}
-- 対応UC: UC-XXX（あれば）"
+- {bullet points of implementation details}
+- Related UC: UC-XXX (if applicable)"
 ```
 
 **Commit message prefix rules:** See .claude/rules/git-rules.md
@@ -173,7 +173,7 @@ git commit -m "{prefix}: {タスク名} (TASK-{N})
 When context remaining is running low, always execute the following before moving to the next task:
 
 ```bash
-# Update the "中断時のメモ" in TASK.md
+# Update the "Session Interruption Notes" in TASK.md
 # Contents to record:
 # - Completed tasks (TASK-001 through TASK-XXX)
 # - Next task to work on (TASK-XXX)
@@ -181,19 +181,19 @@ When context remaining is running low, always execute the following before movin
 # - Handoff notes
 
 git add TASK.md
-git commit -m "chore: セッション中断時点の進捗を記録 (TASK-{N}まで完了)"
+git commit -m "chore: record progress at session interruption (completed through TASK-{N})"
 ```
 
 Then communicate the following to the user and stop:
 
 ```
-セッションを中断します。
+Suspending session.
 
-完了済み: TASK-001〜TASK-{N}
-次のタスク: TASK-{N+1}: {タスク名}
+Completed: TASK-001 through TASK-{N}
+Next task: TASK-{N+1}: {task name}
 
-再開時は「developerを使って再開してください」と伝えてください。
-TASK.md と git log を確認して自動的に再開します。
+To resume, say "please resume using developer".
+TASK.md and git log will be checked to resume automatically.
 ```
 
 ---
@@ -234,7 +234,7 @@ FastAPI specific:
 
 ### Common Coding Conventions
 - Follow the naming rules in `ARCHITECTURE.md` for variable names, function names, and file names
-- Write comments in Japanese (code itself in English)
+- Write comments in the language specified by `Output Language` in project-rules.md (code itself in English)
 - Consider splitting if a file exceeds 300 lines
 
 ### File Operation Principles
@@ -263,7 +263,7 @@ Unlike `error`, this represents a state where the agent itself executed normally
 ```
 AGENT_RESULT: developer
 STATUS: blocked
-BLOCKED_REASON: ARCHITECTURE.md のモジュール X と Y の責務が重複しており、メソッド Z の配置先が不明
+BLOCKED_REASON: Module X and Y in ARCHITECTURE.md have overlapping responsibilities; placement of method Z is unclear
 BLOCKED_TARGET: architect
 CURRENT_TASK: TASK-005
 NEXT: suspended

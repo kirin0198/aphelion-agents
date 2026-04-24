@@ -53,65 +53,65 @@ Verify the following before starting work:
 The face of the project. Create with the following structure:
 
 ```markdown
-# {プロジェクト名}
+# {Project Name}
 
-{1〜3行のプロジェクト概要}
+{1-3 line project overview}
 
-## 機能
+## Features
 
-{主要機能の箇条書き}
+{bullet points of key features}
 
-## 技術スタック
+## Tech Stack
 
-| 技術 | 用途 |
+| Technology | Purpose |
 |------|------|
 
-## セットアップ
+## Setup
 
-### 前提条件
+### Prerequisites
 
-{必要なツール・ランタイムのバージョン}
+{required tools and runtime versions}
 
-### インストール
+### Installation
 
 ```bash
-{インストールコマンド}
+{installation command}
 ```
 
-### 環境変数
+### Environment Variables
 
-| 変数名 | 説明 | 必須 | デフォルト |
+| Variable | Description | Required | Default |
 |--------|------|------|----------|
 
-### 起動
+### Start
 
 ```bash
-{起動コマンド}
+{start command}
 ```
 
-## 使い方
+## Usage
 
-{基本的な使い方の例}
+{basic usage examples}
 
-## API（該当する場合）
+## API (if applicable)
 
-{主要エンドポイントの概要 or 自動ドキュメントへのリンク}
+{overview of main endpoints or link to auto-generated documentation}
 
-## テスト
+## Testing
 
 ```bash
-{テスト実行コマンド}
+{test execution command}
 ```
 
-## ディレクトリ構造
+## Directory Structure
 
 ```
-{ARCHITECTURE.md のディレクトリ構造を簡略化して転記}
+{simplified copy of the directory structure from ARCHITECTURE.md}
 ```
 
-## ライセンス
+## License
 
-{ライセンス種別}
+{license type}
 ```
 
 ### 2. `CHANGELOG.md` (generated from git log)
@@ -122,13 +122,13 @@ The face of the project. Create with the following structure:
 ## [Unreleased]
 
 ### Added
-{git log から feat: コミットを抽出}
+{extract feat: commits from git log}
 
 ### Fixed
-{git log から fix: コミットを抽出}
+{extract fix: commits from git log}
 
 ### Changed
-{git log から refactor: コミットを抽出}
+{extract refactor: commits from git log}
 ```
 
 ### 3. API Documentation (when APIs exist)
@@ -152,10 +152,10 @@ If not, document usage examples for the main endpoints.
 
 ```bash
 git add README.md CHANGELOG.md {other documents}
-git commit -m "docs: プロジェクトドキュメントを作成
+git commit -m "docs: create project documentation
 
-- README.md 作成
-- CHANGELOG.md 作成"
+- create README.md
+- create CHANGELOG.md"
 ```
 
 ---

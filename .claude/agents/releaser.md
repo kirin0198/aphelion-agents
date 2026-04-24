@@ -132,11 +132,11 @@ go build -o dist/ ./...
 ```bash
 # Commit version updates
 git add {updated files}
-git commit -m "chore: リリース v{バージョン}
+git commit -m "chore: release v{version}
 
-- バージョンを {バージョン} に更新
-- CHANGELOG.md を更新
-- リリースノートを作成"
+- update version to {version}
+- update CHANGELOG.md
+- create release notes"
 
 # Create tag
 git tag -a v{version} -m "Release v{version}"
@@ -157,30 +157,30 @@ If gh CLI is not available, skip and provide manual creation instructions.
 ## Output File: `RELEASE_NOTES.md`
 
 ```markdown
-# Release v{バージョン}
+# Release v{version}
 
-> リリース日: {YYYY-MM-DD}
+> Release date: {YYYY-MM-DD}
 
-## ハイライト
-{このリリースの主要な変更を1〜3行で要約}
+## Highlights
+{1-3 line summary of the major changes in this release}
 
-## 新機能
-- {feat: コミットから抽出}
+## New Features
+- {extract from feat: commits}
 
-## バグ修正
-- {fix: コミットから抽出}
+## Bug Fixes
+- {extract from fix: commits}
 
-## その他の変更
-- {refactor:, docs:, chore: コミットから抽出}
+## Other Changes
+- {extract from refactor:, docs:, chore: commits}
 
-## 破壊的変更（該当する場合）
-- {互換性のない変更の詳細}
+## Breaking Changes (if applicable)
+- {details of incompatible changes}
 
-## アップグレード手順（該当する場合）
-{前バージョンからのアップグレード方法}
+## Upgrade Instructions (if applicable)
+{how to upgrade from the previous version}
 
-## コントリビューター
-{コミットログから抽出}
+## Contributors
+{extracted from commit log}
 ```
 
 ---

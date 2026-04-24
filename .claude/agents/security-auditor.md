@@ -153,74 +153,74 @@ Select and inspect CWE (Common Weakness Enumeration) items appropriate for the t
 ## Output File: `SECURITY_AUDIT.md`
 
 ```markdown
-# セキュリティ監査レポート: {プロジェクト名}
+# Security Audit Report: {Project Name}
 
-> 参照元: SPEC.md, ARCHITECTURE.md
-> 監査日: {YYYY-MM-DD}
-> 監査範囲: {ファイル数} ファイル
+> Source: SPEC.md, ARCHITECTURE.md
+> Audit date: {YYYY-MM-DD}
+> Audit scope: {file count} files
 
-## 総合評価
-{✅ 問題なし / ⚠️ 要対応あり / ❌ 重大な脆弱性あり}
-
----
-
-## 🔴 CRITICAL（即時修正必須）
-
-### [SEC-001] {脆弱性タイトル}
-- **カテゴリ:** OWASP {A0X} / CWE-{XXX}
-- **ファイル:** `{パス}:{行番号}`
-- **問題:** {脆弱性の説明}
-- **攻撃シナリオ:** {どのように悪用されるか}
-- **修正方針:** {具体的な修正方法}
-- **参考:** {OWASP/CWE のリンク等}
+## Overall Assessment
+{✅ No issues / ⚠️ Action required / ❌ Critical vulnerabilities found}
 
 ---
 
-## 🟡 WARNING（推奨修正）
+## 🔴 CRITICAL (immediate fix required)
 
-### [SEC-XXX] {指摘タイトル}
-- **カテゴリ:** {カテゴリ}
-- **ファイル:** `{パス}:{行番号}`
-- **問題:** {問題の説明}
-- **修正方針:** {修正方法}
-
----
-
-## 🟢 INFO（情報・推奨事項）
-
-### [SEC-XXX] {推奨事項}
-- **内容:** {説明}
+### [SEC-001] {Vulnerability title}
+- **Category:** OWASP {A0X} / CWE-{XXX}
+- **File:** `{path}:{line number}`
+- **Issue:** {description of the vulnerability}
+- **Attack scenario:** {how it can be exploited}
+- **Remediation:** {specific fix approach}
+- **Reference:** {OWASP/CWE link, etc.}
 
 ---
 
-## 監査チェックリスト
+## 🟡 WARNING (recommended fix)
+
+### [SEC-XXX] {Finding title}
+- **Category:** {category}
+- **File:** `{path}:{line number}`
+- **Issue:** {description of the issue}
+- **Remediation:** {fix approach}
+
+---
+
+## 🟢 INFO (informational / recommendations)
+
+### [SEC-XXX] {Recommendation}
+- **Detail:** {description}
+
+---
+
+## Audit Checklist
 
 ### OWASP Top 10
-| # | カテゴリ | 結果 | 備考 |
+| # | Category | Result | Notes |
 |---|---------|------|------|
 | A01 | Broken Access Control | ✅/⚠️/❌ | |
 | A02 | Cryptographic Failures | ✅/⚠️/❌ | |
 | ... | ... | ... | |
 
-### 依存パッケージ脆弱性
-- スキャンツール: {使用したツール}
-- 脆弱性件数: {件数}
-- 詳細: {ツール出力の要約}
+### Dependency Vulnerability Scanning
+- Scan tool: {tool used}
+- Vulnerability count: {count}
+- Details: {summary of tool output}
 
-### 認証・認可
-| エンドポイント | 認証 | 認可 | 備考 |
+### Authentication / Authorization
+| Endpoint | Authentication | Authorization | Notes |
 |---|---|---|---|
 
-### 機密情報ハードコード
-- 検出件数: {件数}
-- 検索対象外: .env, .env.example, テストフィクスチャ
+### Hardcoded Secrets
+- Detected count: {count}
+- Excluded from search: .env, .env.example, test fixtures
 
-### 入力値バリデーション
-| 入力箇所 | バリデーション | 備考 |
+### Input Validation
+| Input point | Validation | Notes |
 |---|---|---|
 
-### CWE チェック
-| CWE | 結果 | 備考 |
+### CWE Check
+| CWE | Result | Notes |
 |-----|------|------|
 ```
 

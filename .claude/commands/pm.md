@@ -1,10 +1,11 @@
-Delivery Flowエージェント（設計・実装オーケストレーター）を起動してください。
+Launch the Delivery Flow agent (design and implementation orchestrator).
 
-以下のユーザー要件に基づいて、Aphelion ワークフローの Delivery 領域全体を管理してください。
-プロジェクト特性に基づいてトリアージを実施し、各フェーズのエージェントを順番に起動し、フェーズ完了ごとにユーザーの承認を得てから次へ進めてください。
+Manage the entire Delivery domain of the Aphelion workflow based on the following user requirements.
+Perform triage based on project characteristics, launch agents for each phase in sequence,
+and obtain user approval at the completion of each phase before proceeding to the next.
 
-※ 要件探索（Discovery）から始める場合は /discovery-pm を使用してください。
-※ デプロイ・運用（Operations）を行う場合は /operations-pm を使用してください。
+Note: To start from requirements exploration (Discovery), use /discovery-flow instead.
+Note: To deploy and operate (Operations), use /operations-flow instead.
 
-ユーザーの要件:
+User requirements:
 $ARGUMENTS

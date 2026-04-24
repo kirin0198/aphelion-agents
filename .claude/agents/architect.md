@@ -76,107 +76,107 @@ If the user has specified a stack, always prioritize that; if no specification e
 ## Output File: `ARCHITECTURE.md`
 
 ```markdown
-# アーキテクチャ設計書: {プロジェクト名}
+# Architecture Design: {Project Name}
 
-> 参照元: SPEC.md ({バージョン or 最終更新日})
-> 作成日: {日付}
+> Source: SPEC.md ({version or last updated date})
+> Created: {date}
 
-## 1. アーキテクチャ概要
+## 1. Architecture Overview
 
-### システム構成図（テキスト）
-{ASCII または Mermaid 記法で描画}
+### System Diagram (text)
+{Draw using ASCII or Mermaid notation}
 
-### 採用アーキテクチャパターン
-- 理由と根拠を明記
+### Adopted Architecture Pattern
+- State reason and rationale explicitly
 
-### 技術スタック
-| 層 | 技術 | バージョン | 選定理由 |
+### Tech Stack
+| Layer | Technology | Version | Selection Rationale |
 |----|------|-----------|---------|
 
-## 2. ディレクトリ構造
+## 2. Directory Structure
 
 ```
-{プロジェクトルート}/
+{project root}/
 ├── src/
-│   ├── {各ディレクトリの役割をコメントで説明}
+│   ├── {explain the role of each directory in comments}
 ...
 ```
 
-## 3. モジュール設計
+## 3. Module Design
 
-### {モジュール名}
-- **責務:**
-- **依存関係:**
-- **公開インターフェース:**
+### {Module Name}
+- **Responsibilities:**
+- **Dependencies:**
+- **Public Interface:**
 
-## 4. データモデル（実装レベル）
+## 4. Data Model (Implementation Level)
 
-### {エンティティ名}
+### {Entity Name}
 ```
-{型定義 or スキーマ定義}
+{type definition or schema definition}
 ```
-- インデックス:
-- リレーション:
+- Indexes:
+- Relations:
 
-## 5. API設計（該当する場合）
+## 5. API Design (if applicable)
 
-### {エンドポイント}
-- **メソッド:**
-- **認証:**
-- **リクエスト:**
-- **レスポンス:**
-- **エラーコード:**
+### {Endpoint}
+- **Method:**
+- **Authentication:**
+- **Request:**
+- **Response:**
+- **Error codes:**
 
-## 6. 状態管理設計（フロントエンドの場合）
+## 6. State Management Design (for frontend)
 
-## 7. 認証・認可設計
+## 7. Authentication / Authorization Design
 
-## 8. エラーハンドリング方針
+## 8. Error Handling Policy
 
-## 9. テスト戦略
+## 9. Test Strategy
 
-| テスト種別 | ツール | カバレッジ目標 | 対象 |
+| Test Type | Tool | Coverage Target | Scope |
 |-----------|--------|-------------|------|
-| 単体テスト | {pytest / vitest / go test} | {目標値} | {対象} |
-| 統合テスト | {pytest + httpx / supertest} | {目標値} | {対象} |
-| E2E テスト | {Playwright / Selenium / なし} | {目標値} | {対象画面} |
-| GUI テスト | {pywinauto / pyautogui / なし} | {目標値} | {対象操作} |
+| Unit tests | {pytest / vitest / go test} | {target} | {scope} |
+| Integration tests | {pytest + httpx / supertest} | {target} | {scope} |
+| E2E tests | {Playwright / Selenium / none} | {target} | {target screens} |
+| GUI tests | {pywinauto / pyautogui / none} | {target} | {target operations} |
 
-### E2E テスト方針（HAS_UI: true の場合）
-- ツール選定理由: {選定根拠}
-- テスト対象ブラウザ: {Chromium / Firefox / WebKit}
-- 実行モード: {headless（CI）/ headed（開発時）}
-- Page Object Model: {使用する / 使用しない}
+### E2E Test Policy (when HAS_UI: true)
+- Tool selection rationale: {rationale}
+- Target browsers: {Chromium / Firefox / WebKit}
+- Execution mode: {headless (CI) / headed (development)}
+- Page Object Model: {used / not used}
 
-## 10. 実装順序・依存関係
+## 10. Implementation Order / Dependencies
 
 ```
-実装フェーズ 1: {基盤}
-  └─ Task 1-1: {具体的なタスク}（依存なし）
-  └─ Task 1-2: {具体的なタスク}（Task 1-1 完了後）
+Implementation Phase 1: {Foundation}
+  └─ Task 1-1: {specific task} (no dependencies)
+  └─ Task 1-2: {specific task} (after Task 1-1)
 
-実装フェーズ 2: {コア機能}
-  └─ Task 2-1: {具体的なタスク}（フェーズ1完了後）
+Implementation Phase 2: {Core Features}
+  └─ Task 2-1: {specific task} (after Phase 1)
   ...
 ```
 
-## 11. 環境・設定
+## 11. Environment / Configuration
 
-- 環境変数一覧（値は除く）
-- 設定ファイル一覧
+- Environment variable list (without values)
+- Configuration file list
 
-## 12. 既知のリスクと対策
+## 12. Known Risks and Mitigation
 
-| リスク | 影響度 | 対策 |
+| Risk | Impact | Mitigation |
 |--------|--------|------|
 
-## 13. 設計判断の記録（ADR）
+## 13. Architecture Decision Records (ADR)
 
-### ADR-001: {判断タイトル}
-- **状況:**
-- **決定:**
-- **理由:**
-- **却下した代替案:**
+### ADR-001: {decision title}
+- **Context:**
+- **Decision:**
+- **Rationale:**
+- **Rejected alternatives:**
 ```
 
 ---

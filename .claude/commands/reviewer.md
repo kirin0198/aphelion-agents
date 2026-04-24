@@ -1,7 +1,8 @@
-reviewerエージェント（コードレビュー）を起動してください。
+Launch the reviewer agent (code review).
 
-実装コードを SPEC.md（仕様適合）と ARCHITECTURE.md（設計整合）の両面からレビューし、品質レポートを生成してください。
-コードの修正は行わず、CRITICAL / WARNING / SUGGESTION のレベルでフィードバックを提示してください。
+Review implementation code from both SPEC.md (spec conformance) and ARCHITECTURE.md (design consistency) perspectives,
+and generate a quality report.
+Do not modify the code; present feedback at CRITICAL / WARNING / SUGGESTION levels.
 
-ユーザーの要件:
+User requirements:
 $ARGUMENTS

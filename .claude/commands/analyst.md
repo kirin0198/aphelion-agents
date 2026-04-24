@@ -1,7 +1,8 @@
-analystエージェント（issue分析・方針決定）を起動してください。
+Launch the analyst agent (issue analysis and approach decision).
 
-バグ報告・機能追加・リファクタリングのissueを受け取り、方針決定とドキュメント更新を行ってください。
-既存のSPEC.mdやARCHITECTURE.mdを確認し、issueを分類・分析した上で、ユーザーに方針の承認を求めてください。
+Receive a bug report, feature addition, or refactoring issue, and determine the approach and update documentation.
+Review existing SPEC.md and ARCHITECTURE.md, classify and analyze the issue,
+and then request user approval of the proposed approach.
 
-ユーザーの要件:
+User requirements:
 $ARGUMENTS

@@ -1,7 +1,9 @@
-Discovery Flowエージェント（要件探索オーケストレーター）を起動してください。
+Launch the Discovery Flow agent (requirements exploration orchestrator).
 
-プロジェクト特性をヒアリングしてトリアージを実施し、Discovery領域のフロー（interviewer → researcher → poc-engineer → concept-validator → rules-designer → scope-planner）を管理してください。
-各フェーズのエージェントを順番に起動し、フェーズ完了ごとにユーザーの承認を得てから次へ進めてください。
+Interview the user on project characteristics, perform triage, and manage the Discovery domain flow
+(interviewer → researcher → poc-engineer → concept-validator → rules-designer → scope-planner).
+Launch agents for each phase in sequence and obtain user approval at the completion of each phase
+before proceeding to the next.
 
-ユーザーの要件:
+User requirements:
 $ARGUMENTS

@@ -1,36 +1,36 @@
-依存パッケージの脆弱性スキャンを実行してください。
+Run a vulnerability scan on the project's dependencies.
 
-## 手順
+## Steps
 
-1. プロジェクトの技術スタックを自動検出する（以下のファイルの存在で判定）:
+1. Auto-detect the project's tech stack by checking for the following files:
    - `pyproject.toml` / `requirements.txt` → Python
    - `package.json` → Node.js
    - `go.mod` → Go
    - `Cargo.toml` → Rust
 
-2. 検出した技術スタックに対応するスキャンツールを実行する:
+2. Run the scan tool that corresponds to the detected tech stack:
    - Python: `uv run pip-audit 2>/dev/null || pip-audit 2>/dev/null`
    - Node.js: `npm audit`
    - Go: `govulncheck ./...`
    - Rust: `cargo audit`
 
-3. ツールが未インストールの場合はその旨を報告し、インストール方法を案内する
+3. If the tool is not installed, report this and provide installation instructions
 
-4. 結果を以下の形式で報告する:
+4. Report results in the following format:
 
 ```
-## 脆弱性スキャン結果
+## Vulnerability Scan Results
 
-- 技術スタック: {検出結果}
-- スキャンツール: {使用ツール}
-- 脆弱性件数: {件数}
+- Tech stack: {detected result}
+- Scan tool: {tool used}
+- Vulnerabilities found: {count}
 
-### 検出された脆弱性（ある場合）
-| パッケージ | 現バージョン | 脆弱性 | 重大度 | 修正バージョン |
-|-----------|------------|--------|--------|-------------|
+### Detected Vulnerabilities (if any)
+| Package | Current Version | Vulnerability | Severity | Fixed Version |
+|---------|----------------|---------------|----------|---------------|
 
-### 推奨アクション
-{修正方法の提案}
+### Recommended Actions
+{Proposed remediation steps}
 ```
 
 $ARGUMENTS

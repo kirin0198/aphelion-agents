@@ -1,7 +1,9 @@
-Delivery Flowエージェント（設計・実装オーケストレーター）を起動してください。
+Launch the Delivery Flow agent (design and implementation orchestrator).
 
-プロジェクト特性に基づいてトリアージを実施し、Delivery領域のフロー（spec-designer → ux-designer → architect → scaffolder → developer → test-designer → tester → reviewer → security-auditor → doc-writer → releaser）を管理してください。
-各フェーズのエージェントを順番に起動し、フェーズ完了ごとにユーザーの承認を得てから次へ進めてください。
+Perform triage based on project characteristics and manage the Delivery domain flow
+(spec-designer → ux-designer → architect → scaffolder → developer → test-designer → tester → reviewer → security-auditor → doc-writer → releaser).
+Launch agents for each phase in sequence and obtain user approval at the completion of each phase
+before proceeding to the next.
 
-ユーザーの要件:
+User requirements:
 $ARGUMENTS

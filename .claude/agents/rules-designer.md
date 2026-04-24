@@ -71,24 +71,24 @@ Ask only what cannot be inferred from artifacts. Skip questions where the answer
 {
   "questions": [
     {
-      "question": "メインの開発言語はどれですか？",
-      "header": "言語",
+      "question": "What is the main development language?",
+      "header": "Language",
       "options": [
-        {"label": "Python", "description": "FastAPI / Django / Flask 等"},
-        {"label": "TypeScript", "description": "Next.js / Express / Hono 等"},
-        {"label": "Go", "description": "標準ライブラリ / Echo / Gin 等"},
-        {"label": "Rust", "description": "Actix / Axum 等"}
+        {"label": "Python", "description": "FastAPI / Django / Flask, etc."},
+        {"label": "TypeScript", "description": "Next.js / Express / Hono, etc."},
+        {"label": "Go", "description": "Standard library / Echo / Gin, etc."},
+        {"label": "Rust", "description": "Actix / Axum, etc."}
       ],
       "multiSelect": false
     },
     {
-      "question": "パッケージマネージャーはどれを使用しますか？",
-      "header": "パッケージ管理",
+      "question": "Which package manager will you use?",
+      "header": "Package management",
       "options": [
-        {"label": "uv (推奨)", "description": "Python: 高速なパッケージマネージャー"},
-        {"label": "pip", "description": "Python: 標準パッケージマネージャー"},
-        {"label": "npm", "description": "Node.js: 標準パッケージマネージャー"},
-        {"label": "pnpm", "description": "Node.js: 高速・省ディスクなパッケージマネージャー"}
+        {"label": "uv (recommended)", "description": "Python: fast package manager"},
+        {"label": "pip", "description": "Python: standard package manager"},
+        {"label": "npm", "description": "Node.js: standard package manager"},
+        {"label": "pnpm", "description": "Node.js: fast, disk-efficient package manager"}
       ],
       "multiSelect": false
     }
@@ -105,31 +105,31 @@ Adjust package manager options based on the selected language.
 {
   "questions": [
     {
-      "question": "コードコメントの言語はどちらにしますか？",
-      "header": "コメント言語",
+      "question": "What language should code comments be written in?",
+      "header": "Comment language",
       "options": [
-        {"label": "日本語 (推奨)", "description": "コメント・ドキュメントを日本語で記述"},
-        {"label": "英語", "description": "コメント・ドキュメントを英語で記述"}
+        {"label": "Japanese (recommended)", "description": "Write comments and documentation in Japanese"},
+        {"label": "English", "description": "Write comments and documentation in English"}
       ],
       "multiSelect": false
     },
     {
-      "question": "型アノテーション（型注釈）のポリシーはどうしますか？",
-      "header": "型注釈",
+      "question": "What is the type annotation policy?",
+      "header": "Type annotations",
       "options": [
-        {"label": "厳密 (推奨)", "description": "全ての関数引数・戻り値に型を付与"},
-        {"label": "緩め", "description": "公開APIのみ型を付与"},
-        {"label": "なし", "description": "型注釈は使用しない"}
+        {"label": "Strict (recommended)", "description": "Add types to all function arguments and return values"},
+        {"label": "Relaxed", "description": "Add types to public APIs only"},
+        {"label": "None", "description": "Do not use type annotations"}
       ],
       "multiSelect": false
     },
     {
-      "question": "1ファイルあたりの推奨最大行数は？",
-      "header": "ファイルサイズ",
+      "question": "What is the recommended maximum line count per file?",
+      "header": "File size",
       "options": [
-        {"label": "300行 (推奨)", "description": "超えたら分割を検討"},
-        {"label": "500行", "description": "大きめのファイルも許容"},
-        {"label": "制限なし", "description": "行数制限を設けない"}
+        {"label": "300 lines (recommended)", "description": "Consider splitting if exceeded"},
+        {"label": "500 lines", "description": "Larger files are acceptable"},
+        {"label": "No limit", "description": "Do not impose a line count limit"}
       ],
       "multiSelect": false
     }
@@ -143,22 +143,22 @@ Adjust package manager options based on the selected language.
 {
   "questions": [
     {
-      "question": "コミットメッセージの形式はどうしますか？",
-      "header": "コミット形式",
+      "question": "What format should commit messages follow?",
+      "header": "Commit format",
       "options": [
-        {"label": "Conventional Commits (推奨)", "description": "feat: / fix: / refactor: 等のプレフィックス付き"},
-        {"label": "自由形式", "description": "特にルールを設けない"},
-        {"label": "カスタム", "description": "独自のルールを指定する"}
+        {"label": "Conventional Commits (recommended)", "description": "Prefixes like feat: / fix: / refactor:, etc."},
+        {"label": "Free-form", "description": "No specific rules"},
+        {"label": "Custom", "description": "Specify a custom rule"}
       ],
       "multiSelect": false
     },
     {
-      "question": "ブランチ戦略はどうしますか？",
-      "header": "ブランチ戦略",
+      "question": "What branching strategy will you use?",
+      "header": "Branch strategy",
       "options": [
-        {"label": "GitHub Flow (推奨)", "description": "main + feature ブランチのシンプルな構成"},
+        {"label": "GitHub Flow (recommended)", "description": "Simple setup: main + feature branches"},
         {"label": "Git Flow", "description": "main / develop / feature / release / hotfix"},
-        {"label": "Trunk-based", "description": "main に直接コミット（短命ブランチあり）"}
+        {"label": "Trunk-based", "description": "Commit directly to main (with short-lived branches)"}
       ],
       "multiSelect": false
     }
@@ -172,11 +172,11 @@ Adjust package manager options based on the selected language.
 {
   "questions": [
     {
-      "question": "このプロジェクト固有のルールや制約はありますか？",
-      "header": "追加ルール",
+      "question": "Are there any project-specific rules or constraints?",
+      "header": "Additional rules",
       "options": [
-        {"label": "特になし", "description": "上記の設定で十分"},
-        {"label": "あり", "description": "追加のルールを指定する"}
+        {"label": "None in particular", "description": "The settings above are sufficient"},
+        {"label": "Yes", "description": "Specify additional rules"}
       ],
       "multiSelect": false
     }
@@ -184,7 +184,7 @@ Adjust package manager options based on the selected language.
 }
 ```
 
-If the user selects "あり", ask for details via text output and incorporate them.
+If the user selects "Yes", ask for details via text output and incorporate them.
 
 **Round 5: Agent Behavior Policies (2 questions, presented in parallel)**
 
@@ -192,20 +192,20 @@ If the user selects "あり", ask for details via text output and incorporate th
 {
   "questions": [
     {
-      "question": "エージェント出力の既定言語はどれにしますか？",
-      "header": "出力言語",
+      "question": "What should be the default output language for agents?",
+      "header": "Output language",
       "options": [
         {"label": "English (recommended)", "description": "Default. AskUserQuestion / approval gates / progress / reports are in English"},
-        {"label": "Japanese", "description": "日本語で出力する。既存 Aphelion 本体もこちら"}
+        {"label": "Japanese", "description": "Output in Japanese. The Aphelion core itself uses this setting"}
       ],
       "multiSelect": false
     },
     {
-      "question": "コミットに Co-Authored-By: Claude を付与しますか？",
+      "question": "Should commits include Co-Authored-By: Claude?",
       "header": "Co-Author",
       "options": [
-        {"label": "付与する (recommended)", "description": "Claude の関与を co-author として明示。OSS 標準慣行に準拠"},
-        {"label": "付与しない", "description": "プロジェクトポリシーで co-author が禁止されている場合など"}
+        {"label": "Yes (recommended)", "description": "Explicitly attribute Claude's involvement as co-author. Follows OSS standard practice"},
+        {"label": "No", "description": "For projects where co-author attribution is prohibited by policy"}
       ],
       "multiSelect": false
     }
@@ -226,19 +226,19 @@ Output a summary of the generated rules as text, then request approval:
 ```json
 {
   "questions": [{
-    "question": "上記のプロジェクトルール（project-rules.md）で問題ありませんか？",
-    "header": "ルール確認",
+    "question": "Are the project rules (project-rules.md) above acceptable?",
+    "header": "Rule confirmation",
     "options": [
-      {"label": "承認", "description": "このルールで確定する"},
-      {"label": "修正を指示", "description": "一部のルールを変更する"},
-      {"label": "最初からやり直し", "description": "ルール決定をやり直す"}
+      {"label": "Approve", "description": "Confirm with these rules"},
+      {"label": "Request modification", "description": "Change some of the rules"},
+      {"label": "Start over", "description": "Redo the rule determination"}
     ],
     "multiSelect": false
   }]
 }
 ```
 
-If "修正を指示" is selected, apply the changes and re-present.
+If "Request modification" is selected, apply the changes and re-present.
 
 ---
 
@@ -247,89 +247,89 @@ If "修正を指示" is selected, apply the changes and re-present.
 Adapt the template below based on the determined language/framework. Omit sections that are not applicable.
 
 ```markdown
-# Project Rules — {プロジェクト名}
+# Project Rules — {Project Name}
 
-> 作成日: {YYYY-MM-DD}
+> Created: {YYYY-MM-DD}
 
-## プロジェクト概要
+## Project Overview
 
-{INTERVIEW_RESULT.md から1〜3行の要約}
+{1–3 line summary from INTERVIEW_RESULT.md}
 
-## 技術スタック
+## Tech Stack
 
-- 言語: {language} {version}
-- フレームワーク: {framework}
-- パッケージマネージャー: {manager}
-- リンター: {linter}
-- フォーマッター: {formatter}
-- テストフレームワーク: {test framework}
+- Language: {language} {version}
+- Framework: {framework}
+- Package manager: {manager}
+- Linter: {linter}
+- Formatter: {formatter}
+- Test framework: {test framework}
 
-## コーディング規約
+## Coding Conventions
 
-### 命名規則
+### Naming Rules
 
-| 対象 | 規則 | 例 |
+| Target | Rule | Example |
 |------|------|-----|
-| 変数・関数 | {snake_case / camelCase} | {example} |
-| クラス・型 | PascalCase | {example} |
-| 定数 | UPPER_SNAKE_CASE | {example} |
-| ファイル名 | {kebab-case / snake_case} | {example} |
+| Variables / functions | {snake_case / camelCase} | {example} |
+| Classes / types | PascalCase | {example} |
+| Constants | UPPER_SNAKE_CASE | {example} |
+| File names | {kebab-case / snake_case} | {example} |
 
-### コードスタイル
+### Code Style
 
-- インデント: {スペース / タブ}, サイズ: {2 / 4}
-- 最大行長: {80 / 120}
-- コメント言語: {日本語 / 英語}
-- 型注釈: {厳密 / 緩め / なし}
-- 1ファイル推奨最大行数: {300 / 500 / 制限なし}
+- Indent: {spaces / tabs}, size: {2 / 4}
+- Max line length: {80 / 120}
+- Comment language: {Japanese / English}
+- Type annotations: {strict / relaxed / none}
+- Recommended max lines per file: {300 / 500 / no limit}
 
-### {言語}固有のルール
+### {Language}-specific Rules
 
-{言語・フレームワーク固有の規約をここに記載}
+{Language and framework specific conventions go here}
 
-## Git ルール
+## Git Rules
 
-### コミットメッセージ
+### Commit Messages
 
-{Conventional Commits の場合:}
+{For Conventional Commits:}
 ```
-{prefix}: {概要}
+{prefix}: {summary}
 
-- {詳細（箇条書き）}
+- {details (bullet points)}
 ```
 
-| prefix | 用途 |
+| prefix | Usage |
 |--------|------|
-| `feat:` | 新機能 |
-| `fix:` | バグ修正 |
-| `refactor:` | リファクタリング |
-| `test:` | テスト |
-| `docs:` | ドキュメント |
-| `chore:` | 設定・環境 |
+| `feat:` | New feature |
+| `fix:` | Bug fix |
+| `refactor:` | Refactoring |
+| `test:` | Tests |
+| `docs:` | Documentation |
+| `chore:` | Configuration / environment |
 
-### ブランチ戦略
+### Branch Strategy
 
-{選択されたブランチ戦略の説明}
+{Description of the selected branch strategy}
 
-### ステージング
+### Staging
 
-- `git add -A` は禁止（機密ファイルの混入防止）
-- `git add {対象ファイル}` で明示的にステージング
-- `.env`, `credentials.*`, `*.secret` 等はコミットしない
+- `git add -A` is prohibited (prevents accidental inclusion of sensitive files)
+- Stage explicitly with `git add {target files}`
+- Never commit `.env`, `credentials.*`, `*.secret`, etc.
 
-## ビルド・テストコマンド
+## Build / Test Commands
 
-| 操作 | コマンド |
+| Operation | Command |
 |------|---------|
-| ビルド / 型チェック | {command} |
-| リント | {command} |
-| フォーマット | {command} |
-| テスト | {command} |
+| Build / type check | {command} |
+| Lint | {command} |
+| Format | {command} |
+| Test | {command} |
 
-## ディレクトリ構成
+## Directory Structure
 
 ```
-{想定されるディレクトリ構成}
+{expected directory structure}
 ```
 
 ## Authoring
@@ -341,9 +341,9 @@ Adapt the template below based on the determined language/framework. Omit sectio
 - Output Language: {en | ja}
 - Fallback Language: en
 
-## プロジェクト固有のルール
+## Project-Specific Rules
 
-{ユーザーが指定した追加ルール。なければ「特になし」}
+{Additional rules specified by the user. If none, write "None in particular"}
 ```
 
 ### Language-Specific Defaults

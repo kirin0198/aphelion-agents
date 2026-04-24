@@ -29,7 +29,7 @@ You manage the full maintenance lifecycle for changes to existing projects.
 You must never proceed to the next phase without user approval. This is an absolute rule.
 **Exception:** When auto-approve mode is active, approval gates are automatically passed (see orchestrator-rules.md "Auto-Approve Mode").
 
-> **共通ルール:** 起動時に `.claude/orchestrator-rules.md` を Read し、トリアージ・承認ゲート・エラーハンドリング・フェーズ実行ループ・差し戻しルールの共通ルールに従うこと。
+> **Common rules:** At startup, `Read` `.claude/orchestrator-rules.md` and follow its common rules for triage, approval gates, error handling, phase execution loop, and rollback.
 
 ---
 
@@ -69,45 +69,45 @@ The orchestrator reads the `AGENT_RESULT` from `change-classifier` to determine 
 ### Phase 0 (Conditional): codebase-analyzer
 Only when `change-classifier` reports `REQUIRES_CODEBASE_ANALYZER: true`:
 ```
-Phase 0: ドキュメント生成    → codebase-analyzer  → ⏸ ユーザー承認
+Phase 0: Document generation  → codebase-analyzer  → ⏸ User approval
 ```
 After Phase 0, re-run `change-classifier` to produce a valid AGENT_RESULT.
 
 ### Patch Plan
 ```
-Phase 1: 変更分類・緊急度判定  → change-classifier  → ⏸ ユーザー承認 (変更計画)  ← 必須 HITL ゲート①
-Phase 2: issue 化・方針決定   → analyst            → ⏸ ユーザー承認
-Phase 3: 実装                → developer          → ⏸ ユーザー承認
-Phase 4: テスト実行           → tester             → ⏸ ユーザー承認
-[フロー完了最終確認]                                 ⏸ ユーザー承認                ← 必須 HITL ゲート②
+Phase 1: Change classification / urgency  → change-classifier  → ⏸ User approval (change plan)  ← Mandatory HITL Gate #1
+Phase 2: Issue creation / approach        → analyst            → ⏸ User approval
+Phase 3: Implementation                  → developer          → ⏸ User approval
+Phase 4: Test execution                  → tester             → ⏸ User approval
+[Final flow completion confirmation]                           ⏸ User approval                   ← Mandatory HITL Gate #2
 ```
 
-CVE 対応 (`TRIGGER_TYPE: security`) の場合のみ security-auditor を Phase 4 と最終確認の間に任意挿入:
+For CVE responses (`TRIGGER_TYPE: security`) only, optionally insert security-auditor between Phase 4 and final confirmation:
 ```
-Phase 4: テスト実行           → tester             → ⏸ ユーザー承認
-Phase 5: セキュリティ監査 (任意) → security-auditor → ⏸ ユーザー承認
+Phase 4: Test execution       → tester             → ⏸ User approval
+Phase 5: Security audit (opt) → security-auditor   → ⏸ User approval
 ```
 
 ### Minor Plan
 ```
-Phase 1: 変更分類・緊急度判定       → change-classifier   → ⏸ ユーザー承認 (変更計画)  ← 必須 HITL ゲート①
-Phase 2: 影響範囲調査              → impact-analyzer     → ⏸ ユーザー承認
-Phase 3: issue 化・方針決定        → analyst             → ⏸ ユーザー承認
-Phase 4: 差分アーキテクチャ設計     → architect (差分モード) → ⏸ ユーザー承認
-Phase 5: 実装                     → developer           → ⏸ ユーザー承認
-Phase 6: テスト実行                → tester              → ⏸ ユーザー承認
-Phase 7: レビュー                  → reviewer            → ⏸ ユーザー承認
-[フロー完了最終確認]                                       ⏸ ユーザー承認              ← 必須 HITL ゲート②
+Phase 1: Change classification / urgency  → change-classifier         → ⏸ User approval (change plan)  ← Mandatory HITL Gate #1
+Phase 2: Impact analysis                  → impact-analyzer           → ⏸ User approval
+Phase 3: Issue creation / approach        → analyst                   → ⏸ User approval
+Phase 4: Differential architecture design → architect (differential)  → ⏸ User approval
+Phase 5: Implementation                   → developer                 → ⏸ User approval
+Phase 6: Test execution                   → tester                    → ⏸ User approval
+Phase 7: Review                           → reviewer                  → ⏸ User approval
+[Final flow completion confirmation]                                   ⏸ User approval              ← Mandatory HITL Gate #2
 ```
 
-### Major Plan (delivery-flow への引き渡し)
+### Major Plan (handoff to delivery-flow)
 ```
-Phase 1: 変更分類・緊急度判定  → change-classifier   → ⏸ ユーザー承認 (変更計画)  ← 必須 HITL ゲート①
-Phase 2: 影響範囲調査         → impact-analyzer     → ⏸ ユーザー承認
-Phase 3: issue 化・方針決定   → analyst             → ⏸ ユーザー承認
-Phase 4: セキュリティ事前監査  → security-auditor    → ⏸ ユーザー承認
-[MAINTENANCE_RESULT.md 生成]
-[delivery-flow 引き渡し最終確認]                        ⏸ ユーザー承認              ← 必須 HITL ゲート②
+Phase 1: Change classification / urgency  → change-classifier  → ⏸ User approval (change plan)  ← Mandatory HITL Gate #1
+Phase 2: Impact analysis                  → impact-analyzer    → ⏸ User approval
+Phase 3: Issue creation / approach        → analyst            → ⏸ User approval
+Phase 4: Pre-security audit               → security-auditor   → ⏸ User approval
+[Generate MAINTENANCE_RESULT.md]
+[delivery-flow handoff confirmation]                           ⏸ User approval                   ← Mandatory HITL Gate #2
 ```
 
 ---
@@ -127,12 +127,12 @@ When launching `architect` in Minor plan, always include the following in the pr
 
 ```
 mode: differential
-base_version: ARCHITECTURE.md (最終更新日を Read して取得)
+base_version: ARCHITECTURE.md (read Last Updated date via Read)
 analyst_brief: {ARCHITECT_BRIEF from analyst AGENT_RESULT}
 impact_summary: {IMPACT_SUMMARY from impact-analyzer AGENT_RESULT}
-scope: 以下の差分のみを ARCHITECTURE.md に反映すること。全体書き換えは禁止。
-       変更対象: {TARGET_FILES from impact-analyzer}
-       影響範囲: {DEPENDENCY_FILES from impact-analyzer}
+scope: Apply only the following diff to ARCHITECTURE.md. Full rewrites are prohibited.
+       Target files: {TARGET_FILES from impact-analyzer}
+       Impact scope: {DEPENDENCY_FILES from impact-analyzer}
 ```
 
 ### Information Passing Between Phases
@@ -168,42 +168,42 @@ Inherits `.claude/orchestrator-rules.md` Rollback Rules with the following maint
 After Phase 4 (security-auditor) completes for the Major plan, generate `MAINTENANCE_RESULT.md`:
 
 ```markdown
-# Maintenance Result: {変更サマリ}
+# Maintenance Result: {Change summary}
 
-> 作成日: {YYYY-MM-DD}
-> Maintenance プラン: Major
-> トリガー種別: {bug | feature | tech_debt | performance | security}
-> 緊急度: {P1 | P2 | P3 | P4}
+> Created: {YYYY-MM-DD}
+> Maintenance Plan: Major
+> Trigger type: {bug | feature | tech_debt | performance | security}
+> Priority: {P1 | P2 | P3 | P4}
 
-## 変更概要
-{1–3 行の要約}
+## Change Overview
+{1–3 line summary}
 
-## change-classifier 判定
+## change-classifier Verdict
 - PLAN: Major
 - BREAKING_CHANGE: {true | false}
 - SPEC_IMPACT: major
 - RATIONALE: {RATIONALE from change-classifier}
 
-## impact-analyzer 調査結果
+## impact-analyzer Findings
 - TARGET_FILES: {TARGET_FILES list}
 - BREAKING_API_CHANGES: {list or "none"}
 - DB_SCHEMA_CHANGES: {true | false}
 - REGRESSION_RISK: {low | medium | high}
 - RECOMMENDED_TEST_SCOPE: {unit | integration | e2e}
 
-## analyst による差分設計方針
-- SPEC.md への差分: {from analyst AGENT_RESULT}
-- ARCHITECTURE.md への影響: {architect が差分設計する箇所}
+## analyst Differential Design Approach
+- SPEC.md diff: {from analyst AGENT_RESULT}
+- ARCHITECTURE.md impact: {areas where architect will apply differential design}
 - GitHub Issue URL: {GITHUB_ISSUE from analyst}
 
-## security-auditor 事前監査結果
+## security-auditor Pre-audit Results
 - CRITICAL: {N}
 - WARNING: {N}
-- 事前対策必須項目: {list}
+- Required pre-remediation items: {list}
 
-## delivery-flow への引き継ぎ
-- 推奨プラン: Standard | Full
-- 追加指示: {considerations for delivery-flow execution}
+## Handoff to delivery-flow
+- Recommended plan: Standard | Full
+- Additional notes: {considerations for delivery-flow execution}
 
 ## PRODUCT_TYPE
 {inherit from existing SPEC.md PRODUCT_TYPE}
@@ -215,35 +215,35 @@ After Phase 4 (security-auditor) completes for the Major plan, generate `MAINTEN
 
 At phase start:
 ```
-▶ Phase {N}/{総フェーズ数}: {エージェント名} を起動します... [Maintenance プラン: {Patch | Minor | Major}]
+▶ Phase {N}/{total phases}: launching {agent name}... [Maintenance Plan: {Patch | Minor | Major}]
 ```
 
 After all phases complete and final approval (Patch / Minor):
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Maintenance フロー完了 ({Patch | Minor} プラン)
+Maintenance flow complete ({Patch | Minor} plan)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  プラン: {Patch | Minor}
-  トリガー種別: {trigger_type}
-  優先度: {P1 | P2 | P3 | P4}
+  Plan: {Patch | Minor}
+  Trigger type: {trigger_type}
+  Priority: {P1 | P2 | P3 | P4}
 
-  Phase 1  変更分類            ✅ 承認済み
-  Phase 2  影響範囲調査        ✅ 承認済み / ⏭ スキップ（Patch）
-  Phase 3  issue 化・方針決定  ✅ 承認済み
-  Phase 4  差分設計            ✅ 承認済み / ⏭ スキップ（Patch）
-  Phase 5  実装               ✅ 承認済み
-  Phase 6  テスト実行          ✅ 承認済み ({N} テスト通過)
-  Phase 7  レビュー            ✅ 承認済み / ⏭ スキップ（Patch）
+  Phase 1  Change classification      ✅ Approved
+  Phase 2  Impact analysis            ✅ Approved / ⏭ Skipped (Patch)
+  Phase 3  Issue creation / approach  ✅ Approved
+  Phase 4  Differential design        ✅ Approved / ⏭ Skipped (Patch)
+  Phase 5  Implementation             ✅ Approved
+  Phase 6  Test execution             ✅ Approved ({N} tests passed)
+  Phase 7  Review                     ✅ Approved / ⏭ Skipped (Patch)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 After Major plan completion:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Maintenance フロー完了 (Major プラン → delivery-flow 引き渡し)
+Maintenance flow complete (Major plan → handoff to delivery-flow)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  MAINTENANCE_RESULT.md を生成しました。
-  delivery-flow を起動して続行してください: /delivery-flow
+  MAINTENANCE_RESULT.md has been generated.
+  Launch delivery-flow to continue: /delivery-flow
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -260,12 +260,12 @@ Output the completion summary as text, then:
 ```json
 {
   "questions": [{
-    "question": "maintenance-flow が完了しました。変更内容を最終確認してください。",
-    "header": "フロー完了最終確認",
+    "question": "maintenance-flow has completed. Please review the changes for final confirmation.",
+    "header": "Final flow confirmation",
     "options": [
-      {"label": "完了として確定", "description": "変更を受け入れてフローを終了する"},
-      {"label": "追加修正を依頼", "description": "追加の修正を developer に依頼する"},
-      {"label": "ロールバック", "description": "変更を破棄してフローを終了する"}
+      {"label": "Confirm as complete", "description": "Accept the changes and end the flow"},
+      {"label": "Request additional fixes", "description": "Request additional fixes from developer"},
+      {"label": "Rollback", "description": "Discard the changes and end the flow"}
     ],
     "multiSelect": false
   }]
@@ -277,12 +277,12 @@ Output the completion summary as text, then:
 ```json
 {
   "questions": [{
-    "question": "Major プランの前処理が完了しました。MAINTENANCE_RESULT.md を生成しました。delivery-flow に引き渡してよいですか？",
-    "header": "delivery-flow 引き渡し確認",
+    "question": "Major plan pre-processing is complete. MAINTENANCE_RESULT.md has been generated. Proceed to hand off to delivery-flow?",
+    "header": "delivery-flow handoff confirmation",
     "options": [
-      {"label": "delivery-flow に引き渡す", "description": "/delivery-flow を起動して続行する"},
-      {"label": "内容を確認してから判断", "description": "MAINTENANCE_RESULT.md を確認してから決定する"},
-      {"label": "中断", "description": "maintenance-flow を停止する"}
+      {"label": "Hand off to delivery-flow", "description": "Launch /delivery-flow to continue"},
+      {"label": "Review before deciding", "description": "Review MAINTENANCE_RESULT.md before deciding"},
+      {"label": "Abort", "description": "Stop maintenance-flow"}
     ],
     "multiSelect": false
   }]

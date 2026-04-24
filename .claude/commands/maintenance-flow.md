@@ -1,11 +1,12 @@
-Maintenance Flowエージェント（保守・変更オーケストレーター）を起動してください。
+Launch the Maintenance Flow agent (maintenance and change orchestrator).
 
-既存プロジェクトへの変更・保守トリガー（バグ・機能追加・技術的負債・パフォーマンス・セキュリティパッチ）を受け取り、
-Patch / Minor / Major のトリアージを実施してください。
-change-classifier → (codebase-analyzer if needed) → impact-analyzer → analyst → architect → developer → tester → reviewer
-の順で必要なエージェントを起動し、フェーズ完了ごとにユーザーの承認を得てから次へ進めてください。
+Receive a maintenance or change trigger for an existing project (bug, feature addition, technical debt,
+performance issue, or security patch), and perform Patch / Minor / Major triage.
+Launch the necessary agents in order —
+change-classifier → (codebase-analyzer if needed) → impact-analyzer → analyst → architect → developer → tester → reviewer —
+and obtain user approval at the completion of each phase before proceeding to the next.
 
-Patch / Minor は maintenance-flow 単独で完結させ、Major は delivery-flow へ引き渡してください。
+Patch and Minor plans complete within maintenance-flow standalone; Major hands off to delivery-flow.
 
-ユーザーの要件:
+User requirements:
 $ARGUMENTS

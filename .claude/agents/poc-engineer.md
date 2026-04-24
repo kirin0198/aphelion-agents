@@ -124,78 +124,78 @@ When a requirement is determined infeasible, provide alternatives whenever possi
 ## Output File: `POC_RESULT.md`
 
 ```markdown
-# PoC Result: {プロジェクト名}
+# PoC Result: {Project Name}
 
-> 参照元: INTERVIEW_RESULT.md, RESEARCH_RESULT.md
-> 実施日: {YYYY-MM-DD}
-> 更新履歴:
->   - {YYYY-MM-DD}: 初回作成
+> Source: INTERVIEW_RESULT.md, RESEARCH_RESULT.md
+> Conducted: {YYYY-MM-DD}
+> Update history:
+>   - {YYYY-MM-DD}: Initial creation
 
-## PoC概要
-{何を検証したか、1〜3行の要約}
+## PoC Overview
+{1–3 line summary of what was verified}
 
-## 検証項目と結果
+## Verification Items and Results
 
-| # | 検証項目 | 結果 | 備考 |
+| # | Verification Item | Result | Notes |
 |---|---|---|---|
-| 1 | {検証項目} | ✅ 成功 / ❌ 失敗 / ⚠️ 条件付き | {詳細・制約} |
+| 1 | {verification item} | ✅ Pass / ❌ Fail / ⚠️ Conditional | {details / constraints} |
 
-### 検証詳細
+### Verification Details
 
-#### 検証 1: {検証項目名}
-- **目的:** {何を確認するか}
-- **手法:** {どのように検証したか}
-- **結果:** {✅ 成功 / ❌ 失敗 / ⚠️ 条件付き}
-- **詳細:** {具体的な結果・数値・ログ等}
-- **所見:** {この結果から言えること}
+#### Verification 1: {verification item name}
+- **Purpose:** {what is being confirmed}
+- **Method:** {how it was verified}
+- **Result:** {✅ Pass / ❌ Fail / ⚠️ Conditional}
+- **Details:** {specific results, numbers, logs, etc.}
+- **Findings:** {what can be concluded from this result}
 
-## 既存システム分析（該当する場合）
+## Existing System Analysis (if applicable)
 
-### コードベース概要
-- 言語・フレームワーク: {特定結果}
-- ファイル数: {概算}
-- ディレクトリ構造: {主要な構造}
+### Codebase Overview
+- Language / framework: {identified result}
+- File count: {estimate}
+- Directory structure: {key structure}
 
-### 技術的負債
-| 項目 | 深刻度 | 影響 |
+### Technical Debt
+| Item | Severity | Impact |
 |---|---|---|
-| {負債の内容} | 高/中/低 | {プロジェクトへの影響} |
+| {debt description} | high/medium/low | {impact on the project} |
 
-### 統合ポイント
-| 統合箇所 | 既存コード | 新規機能 | 難易度 |
+### Integration Points
+| Integration point | Existing code | New feature | Difficulty |
 |---|---|---|---|
-| {統合ポイント} | {既存側のファイル/モジュール} | {新規側の機能} | 高/中/低 |
+| {integration point} | {existing file/module} | {new feature} | high/medium/low |
 
-## データ戦略評価（該当する場合）
+## Data Strategy Evaluation (if applicable)
 
-### データ量の推定
-{初期データ量・成長率の概算}
+### Data Volume Estimation
+{Estimate of initial data volume and growth rate}
 
-### 移行要件
-{既存データの移行が必要な場合の計画}
+### Migration Requirements
+{Plan if existing data migration is needed}
 
-### 統合要件
-{外部データソースとの連携が必要な場合の方針}
+### Integration Requirements
+{Approach if integration with external data sources is needed}
 
-## PoCコード
-| ファイル | 概要 | 検証項目 |
+## PoC Code
+| File | Description | Verification item |
 |---|---|---|
-| poc/{ファイル名} | {概要} | 検証 {N} |
+| poc/{filename} | {description} | Verification {N} |
 
-## 技術的な制約・発見事項
-- {PoC を通じて発見した制約や注意点}
+## Technical Constraints / Findings
+- {constraints and caveats discovered through PoC}
 
-## 実現不可能な要件（該当する場合）
-| 要件 | 理由 | 代替案 |
+## Infeasible Requirements (if any)
+| Requirement | Reason | Alternative |
 |---|---|---|
-| {要件名} | {なぜ実現不可能か} | {代替案の提案} |
+| {requirement name} | {why it is infeasible} | {proposed alternative} |
 
-{interviewer への差し戻し理由を明記}
+{Clearly state the reason for rollback to interviewer}
 
-## 推奨技術スタック（初期提案）
-| 層 | 技術 | 選定理由 |
+## Recommended Tech Stack (Initial Proposal)
+| Layer | Technology | Selection Rationale |
 |---|---|---|
-| {バックエンド/フロントエンド/DB等} | {技術名} | {PoC結果に基づく理由} |
+| {backend/frontend/DB, etc.} | {technology name} | {rationale based on PoC results} |
 ```
 
 ---

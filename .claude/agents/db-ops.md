@@ -169,78 +169,78 @@ Generate `DB_OPS.md` from the above analysis results following the template belo
 ## Output File: `DB_OPS.md`
 
 ```markdown
-# DB運用ガイド: {プロジェクト名}
+# DB Operations Guide: {Project Name}
 
-> 参照元: ARCHITECTURE.md ({バージョン or 最終更新日})
-> 作成日: {YYYY-MM-DD}
+> Source: ARCHITECTURE.md ({version or last updated date})
+> Created: {YYYY-MM-DD}
 
-## 1. DB構成
+## 1. DB Configuration
 
-### 本番環境
-| 設定項目 | 値 | 備考 |
+### Production Environment
+| Setting | Value | Notes |
 |----------|---|------|
-| DB種別 | {PostgreSQL / MySQL / etc.} | |
-| バージョン | {バージョン} | |
-| 接続プール（最小/最大） | {N} / {N} | |
-| 接続タイムアウト | {N}秒 | |
-| ステートメントタイムアウト | {N}秒 | |
+| DB type | {PostgreSQL / MySQL / etc.} | |
+| Version | {version} | |
+| Connection pool (min/max) | {N} / {N} | |
+| Connection timeout | {N}s | |
+| Statement timeout | {N}s | |
 
-### 開発環境
-| 設定項目 | 値 | 備考 |
+### Development Environment
+| Setting | Value | Notes |
 |----------|---|------|
 
-### 接続文字列テンプレート
-{機密情報を含まない形式で記載}
+### Connection String Template
+{documented in a form that does not include sensitive information}
 
-## 2. マイグレーション手順
+## 2. Migration Procedures
 
-### マイグレーション一覧
-| # | ファイル名 | 内容 | 破壊的変更 |
+### Migration List
+| # | Filename | Contents | Destructive Change |
 |---|-----------|------|-----------|
 
-### 実行手順
-1. {手順}
+### Execution Procedure
+1. {step}
 
-### ロールバック手順
-1. {手順}
+### Rollback Procedure
+1. {step}
 
-### 破壊的変更の評価
-| 変更 | リスクレベル | 対策 |
+### Destructive Change Assessment
+| Change | Risk Level | Countermeasure |
 |------|------------|------|
 
-## 3. バックアップ/リストア
+## 3. Backup / Restore
 
-### バックアップ手順
-{技術スタックに応じた手順}
+### Backup Procedure
+{procedure appropriate for the tech stack}
 
-### リストア手順
-{技術スタックに応じた手順}
+### Restore Procedure
+{procedure appropriate for the tech stack}
 
-### バックアップスケジュール
-| 種別 | 頻度 | 保持期間 | 方法 |
+### Backup Schedule
+| Type | Frequency | Retention Period | Method |
 |------|------|---------|------|
 
-## 4. 監視項目
-| 項目 | 閾値 | アラート条件 |
+## 4. Monitoring Items
+| Item | Threshold | Alert Condition |
 |------|------|------------|
 
-## 5. トラブルシューティング
+## 5. Troubleshooting
 
-### 接続エラー
-- 原因:
-- 対処:
+### Connection Error
+- Cause:
+- Resolution:
 
-### スロークエリ
-- 原因:
-- 対処:
+### Slow Query
+- Cause:
+- Resolution:
 
-### デッドロック
-- 原因:
-- 対処:
+### Deadlock
+- Cause:
+- Resolution:
 
-### ディスク容量不足
-- 原因:
-- 対処:
+### Disk Space Full
+- Cause:
+- Resolution:
 ```
 
 ---

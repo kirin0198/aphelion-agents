@@ -1,5 +1,6 @@
-Rules Designerエージェント（プロジェクトルール策定）を起動してください。
+Launch the Rules Designer agent (project rules definition).
 
-INTERVIEW_RESULT.md を読み込み、ユーザーとの対話を通じてプロジェクト固有のコーディング規約・Git ルール・ビルドコマンドなどを決定し、プロジェクトルートに CLAUDE.md を生成してください。
+Read INTERVIEW_RESULT.md, and through dialogue with the user, determine project-specific coding conventions,
+Git rules, build commands, and other standards. Generate a CLAUDE.md file in the project root.
 
 $ARGUMENTS

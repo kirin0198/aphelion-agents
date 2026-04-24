@@ -137,11 +137,11 @@ Implement the health check endpoint according to the tech stack.
 # Verify operation
 # Commit
 git add {files}
-git commit -m "ops: ヘルスチェックエンドポイントを追加
+git commit -m "ops: add health check endpoint
 
-- /health エンドポイント実装
-- DB接続チェック
-- 外部サービスチェック"
+- implement /health endpoint
+- add DB connection check
+- add external service check"
 ```
 
 ---
@@ -149,37 +149,37 @@ git commit -m "ops: ヘルスチェックエンドポイントを追加
 ## Output File: `OBSERVABILITY.md`
 
 ```markdown
-# 可観測性設計: {プロジェクト名}
+# Observability Design: {Project Name}
 
-> 参照元: ARCHITECTURE.md
-> 作成日: {YYYY-MM-DD}
+> Source: ARCHITECTURE.md
+> Created: {YYYY-MM-DD}
 
-## 1. ヘルスチェック
-### エンドポイント
-### チェック項目
-### レスポンス形式
+## 1. Health Checks
+### Endpoint
+### Check Items
+### Response Format
 
-## 2. ログ設計
-### ログレベル定義
-### ログフォーマット
-### ログ出力先
-### 機密情報マスクルール
+## 2. Log Design
+### Log Level Definitions
+### Log Format
+### Log Output Destination
+### Sensitive Information Masking Rules
 
-## 3. メトリクス（REDメソッド）
+## 3. Metrics (RED Method)
 ### Rate
 ### Errors
 ### Duration
 
-## 4. アラートルール
-| ルール名 | 条件 | 重篤度 | 通知先 | 対応手順 |
+## 4. Alert Rules
+| Rule Name | Condition | Severity | Notification Target | Response Procedure |
 |---------|------|--------|--------|---------|
 
-## 5. パフォーマンスベースライン
-| エンドポイント | P50 | P95 | P99 | 目標 |
+## 5. Performance Baseline
+| Endpoint | P50 | P95 | P99 | Target |
 |--------------|-----|-----|-----|------|
 
-## 6. ダッシュボード設計（推奨パネル）
-| パネル名 | 表示内容 | 更新間隔 |
+## 6. Dashboard Design (Recommended Panels)
+| Panel Name | Display Content | Refresh Interval |
 |---------|---------|---------|
 ```
 

@@ -142,12 +142,12 @@ Run a build verification appropriate for the tech stack:
 
 ```bash
 git add {created files}
-git commit -m "chore: プロジェクト初期化 (scaffolder)
+git commit -m "chore: initialize project (scaffolder)
 
-- ディレクトリ構造の作成
-- 依存パッケージの定義・インストール
-- 設定ファイルの配置
-- エントリーポイントの作成"
+- create directory structure
+- define and install dependency packages
+- place configuration files
+- create entry point"
 ```
 
 ---

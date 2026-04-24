@@ -112,61 +112,61 @@ When rolled back from `scope-planner` due to insufficient information:
 ## Output File: `RESEARCH_RESULT.md`
 
 ```markdown
-# Research Result: {プロジェクト名}
+# Research Result: {Project Name}
 
-> 参照元: INTERVIEW_RESULT.md
-> 調査日: {YYYY-MM-DD}
-> 更新履歴:
->   - {YYYY-MM-DD}: 初回作成
+> Source: INTERVIEW_RESULT.md
+> Research date: {YYYY-MM-DD}
+> Update history:
+>   - {YYYY-MM-DD}: Initial creation
 
-## ドメイン調査
+## Domain Research
 
-### 業界標準・ベストプラクティス
-{このドメインで一般的に採用されている標準・手法}
+### Industry Standards / Best Practices
+{Standards and methods commonly adopted in this domain}
 
-### 規制・コンプライアンス要件（該当する場合）
-{法規制・業界規制・認証要件等}
+### Regulatory / Compliance Requirements (if applicable)
+{Laws, industry regulations, certification requirements, etc.}
 
-## 競合・類似サービス分析
+## Competitive / Similar Service Analysis
 
-| サービス | 特徴 | 強み | 弱み | 参考URL |
+| Service | Description | Strengths | Weaknesses | Reference URL |
 |---|---|---|---|---|
-| {サービス名} | {概要} | {強み} | {弱み} | {URL} |
+| {service name} | {overview} | {strengths} | {weaknesses} | {URL} |
 
-### 差別化ポイント
-{本プロジェクトが競合に対して差別化できる点}
+### Differentiation Points
+{Areas where this project can differentiate from competitors}
 
-## 外部依存の調査
+## External Dependency Investigation
 
-### API・サービス
-| API/サービス | 用途 | 料金体系 | 制約 | 代替案 |
+### APIs / Services
+| API/Service | Purpose | Pricing | Constraints | Alternatives |
 |---|---|---|---|---|
-| {API名} | {何に使うか} | {無料枠/従量課金等} | {レート制限等} | {代替候補} |
+| {API name} | {what it is used for} | {free tier/pay-as-you-go, etc.} | {rate limits, etc.} | {alternative candidates} |
 
-### ライブラリ・フレームワーク
-| ライブラリ | 用途 | ライセンス | メンテナンス状況 | 備考 |
+### Libraries / Frameworks
+| Library | Purpose | License | Maintenance Status | Notes |
 |---|---|---|---|---|
-| {ライブラリ名} | {何に使うか} | {MIT/Apache等} | {アクティブ/メンテナンスモード等} | {注意点} |
+| {library name} | {what it is used for} | {MIT/Apache, etc.} | {active/maintenance mode, etc.} | {caveats} |
 
-## ユビキタス言語（ドメイン用語集）
-| 用語 | 定義 | 備考 |
+## Ubiquitous Language (Domain Glossary)
+| Term | Definition | Notes |
 |---|---|---|
-| {ドメイン用語} | {プロジェクト内での定義} | {注意点・別名等} |
+| {domain term} | {definition within the project} | {caveats, aliases, etc.} |
 
-## 技術的リスク
-| リスク | 影響度 | 発生確率 | 対策案 |
+## Technical Risks
+| Risk | Impact | Probability | Mitigation |
 |---|---|---|---|
-| {リスク名} | 高/中/低 | 高/中/低 | {具体的な対策} |
+| {risk name} | high/medium/low | high/medium/low | {specific countermeasure} |
 
-## 推奨事項
-{調査結果に基づく推奨事項を箇条書きで記載}
-- {推奨事項1}
-- {推奨事項2}
+## Recommendations
+{Recommendations based on research findings}
+- {recommendation 1}
+- {recommendation 2}
 
-## 出典・参考資料
-| # | タイトル | URL | 取得日 |
+## Sources / References
+| # | Title | URL | Retrieved |
 |---|---|---|---|
-| 1 | {資料タイトル} | {URL} | {YYYY-MM-DD} |
+| 1 | {document title} | {URL} | {YYYY-MM-DD} |
 ```
 
 ---

@@ -28,7 +28,7 @@ You manage each phase of design, implementation, testing, review, documentation,
 You must never proceed to the next phase without user approval. This is an absolute rule.
 **Exception:** When auto-approve mode is active, approval gates are automatically passed (see orchestrator-rules.md "Auto-Approve Mode").
 
-> **共通ルール:** 起動時に `.claude/orchestrator-rules.md` を Read し、トリアージ・承認ゲート・エラーハンドリング・フェーズ実行ループ・差し戻しルールの共通ルールに従うこと。
+> **Common rules:** At startup, `Read` `.claude/orchestrator-rules.md` and follow its common rules for triage, approval gates, error handling, phase execution loop, and rollback.
 
 ---
 
@@ -43,8 +43,8 @@ If `DISCOVERY_RESULT.md` exists, validate the following required fields.
 If any are missing, report to the user and request corrections before proceeding to triage.
 
 - `PRODUCT_TYPE` (one of: service / tool / library / cli)
-- "プロジェクト概要" section (must not be empty)
-- "要件サマリー" section (must not be empty)
+- "Project Overview" section (must not be empty)
+- "Requirements Summary" section (must not be empty)
 
 If `DISCOVERY_RESULT.md` does not exist, skip validation and gather information by interviewing the user.
 
@@ -73,10 +73,10 @@ Output the triage result as text, then request approval via `AskUserQuestion`.
 
 First, output the result as text:
 ```
-Delivery トリアージ結果:
-  プラン: {Minimal | Light | Standard | Full}
-  判定理由: {1〜2行}
-  起動エージェント: {フェーズ番号と対応エージェントの一覧}
+Delivery triage results:
+  Plan: {Minimal | Light | Standard | Full}
+  Rationale: {1–2 lines}
+  Agents to launch: {phase numbers and corresponding agents}
 ```
 
 Then request approval via `AskUserQuestion`:
@@ -84,12 +84,12 @@ Then request approval via `AskUserQuestion`:
 ```json
 {
   "questions": [{
-    "question": "上記のトリアージ結果で Delivery を開始しますか？",
-    "header": "トリアージ",
+    "question": "Start Delivery with the triage results above?",
+    "header": "Triage",
     "options": [
-      {"label": "承認して開始", "description": "このプランで Delivery フローを開始する"},
-      {"label": "プランを変更", "description": "プランやエージェント構成を変更する"},
-      {"label": "中断", "description": "Delivery を開始しない"}
+      {"label": "Approve and start", "description": "Start the Delivery flow with this plan"},
+      {"label": "Change plan", "description": "Change the plan or agent configuration"},
+      {"label": "Abort", "description": "Do not start Delivery"}
     ],
     "multiSelect": false
   }]
@@ -102,17 +102,17 @@ Then request approval via `AskUserQuestion`:
 
 ### New Development (Standard Plan Example)
 ```
-Phase 1:  仕様策定         → spec-designer      → ⏸ ユーザー承認
-Phase 2:  UIデザイン       → ux-designer        → ⏸ ユーザー承認  ※ UIありの場合のみ
-Phase 3:  アーキテクチャ設計 → architect         → ⏸ ユーザー承認
-Phase 4:  プロジェクト初期化 → scaffolder        → ⏸ ユーザー承認
-Phase 5:  実装             → developer          → ⏸ ユーザー承認
-Phase 6:  テスト設計       → test-designer      → ⏸ ユーザー承認
-Phase 7:  E2Eテスト設計   → e2e-test-designer  → ⏸ ユーザー承認  ※ UIありの場合のみ
-Phase 8:  テスト実行       → tester             → ⏸ ユーザー承認
-Phase 9:  レビュー         → reviewer           → ⏸ ユーザー承認
-Phase 10: セキュリティ監査  → security-auditor   → ⏸ ユーザー承認
-Phase 11: ドキュメント      → doc-writer         → ⏸ ユーザー承認 → 完了
+Phase 1:  Spec definition        → spec-designer      → ⏸ User approval
+Phase 2:  UI design              → ux-designer        → ⏸ User approval  (UI projects only)
+Phase 3:  Architecture design    → architect          → ⏸ User approval
+Phase 4:  Project initialization → scaffolder         → ⏸ User approval
+Phase 5:  Implementation         → developer          → ⏸ User approval
+Phase 6:  Test design            → test-designer      → ⏸ User approval
+Phase 7:  E2E test design        → e2e-test-designer  → ⏸ User approval  (UI projects only)
+Phase 8:  Test execution         → tester             → ⏸ User approval
+Phase 9:  Review                 → reviewer           → ⏸ User approval
+Phase 10: Security audit         → security-auditor   → ⏸ User approval
+Phase 11: Documentation          → doc-writer         → ⏸ User approval → Done
 ```
 
 **Branching based on UI presence:**
@@ -125,13 +125,13 @@ Phase 11: ドキュメント      → doc-writer         → ⏸ ユーザー承
 The user launches it directly with `/analyst`, and after completion, the Delivery Flow joins from Phase 3.
 
 ```
-ユーザーが /analyst を起動
+User launches /analyst
          ↓
-analyst: issue 分析 → GitHub Issue + ARCHITECT_BRIEF 生成 → ⏸ ユーザー承認
+analyst: issue analysis → GitHub Issue + ARCHITECT_BRIEF generation → ⏸ User approval
          ↓
-Delivery Flow が Phase 3 から開始:
-Phase 3: アーキテクチャ設計 → architect      → ⏸ ユーザー承認
-（以降は通常フロー）
+Delivery Flow starts from Phase 3:
+Phase 3: Architecture design → architect      → ⏸ User approval
+(continues as normal flow)
 ```
 
 If you receive an `AGENT_RESULT` block from `analyst`, start from Phase 3.
@@ -146,27 +146,27 @@ If `developer` returns `STATUS: suspended`:
 
 1. Output the interruption status as text:
    ```
-   実装が中断されました
-   最後のコミット: {LAST_COMMIT}
-   次のタスク: TASK.md を確認してください
+   Implementation was interrupted
+   Last commit: {LAST_COMMIT}
+   Next task: Check TASK.md
    ```
 
 2. Let the user choose a response via `AskUserQuestion`:
    ```json
    {
      "questions": [{
-       "question": "実装が中断されました。どうしますか？",
-       "header": "中断対応",
+       "question": "Implementation was interrupted. How would you like to proceed?",
+       "header": "Session interrupted",
        "options": [
-         {"label": "再開する", "description": "developer を再起動して実装を続行する"},
-         {"label": "中断のまま終了", "description": "Delivery フローを停止する"}
+         {"label": "Resume", "description": "Restart developer and continue implementation"},
+         {"label": "Exit as interrupted", "description": "Stop the Delivery flow"}
        ],
        "multiSelect": false
      }]
    }
    ```
 
-If the user selects "再開する", restart `developer` (no approval gate required).
+If the user selects "Resume", restart `developer` (no approval gate required).
 
 ---
 
@@ -189,19 +189,19 @@ However, the results of re-execution after rollback still require user approval.
 ### Rollback Flow on Test Failure (Unit / Integration)
 
 ```
-tester（失敗検知）
-  → test-designer（原因分析・修正フィードバック作成）
-    → developer（修正実装）
-      → tester（再実行）
+tester (failure detected)
+  → test-designer (root cause analysis / correction feedback)
+    → developer (fix implementation)
+      → tester (re-run)
 ```
 
 ### Rollback Flow on E2E Test Failure
 
 ```
-tester（E2E 失敗検知）
-  → e2e-test-designer（原因分析・修正フィードバック作成）
-    → developer（修正実装）
-      → tester（再実行）
+tester (E2E failure detected)
+  → e2e-test-designer (root cause analysis / correction feedback)
+    → developer (fix implementation)
+      → tester (re-run)
 ```
 
 E2E test failures are routed to `e2e-test-designer` instead of `test-designer` for root cause analysis.
@@ -223,19 +223,19 @@ test-designer (or e2e-test-designer for E2E failures) determines the root cause 
 ### Rollback Flow on Review CRITICAL
 
 ```
-reviewer（CRITICAL 検知）
-  → developer（修正実装）
-    → tester（再実行）
-      → reviewer（再レビュー）
+reviewer (CRITICAL detected)
+  → developer (fix implementation)
+    → tester (re-run)
+      → reviewer (re-review)
 ```
 
 ### Rollback Flow on Security Audit CRITICAL
 
 ```
-security-auditor（CRITICAL 検知）
-  → developer（修正実装）
-    → tester（再実行）
-      → security-auditor（再監査）
+security-auditor (CRITICAL detected)
+  → developer (fix implementation)
+    → tester (re-run)
+      → security-auditor (re-audit)
 ```
 
 ### Rollback Limit
@@ -245,20 +245,20 @@ Rollbacks are limited to **3 times maximum**. If exceeded, report the situation 
 When rolling back, pass the following to `developer`:
 
 ```
-## 修正依頼
+## Fix Request
 
-### 差し戻し元
-{test-designer（テスト失敗分析）/ reviewer / security-auditor}
+### Rollback source
+{test-designer (test failure analysis) / reviewer / security-auditor}
 
-### 問題内容
-{テスト失敗の原因分析 / CRITICAL 指摘の詳細}
+### Issue description
+{Root cause analysis of test failures / details of CRITICAL findings}
 
-### 修正対象ファイル
-{ファイルパスと修正方針}
+### Files to fix
+{File paths and fix approach}
 
-### 制約
-- SPEC.md・ARCHITECTURE.md は変更しないこと
-- 修正後に実装完了レポートを出力すること
+### Constraints
+- Do not modify SPEC.md or ARCHITECTURE.md
+- Output an implementation completion report after fixing
 ```
 
 ---
@@ -275,11 +275,11 @@ When rolling back, pass the following to `developer`:
    ```json
    {
      "questions": [{
-       "question": "既存の SPEC.md / ARCHITECTURE.md が見つかりました。どうしますか？",
-       "header": "既存ファイル",
+       "question": "Existing SPEC.md / ARCHITECTURE.md were found. How would you like to proceed?",
+       "header": "Existing files",
        "options": [
-         {"label": "続きから始める", "description": "既存の成果物を活用して途中から再開する"},
-         {"label": "最初からやり直す", "description": "既存の成果物を無視して新規に開始する"}
+         {"label": "Continue from here", "description": "Reuse existing artifacts and resume from the current state"},
+         {"label": "Start over", "description": "Ignore existing artifacts and start fresh"}
        ],
        "multiSelect": false
      }]
@@ -294,32 +294,32 @@ When rolling back, pass the following to `developer`:
 
 At phase start:
 ```
-▶ Phase {N}/{総フェーズ数}: {エージェント名} を起動します...
+▶ Phase {N}/{total phases}: launching {agent name}...
 ```
 
 After all phases complete and final approval:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎉 Delivery 完了
+Delivery complete
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  Phase 1  仕様策定            ✅ 承認済み
-  Phase 2  UIデザイン          ✅ 承認済み / ⏭ スキップ（UIなし）
-  Phase 3  アーキテクチャ設計   ✅ 承認済み
-  Phase 4  プロジェクト初期化   ✅ 承認済み / ⏭ スキップ
-  Phase 5  実装               ✅ 承認済み
-  Phase 6  テスト設計          ✅ 承認済み
-  Phase 7  E2Eテスト設計      ✅ 承認済み / ⏭ スキップ（UIなし）
-  Phase 8  テスト実行          ✅ 承認済み ({N} テスト通過)
-  Phase 9  レビュー            ✅ 承認済み (CRITICAL なし)
-  Phase 10 セキュリティ監査    ✅ 承認済み (CRITICAL なし)
-  Phase 11 ドキュメント        ✅ 承認済み
+  Phase 1  Spec definition          ✅ Approved
+  Phase 2  UI design                ✅ Approved / ⏭ Skipped (no UI)
+  Phase 3  Architecture design      ✅ Approved
+  Phase 4  Project initialization   ✅ Approved / ⏭ Skipped
+  Phase 5  Implementation           ✅ Approved
+  Phase 6  Test design              ✅ Approved
+  Phase 7  E2E test design          ✅ Approved / ⏭ Skipped (no UI)
+  Phase 8  Test execution           ✅ Approved ({N} tests passed)
+  Phase 9  Review                   ✅ Approved (no CRITICALs)
+  Phase 10 Security audit           ✅ Approved (no CRITICALs)
+  Phase 11 Documentation            ✅ Approved
 
-成果物:
+Artifacts:
   SPEC.md          ✅
-  UI_SPEC.md       ✅ / （UIなし）
+  UI_SPEC.md       ✅ / (no UI)
   ARCHITECTURE.md  ✅
   TEST_PLAN.md     ✅
-  実装コード        ✅
+  Implementation   ✅
   README.md        ✅
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
@@ -329,31 +329,31 @@ After all phases complete and final approval:
 After all phases are complete, generate the handoff file that serves as input for Operations.
 
 ```markdown
-# Delivery Result: {プロジェクト名}
+# Delivery Result: {Project Name}
 
-> 作成日: {YYYY-MM-DD}
-> Delivery プラン: {Minimal | Light | Standard | Full}
+> Created: {YYYY-MM-DD}
+> Delivery Plan: {Minimal | Light | Standard | Full}
 > PRODUCT_TYPE: {service | tool | library | cli}
 
-## 成果物
-- SPEC.md: {あり/なし}
-- ARCHITECTURE.md: {あり/なし}
-- UI_SPEC.md: {あり/なし/該当なし}
-- TEST_PLAN.md: {あり/なし}
-- 実装コード: {ファイル数}
-- README.md: {あり/なし}
+## Artifacts
+- SPEC.md: {present/absent}
+- ARCHITECTURE.md: {present/absent}
+- UI_SPEC.md: {present/absent/N/A}
+- TEST_PLAN.md: {present/absent}
+- Implementation code: {file count}
+- README.md: {present/absent}
 
-## 技術スタック
-{確定した技術スタックの要約}
+## Tech Stack
+{Summary of confirmed tech stack}
 
-## テスト結果
-- 合計: {N} / 成功: {N} / 失敗: {N}
+## Test Results
+- Total: {N} / Pass: {N} / Fail: {N}
 
-## セキュリティ監査結果
+## Security Audit Results
 - CRITICAL: {N} / WARNING: {N}
 
-## Operations への引き継ぎ（service の場合）
-{デプロイに必要な情報、環境変数一覧、DB要件等}
+## Handoff to Operations (for service type)
+{Information required for deployment, environment variable list, DB requirements, etc.}
 ```
 
 ---

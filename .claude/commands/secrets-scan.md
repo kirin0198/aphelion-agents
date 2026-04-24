@@ -1,40 +1,40 @@
-ソースコード内にハードコードされた秘密情報がないかスキャンしてください。
+Scan the source code for hardcoded secrets.
 
-## 手順
+## Steps
 
-1. 以下のパターンを Grep ツールで検索する（`.env`, `.env.example`, `*.secret`, テストフィクスチャは除外）:
+1. Search for the following patterns using the Grep tool (exclude `.env`, `.env.example`, `*.secret`, and test fixtures):
 
-   - API キー: `api[_-]?key\s*[:=]\s*["'][^"']{8,}["']`
-   - パスワード: `password\s*[:=]\s*["'][^"']+["']`
-   - シークレット: `secret\s*[:=]\s*["'][^"']{8,}["']`
-   - トークン: `token\s*[:=]\s*["'][^"']{8,}["']`
-   - 接続文字列: `(mysql|postgres|mongodb|redis)://[^\s"']+`
-   - AWS アクセスキー: `AKIA[0-9A-Z]{16}`
-   - 秘密鍵: `-----BEGIN (RSA |EC |DSA )?PRIVATE KEY-----`
-   - Bearer トークン: `Bearer\s+[A-Za-z0-9\-._~+/]{20,}`
+   - API keys: `api[_-]?key\s*[:=]\s*["'][^"']{8,}["']`
+   - Passwords: `password\s*[:=]\s*["'][^"']+["']`
+   - Secrets: `secret\s*[:=]\s*["'][^"']{8,}["']`
+   - Tokens: `token\s*[:=]\s*["'][^"']{8,}["']`
+   - Connection strings: `(mysql|postgres|mongodb|redis)://[^\s"']+`
+   - AWS access keys: `AKIA[0-9A-Z]{16}`
+   - Private keys: `-----BEGIN (RSA |EC |DSA )?PRIVATE KEY-----`
+   - Bearer tokens: `Bearer\s+[A-Za-z0-9\-._~+/]{20,}`
 
-2. 検出された各項目について、以下を判定する:
-   - 本物の秘密情報か、プレースホルダー/サンプル値か
-   - 環境変数参照（`os.environ`, `process.env` 等）であれば安全と判定
+2. For each detected item, determine:
+   - Is it a real secret, or a placeholder/sample value?
+   - If it is an environment variable reference (`os.environ`, `process.env`, etc.), classify it as safe
 
-3. 結果を以下の形式で報告する:
+3. Report results in the following format:
 
 ```
-## 秘密情報スキャン結果
+## Secrets Scan Results
 
-- スキャン対象: {ファイル数} ファイル
-- 除外: .env, .env.example, テストフィクスチャ
-- 検出件数: {件数}
+- Files scanned: {file count}
+- Excluded: .env, .env.example, test fixtures
+- Issues found: {count}
 
-### 検出された項目（ある場合）
-| # | ファイル:行 | 種別 | 判定 | 内容（マスク済み） |
-|---|-----------|------|------|-----------------|
-| 1 | {path}:{line} | {API key / password / ...} | {要対応 / 安全} | {先頭4文字}**** |
+### Detected Items (if any)
+| # | File:Line | Type | Verdict | Value (masked) |
+|---|-----------|------|---------|----------------|
+| 1 | {path}:{line} | {API key / password / ...} | {action required / safe} | {first 4 chars}**** |
 
-### 推奨アクション
-{環境変数への移行方法など}
+### Recommended Actions
+{How to migrate to environment variables, etc.}
 ```
 
-4. 検出が 0 件の場合も「検出なし」と明示的に報告する
+4. If no items are detected, explicitly report "No secrets found"
 
 $ARGUMENTS

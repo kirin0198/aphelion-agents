@@ -89,133 +89,133 @@ Record a summary of all artifacts and readiness status as the final artifact of 
 ### `OPS_PLAN.md`
 
 ```markdown
-# 運用計画書: {プロジェクト名}
+# Operations Plan: {Project Name}
 
-> 参照元: ARCHITECTURE.md, {前段成果物}
-> 作成日: {YYYY-MM-DD}
+> Source: ARCHITECTURE.md, {preceding artifacts}
+> Created: {YYYY-MM-DD}
 
-## 1. デプロイ手順
+## 1. Deploy Procedure
 
-### 前提条件
-- {必要なアクセス権限}
-- {必要なツール・CLI}
-- {環境変数の設定}
+### Prerequisites
+- {required access permissions}
+- {required tools / CLI}
+- {environment variable configuration}
 
-### 初回デプロイ手順
-1. {手順} ← ロールバックポイント①
-2. {手順}
-3. {手順} ← ロールバックポイント②
-4. {手順}
+### Initial Deploy Procedure
+1. {step} ← Rollback point 1
+2. {step}
+3. {step} ← Rollback point 2
+4. {step}
 
-### 通常デプロイ手順（2回目以降）
-1. {手順}
-2. {手順}
+### Routine Deploy Procedure (2nd time onwards)
+1. {step}
+2. {step}
 
-### デプロイ確認チェックリスト
-- [ ] アプリケーションが起動している
-- [ ] ヘルスチェックが通過している
-- [ ] ログにエラーが出ていない
-- [ ] 主要機能が動作している
+### Deploy Verification Checklist
+- [ ] Application is running
+- [ ] Health check is passing
+- [ ] No errors in logs
+- [ ] Key features are working
 
-## 2. ロールバック手順
+## 2. Rollback Procedure
 
-### トリガー条件
-以下のいずれかに該当する場合、ロールバックを実行する：
-- ヘルスチェックが3回連続失敗
-- エラー率が {閾値}% を超過
-- 主要機能が動作しない
+### Trigger Conditions
+Execute rollback if any of the following apply:
+- Health check fails 3 consecutive times
+- Error rate exceeds {threshold}%
+- Key features not functioning
 
-### ロールバック手順
-1. {手順}
-2. {手順}
+### Rollback Steps
+1. {step}
+2. {step}
 
-### ロールバック確認
-- [ ] 前バージョンが起動している
-- [ ] ヘルスチェックが通過している
+### Rollback Verification
+- [ ] Previous version is running
+- [ ] Health check is passing
 
-## 3. インシデント対応プレイブック
+## 3. Incident Response Playbook
 
-### 重篤度定義
-| レベル | 定義 | 対応時間目標 | エスカレーション |
+### Severity Definitions
+| Level | Definition | Response Time Target | Escalation |
 |--------|------|------------|----------------|
-| P1 | サービス全面停止 | 15分以内 | 即時 |
-| P2 | 主要機能の障害 | 30分以内 | 30分後 |
-| P3 | 一部機能の障害 | 2時間以内 | 翌営業日 |
-| P4 | 軽微な問題 | 翌営業日 | 不要 |
+| P1 | Full service outage | Within 15 minutes | Immediate |
+| P2 | Major feature failure | Within 30 minutes | After 30 minutes |
+| P3 | Partial feature failure | Within 2 hours | Next business day |
+| P4 | Minor issue | Next business day | Not required |
 
-### シナリオ別対応
+### Response by Scenario
 
-#### シナリオ1: アプリケーション停止
-- **検知:** ヘルスチェック失敗アラート
-- **初動:** ログ確認 → プロセス再起動
-- **エスカレーション:** 再起動で復旧しない場合
-- **復旧:** ロールバック実行
+#### Scenario 1: Application Down
+- **Detection:** Health check failure alert
+- **Initial action:** Check logs → restart process
+- **Escalation:** If service does not recover after restart
+- **Recovery:** Execute rollback
 
-#### シナリオ2: DB接続障害
-- **検知:** ヘルスチェック（DB）失敗
-- **初動:** DB サーバー状態確認 → 接続プール確認
-- **エスカレーション:** DB サーバー自体の障害の場合
-- **復旧:** DB 復旧後にアプリケーション再起動
+#### Scenario 2: DB Connection Failure
+- **Detection:** Health check (DB) failure
+- **Initial action:** Check DB server status → check connection pool
+- **Escalation:** If the DB server itself has failed
+- **Recovery:** Restart application after DB recovery
 
-#### シナリオ3: 外部API障害
-- **検知:** エラーログ増加 / タイムアウト増加
-- **初動:** 外部APIステータスページ確認
-- **エスカレーション:** 長時間の障害の場合
-- **復旧:** 外部API復旧後に自動回復 / フォールバック
+#### Scenario 3: External API Failure
+- **Detection:** Increasing error logs / increasing timeouts
+- **Initial action:** Check external API status page
+- **Escalation:** If the outage is prolonged
+- **Recovery:** Auto-recovery after external API recovers / fallback
 
-## 4. メンテナンスチェックリスト
+## 4. Maintenance Checklist
 
-### 日次
-- [ ] ログの異常確認
-- [ ] ディスク使用量確認
-- [ ] バックアップ完了確認
+### Daily
+- [ ] Check logs for anomalies
+- [ ] Check disk usage
+- [ ] Confirm backup completed
 
-### 週次
-- [ ] 依存パッケージの脆弱性チェック
-- [ ] パフォーマンスメトリクスの傾向確認
-- [ ] ログのローテーション確認
+### Weekly
+- [ ] Dependency vulnerability check
+- [ ] Check performance metrics trends
+- [ ] Confirm log rotation
 
-### 月次
-- [ ] DB のバキューム / 最適化
-- [ ] SSL 証明書の有効期限確認
-- [ ] アクセス権限の棚卸し
+### Monthly
+- [ ] DB vacuum / optimization
+- [ ] Check SSL certificate expiry
+- [ ] Review access permissions
 
-## 5. 連絡先・エスカレーション
-| 役割 | 連絡先 | 備考 |
+## 5. Contacts / Escalation
+| Role | Contact | Notes |
 |------|--------|------|
 ```
 
 ### `OPS_RESULT.md`
 
 ```markdown
-# Operations Result: {プロジェクト名}
+# Operations Result: {Project Name}
 
-> 作成日: {YYYY-MM-DD}
-> Operations プラン: {Light | Standard | Full}
+> Created: {YYYY-MM-DD}
+> Operations plan: {Light | Standard | Full}
 
-## 成果物一覧
-| ファイル | 内容 | 状態 |
+## Artifact List
+| File | Contents | Status |
 |---------|------|------|
-| Dockerfile | コンテナ定義 | あり/なし |
-| docker-compose.yml | コンテナ構成 | あり/なし |
-| .github/workflows/ci.yml | CI/CD | あり/なし |
-| .env.example | 環境変数テンプレート | あり/なし |
-| DB_OPS.md | DB運用ガイド | あり/なし |
-| OBSERVABILITY.md | 可観測性設計 | あり/なし |
-| OPS_PLAN.md | 運用計画書 | あり |
+| Dockerfile | Container definition | present/absent |
+| docker-compose.yml | Container configuration | present/absent |
+| .github/workflows/ci.yml | CI/CD | present/absent |
+| .env.example | Environment variable template | present/absent |
+| DB_OPS.md | DB operations guide | present/absent |
+| OBSERVABILITY.md | Observability design | present/absent |
+| OPS_PLAN.md | Operations plan | present |
 
-## デプロイ準備状態
-- [ ] Dockerfile / docker-compose 作成済み
-- [ ] CI/CD パイプライン構築済み
-- [ ] 環境変数テンプレート作成済み
-- [ ] DB運用ガイド作成済み（該当する場合）
-- [ ] 可観測性設計完了（該当する場合）
-- [ ] デプロイ手順書作成済み
-- [ ] ロールバック手順策定済み
-- [ ] インシデント対応プレイブック作成済み
+## Deploy Readiness
+- [ ] Dockerfile / docker-compose created
+- [ ] CI/CD pipeline built
+- [ ] Environment variable template created
+- [ ] DB operations guide created (if applicable)
+- [ ] Observability design complete (if applicable)
+- [ ] Deploy procedure document created
+- [ ] Rollback procedure defined
+- [ ] Incident response playbook created
 
-## 未対応事項
-{残タスクがあれば記載}
+## Outstanding Items
+{list any remaining tasks}
 ```
 
 ---

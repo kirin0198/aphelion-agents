@@ -36,7 +36,7 @@ You must never proceed to the next phase without user approval. This is an absol
 Systematically conduct requirements exploration for the project and generate a **`DISCOVERY_RESULT.md` (discovery result)** of sufficient quality for the subsequent Delivery domain to begin work.
 Perform triage according to project characteristics and selectively launch only the necessary agents, balancing efficiency and quality.
 
-> **共通ルール:** 起動時に `.claude/orchestrator-rules.md` を Read し、トリアージ・承認ゲート・エラーハンドリング・フェーズ実行ループ・差し戻しルールの共通ルールに従うこと。
+> **Common rules:** At startup, `Read` `.claude/orchestrator-rules.md` and follow its common rules for triage, approval gates, error handling, phase execution loop, and rollback.
 
 ---
 
@@ -63,42 +63,42 @@ Since `AskUserQuestion` allows a maximum of 4 questions per call, split into 2 r
 {
   "questions": [
     {
-      "question": "プロジェクトの規模はどの程度ですか？",
-      "header": "規模",
+      "question": "What is the scale of the project?",
+      "header": "Scale",
       "options": [
-        {"label": "小規模スクリプト", "description": "個人利用の小さなツールやスクリプト"},
-        {"label": "個人PJ", "description": "個人のサイドプロジェクト。複数機能あり"},
-        {"label": "チームPJ", "description": "チームで開発する中規模プロジェクト"},
-        {"label": "大規模PJ", "description": "複数チーム・長期間の大規模プロジェクト"}
+        {"label": "Small script", "description": "A small personal tool or script"},
+        {"label": "Personal project", "description": "A personal side project with multiple features"},
+        {"label": "Team project", "description": "A medium-scale project developed by a team"},
+        {"label": "Large-scale project", "description": "A large project spanning multiple teams over a long period"}
       ],
       "multiSelect": false
     },
     {
-      "question": "UIの形態はどれですか？",
-      "header": "UI形態",
+      "question": "What type of UI does the project have?",
+      "header": "UI type",
       "options": [
-        {"label": "CLI", "description": "コマンドラインインターフェース"},
-        {"label": "API only", "description": "APIのみ（UIなし）"},
-        {"label": "Web UI", "description": "ブラウザで操作するWebアプリケーション"},
-        {"label": "モバイル", "description": "iOS / Android アプリ"}
+        {"label": "CLI", "description": "Command-line interface"},
+        {"label": "API only", "description": "API only (no UI)"},
+        {"label": "Web UI", "description": "A web application operated via browser"},
+        {"label": "Mobile", "description": "iOS / Android app"}
       ],
       "multiSelect": false
     },
     {
-      "question": "外部APIやサードパーティサービスを利用しますか？",
-      "header": "外部依存",
+      "question": "Will the project use external APIs or third-party services?",
+      "header": "External dependencies",
       "options": [
-        {"label": "なし", "description": "外部サービスへの依存なし"},
-        {"label": "あり", "description": "外部API・サードパーティサービスを利用する"}
+        {"label": "None", "description": "No dependency on external services"},
+        {"label": "Yes", "description": "Uses external APIs or third-party services"}
       ],
       "multiSelect": false
     },
     {
-      "question": "既存システムとの統合は必要ですか？",
-      "header": "既存統合",
+      "question": "Does the project need to integrate with an existing system?",
+      "header": "Existing integration",
       "options": [
-        {"label": "新規", "description": "ゼロから新規開発"},
-        {"label": "既存統合あり", "description": "既存システムやコードベースと統合する"}
+        {"label": "New development", "description": "Brand new development from scratch"},
+        {"label": "Integration required", "description": "Integrates with an existing system or codebase"}
       ],
       "multiSelect": false
     }
@@ -112,23 +112,23 @@ Since `AskUserQuestion` allows a maximum of 4 questions per call, split into 2 r
 {
   "questions": [
     {
-      "question": "ドメインの複雑度はどの程度ですか？",
-      "header": "複雑度",
+      "question": "How complex is the domain?",
+      "header": "Complexity",
       "options": [
-        {"label": "単純", "description": "一般的な技術領域。特殊なルールなし"},
-        {"label": "中程度", "description": "業界固有のルールがいくつかある"},
-        {"label": "複雑", "description": "規制あり・業界固有ルール・コンプライアンス対応が必要"}
+        {"label": "Simple", "description": "General technology area; no special rules"},
+        {"label": "Moderate", "description": "Has some industry-specific rules"},
+        {"label": "Complex", "description": "Requires regulatory compliance, industry-specific rules, or compliance handling"}
       ],
       "multiSelect": false
     },
     {
-      "question": "成果物の性質はどれに該当しますか？",
+      "question": "Which best describes the nature of the artifact?",
       "header": "PRODUCT_TYPE",
       "options": [
-        {"label": "service", "description": "ネットワーク越しにサービスを提供（Web API, Web アプリ等）"},
-        {"label": "tool", "description": "ローカルで動作するユーティリティ（GUI / TUI ツール等）"},
-        {"label": "library", "description": "他のコードから呼び出されるライブラリ / SDK"},
-        {"label": "cli", "description": "コマンドラインインターフェースツール"}
+        {"label": "service", "description": "Provides a service over the network (Web API, web app, etc.)"},
+        {"label": "tool", "description": "A locally running utility (GUI / TUI tool, etc.)"},
+        {"label": "library", "description": "A library / SDK called by other code"},
+        {"label": "cli", "description": "A command-line interface tool"}
       ],
       "multiSelect": false
     }
@@ -155,16 +155,16 @@ Output triage results as text, then request approval via `AskUserQuestion`.
 
 First, output results as text:
 ```
-トリアージ結果:
-  - 規模: {判定結果}
-  - UI有無: {判定結果}
-  - 外部依存: {判定結果}
-  - 既存システム: {判定結果}
-  - ドメイン複雑度: {判定結果}
+Triage results:
+  - Scale: {result}
+  - UI: {result}
+  - External dependencies: {result}
+  - Existing system: {result}
+  - Domain complexity: {result}
   - PRODUCT_TYPE: {service | tool | library | cli}
 
-選択プラン: {Minimal | Light | Standard | Full}
-起動エージェント: {エージェントの順序}
+Selected plan: {Minimal | Light | Standard | Full}
+Agents to launch: {agent order}
 ```
 
 Then request approval via `AskUserQuestion`:
@@ -172,12 +172,12 @@ Then request approval via `AskUserQuestion`:
 ```json
 {
   "questions": [{
-    "question": "上記のトリアージ結果で Discovery を開始しますか？",
-    "header": "トリアージ",
+    "question": "Start Discovery with the triage results above?",
+    "header": "Triage",
     "options": [
-      {"label": "承認して開始", "description": "このプランで Discovery フローを開始する"},
-      {"label": "プランを変更", "description": "プランやエージェント構成を変更する"},
-      {"label": "中断", "description": "Discovery を開始しない"}
+      {"label": "Approve and start", "description": "Start the Discovery flow with this plan"},
+      {"label": "Change plan", "description": "Change the plan or agent configuration"},
+      {"label": "Abort", "description": "Do not start Discovery"}
     ],
     "multiSelect": false
   }]
@@ -190,34 +190,34 @@ Then request approval via `AskUserQuestion`:
 
 ### Minimal Plan
 ```
-Phase 1: 要件ヒアリング    → interviewer       → ⏸ ユーザー承認
-→ DISCOVERY_RESULT.md 生成（Flow が interviewer の結果をもとに作成）
+Phase 1: Requirements interview  → interviewer       → ⏸ User approval
+→ Generate DISCOVERY_RESULT.md (flow creates it from interviewer's results)
 ```
 
 ### Light Plan
 ```
-Phase 1: 要件ヒアリング    → interviewer       → ⏸ ユーザー承認
-Phase 2: ルール策定        → rules-designer    → ⏸ ユーザー承認
-Phase 3: スコープ策定      → scope-planner     → ⏸ ユーザー承認 → 完了
+Phase 1: Requirements interview  → interviewer       → ⏸ User approval
+Phase 2: Rules definition        → rules-designer    → ⏸ User approval
+Phase 3: Scope definition        → scope-planner     → ⏸ User approval → Done
 ```
 
 ### Standard Plan
 ```
-Phase 1: 要件ヒアリング    → interviewer       → ⏸ ユーザー承認
-Phase 2: ドメイン調査      → researcher        → ⏸ ユーザー承認
-Phase 3: 技術PoC          → poc-engineer      → ⏸ ユーザー承認
-Phase 4: ルール策定        → rules-designer    → ⏸ ユーザー承認
-Phase 5: スコープ策定      → scope-planner     → ⏸ ユーザー承認 → 完了
+Phase 1: Requirements interview  → interviewer       → ⏸ User approval
+Phase 2: Domain research         → researcher        → ⏸ User approval
+Phase 3: Technical PoC           → poc-engineer      → ⏸ User approval
+Phase 4: Rules definition        → rules-designer    → ⏸ User approval
+Phase 5: Scope definition        → scope-planner     → ⏸ User approval → Done
 ```
 
 ### Full Plan
 ```
-Phase 1: 要件ヒアリング    → interviewer       → ⏸ ユーザー承認
-Phase 2: ドメイン調査      → researcher        → ⏸ ユーザー承認
-Phase 3: 技術PoC          → poc-engineer      → ⏸ ユーザー承認
-Phase 4: コンセプト検証    → concept-validator → ⏸ ユーザー承認  ※ UIありの場合のみ
-Phase 5: ルール策定        → rules-designer    → ⏸ ユーザー承認
-Phase 6: スコープ策定      → scope-planner     → ⏸ ユーザー承認 → 完了
+Phase 1: Requirements interview  → interviewer       → ⏸ User approval
+Phase 2: Domain research         → researcher        → ⏸ User approval
+Phase 3: Technical PoC           → poc-engineer      → ⏸ User approval
+Phase 4: Concept validation      → concept-validator → ⏸ User approval  (UI projects only)
+Phase 5: Rules definition        → rules-designer    → ⏸ User approval
+Phase 6: Scope definition        → scope-planner     → ⏸ User approval → Done
 ```
 
 ---
@@ -230,52 +230,52 @@ Rollbacks are limited to **3 times maximum**. If exceeded, report the situation 
 ### Pattern 1: poc-engineer → interviewer (technically infeasible requirements)
 
 ```
-poc-engineer（STATUS: blocked, BLOCKED_ITEMS > 0）
-  → interviewer（実現不可能な要件を除外・代替案をヒアリング）
-    → researcher（必要に応じて再調査）
-      → poc-engineer（再検証）
+poc-engineer (STATUS: blocked, BLOCKED_ITEMS > 0)
+  → interviewer (exclude infeasible requirements / interview for alternatives)
+    → researcher (re-investigate if needed)
+      → poc-engineer (re-verify)
 ```
 
 Pass the following to `interviewer` during rollback:
 
 ```
-## 差し戻し: 技術的に実現不可能な要件
+## Rollback: Technically infeasible requirements
 
-### 差し戻し元
+### Rollback source
 poc-engineer
 
-### 実現不可能な要件
-{POC_RESULT.md の「実現不可能な要件」セクションから抽出}
+### Infeasible requirements
+{Extracted from the "Infeasible Requirements" section of POC_RESULT.md}
 
-### 代替案の提案（poc-engineer からの提案があれば）
-{代替案}
+### Proposed alternatives (if any, from poc-engineer)
+{alternatives}
 
-### 依頼事項
-- 上記の要件について、ユーザーと代替案を協議してください
-- 要件の修正または削除を INTERVIEW_RESULT.md に反映してください
+### Request
+- Please discuss alternatives for the above requirements with the user
+- Reflect requirement changes or removals in INTERVIEW_RESULT.md
 ```
 
 ### Pattern 2: scope-planner → researcher (insufficient information)
 
 ```
-scope-planner（STATUS: blocked）
-  → researcher（不足情報を追加調査）
-    → scope-planner（再実行）
+scope-planner (STATUS: blocked)
+  → researcher (additional research on missing information)
+    → scope-planner (re-run)
 ```
 
 Pass the following to `researcher` during rollback:
 
 ```
-## 差し戻し: 情報不足
+## Rollback: Insufficient information
 
-### 差し戻し元
+### Rollback source
 scope-planner
 
-### 不足している情報
-{scope-planner の BLOCKED_REASON から抽出}
+### Missing information
+{Extracted from scope-planner's BLOCKED_REASON}
 
-### 依頼事項
-- 上記の情報を追加調査して RESEARCH_RESULT.md を更新してください
+### Request
+- Please conduct additional research on the above information and update RESEARCH_RESULT.md
 ```
 
 ---
@@ -303,30 +303,30 @@ scope-planner
 For the Minimal plan, the flow orchestrator generates this directly. For Light and above, scope-planner generates it.
 
 ```markdown
-# Discovery Result: {プロジェクト名}
+# Discovery Result: {Project Name}
 
-> 作成日: {YYYY-MM-DD}
-> Discovery プラン: {Minimal | Light | Standard | Full}
+> Created: {YYYY-MM-DD}
+> Discovery Plan: {Minimal | Light | Standard | Full}
 
-## プロジェクト概要
-{1〜3行の要約}
+## Project Overview
+{1–3 line summary}
 
-## 成果物の性質
+## Artifact Type
 PRODUCT_TYPE: {service | tool | library | cli}
 
-## 要件サマリー
-{構造化された要件の要約}
+## Requirements Summary
+{Structured requirements summary}
 
-## スコープ（確定している場合）
-- MVP: {最小スコープ}
-- IN: {含むもの}
-- OUT: {含まないもの}
+## Scope (if confirmed)
+- MVP: {minimum scope}
+- IN: {included}
+- OUT: {excluded}
 
-## 技術リスク・制約（調査済みの場合）
-{PoCの結果、外部依存の制約等}
+## Technical Risks / Constraints (if investigated)
+{PoC results, external dependency constraints, etc.}
 
-## 未解決事項
-{Delivery で解決すべき残課題}
+## Unresolved Items
+{Remaining issues to be resolved in Delivery}
 ```
 
 ---
@@ -335,34 +335,34 @@ PRODUCT_TYPE: {service | tool | library | cli}
 
 At phase start:
 ```
-▶ Phase {N}/{総フェーズ数}: {エージェント名} を起動します...
+▶ Phase {N}/{total phases}: launching {agent name}...
 ```
 
 After all phases complete and final approval:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Discovery 完了
+Discovery complete
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  プラン: {選択プラン}
-  PRODUCT_TYPE: {判定結果}
+  Plan: {selected plan}
+  PRODUCT_TYPE: {result}
 
-  Phase 1 要件ヒアリング    ✅ 承認済み
-  Phase 2 ドメイン調査      ✅ 承認済み / ⏭ スキップ
-  Phase 3 技術PoC          ✅ 承認済み / ⏭ スキップ
-  Phase 4 コンセプト検証    ✅ 承認済み / ⏭ スキップ（UIなし）
-  Phase 5 ルール策定        ✅ 承認済み / ⏭ スキップ
-  Phase 6 スコープ策定      ✅ 承認済み / ⏭ スキップ
+  Phase 1 Requirements interview  ✅ Approved
+  Phase 2 Domain research         ✅ Approved / ⏭ Skipped
+  Phase 3 Technical PoC           ✅ Approved / ⏭ Skipped
+  Phase 4 Concept validation      ✅ Approved / ⏭ Skipped (no UI)
+  Phase 5 Rules definition        ✅ Approved / ⏭ Skipped
+  Phase 6 Scope definition        ✅ Approved / ⏭ Skipped
 
-成果物:
-  DISCOVERY_RESULT.md  ✅
-  INTERVIEW_RESULT.md  ✅
-  RESEARCH_RESULT.md   ✅ / （該当なし）
-  POC_RESULT.md        ✅ / （該当なし）
-  CONCEPT_VALIDATION.md ✅ / （該当なし）
-  SCOPE_PLAN.md        ✅ / （該当なし）
+Artifacts:
+  DISCOVERY_RESULT.md   ✅
+  INTERVIEW_RESULT.md   ✅
+  RESEARCH_RESULT.md    ✅ / (N/A)
+  POC_RESULT.md         ✅ / (N/A)
+  CONCEPT_VALIDATION.md ✅ / (N/A)
+  SCOPE_PLAN.md         ✅ / (N/A)
 
-次のステップ:
-  Delivery Flow を起動して DISCOVERY_RESULT.md を入力してください。
+Next step:
+  Launch Delivery Flow and provide DISCOVERY_RESULT.md as input.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
