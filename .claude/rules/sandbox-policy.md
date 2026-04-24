@@ -1,6 +1,6 @@
 # Sandbox Policy
 
-> **Last updated**: 2026-04-18
+> **Last updated**: 2026-04-25
 > **Auto-loaded**: Yes — placed in `.claude/rules/`, loaded by Claude Code on every session start
 
 This rule applies to all agents that own the `Bash` tool:
@@ -65,31 +65,19 @@ When a command matches a category, select the isolation mode as follows:
     └─ container unavailable (devcontainer missing OR docker daemon not running)
             │
             ▼
-        [Platform Detection]
+        [Claude Code Permission Mode Selection]
             │
-            ├─ claude_code ──▶ [Permission Mode Selection]
-            │                       ├─ required category → permission: `ask` (when settings.json not configured) or `deny`
-            │                       ├─ recommended category → permission: `ask`
-            │                       └─ optional category → permission: `allow` + audit log
-            │
-            ├─ copilot / codex ──▶ [advisory_only: display warning only, execution is caller's decision]
-            │                       (Native sandbox support is a follow-up issue)
-            │
-            └─ unknown ──▶ [blocked: refuse execution, prompt user to specify platform]
+            ├─ required category → permission: `ask` (when settings.json not configured) or `deny`
+            ├─ recommended category → permission: `ask`
+            └─ optional category → permission: `allow` + audit log
 ```
 
 **Fallback order (confirmed):**
-`container` → `platform_permission` → `advisory_only` → `blocked`
+`container` → `platform_permission` → `blocked`
 
 > **Note on auto mode and container isolation:** Even when Claude Code operates in `auto` / `allow` mode (which would otherwise bypass permission gates), running inside a container still provides real physical isolation. `container` mode is therefore always the strongest option regardless of the permission mode setting.
 
-### Platform Detection Method
-
-Check environment variables in order:
-1. `$CLAUDE_CODE_*` present → `claude_code`
-2. `$GITHUB_COPILOT_*` present → `copilot`
-3. `$OPENAI_CODEX_*` present → `codex`
-4. None detected → `unknown`
+> **Claude Code only:** Aphelion is a Claude Code–only project. This policy assumes Claude Code as the execution host. No multi-platform detection is performed.
 
 ---
 
@@ -99,11 +87,10 @@ Check environment variables in order:
 |------|-------------|
 | `container` | Command runs inside the project's devcontainer (`.devcontainer/devcontainer.json`) or `docker-compose.dev.yml`. Provides real physical isolation. Highest priority when available. |
 | `platform_permission` | Claude Code permission mode controls execution (allow / ask / deny) |
-| `advisory_only` | Warning displayed only; execution proceeds under caller's responsibility |
 | `blocked` | Execution refused; user must confirm or override |
 | `bypassed` | No category match; executed directly without sandbox |
 
-**Priority order:** `container` > `platform_permission` > `advisory_only` > `blocked`
+**Priority order:** `container` > `platform_permission` > `blocked`
 
 > `container` mode provides real physical isolation independent of the platform's permission mode setting.
 > Even when running in `auto`/`allow` mode, container isolation remains effective as a structural boundary.
