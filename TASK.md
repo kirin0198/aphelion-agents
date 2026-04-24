@@ -16,7 +16,7 @@
 - [x] TASK-005: wiki Contributing.md (ja/en) 更新 | 対象ファイル: docs/wiki/en/Contributing.md, docs/wiki/ja/Contributing.md
 - [x] TASK-006: wiki Architecture.md (ja/en) 更新 | 対象ファイル: docs/wiki/en/Architecture.md, docs/wiki/ja/Architecture.md
 - [x] TASK-007: site 更新 | 対象ファイル: site/astro.config.mjs, site/src/content/docs/en/index.mdx, site/src/content/docs/ja/index.mdx
-- [ ] TASK-008: README.md / README.ja.md 更新 | 対象ファイル: README.md, README.ja.md
+- [x] TASK-008: README.md / README.ja.md 更新 | 対象ファイル: README.md, README.ja.md
 
 ## 直近のコミット
 （タスク完了のたびに git log --oneline -3 を記録する）
