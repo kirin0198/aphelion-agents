@@ -93,13 +93,13 @@ At each step of the interview, use `AskUserQuestion` for questions that can be a
 ```json
 {
   "questions": [{
-    "question": "以下の非機能要件のうち、このプロジェクトで必要なものはどれですか？",
-    "header": "非機能要件",
+    "question": "Which of the following non-functional requirements are needed for this project?",
+    "header": "Non-functional requirements",
     "options": [
-      {"label": "認証・認可", "description": "ログイン機能やロールベースのアクセス制御"},
-      {"label": "データ永続化", "description": "データベースへの保存・バックアップ"},
-      {"label": "パフォーマンス要件", "description": "応答時間や同時接続数の目標値"},
-      {"label": "セキュリティ", "description": "個人情報の取り扱い・暗号化"}
+      {"label": "Authentication / Authorization", "description": "Login functionality or role-based access control"},
+      {"label": "Data persistence", "description": "Database storage and backup"},
+      {"label": "Performance requirements", "description": "Response time targets or concurrent user targets"},
+      {"label": "Security", "description": "Handling of personal data, encryption"}
     ],
     "multiSelect": true
   }]
@@ -111,13 +111,13 @@ At each step of the interview, use `AskUserQuestion` for questions that can be a
 ```json
 {
   "questions": [{
-    "question": "成果物はどの形態に最も近いですか？",
+    "question": "Which best describes the form of the artifact?",
     "header": "PRODUCT_TYPE",
     "options": [
-      {"label": "service", "description": "ネットワーク越しにサービスを提供（Web API, Web アプリ等）"},
-      {"label": "tool", "description": "ローカルで動作するユーティリティ（GUI / TUI ツール等）"},
-      {"label": "library", "description": "他のコードから呼び出されるライブラリ / SDK"},
-      {"label": "cli", "description": "コマンドラインインターフェースツール"}
+      {"label": "service", "description": "Provides a service over the network (Web API, web app, etc.)"},
+      {"label": "tool", "description": "A locally running utility (GUI / TUI tool, etc.)"},
+      {"label": "library", "description": "A library / SDK called by other code"},
+      {"label": "cli", "description": "A command-line interface tool"}
     ],
     "multiSelect": false
   }]
@@ -155,12 +155,12 @@ When a technically infeasible requirement is rolled back from `poc-engineer`:
 ```json
 {
   "questions": [{
-    "question": "「{要件名}」は技術的に実現不可能と判定されました。どう対応しますか？",
-    "header": "要件変更",
+    "question": "'{requirement name}' has been determined to be technically infeasible. How would you like to handle it?",
+    "header": "Requirement change",
     "options": [
-      {"label": "要件を削除", "description": "この要件をスコープから除外する"},
-      {"label": "代替案に変更", "description": "{代替案の概要}"},
-      {"label": "制約付きで維持", "description": "条件を明確化した上で要件を維持する"}
+      {"label": "Remove requirement", "description": "Exclude this requirement from the scope"},
+      {"label": "Switch to alternative", "description": "{summary of alternative}"},
+      {"label": "Retain with constraints", "description": "Retain the requirement with explicitly clarified conditions"}
     ],
     "multiSelect": false
   }]
@@ -175,53 +175,53 @@ When a technically infeasible requirement is rolled back from `poc-engineer`:
 ## Output File: `INTERVIEW_RESULT.md`
 
 ```markdown
-# Interview Result: {プロジェクト名}
+# Interview Result: {Project Name}
 
-> 作成日: {YYYY-MM-DD}
-> 更新履歴:
->   - {YYYY-MM-DD}: 初回作成
+> Created: {YYYY-MM-DD}
+> Update history:
+>   - {YYYY-MM-DD}: Initial creation
 
-## プロジェクト概要
-{1〜3行の要約。何を作るのか、なぜ作るのか}
+## Project Overview
+{1–3 line summary: what is being built and why}
 
 ## PRODUCT_TYPE
 {service | tool | library | cli}
-判定理由: {なぜその種別と判定したか}
+Rationale: {why this type was determined}
 
-## ステークホルダー
-| ステークホルダー | 役割 | 関心事 |
+## Stakeholders
+| Stakeholder | Role | Concerns |
 |---|---|---|
-| {名前/種別} | {開発者/エンドユーザー/管理者等} | {主な関心事} |
+| {name/type} | {developer/end user/admin, etc.} | {primary concerns} |
 
-## 要件一覧
+## Requirements
 
-### 機能要件
-| # | 要件 | 優先度 | 備考 |
+### Functional Requirements
+| # | Requirement | Priority | Notes |
 |---|---|---|---|
-| FR-001 | {要件名} | 高/中/低 | {補足情報} |
+| FR-001 | {requirement name} | high/medium/low | {additional info} |
 
-### 非機能要件
-| カテゴリ | 要件 | 備考 |
+### Non-Functional Requirements
+| Category | Requirement | Notes |
 |---|---|---|
-| {パフォーマンス/セキュリティ/可用性等} | {具体的な要件} | {補足情報} |
+| {performance/security/availability, etc.} | {specific requirement} | {additional info} |
 
-### 暗黙要件（ヒアリングから発見）
-| # | 要件 | 根拠 |
+### Implicit Requirements (discovered via interview)
+| # | Requirement | Basis |
 |---|---|---|
-| IR-001 | {暗黙的に必要な要件} | {なぜこの要件が必要と判断したか} |
+| IR-001 | {implicitly required item} | {why this requirement was identified as necessary} |
 
-## 制約・前提条件
-- {技術的制約}
-- {ビジネス上の制約}
-- {環境の前提条件}
+## Constraints / Preconditions
+- {technical constraints}
+- {business constraints}
+- {environmental preconditions}
 
-## UI有無
+## UI Presence
 HAS_UI: {true | false}
-判定理由: {なぜそう判定したか}
+Rationale: {why this was determined}
 
-## 未解決事項
-- {ヒアリングでは確定できなかった事項}
-- {後続フェーズで検討が必要な事項}
+## Unresolved Items
+- {items that could not be confirmed during the interview}
+- {items that need consideration in subsequent phases}
 ```
 
 ---

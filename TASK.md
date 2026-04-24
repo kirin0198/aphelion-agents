@@ -18,7 +18,7 @@
 - [x] TASK-003: agents/ オーケストレーター英語化 | 対象ファイル: .claude/agents/discovery-flow.md, delivery-flow.md, operations-flow.md, maintenance-flow.md
 
 ### Phase 4: agents/ Discovery系（6件）
-- [ ] TASK-004: agents/ Discovery系英語化 | 対象ファイル: .claude/agents/interviewer.md, researcher.md, poc-engineer.md, concept-validator.md, rules-designer.md, scope-planner.md
+- [x] TASK-004: agents/ Discovery系英語化 | 対象ファイル: .claude/agents/interviewer.md, researcher.md, poc-engineer.md, concept-validator.md, rules-designer.md, scope-planner.md
 
 ### Phase 5: agents/ Delivery系（12件）
 - [ ] TASK-005: agents/ Delivery系英語化 | 対象ファイル: .claude/agents/spec-designer.md, architect.md, scaffolder.md, ux-designer.md, developer.md, test-designer.md, e2e-test-designer.md, tester.md, security-auditor.md, reviewer.md, doc-writer.md, releaser.md

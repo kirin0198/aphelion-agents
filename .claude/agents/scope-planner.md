@@ -102,12 +102,12 @@ If any item is unmet, explain the reason via text output and use `AskUserQuestio
 ```json
 {
   "questions": [{
-    "question": "ハンドオフ判定が NOT READY です。どう対応しますか？",
-    "header": "ハンドオフ",
+    "question": "The handoff assessment is NOT READY. How would you like to proceed?",
+    "header": "Handoff",
     "options": [
-      {"label": "Delivery へ進む", "description": "未達項目があるが、Delivery で対処する"},
-      {"label": "researcher に差し戻し", "description": "情報不足の項目を追加調査する"},
-      {"label": "中断", "description": "Discovery フローを停止する"}
+      {"label": "Proceed to Delivery", "description": "There are unmet items, but address them in Delivery"},
+      {"label": "Roll back to researcher", "description": "Conduct additional research on missing information"},
+      {"label": "Abort", "description": "Stop the Discovery flow"}
     ],
     "multiSelect": false
   }]
@@ -121,106 +121,106 @@ If any item is unmet, explain the reason via text output and use `AskUserQuestio
 ### `SCOPE_PLAN.md`
 
 ```markdown
-# Scope Plan: {プロジェクト名}
+# Scope Plan: {Project Name}
 
-> 参照元: {存在する前段成果物を列挙}
-> 作成日: {YYYY-MM-DD}
+> Source: {list preceding artifacts that exist}
+> Created: {YYYY-MM-DD}
 
-## 1. MVP定義
+## 1. MVP Definition
 
-### 最小スコープ
-{MVP に含める最小限の機能を箇条書き}
+### Minimum Scope
+{Minimum set of features included in the MVP}
 
-### MVP の提供価値
-{この MVP でユーザーが得られる価値}
+### Value Delivered by MVP
+{Value users gain from this MVP}
 
-## 2. 要件優先順位（MoSCoW）
+## 2. Requirements Prioritization (MoSCoW)
 
-| # | 要件 | 分類 | 理由 |
+| # | Requirement | Category | Rationale |
 |---|------|------|------|
-| 1 | {要件} | Must | {理由} |
-| 2 | {要件} | Should | {理由} |
-| 3 | {要件} | Could | {理由} |
-| 4 | {要件} | Won't | {理由} |
+| 1 | {requirement} | Must | {rationale} |
+| 2 | {requirement} | Should | {rationale} |
+| 3 | {requirement} | Could | {rationale} |
+| 4 | {requirement} | Won't | {rationale} |
 
-## 3. KPI・成功指標
+## 3. KPIs / Success Metrics
 
-| 指標 | 目標値 | 測定方法 | 備考 |
+| Metric | Target | Measurement Method | Notes |
 |------|--------|---------|------|
 
-## 4. リスク評価
+## 4. Risk Assessment
 
-| # | リスク | 影響度 | 発生確率 | 対策 | 出典 |
+| # | Risk | Impact | Probability | Mitigation | Source |
 |---|--------|--------|---------|------|------|
-| 1 | {リスク} | 高/中/低 | 高/中/低 | {対策} | {RESEARCH/POC等} |
+| 1 | {risk} | high/medium/low | high/medium/low | {mitigation} | {RESEARCH/POC, etc.} |
 
-## 5. コスト概算（工数ベース）
+## 5. Cost Estimate (Effort-Based)
 
-| フェーズ | 推定工数 | 備考 |
+| Phase | Estimated Effort | Notes |
 |---------|---------|------|
-| 仕様策定 | {時間} | |
-| 設計 | {時間} | |
-| 実装 | {時間} | |
-| テスト | {時間} | |
-| 合計 | {時間} | |
+| Spec definition | {hours} | |
+| Design | {hours} | |
+| Implementation | {hours} | |
+| Testing | {hours} | |
+| Total | {hours} | |
 
-※ 概算であり正確な見積もりではない
+* This is an estimate, not an exact quote
 
-## 6. ハンドオフ判定
+## 6. Handoff Assessment
 
-- [ ] 要件が十分に明確化されている
-- [ ] 技術リスクが許容範囲内である
-- [ ] スコープが合意されている
-- [ ] 未解決事項が Delivery で対処可能である
+- [ ] Requirements are sufficiently clarified
+- [ ] Technical risks are within acceptable range
+- [ ] Scope has been agreed upon
+- [ ] Unresolved items can be addressed in Delivery
 
-**判定: READY / NOT READY**
-{NOT READY の場合は理由と対策}
+**Assessment: READY / NOT READY**
+{If NOT READY, state the reason and countermeasures}
 
-## 7. 未解決事項
+## 7. Unresolved Items
 
-{Delivery で解決すべき残課題}
+{Remaining issues to be resolved in Delivery}
 ```
 
 ### `DISCOVERY_RESULT.md` (Final Handoff File)
 
 ```markdown
-# Discovery Result: {プロジェクト名}
+# Discovery Result: {Project Name}
 
-> 作成日: {YYYY-MM-DD}
-> Discovery プラン: {Minimal | Light | Standard | Full}
+> Created: {YYYY-MM-DD}
+> Discovery Plan: {Minimal | Light | Standard | Full}
 
-## プロジェクト概要
-{1〜3行の要約}
+## Project Overview
+{1–3 line summary}
 
-## 成果物の性質
+## Artifact Type
 PRODUCT_TYPE: {service | tool | library | cli}
 
-## 要件サマリー
-### 機能要件（Must）
-{Must 要件の一覧}
+## Requirements Summary
+### Functional Requirements (Must)
+{List of Must requirements}
 
-### 非機能要件
-{主要な非機能要件}
+### Non-Functional Requirements
+{Key non-functional requirements}
 
-## スコープ
-- **MVP:** {最小スコープの概要}
-- **IN:** {含むもの}
-- **OUT:** {含まないもの}
+## Scope
+- **MVP:** {minimum scope summary}
+- **IN:** {included}
+- **OUT:** {excluded}
 
-## 技術リスク・制約
-{PoCの結果、外部依存の制約等。調査していない場合は「未調査」}
+## Technical Risks / Constraints
+{PoC results, external dependency constraints, etc. Write "Not investigated" if not researched}
 
-## Discovery 成果物一覧
-| ファイル | 内容 | 状態 |
+## Discovery Artifacts
+| File | Description | Status |
 |---------|------|------|
-| INTERVIEW_RESULT.md | 要件ヒアリング結果 | あり |
-| RESEARCH_RESULT.md | ドメイン調査結果 | あり/なし |
-| POC_RESULT.md | 技術PoC結果 | あり/なし |
-| CONCEPT_VALIDATION.md | コンセプト検証結果 | あり/なし |
-| SCOPE_PLAN.md | スコープ計画 | あり |
+| INTERVIEW_RESULT.md | Requirements interview results | present |
+| RESEARCH_RESULT.md | Domain research results | present/absent |
+| POC_RESULT.md | Technical PoC results | present/absent |
+| CONCEPT_VALIDATION.md | Concept validation results | present/absent |
+| SCOPE_PLAN.md | Scope plan | present |
 
-## 未解決事項
-{Delivery で解決すべき残課題}
+## Unresolved Items
+{Remaining issues to be resolved in Delivery}
 ```
 
 ---
