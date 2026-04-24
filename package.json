@@ -1,7 +1,7 @@
 {
   "name": "aphelion-agents",
   "version": "0.1.0",
-  "description": "AI coding agent definitions for Claude Code, GitHub Copilot, and OpenAI Codex",
+  "description": "AI coding agent definitions for Claude Code.",
   "license": "MIT",
   "author": "kirin0198",
   "repository": {
@@ -19,7 +19,6 @@
     "node": ">=20"
   },
   "scripts": {
-    "generate": "node scripts/generate.mjs",
     "sync-wiki": "node scripts/sync-wiki.mjs"
   }
 }
