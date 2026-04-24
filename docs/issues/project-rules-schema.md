@@ -527,25 +527,35 @@ feat: extend project-rules.md schema with Authoring and Localization (#30, #32)
 
 ## 10. 未解決論点・ユーザー承認待ち項目
 
-本方針書では以下の論点を実装前に確認したい。AskUserQuestion が使えないため、**方針 A / B 併記 + 推奨値**の形で列挙する。
+本方針書では以下の論点を実装前に確認する。**2026-04-24 ユーザー承認済み**（AskUserQuestion で個別確認）。
+
+### 確定事項サマリ
+
+| 論点 | 決定 | 備考 |
+|------|------|------|
+| 10.1 辞書ファイル形式 | **A** | Markdown 1 ファイル |
+| 10.2 Round 5 質問粒度 | **A** | 2 問直接提示 |
+| 10.3 Behavior ブロック位置 | **A** | エージェント本文の冒頭 |
+| 10.4 本体 project-rules.md 範囲 | **A** | 2 項目のみ |
+| 10.5 platforms/ 再生成 | **B** | 別 PR（推奨 A と異なる：ユーザー判断） |
 
 ### 10.1 辞書ファイル配置とフォーマット
 
-- **A (推奨):** `.claude/rules/localization-dictionary.md` として Markdown 表形式（本方針書の 3.4 案）
+- **A (推奨・採用):** `.claude/rules/localization-dictionary.md` として Markdown 表形式（本方針書の 3.4 案）
 - **B:** `.claude/rules/localization/{en,ja}.yaml` のように言語別 YAML に分離
 
 **推奨理由:** 既存ルールファイルが全て Markdown で統一されているため、A のほうが一貫。YAML 化は対応言語が 3 以上になった段階で別 issue として検討。
 
 ### 10.2 Round 5 の質問粒度
 
-- **A (推奨):** 上記 4.1 の 2 択（English/Japanese、付与/付与しない）
+- **A (推奨・採用):** 上記 4.1 の 2 択（English/Japanese、付与/付与しない）
 - **B:** 「(推奨) デフォルトに従う」と「カスタマイズ」の 2 択に統合し、カスタマイズ選択時のみ 2 問目を聞く
 
 **推奨理由:** rules-designer のラウンドは既に Round 1〜4 で 2 択/3 択が並んでおり、A の粒度が既存トーンに合致する。
 
 ### 10.3 `Project-Specific Behavior` ブロックを置く位置
 
-- **A (推奨):** 各エージェント本文の **冒頭**（description frontmatter 直後、「You are the ...」セクションの上）
+- **A (推奨・採用):** 各エージェント本文の **冒頭**（description frontmatter 直後、「You are the ...」セクションの上）
 - **B:** 各エージェントの `Bash`/`Write` を伴う手順の直前ごと
 - **C:** `.claude/rules/` の共通ファイル 1 箇所のみに書き、エージェント本文には書かない
 
@@ -553,7 +563,7 @@ feat: extend project-rules.md schema with Authoring and Localization (#30, #32)
 
 ### 10.4 Aphelion 本体 project-rules.md にその他の既定値を追記するか
 
-- **A (推奨):** Issue #30/#32 対象の 2 項目のみ
+- **A (推奨・採用):** Issue #30/#32 対象の 2 項目のみ
 - **B:** この機会に言語（TypeScript/Node.js）・Git 戦略・ビルドコマンド等、Aphelion 本体の正式 project-rules を完成させる
 
 **推奨理由:** B はスコープ拡大。本 PR は Issue #30/#32 統合の実装に集中し、Aphelion 本体 project-rules の拡充は別 PR として切る。
@@ -561,9 +571,9 @@ feat: extend project-rules.md schema with Authoring and Localization (#30, #32)
 ### 10.5 platforms/ 再生成をこの PR に含めるか
 
 - **A (推奨):** 含める（コミット 7 として）
-- **B:** 含めない（別 PR）
+- **B (採用):** 含めない（別 PR）
 
-**推奨理由:** エージェント定義が変更されるので platforms/ との同期がずれる。同一 PR でまとめたほうがレビュー容易性が高い。
+**ユーザー判断:** 本 PR はスキーマ拡張と実装に集中し、platforms/ 再生成は別 PR で対応する。これに伴い、本 PR のコミット分割戦略（§8）からコミット 7 を除外する。同期ずれは別 PR マージまでの短期間に限定される（実用上許容範囲）。
 
 ---
 
