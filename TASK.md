@@ -11,7 +11,7 @@
 ### Phase 1 — ルールドキュメント改訂
 
 - [x] TASK-001: language-rules.md と git-rules.md を project-rules 参照型に改訂 | 対象ファイル: .claude/rules/language-rules.md, .claude/rules/git-rules.md
-- [ ] TASK-002: localization-dictionary.md 新規追加（en/ja 固定文字列辞書） | 対象ファイル: .claude/rules/localization-dictionary.md
+- [x] TASK-002: localization-dictionary.md 新規追加（en/ja 固定文字列辞書） | 対象ファイル: .claude/rules/localization-dictionary.md
 
 ### Phase 2 — エージェント実装
 
