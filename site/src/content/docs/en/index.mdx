@@ -23,11 +23,11 @@ hero:
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## Meet the 27 Agents
+## Meet the 29 Agents across 4 Flows
 
 <CardGrid>
 	<Card title="Flow Orchestrators" icon="rocket">
-		4 top-level orchestrators: discovery-flow, delivery-flow, operations-flow, and the root triage.
+		4 top-level orchestrators: discovery-flow, delivery-flow, operations-flow, maintenance-flow.
 		[→ Flow Orchestrators](/en/agents-reference/#flow-orchestrators)
 	</Card>
 	<Card title="Discovery Domain" icon="magnifier">
@@ -41,6 +41,10 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 	<Card title="Operations Domain" icon="laptop">
 		4 agents that build infra, manage DB, set up observability, and plan ops.
 		[→ Operations Domain](/en/agents-reference/#operations-domain)
+	</Card>
+	<Card title="Maintenance Domain" icon="pencil">
+		2 agents (change-classifier, impact-analyzer) that triage and scope changes to existing projects.
+		[→ Maintenance Domain](/en/agents-reference/#maintenance-domain)
 	</Card>
 	<Card title="Safety & Standalone" icon="approve-check">
 		sandbox-runner for isolated execution, plus analyst and codebase-analyzer for standalone use.

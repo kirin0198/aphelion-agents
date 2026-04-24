@@ -23,11 +23,11 @@ hero:
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## 27エージェント
+## 29 エージェント × 4 フロー
 
 <CardGrid>
 	<Card title="フローオーケストレーター" icon="rocket">
-		4 つの上位オーケストレーター: discovery-flow, delivery-flow, operations-flow, ルートトリアージ。
+		4 つの上位オーケストレーター: discovery-flow, delivery-flow, operations-flow, maintenance-flow。
 		[→ Flow Orchestrators](/ja/agents-reference/#flow-orchestrators)
 	</Card>
 	<Card title="Discovery ドメイン" icon="magnifier">
@@ -41,6 +41,10 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 	<Card title="Operations ドメイン" icon="laptop">
 		インフラ構築・DB 管理・可観測性・運用計画を担う 4 エージェント。
 		[→ Operations Domain](/ja/agents-reference/#operations-domain)
+	</Card>
+	<Card title="Maintenance ドメイン" icon="pencil">
+		既存プロジェクトの変更をトリアージ・範囲確定する 2 エージェント (change-classifier, impact-analyzer)。
+		[→ Maintenance Domain](/ja/agents-reference/#maintenanceドメイン)
 	</Card>
 	<Card title="Safety / Standalone" icon="approve-check">
 		隔離実行の sandbox-runner と、単独起動可能な analyst / codebase-analyzer。

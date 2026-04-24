@@ -15,9 +15,9 @@
 - [x] TASK-004: Home.md (en/ja) 更新 | 対象ファイル: docs/wiki/en/Home.md, docs/wiki/ja/Home.md
 
 ### Commit 2 (P2 推奨・6 ファイル)
-- [ ] TASK-005: Getting-Started.md (en/ja) 更新 | 対象ファイル: docs/wiki/en/Getting-Started.md, docs/wiki/ja/Getting-Started.md
-- [ ] TASK-006: Contributing.md (en/ja) 更新 | 対象ファイル: docs/wiki/en/Contributing.md, docs/wiki/ja/Contributing.md
-- [ ] TASK-007: index.mdx (en/ja) 更新 | 対象ファイル: site/src/content/docs/en/index.mdx, site/src/content/docs/ja/index.mdx
+- [x] TASK-005: Getting-Started.md (en/ja) 更新 | 対象ファイル: docs/wiki/en/Getting-Started.md, docs/wiki/ja/Getting-Started.md
+- [x] TASK-006: Contributing.md (en/ja) 更新 | 対象ファイル: docs/wiki/en/Contributing.md, docs/wiki/ja/Contributing.md
+- [x] TASK-007: index.mdx (en/ja) 更新 | 対象ファイル: site/src/content/docs/en/index.mdx, site/src/content/docs/ja/index.mdx
 
 ### Commit 3 (自動反映)
 - [ ] TASK-008: sync-wiki.mjs 実行・生成物コミット | 対象ファイル: site/src/content/docs/{en,ja}/*.md

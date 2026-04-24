@@ -1,7 +1,7 @@
 # Contributing
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-04-18
+> **Last updated**: 2026-04-24
 > **Audience**: Agent developers
 
 This page covers how to contribute to Aphelion: adding or modifying agents, updating rules, maintaining the wiki, and running the platform generator. Read this before opening a pull request.
@@ -30,6 +30,7 @@ This page covers how to contribute to Aphelion: adding or modifying agents, upda
 | New rule | `.claude/rules/{name}.md` + Rules-Reference (en+ja) |
 | Modify rule | `.claude/rules/{name}.md` + Rules-Reference entry (en+ja) |
 | Orchestrator rules change | `.claude/orchestrator-rules.md` + Architecture.md / Triage-System.md (en+ja) |
+| New flow (orchestrator) | `.claude/agents/{flow}.md` + `.claude/commands/{flow}.md` + Architecture.md (figures + text) + Triage-System.md (new section) + Agents-Reference.md (new orchestrator + domain section) + Home.md (personas + glossary) + index.mdx (card) + `ORCHESTRATOR_NAMES` in generate.mjs |
 | Wiki page update | `wiki/en/{page}.md` + `wiki/ja/{page}.md` (same PR) |
 | Platform generator change | `scripts/generate.mjs` + regenerate `platforms/` |
 
@@ -170,6 +171,7 @@ Before opening a PR, verify:
 - [ ] Agents-Reference or Rules-Reference entry updated (if agent/rule changed)
 - [ ] Platform files regenerated (`node scripts/generate.mjs`) if canonical changed
 - [ ] Generated `platforms/` files staged alongside canonical changes
+- [ ] If a new flow / orchestrator is added, update all 4 integration points: Architecture.md figures, Triage-System.md sections, Agents-Reference.md domain section, Home.md persona entries
 
 ---
 

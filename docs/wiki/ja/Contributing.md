@@ -1,8 +1,8 @@
 # コントリビューティング
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-04-18
-> **EN canonical**: 2026-04-18 of wiki/en/Contributing.md
+> **Last updated**: 2026-04-24
+> **EN canonical**: 2026-04-24 of wiki/en/Contributing.md
 > **Audience**: エージェント開発者
 
 このページはAphelionへの貢献方法をカバーします：エージェントの追加・変更、ルールの更新、Wikiのメンテナンス、プラットフォームジェネレーターの実行。プルリクエストを開く前にこのページを読んでください。
@@ -31,6 +31,7 @@
 | 新しいルール | `.claude/rules/{name}.md` + Rules-Reference（en+ja） |
 | ルールの変更 | `.claude/rules/{name}.md` + Rules-Referenceのエントリ（en+ja） |
 | オーケストレータールールの変更 | `.claude/orchestrator-rules.md` + Architecture.md / Triage-System.md（en+ja） |
+| 新フロー (オーケストレーター) | `.claude/agents/{flow}.md` + `.claude/commands/{flow}.md` + Architecture.md (図と本文) + Triage-System.md (新セクション) + Agents-Reference.md (新オーケストレーター + ドメインセクション) + Home.md (ペルソナ + 用語集) + index.mdx (カード) + generate.mjs の `ORCHESTRATOR_NAMES` |
 | Wikiページの更新 | `wiki/en/{page}.md` + `wiki/ja/{page}.md`（同一PR） |
 | プラットフォームジェネレーターの変更 | `scripts/generate.mjs` + `platforms/`の再生成 |
 
@@ -171,6 +172,7 @@ PRを開く前に確認してください：
 - [ ] エージェント/ルールが変更された場合、Agents-ReferenceまたはRules-Referenceのエントリを更新済み
 - [ ] 正規が変更された場合、プラットフォームファイルを再生成済み（`node scripts/generate.mjs`）
 - [ ] 生成された`platforms/`ファイルを正規の変更とともにステージ済み
+- [ ] 新しいフロー / オーケストレーターを追加した場合、4 箇所の統合ポイントをすべて更新済み: Architecture.md の図、Triage-System.md のセクション、Agents-Reference.md のドメインセクション、Home.md のペルソナエントリ
 
 ---
 

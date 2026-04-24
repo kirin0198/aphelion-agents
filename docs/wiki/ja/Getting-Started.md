@@ -1,8 +1,8 @@
 # はじめに
 
 > **Language**: [English](../en/Getting-Started.md) | [日本語](../ja/Getting-Started.md)
-> **Last updated**: 2026-04-18
-> **EN canonical**: 2026-04-18 of wiki/en/Getting-Started.md
+> **Last updated**: 2026-04-24
+> **EN canonical**: 2026-04-24 of wiki/en/Getting-Started.md
 > **Audience**: 新規ユーザー
 
 このページはAphelionを使い始めるために必要なすべてをカバーします：プラットフォーム別のセットアップ、初回実行のウォークスルー、利用シナリオ、コマンドリファレンス、トラブルシューティング。
@@ -195,6 +195,21 @@ Deliveryが完了した後（serviceプロジェクトの場合）：
 
 フローはPhase 3（アーキテクチャ）から合流し、仕様・UIデザインをスキップします。
 
+### シナリオ3b：Maintenance フロー (バグ / CVE / 小機能のトリアージ付き)
+
+変更が小さくトリアージを自動化したい場合:
+
+```
+/maintenance-flow メールアドレスに特殊文字が含まれるとログインエンドポイントで 500 エラーが発生する
+```
+
+`change-classifier` がトリガーを分析して Patch / Minor / Major を提案します。Patch / Minor は単独で完結、Major は `MAINTENANCE_RESULT.md` 経由で `/delivery-flow` へ自動引き渡しされます。
+
+`/maintenance-flow` を `/analyst` よりも優先する判断基準:
+- 変更に緊急性がある (P1/P2 インシデント)
+- 影響範囲の自動分析 (ファイル・依存関係・リグレッションリスク) を得たい
+- 単一 issue ワークフローではなくガイド付きプラン選択が欲しい
+
 ### シナリオ4：既存プロジェクトへの変更（ドキュメントなし）
 
 まず仕様書を逆生成：
@@ -231,6 +246,7 @@ Deliveryが完了した後（serviceプロジェクトの場合）：
 | `/pm {説明}` | Deliveryを直接開始（ショートハンド） | 要件が固まっている場合 |
 | `/operations-flow` | デプロイ・運用を開始 | Delivery後、serviceタイプのみ |
 | `/analyst {issue}` | 既存プロジェクトのバグ・機能を分析 | SPEC.mdがあるプロジェクト |
+| `/maintenance-flow {トリガー}` | 既存プロジェクトの保守トリアージと実行 (Patch/Minor/Major) | SPEC.md + ARCHITECTURE.md があるプロジェクト |
 | `/codebase-analyzer {指示}` | 既存コードから仕様を逆生成 | SPEC.mdがないプロジェクト |
 
 > これらのコマンドは `.claude/commands/*.md` でスラッシュコマンドとして定義（Claude Code）されるか、エージェントモードのインターフェース（Copilot）を通じて起動されます。

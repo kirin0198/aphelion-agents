@@ -1,7 +1,7 @@
 # Getting Started
 
 > **Language**: [English](../en/Getting-Started.md) | [日本語](../ja/Getting-Started.md)
-> **Last updated**: 2026-04-18
+> **Last updated**: 2026-04-24
 > **Audience**: New users
 
 This page covers everything you need to start using Aphelion: platform-specific setup, first-run walkthrough, usage scenarios, command reference, and troubleshooting.
@@ -200,6 +200,21 @@ After `analyst` generates the GitHub issue and approach document:
 
 The flow joins from Phase 3 (architecture), skipping spec and UI design.
 
+### Scenario 3b: Maintenance flow with triage (bug / CVE / small feature)
+
+When the change is small and you want automatic triage:
+
+```
+/maintenance-flow Login endpoint returns 500 when email contains special characters
+```
+
+`change-classifier` analyzes the trigger and proposes Patch / Minor / Major. Patch and Minor complete in a single flow; Major hands off to `/delivery-flow` automatically via `MAINTENANCE_RESULT.md`.
+
+Prefer `/maintenance-flow` over `/analyst` when:
+- The change has urgency (P1/P2 incident)
+- You want automatic impact analysis (files, dependencies, regression risk)
+- You need guided plan selection rather than a single-issue workflow
+
 ### Scenario 4: Existing Project without Docs
 
 Reverse-engineer the specification first:
@@ -236,6 +251,7 @@ You can invoke any agent directly without a flow:
 | `/pm {description}` | Start Delivery directly (shorthand) | When requirements are clear |
 | `/operations-flow` | Start deployment & operations | After Delivery, service type only |
 | `/analyst {issue}` | Analyze bugs/features for existing projects | Projects with SPEC.md |
+| `/maintenance-flow {trigger}` | Maintenance triage and execution (Patch/Minor/Major) for existing project | Projects with SPEC.md + ARCHITECTURE.md |
 | `/codebase-analyzer {instruction}` | Reverse-engineer specs from existing code | Projects without SPEC.md |
 
 > These commands are defined as slash commands in `.claude/commands/*.md` (Claude Code) or invoked through the agent mode interface (Copilot).
