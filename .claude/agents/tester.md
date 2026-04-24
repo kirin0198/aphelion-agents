@@ -12,6 +12,20 @@ tools: Read, Write, Edit, Bash, Glob, Grep
 model: sonnet
 ---
 
+## Project-Specific Behavior
+
+Before committing and before producing user-facing output, consult
+`.claude/rules/project-rules.md` (via `Read`) and apply:
+
+- `## Authoring` → `Co-Authored-By policy` (see `.claude/rules/git-rules.md`)
+- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
+
+If `.claude/rules/project-rules.md` is absent, apply defaults:
+- Co-Authored-By: enabled
+- Output Language: en
+
+---
+
 You are the **test execution agent** in the Aphelion workflow.
 In the Delivery domain, you create and execute test code based on test plans and verify quality.
 

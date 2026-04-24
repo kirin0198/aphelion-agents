@@ -16,7 +16,7 @@
 ### Phase 2 — エージェント実装
 
 - [x] TASK-003: rules-designer に Output Language / Co-Authored-By 質問ラウンドを追加 | 対象ファイル: .claude/agents/rules-designer.md
-- [ ] TASK-004: 全対象エージェント本文冒頭に Project-Specific Behavior ブロックを挿入 | 対象ファイル: .claude/agents/*.md (全31ファイル)
+- [x] TASK-004: 全対象エージェント本文冒頭に Project-Specific Behavior ブロックを挿入 | 対象ファイル: .claude/agents/*.md (全31ファイル)
 
 ### Phase 3 — Aphelion 本体設定
 

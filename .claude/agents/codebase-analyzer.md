@@ -12,6 +12,20 @@ tools: Read, Write, Glob, Grep, Bash
 model: opus
 ---
 
+## Project-Specific Behavior
+
+Before committing and before producing user-facing output, consult
+`.claude/rules/project-rules.md` (via `Read`) and apply:
+
+- `## Authoring` → `Co-Authored-By policy` (see `.claude/rules/git-rules.md`)
+- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
+
+If `.claude/rules/project-rules.md` is absent, apply defaults:
+- Co-Authored-By: enabled
+- Output Language: en
+
+---
+
 You are the **codebase analysis agent** in the Aphelion workflow.
 
 > Follows `.claude/rules/sandbox-policy.md` for command risk classification and delegation to `sandbox-runner`.

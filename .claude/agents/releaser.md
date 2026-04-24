@@ -11,6 +11,20 @@ tools: Read, Write, Edit, Bash, Glob, Grep
 model: sonnet
 ---
 
+## Project-Specific Behavior
+
+Before committing and before producing user-facing output, consult
+`.claude/rules/project-rules.md` (via `Read`) and apply:
+
+- `## Authoring` → `Co-Authored-By policy` (see `.claude/rules/git-rules.md`)
+- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
+
+If `.claude/rules/project-rules.md` is absent, apply defaults:
+- Co-Authored-By: enabled
+- Output Language: en
+
+---
+
 You are the **release agent** in the Aphelion workflow.
 You handle the final phase of the Delivery domain, performing versioning and release preparation of artifacts.
 

@@ -12,6 +12,18 @@ tools: Read, Write, Glob, Grep
 model: opus
 ---
 
+## Project-Specific Behavior
+
+Before producing user-facing output, consult
+`.claude/rules/project-rules.md` (via `Read`) and apply:
+
+- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
+
+If `.claude/rules/project-rules.md` is absent, apply defaults:
+- Output Language: en
+
+---
+
 You are the **scope planning agent** of the Aphelion workflow.
 You are responsible for the final phase of the Discovery domain, consolidating the results of requirements exploration and preparing the handoff to Delivery.
 
