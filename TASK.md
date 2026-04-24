@@ -4,7 +4,7 @@
 
 ## フェーズ: agent definitions 英語化
 最終更新: 2026-04-24T(TASK-005完了)
-ステータス: 進行中
+ステータス: 完了
 
 ## タスク一覧
 
@@ -27,12 +27,12 @@
 - [x] TASK-006: agents/ Operations系英語化 | 対象ファイル: .claude/agents/infra-builder.md, db-ops.md, observability.md, ops-planner.md
 
 ### Phase 7: agents/ Maintenance+Standalone系（4件）
-- [ ] TASK-007: agents/ Maintenance+Standalone系英語化 | 対象ファイル: .claude/agents/change-classifier.md, impact-analyzer.md, analyst.md, codebase-analyzer.md
+- [x] TASK-007: agents/ Maintenance+Standalone系英語化 | 対象ファイル: .claude/agents/change-classifier.md, impact-analyzer.md, analyst.md, codebase-analyzer.md
 
 ## 直近のコミット
+f696e2c refactor: translate Operations agent definitions to English (TASK-006)
+c443409 refactor: translate Delivery agent definitions to English (TASK-005)
 ac1d723 refactor: translate Discovery agent definitions to English (TASK-004)
-e8b709c refactor: translate orchestrator agent definitions to English (TASK-003)
-d7404e0 refactor: translate commands/*.md to English (TASK-002)
 
 ## 中断時のメモ
 （セッション中断時に状況をここに記録する）

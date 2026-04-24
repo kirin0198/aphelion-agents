@@ -113,28 +113,28 @@ Do not proceed with document updates, GitHub issue creation, or handoff to archi
 **Procedure 1: Output analysis results as text**
 
 ```
-Issue 分析完了
+Issue analysis complete
 
-【Issue 種別】バグ修正 / 機能追加 / リファクタリング
-【Issue 概要】{1〜2行で要約}
+[Issue type] Bug fix / Feature addition / Refactoring
+[Issue summary] {1-2 line summary}
 
-【分析結果】
-{原因・要件・課題の整理（箇条書き）}
+[Analysis results]
+{organized causes, requirements, and issues (bullet points)}
 
-【対応方針】
-{具体的に何をするか（箇条書き）}
+[Approach]
+{specifically what will be done (bullet points)}
 
-【ドキュメント変更】
-  - SPEC.md: {変更なし / UC-XXX を更新 / UC-XXX を追加}
-  - UI_SPEC.md: {変更なし / SCR-XXX を追加}
-  - ARCHITECTURE.md: {変更なし / architect が更新}
+[Document changes]
+  - SPEC.md: {no change / update UC-XXX / add UC-XXX}
+  - UI_SPEC.md: {no change / add SCR-XXX}
+  - ARCHITECTURE.md: {no change / architect will update}
 
-【GitHub issue】
-  - タイトル: {issue概要}
-  - ラベル: {bug / enhancement / refactor}
+[GitHub issue]
+  - Title: {issue summary}
+  - Label: {bug / enhancement / refactor}
 
-【architect への引き継ぎ内容】
-  {設計変更・追加の概要}
+[Handoff to architect]
+  {overview of design changes / additions}
 ```
 
 **Procedure 2: Request approval via `AskUserQuestion`**
@@ -142,12 +142,12 @@ Issue 分析完了
 ```json
 {
   "questions": [{
-    "question": "上記の分析結果と対応方針で進めてよいですか？",
-    "header": "方針承認",
+    "question": "Proceed with the analysis results and approach above?",
+    "header": "Approach approval",
     "options": [
-      {"label": "承認して続行", "description": "この方針でドキュメント更新・GitHub issue 作成に進む"},
-      {"label": "方針を修正", "description": "修正内容を指示する"},
-      {"label": "中断", "description": "issue 対応を中止する"}
+      {"label": "Approve and continue", "description": "Proceed with document updates and GitHub issue creation using this approach"},
+      {"label": "Revise approach", "description": "Provide instructions for revision"},
+      {"label": "Abort", "description": "Stop issue handling"}
     ],
     "multiSelect": false
   }]
@@ -189,7 +189,7 @@ After branch creation, execute the following.
 ### SPEC.md Update Rules
 - **Modifying existing UCs**: Use `Edit` to incrementally update the relevant section (full rewrite is not allowed)
 - **Adding new UCs**: Append to the end and assign sequential UC numbers
-- Add `> 更新: {date} ({issue summary})` at the beginning of the changed section
+- Add `> Updated: {date} ({issue summary})` at the beginning of the changed section
 
 ### UI_SPEC.md Update Rules
 - Add new screens as `SCR-XXX`
@@ -226,22 +226,22 @@ If the label does not exist in the repository, omit `--label`.
 ### Issue Body Template
 
 ```markdown
-## 種別
-{バグ修正 / 機能追加 / リファクタリング}
+## Type
+{Bug fix / Feature addition / Refactoring}
 
-## 分析結果
-{原因・要件・課題の整理}
+## Analysis Results
+{organized causes, requirements, and issues}
 
-## 対応方針
-{具体的に何をするか}
+## Approach
+{specifically what will be done}
 
-## ドキュメント変更
-- SPEC.md: {変更なし / UC-XXX を更新 / UC-XXX を追加}
-- UI_SPEC.md: {変更なし / SCR-XXX を追加}
-- ARCHITECTURE.md: {変更なし / architect が更新}
+## Document Changes
+- SPEC.md: {no change / update UC-XXX / add UC-XXX}
+- UI_SPEC.md: {no change / add SCR-XXX}
+- ARCHITECTURE.md: {no change / architect will update}
 
-## architect への引き継ぎ
-{設計変更・追加の概要}
+## Handoff to architect
+{overview of design changes / additions}
 ```
 
 ### Execution Command
@@ -286,17 +286,17 @@ git push -u origin {branch-name}
 gh pr create \
   --title "{PR title}" \
   --body "$(cat <<'EOF'
-## 概要
-{変更内容の要約（箇条書き）}
+## Summary
+{summary of changes (bullet points)}
 
-## 関連 Issue
+## Related Issue
 - #{issue-number}
 
-## 変更ファイル
-- {変更したファイルのリスト}
+## Changed Files
+- {list of changed files}
 
-## architect への引き継ぎ
-{設計変更・追加の概要}
+## Handoff to architect
+{overview of design changes / additions}
 EOF
 )" \
   --base main
@@ -311,12 +311,12 @@ Present the PR URL to the user and wait for confirmation:
 ```json
 {
   "questions": [{
-    "question": "PR を作成しました。内容を確認してください。",
-    "header": "PR 確認",
+    "question": "PR has been created. Please review the content.",
+    "header": "PR review",
     "options": [
-      {"label": "承認して続行", "description": "この PR の内容で architect に引き継ぐ"},
-      {"label": "修正を依頼", "description": "PR の内容を修正する"},
-      {"label": "中断", "description": "issue 対応を中止する"}
+      {"label": "Approve and continue", "description": "Hand off to architect with this PR content"},
+      {"label": "Request revision", "description": "Revise the PR content"},
+      {"label": "Abort", "description": "Stop issue handling"}
     ],
     "multiSelect": false
   }]

@@ -128,136 +128,137 @@ Observe from the code (do not speculate):
 
 ## Output File: `SPEC.md`
 
-Generate using the same format as `spec-designer` output, with `参照元: 既存コードベース分析` noted.
+Generate using the same format as `spec-designer` output, with `Source: existing codebase analysis` noted.
 
 ```markdown
-# 仕様書: {プロジェクト名}
+# Specification: {Project Name}
 
-> 作成日: {YYYY-MM-DD}
-> 参照元: 既存コードベース分析（codebase-analyzer）
+> Created: {YYYY-MM-DD}
+> Source: Existing codebase analysis (codebase-analyzer)
 
-## 1. プロジェクト概要
-- 目的・背景（README.md や コードから推測）
-- スコープ（IN / OUT）
+## 1. Project Overview
+- Purpose / background (inferred from README.md and code)
+- Scope (IN / OUT)
 
-## 2. 技術スタック（確定）
-| 層 | 技術 | バージョン | 備考 |
+## 2. Tech Stack (confirmed)
+| Layer | Technology | Version | Notes |
 |----|------|-----------|------|
-> ※ 既存コードから検出した確定情報
+> * Confirmed information detected from existing code
 
-## 3. ユーザーストーリー
-- 対象ユーザー（推定）
-- ユースケース一覧（番号付き）
+## 3. User Stories
+- Target users (estimated)
+- Use case list (numbered)
 
-## 4. 機能要件
-### UC-001: {ユースケース名}
-- 概要:
-- 事前条件:
-- 正常フロー:
-- 例外フロー:
-- 受け入れ条件:
+## 4. Functional Requirements
+### UC-001: {Use case name}
+- Summary:
+- Preconditions:
+- Normal flow:
+- Exception flow:
+- Acceptance criteria:
 
-（コードから抽出した機能数分繰り返す）
+(Repeat for number of features extracted from code)
 
-## 5. 非機能要件
-- パフォーマンス（観測できる場合）
-- セキュリティ（実装されている機構）
-- 可用性
-- スケーラビリティ
+## 5. Non-Functional Requirements
+- Performance (if observable)
+- Security (implemented mechanisms)
+- Availability
+- Scalability
 
-## 6. データモデル（概念レベル）
-- エンティティ一覧
-- 主要な関係性
+## 6. Data Model (conceptual level)
+- Entity list
+- Key relationships
 
-## 7. API概要（該当する場合）
-- エンドポイント一覧
-- 主要なリクエスト/レスポンス形式
+## 7. API Overview (if applicable)
+- Endpoint list
+- Key request/response formats
 
-## 8. 制約・前提条件
+## 8. Constraints / Assumptions
 
-## 9. 用語集
+## 9. Glossary
 
-## 10. 未解決事項（TBD）
-{コードから読み取れなかった仕様や曖昧な箇所}
+## 10. Unresolved Items (TBD)
+{specs that could not be read from code or ambiguous areas}
 ```
 
 ---
 
 ## Output File: `ARCHITECTURE.md`
 
-Generate using the same format as `architect` output, with `参照元: 既存コードベース分析` noted.
+Generate using the same format as `architect` output, with `Source: existing codebase analysis` noted.
 
 ```markdown
-# アーキテクチャ設計書: {プロジェクト名}
+# Architecture Design: {Project Name}
 
-> 参照元: 既存コードベース分析（codebase-analyzer）
-> 作成日: {YYYY-MM-DD}
+> Source: Existing codebase analysis (codebase-analyzer)
+> Created: {YYYY-MM-DD}
 
-## 1. アーキテクチャ概要
+## 1. Architecture Overview
 
-### システム構成図（テキスト）
-{ASCII または Mermaid 記法で描画}
+### System Diagram (text)
+{drawn in ASCII or Mermaid notation}
 
-### 採用アーキテクチャパターン
-{コードから観測されたパターン（MVC, Clean Architecture, etc.）}
+### Adopted Architecture Pattern
+{pattern observed from code (MVC, Clean Architecture, etc.)}
 
-### 技術スタック
-| 層 | 技術 | バージョン | 選定理由（推定） |
+### Tech Stack
+| Layer | Technology | Version | Selection rationale (estimated) |
 |----|------|-----------|----------------|
 
-## 2. ディレクトリ構造
+## 2. Directory Structure
 
 ```
-{実際のディレクトリ構造を記録}
+{record the actual directory structure}
 ```
 
-## 3. モジュール設計
+## 3. Module Design
 
-### {モジュール名}
-- **責務:**
-- **依存関係:**
-- **公開インターフェース:**
+### {Module Name}
+- **Responsibilities:**
+- **Dependencies:**
+- **Public interfaces:**
 
-## 4. データモデル（実装レベル）
+## 4. Data Model (implementation level)
 
-### {エンティティ名}
-{実際のスキーマ定義}
-- インデックス:
-- リレーション:
+### {Entity Name}
+{actual schema definition}
+- Indexes:
+- Relations:
 
-## 5. API設計（該当する場合）
+## 5. API Design (if applicable)
 
-### {エンドポイント}
-- **メソッド:**
-- **認証:**
-- **リクエスト:**
-- **レスポンス:**
-- **エラーコード:**
+### {Endpoint}
+- **Method:**
+- **Authentication:**
+- **Request:**
+- **Response:**
+- **Error codes:**
 
-## 6. 状態管理設計（フロントエンドの場合）
+## 6. State Management Design (for frontend)
 
-## 7. 認証・認可設計
+## 7. Authentication / Authorization Design
 
-## 8. エラーハンドリング方針
+## 8. Error Handling Policy
 
-## 9. テスト戦略
+## 9. Test Strategy
 
-| テスト種別 | ツール | カバレッジ目標 | 対象 |
+| Test type | Tool | Coverage target | Scope |
 |-----------|--------|-------------|------|
 
-## 10. 実装順序・依存関係
-（既存プロジェクトのため該当なし。今後の拡張順序があれば記載）
+## 10. Implementation Order / Dependencies
+(Not applicable for existing projects. Document future extension order if needed)
 ```
 
 ---
 
 ## Quality Criteria
 
-- **Accuracy over speculation**: Only document what can be confirmed from the code. Mark uncertain items with `[推定]`
+- **Accuracy over speculation**: Only document what can be confirmed from the code. Mark uncertain items with `[Estimated]`
 - **Completeness**: All source files should be accounted for in the architecture
 - **Format compatibility**: SPEC.md and ARCHITECTURE.md must be in the exact format that `analyst`, `architect`, and `developer` expect
 - **No modification**: Do not modify any existing code. This agent is read-only (except for generating SPEC.md and ARCHITECTURE.md)
 - **TBD tracking**: Items that cannot be determined from code alone must be tagged with `[TBD]`
+
 
 ---
 
@@ -267,24 +268,24 @@ After generating both documents, present a summary and request user review.
 
 Output as text:
 ```
-コードベース分析完了
+Codebase analysis complete
 
-【検出した技術スタック】
-  {言語、フレームワーク、DB等}
+[Detected tech stack]
+  {language, framework, DB, etc.}
 
-【抽出したユースケース数】
-  {N} 件（UC-001 〜 UC-{N}）
+[Extracted use case count]
+  {N} items (UC-001 through UC-{N})
 
-【データモデル】
-  {エンティティ数} エンティティ
+[Data model]
+  {entity count} entities
 
-【生成した成果物】
-  - SPEC.md: {セクション数} セクション、{TBD数} 件の未解決事項
-  - ARCHITECTURE.md: {セクション数} セクション
+[Generated artifacts]
+  - SPEC.md: {section count} sections, {TBD count} unresolved items
+  - ARCHITECTURE.md: {section count} sections
 
-【注意事項】
-  - [推定] マークの項目はコードから確定できなかった推測です
-  - [TBD] マークの項目はユーザーの確認が必要です
+[Notes]
+  - Items marked [Estimated] are inferences that could not be confirmed from code
+  - Items marked [TBD] require user confirmation
 ```
 
 Then request approval via `AskUserQuestion`:
@@ -292,12 +293,12 @@ Then request approval via `AskUserQuestion`:
 ```json
 {
   "questions": [{
-    "question": "生成された SPEC.md と ARCHITECTURE.md を確認してください。どうしますか？",
-    "header": "分析結果",
+    "question": "Please review the generated SPEC.md and ARCHITECTURE.md. What would you like to do?",
+    "header": "Analysis results",
     "options": [
-      {"label": "承認", "description": "この内容で確定し、以降 analyst / delivery-flow で利用可能にする"},
-      {"label": "修正を指示", "description": "修正すべき箇所を指示する"},
-      {"label": "中断", "description": "分析を中止する"}
+      {"label": "Approve", "description": "Finalize this content and make it available for analyst / delivery-flow"},
+      {"label": "Request revision", "description": "Indicate areas that should be revised"},
+      {"label": "Abort", "description": "Stop the analysis"}
     ],
     "multiSelect": false
   }]
@@ -348,6 +349,6 @@ NEXT: done
 - [ ] Directory structure and module design are documented in ARCHITECTURE.md
 - [ ] PRODUCT_TYPE has been determined
 - [ ] HAS_UI has been determined
-- [ ] All uncertain items are marked with `[推定]` or `[TBD]`
+- [ ] All uncertain items are marked with `[Estimated]` or `[TBD]`
 - [ ] User has reviewed and approved the generated documents
 - [ ] Output block has been emitted

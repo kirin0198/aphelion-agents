@@ -79,7 +79,7 @@ Assign a priority level:
 Use `Grep` and `Glob` to search for related code locations:
 
 ```bash
-# キーワードでファイルを検索
+# Search files by keyword
 grep -r "{keyword from trigger}" . --include="*.py" --include="*.ts" --include="*.go" -l
 ```
 
@@ -125,20 +125,20 @@ If `SPEC.md` or `ARCHITECTURE.md` is missing:
 
 1. Output a notification as text:
    ```
-   SPEC.md / ARCHITECTURE.md が見つかりません。
-   トリアージを正確に行うために、まず codebase-analyzer でドキュメントを生成することを推奨します。
+   SPEC.md / ARCHITECTURE.md not found.
+   To perform accurate triage, it is recommended to first generate documentation using codebase-analyzer.
    ```
 
 2. Ask the user via `AskUserQuestion`:
    ```json
    {
      "questions": [{
-       "question": "SPEC.md または ARCHITECTURE.md が存在しません。codebase-analyzer を先に実行しますか？",
-       "header": "前提ドキュメント確認",
+       "question": "SPEC.md or ARCHITECTURE.md does not exist. Run codebase-analyzer first?",
+       "header": "Prerequisite document check",
        "options": [
-         {"label": "codebase-analyzer を実行 (推奨)", "description": "コードベースを分析して SPEC.md / ARCHITECTURE.md を生成してから分類を行う"},
-         {"label": "ドキュメントなしで続行", "description": "不完全な情報でトリアージを試みる（精度が下がる）"},
-         {"label": "中断", "description": "作業を中止する"}
+         {"label": "Run codebase-analyzer (recommended)", "description": "Analyze the codebase to generate SPEC.md / ARCHITECTURE.md before classification"},
+         {"label": "Continue without documents", "description": "Attempt triage with incomplete information (lower accuracy)"},
+         {"label": "Abort", "description": "Stop work"}
        ],
        "multiSelect": false
      }]
@@ -156,19 +156,19 @@ After completing the analysis, present the triage result and request approval:
 **Step 1: Output analysis as text:**
 
 ```
-変更分類完了
+Change classification complete
 
-【トリガー種別】{bug | feature | tech_debt | performance | security}
-【優先度】{P1 | P2 | P3 | P4}
-【推定影響ファイル数】{N} ファイル
-【破壊的変更】{あり | なし}
-【SPEC.md への影響】{なし | 軽微 | 大きい}
-【判定プラン】{Patch | Minor | Major}
+[Trigger type] {bug | feature | tech_debt | performance | security}
+[Priority] {P1 | P2 | P3 | P4}
+[Estimated affected files] {N} files
+[Breaking change] {present | none}
+[SPEC.md impact] {none | minor | major}
+[Determined plan] {Patch | Minor | Major}
 
-【判定根拠】
-{上記 4 観点ごとの根拠を箇条書きで}
+[Classification rationale]
+{bullet points for each of the 4 dimensions above}
 
-【次のフェーズ】
+[Next phase]
 {Patch → analyst | Minor/Major → impact-analyzer}
 ```
 
@@ -177,14 +177,14 @@ After completing the analysis, present the triage result and request approval:
 ```json
 {
   "questions": [{
-    "question": "上記のトリアージ結果で maintenance-flow を進めてよいですか？プランを変更することも可能です。",
-    "header": "変更計画の承認",
+    "question": "Proceed with maintenance-flow using the triage result above? You can also change the plan.",
+    "header": "Change plan approval",
     "options": [
-      {"label": "承認して続行 (推奨)", "description": "判定されたプランで次フェーズへ進む"},
-      {"label": "Patch に変更", "description": "プランを Patch に格下げして続行する"},
-      {"label": "Minor に変更", "description": "プランを Minor に変更して続行する"},
-      {"label": "Major に変更", "description": "プランを Major に格上げして続行する"},
-      {"label": "中断", "description": "maintenance-flow を停止する"}
+      {"label": "Approve and continue (recommended)", "description": "Proceed to the next phase with the determined plan"},
+      {"label": "Change to Patch", "description": "Downgrade plan to Patch and continue"},
+      {"label": "Change to Minor", "description": "Change plan to Minor and continue"},
+      {"label": "Change to Major", "description": "Upgrade plan to Major and continue"},
+      {"label": "Abort", "description": "Stop maintenance-flow"}
     ],
     "multiSelect": false
   }]

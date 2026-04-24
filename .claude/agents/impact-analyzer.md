@@ -56,10 +56,10 @@ Before starting analysis, verify you have:
 Locate the specific code positions related to the trigger using `Grep` and `Glob`:
 
 ```bash
-# エラーメッセージ・関数名・クラス名などで検索
+# Search by error message, function name, class name, etc.
 grep -r "{keyword}" . --include="*.py" --include="*.ts" --include="*.go" --include="*.rs" -n -l
 
-# 特定のモジュール・パスを対象に絞る場合
+# Narrow down to a specific module or path
 find . -path "*/module_name/*" -name "*.py"
 ```
 
@@ -78,7 +78,7 @@ For each target file, trace outgoing and incoming dependencies:
 **Incoming dependencies (what depends on this file — fan-in):**
 
 ```bash
-# 変更対象ファイルが export しているシンボルを他ファイルが import しているか検索
+# Search whether other files import symbols exported by the target file
 grep -r "{exported_symbol}" . --include="*.py" -l
 grep -r "from {module}" . --include="*.ts" -l
 ```
@@ -103,13 +103,13 @@ Evaluate the following factors:
 
 **Test coverage:**
 ```bash
-# 変更対象ファイルに対応するテストファイルが存在するか
+# Check whether test files corresponding to the target files exist
 find . -name "test_*.py" -o -name "*_test.go" -o -name "*.spec.ts" -o -name "*.test.ts" | head -50
 ```
 
 **Commit frequency (stability indicator):**
 ```bash
-# 過去 3 ヶ月の変更対象ファイルのコミット頻度
+# Commit frequency for target files over the past 3 months
 git log --since="3 months ago" --oneline -- {target_file}
 ```
 
@@ -140,25 +140,25 @@ After completing the analysis, present the impact report and request approval:
 **Step 1: Output impact report as text:**
 
 ```
-影響範囲調査完了
+Impact scope analysis complete
 
-【変更対象ファイル】
-  - {file path}: {変更予定の箇所}
+[Target files]
+  - {file path}: {expected change location}
   - ...
 
-【依存ファイル (影響を受ける可能性)】
-  - {file path}: {依存箇所}
+[Dependency files (potentially affected)]
+  - {file path}: {dependency location}
   - ...
 
-【破壊的変更】
-  - 公開 API: {変更あり / なし}
-  - DB スキーマ: {変更あり / なし}
-  - 環境変数: {変更あり / なし}
+[Breaking changes]
+  - Public API: {present / none}
+  - DB schema: {present / none}
+  - Environment variables: {present / none}
 
-【リグレッションリスク】{low | medium | high}
-  根拠: {テストカバレッジ・fan-in・コミット頻度の評価}
+[Regression risk] {low | medium | high}
+  Rationale: {assessment of test coverage, fan-in, commit frequency}
 
-【推奨テスト範囲】{unit | integration | e2e}
+[Recommended test scope] {unit | integration | e2e}
 ```
 
 **Step 2: Request approval via `AskUserQuestion`:**
@@ -166,12 +166,12 @@ After completing the analysis, present the impact report and request approval:
 ```json
 {
   "questions": [{
-    "question": "影響範囲調査結果を確認しました。analyst フェーズに進んでよいですか？",
-    "header": "影響評価の承認",
+    "question": "Impact scope analysis confirmed. Proceed to the analyst phase?",
+    "header": "Impact assessment approval",
     "options": [
-      {"label": "承認して続行 (推奨)", "description": "この影響範囲評価で analyst に引き継ぐ"},
-      {"label": "追加調査を依頼", "description": "調査範囲を広げるよう指示する"},
-      {"label": "中断", "description": "maintenance-flow を停止する"}
+      {"label": "Approve and continue (recommended)", "description": "Hand off to analyst with this impact scope assessment"},
+      {"label": "Request additional investigation", "description": "Expand the investigation scope"},
+      {"label": "Abort", "description": "Stop maintenance-flow"}
     ],
     "multiSelect": false
   }]
