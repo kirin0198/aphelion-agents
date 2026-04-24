@@ -20,10 +20,12 @@
 
 ### Phase 3 — Aphelion 本体設定
 
-- [ ] TASK-005: Aphelion 本体 project-rules.md 作成（後方互換） | 対象ファイル: .claude/rules/project-rules.md
+- [x] TASK-005: Aphelion 本体 project-rules.md 作成（後方互換） | 対象ファイル: .claude/rules/project-rules.md
 
 ## 直近のコミット
-（タスク完了のたびに git log --oneline -3 を記録する）
+067f41d refactor(agents): centralize project-rules reference in agent bodies
+9885152 feat(rules-designer): add Output Language and Co-Authored-By questions
+e938988 docs: add localization-dictionary.md (en/ja fixed strings)
 
 ## 中断時のメモ
 （セッション中断時に状況をここに記録する）
