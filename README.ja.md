@@ -4,7 +4,7 @@
 
 # Aphelion — Frontier AI Agents
 
-マルチプラットフォーム対応の AI コーディングエージェント定義集です。27 の専門エージェントがプロジェクトの全工程を自動化します。
+Claude Code 向け AI コーディングエージェント定義集です。27 の専門エージェントがプロジェクトの全工程を自動化します。
 
 [![Wiki](https://img.shields.io/badge/Wiki-aphelion--agents.pages.dev-F38020?logo=cloudflarepages&logoColor=white&style=flat)](https://aphelion-agents.pages.dev/)
 
@@ -30,16 +30,6 @@ flowchart LR
 ```
 
 各フェーズ完了ごとにユーザーの承認を得てから次へ進みます。`service` 以外（`tool` / `library` / `cli`）は Operations をスキップします。
-
-### 対応プラットフォーム
-
-| プラットフォーム | サブエージェント連携 | 状態 |
-|---------------|-------------------|------|
-| **Claude Code** | フル対応（Agent tool） | 正規ソース |
-| **GitHub Copilot** | フル対応（agent tool） | ソースから生成 |
-| **OpenAI Codex** | Skills のみ | ソースから生成 |
-
-Claude Code ファイル（`.claude/`）が正規ソースです。Copilot / Codex ファイルは `scripts/generate.mjs` で生成されます。
 
 ---
 
@@ -69,26 +59,11 @@ npx github:kirin0198/aphelion-agents update --user
 
 リポジトリをクローンして手動でファイルをコピーする方法：
 
-**Claude Code:**
-
 ```bash
 cp -r .claude /path/to/your-project/
 cd /path/to/your-project && claude
 
 /discovery-flow TODOアプリを作りたい
-```
-
-**GitHub Copilot:**
-
-```bash
-cp -r platforms/copilot/* /path/to/your-project/.github/
-```
-
-**OpenAI Codex:**
-
-```bash
-cp platforms/codex/AGENTS.md /path/to/your-project/
-cp -r platforms/codex/skills/ /path/to/your-project/
 ```
 
 フローオーケストレーターがプロジェクト規模を自動判定し、必要なエージェントだけを起動します。
@@ -176,34 +151,7 @@ cp -r platforms/codex/skills/ /path/to/your-project/
 ├── orchestrator-rules.md        # オーケストレーター専用ルール
 ├── agents/*.md                  # エージェント定義（27ファイル）
 └── commands/*.md                # スラッシュコマンド定義
-
-platforms/
-├── copilot/                     # GitHub Copilot（生成物）
-│   ├── copilot-instructions.md  # → .github/copilot-instructions.md
-│   └── agents/*.md              # → .github/agents/*.agent.md
-└── codex/                       # OpenAI Codex（生成物）
-    ├── AGENTS.md                # → プロジェクトルート
-    └── skills/                  # → プロジェクトルート
 ```
-
-プラットフォームファイルの再生成:
-
-```bash
-node scripts/generate.mjs                    # 全プラットフォーム生成
-node scripts/generate.mjs --platform copilot # Copilot のみ
-node scripts/generate.mjs --platform codex   # Codex のみ
-node scripts/generate.mjs --clean            # 生成物を削除
-```
-
-### プラットフォーム比較
-
-| 機能 | Claude Code | GitHub Copilot | OpenAI Codex |
-|------|------------|----------------|-------------|
-| グローバル指示 | `.claude/rules/aphelion-overview.md` | `.github/copilot-instructions.md` | `AGENTS.md` |
-| エージェント定義 | `.claude/agents/*.md` | `.github/agents/*.agent.md` | N/A（単一エージェント） |
-| スキル/コマンド | `.claude/commands/*.md` | — | `skills/*/SKILL.md` |
-| サブエージェント | あり（Agent tool） | あり（agent tool） | なし |
-| フルオーケストレーション | 可能 | 可能 | 不可 |
 
 > Aphelion は開発時ワークフローであり、CI/CD ランタイムではありません。`infra-builder` が GitHub Actions 等のパイプライン定義を生成します。
 
@@ -220,7 +168,6 @@ node scripts/generate.mjs --clean            # 生成物を削除
 | [トリアージシステム](docs/wiki/ja/Triage-System.md) | プランティア、エージェント選択ロジック、HAS_UI条件 |
 | [エージェントリファレンス](docs/wiki/ja/Agents-Reference.md) | 全27エージェント — 入力・出力・NEXT条件 |
 | [ルールリファレンス](docs/wiki/ja/Rules-Reference.md) | 全8行動ルール — スコープとインタラクション |
-| [プラットフォームガイド](docs/wiki/ja/Platform-Guide.md) | Copilot/Codexの差異、ジェネレーター使用方法、移植ガイド |
 | [コントリビューティング](docs/wiki/ja/Contributing.md) | エージェント追加方法、バイリンガル同期ポリシー、PRチェックリスト |
 
 ---
@@ -234,7 +181,7 @@ node scripts/generate.mjs --clean            # 生成物を削除
 - **自動差し戻し** — テスト失敗・レビュー指摘時に原因分析後ロールバック（最大3回）
 - **セッション中断・再開** — TASK.md による状態管理で途中再開が可能
 - **ドキュメント駆動** — 領域間は `.md` ハンドオフでトレーサビリティを確保
-- **マルチプラットフォーム** — Claude Code（正規）、GitHub Copilot、OpenAI Codex
+- **Claude Code ネイティブ** — Claude Code の Agent tool・サブエージェントオーケストレーション・パーミッションモードに基づいて構築
 - **多言語対応** — Python / TypeScript / Go / Rust に対応
 - **コンテナ隔離** — infra-builder が devcontainer / docker-compose.dev.yml を生成し、sandbox-runner が auto-permission モードでも実体的なコンテナ隔離を提供
 

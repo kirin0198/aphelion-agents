@@ -1,15 +1,15 @@
 # Getting Started
 
 > **Language**: [English](../en/Getting-Started.md) | [日本語](../ja/Getting-Started.md)
-> **Last updated**: 2026-04-24
+> **Last updated**: 2026-04-24 (updated 2026-04-24: Claude Code only)
 > **Audience**: New users
 
-This page covers everything you need to start using Aphelion: platform-specific setup, first-run walkthrough, usage scenarios, command reference, and troubleshooting.
+This page covers everything you need to start using Aphelion: Claude Code setup, first-run walkthrough, usage scenarios, command reference, and troubleshooting.
 
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
-- [Quick Start by Platform](#quick-start-by-platform)
+- [Quick Start](#quick-start)
 - [First Run Walkthrough](#first-run-walkthrough)
 - [Usage Scenarios](#usage-scenarios)
 - [Command Reference](#command-reference)
@@ -22,11 +22,9 @@ This page covers everything you need to start using Aphelion: platform-specific 
 
 ## Prerequisites
 
-| Platform | Requirement |
-|----------|-------------|
+| Requirement | Details |
+|-------------|---------|
 | Claude Code | Claude Code CLI installed and authenticated |
-| GitHub Copilot | GitHub Copilot extension in VS Code, JetBrains, or Neovim |
-| OpenAI Codex | Access to OpenAI Codex environment |
 
 You can install Aphelion via `npx github:kirin0198/aphelion-agents init` (no clone required), or clone the repository manually:
 
@@ -36,7 +34,7 @@ git clone https://github.com/kirin0198/aphelion-agents.git
 
 ---
 
-## Quick Start by Platform
+## Quick Start
 
 ### Install via npx (recommended)
 
@@ -64,8 +62,6 @@ git clone https://github.com/kirin0198/aphelion-agents.git
 
 Then copy the files manually:
 
-### Claude Code (Canonical)
-
 Copy the `.claude/` directory to your project and start Claude Code:
 
 ```bash
@@ -74,29 +70,6 @@ cd /path/to/your-project && claude
 
 /discovery-flow I want to build a TODO app
 ```
-
-### GitHub Copilot
-
-Copy the generated Copilot agent files to your project's `.github/` directory:
-
-```bash
-cp -r platforms/copilot/* /path/to/your-project/.github/
-```
-
-Then use GitHub Copilot's agent mode in your IDE. Copilot agents are placed in `.github/agents/`.
-
-### OpenAI Codex
-
-Copy the generated Codex files to your project root:
-
-```bash
-cp platforms/codex/AGENTS.md /path/to/your-project/
-cp -r platforms/codex/skills/ /path/to/your-project/
-```
-
-Codex uses the `AGENTS.md` file as global instructions. Skills are available as individual utilities.
-
-> **Note:** Codex does not support sub-agent orchestration. Full multi-phase flows are only available on Claude Code and GitHub Copilot. See [Platform Guide](./Platform-Guide.md) for details.
 
 ---
 
@@ -254,7 +227,7 @@ You can invoke any agent directly without a flow:
 | `/maintenance-flow {trigger}` | Maintenance triage and execution (Patch/Minor/Major) for existing project | Projects with SPEC.md + ARCHITECTURE.md |
 | `/codebase-analyzer {instruction}` | Reverse-engineer specs from existing code | Projects without SPEC.md |
 
-> These commands are defined as slash commands in `.claude/commands/*.md` (Claude Code) or invoked through the agent mode interface (Copilot).
+> These commands are defined as slash commands in `.claude/commands/*.md` (Claude Code).
 
 ---
 
@@ -311,21 +284,12 @@ The orchestrator will present options:
 
 `developer` uses `TASK.md` to track progress. If a task is taking too long, you can interrupt and resume later. The next run will start from the first incomplete task in `TASK.md`.
 
-### Copilot: Agents not appearing
-
-Ensure the agent files are in `.github/agents/` (not `.github/copilot-agents/`). Also verify that the Copilot extension has access to the project's `.github/` directory.
-
-### Codex: Flow commands not working
-
-Codex does not support multi-agent orchestration. Use individual skills (`/vuln-scan`, `/secrets-scan`) instead of flow commands. For full orchestration, use Claude Code or Copilot.
-
 ---
 
 ## Related Pages
 
 - [Architecture](./Architecture.md)
 - [Triage System](./Triage-System.md)
-- [Platform Guide](./Platform-Guide.md)
 
 ## Canonical Sources
 

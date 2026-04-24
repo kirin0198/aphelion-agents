@@ -13,7 +13,6 @@ const PAGES = [
 	{ slug: 'triage-system',    labelEn: 'Triage System',     labelJa: 'トリアージシステム'     },
 	{ slug: 'agents-reference', labelEn: 'Agents Reference',  labelJa: 'エージェントリファレンス' },
 	{ slug: 'rules-reference',  labelEn: 'Rules Reference',   labelJa: 'ルールリファレンス'     },
-	{ slug: 'platform-guide',   labelEn: 'Platform Guide',    labelJa: 'プラットフォームガイド' },
 	{ slug: 'contributing',     labelEn: 'Contributing',      labelJa: 'コントリビューション'   },
 ];
 

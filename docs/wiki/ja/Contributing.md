@@ -2,10 +2,10 @@
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
 > **Last updated**: 2026-04-24
-> **EN canonical**: 2026-04-24 of wiki/en/Contributing.md
+> **EN canonical**: 2026-04-24 (updated 2026-04-24) of wiki/en/Contributing.md
 > **Audience**: エージェント開発者
 
-このページはAphelionへの貢献方法をカバーします：エージェントの追加・変更、ルールの更新、Wikiのメンテナンス、プラットフォームジェネレーターの実行。プルリクエストを開く前にこのページを読んでください。
+このページはAphelionへの貢献方法をカバーします：エージェントの追加・変更、ルールの更新、Wikiのメンテナンス。プルリクエストを開く前にこのページを読んでください。
 
 ## 目次
 
@@ -15,7 +15,6 @@
 - [ルールの更新](#ルールの更新)
 - [Wikiのメンテナンス](#wikiのメンテナンス)
 - [バイリンガル同期ポリシー](#バイリンガル同期ポリシー)
-- [プラットフォームファイルの再生成](#プラットフォームファイルの再生成)
 - [プルリクエストチェックリスト](#プルリクエストチェックリスト)
 - [関連ページ](#関連ページ)
 - [正規ソース](#正規ソース)
@@ -26,14 +25,13 @@
 
 | 種類 | 必要な変更 |
 |-----|---------|
-| 新しいエージェント | `.claude/agents/{name}.md` + Agents-Reference（en+ja）+ generate.mjs（新しいエージェントの場合） |
+| 新しいエージェント | `.claude/agents/{name}.md` + Agents-Reference（en+ja） |
 | エージェントの変更 | `.claude/agents/{name}.md` + Agents-Referenceのエントリ（en+ja） |
 | 新しいルール | `.claude/rules/{name}.md` + Rules-Reference（en+ja） |
 | ルールの変更 | `.claude/rules/{name}.md` + Rules-Referenceのエントリ（en+ja） |
 | オーケストレータールールの変更 | `.claude/orchestrator-rules.md` + Architecture.md / Triage-System.md（en+ja） |
-| 新フロー (オーケストレーター) | `.claude/agents/{flow}.md` + `.claude/commands/{flow}.md` + Architecture.md (図と本文) + Triage-System.md (新セクション) + Agents-Reference.md (新オーケストレーター + ドメインセクション) + Home.md (ペルソナ + 用語集) + index.mdx (カード) + generate.mjs の `ORCHESTRATOR_NAMES` |
+| 新フロー (オーケストレーター) | `.claude/agents/{flow}.md` + `.claude/commands/{flow}.md` + Architecture.md (図と本文) + Triage-System.md (新セクション) + Agents-Reference.md (新オーケストレーター + ドメインセクション) + Home.md (ペルソナ + 用語集) + index.mdx (カード) |
 | Wikiページの更新 | `wiki/en/{page}.md` + `wiki/ja/{page}.md`（同一PR） |
-| プラットフォームジェネレーターの変更 | `scripts/generate.mjs` + `platforms/`の再生成 |
 
 ---
 
@@ -58,9 +56,7 @@
 
 4. **エージェントが新しいフローオーケストレーターの場合**、新しいエージェントをトリアージまたはフェーズシーケンスに含めるよう`.claude/orchestrator-rules.md`を更新します。
 
-5. **プラットフォームファイルを再生成します**：`node scripts/generate.mjs`を実行して`platforms/copilot/`と`platforms/codex/`を更新します。
-
-6. **Agents-Referenceの分割しきい値**：エージェントの合計数が40を超える場合、またはAgents-Reference.md内のいずれかのセクションが300行を超える場合は、エージェントごとの`wiki/en/agents/{name}.md`ファイルへの分割とAgents-Reference.mdをリスト+リンクハブに変換することを検討してください。これは将来の決定事項です — まずissueを開いて議論してください。
+5. **Agents-Referenceの分割しきい値**：エージェントの合計数が40を超える場合、またはAgents-Reference.md内のいずれかのセクションが300行を超える場合は、エージェントごとの`wiki/en/agents/{name}.md`ファイルへの分割とAgents-Reference.mdをリスト+リンクハブに変換することを検討してください。これは将来の決定事項です — まずissueを開いて議論してください。
 
 ---
 
@@ -71,8 +67,6 @@
 2. **`wiki/en/Agents-Reference.md`と`wiki/ja/Agents-Reference.md`の両方のAgents-Referenceエントリを更新して**変更を反映させます。
 
    > Agents-Referenceの同期維持は必須です。Wikiエントリを更新せずにエージェント定義を更新すると、レビュアーが修正を要求します。
-
-3. **プラットフォームファイルを再生成します**：`node scripts/generate.mjs`を実行して変更を`platforms/copilot/`と`platforms/codex/`に伝播させます。
 
 ---
 
@@ -86,7 +80,6 @@
 
 4. **ルールがトリアージに影響する場合**、`wiki/en/Triage-System.md`と`wiki/ja/Triage-System.md`も更新します。
 
-5. **ルールの変更がプラットフォーム生成ファイルに影響する場合**（例：build-verification-commandsやlibrary-and-security-policy）、プラットフォームファイルを再生成します。
 
 ---
 
@@ -118,7 +111,7 @@
 ### READMEとWikiの棲み分け
 
 - **README**：エントリーポイントとクイックスタート。短くまとめてください — セットアップ、シナリオ、コマンドリファレンス。
-- **Wiki**：詳細リファレンス。エージェントスキーマ、ルール説明、プラットフォーム内部、トリアージロジック。
+- **Wiki**：詳細リファレンス。エージェントスキーマ、ルール説明、トリアージロジック。
 - 詳細なリファレンスコンテンツをREADMEに追加しないでください。クイックスタートコンテンツをwikiのHome.mdに追加しないでください。
 
 ---
@@ -141,25 +134,6 @@ Wikiは英語を正規とするバイリンガルです。以下のルールはP
 
 ---
 
-## プラットフォームファイルの再生成
-
-`.claude/agents/`、`.claude/rules/`、または`.claude/orchestrator-rules.md`のファイルを変更するときは、プラットフォームファイルを再生成してください：
-
-```bash
-node scripts/generate.mjs
-```
-
-生成されたファイルを正規の変更とともにステージします：
-
-```bash
-git add .claude/agents/{name}.md platforms/copilot/agents/{name}.agent.md
-git add platforms/codex/AGENTS.md
-```
-
-> **`platforms/`ファイルを直接編集しないでください。** それらは生成された成果物です。直接編集は次回のジェネレーター実行時に上書きされます。
-
----
-
 ## プルリクエストチェックリスト
 
 PRを開く前に確認してください：
@@ -170,8 +144,6 @@ PRを開く前に確認してください：
 - [ ] 変更したWikiページの`> Last updated:`行を更新済み
 - [ ] 対応する`wiki/ja/`ページの`> EN canonical:`行を更新済み
 - [ ] エージェント/ルールが変更された場合、Agents-ReferenceまたはRules-Referenceのエントリを更新済み
-- [ ] 正規が変更された場合、プラットフォームファイルを再生成済み（`node scripts/generate.mjs`）
-- [ ] 生成された`platforms/`ファイルを正規の変更とともにステージ済み
 - [ ] 新しいフロー / オーケストレーターを追加した場合、4 箇所の統合ポイントをすべて更新済み: Architecture.md の図、Triage-System.md のセクション、Agents-Reference.md のドメインセクション、Home.md のペルソナエントリ
 
 ---
@@ -181,11 +153,9 @@ PRを開く前に確認してください：
 - [アーキテクチャ](./Architecture.md)
 - [エージェントリファレンス](./Agents-Reference.md)
 - [ルールリファレンス](./Rules-Reference.md)
-- [プラットフォームガイド](./Platform-Guide.md)
 
 ## 正規ソース
 
 - [.claude/agents/](../../.claude/agents/) — エージェント定義ファイル（正規）
 - [.claude/rules/](../../.claude/rules/) — ルールファイル（正規）
-- [scripts/generate.mjs](../../scripts/generate.mjs) — プラットフォームファイルジェネレーター
 - [wiki/DESIGN.md](../DESIGN.md) — Wiki情報アーキテクチャ設計

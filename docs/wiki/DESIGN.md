@@ -2,9 +2,10 @@
 
 > 参照元: ISSUE.md (2026-04-18)
 > 作成日: 2026-04-18
-> 最終更新: 2026-04-18
+> 最終更新: 2026-04-24
 > 更新履歴:
 >   - 2026-04-18: 初版作成（architect による情報アーキテクチャ確定）
+>   - 2026-04-24: Platform-Guide ページ廃止に伴い 8→7 ページ構成に改訂
 
 本ドキュメントは Aphelion リポジトリの `docs/wiki/` ディレクトリ（バイリンガル wiki）に関する**軽量な情報アーキテクチャ設計メモ**である。
 通常の `ARCHITECTURE.md`（データモデル / API 設計 / 依存関係）は不要であり、本ファイルのみで developer がページ本体を執筆可能な粒度にまとめる。
@@ -25,7 +26,7 @@
 
 ### 1.1 ページ構成
 
-ISSUE.md §5 の **8 ページ構成を維持**する。ただし `Agents-Reference` は 26 エージェント × 2 言語 = 52 ファイルに分割すると保守負荷が高く、目次性も損なわれるため、**1 ページ内でドメイン別セクション化**する方針とする。
+ISSUE.md §5 の構成を参照し、Platform-Guide ページ廃止により **7 ページ構成**に改訂する（旧 Platform-Guide を廃止）。ただし `Agents-Reference` は 26 エージェント × 2 言語 = 52 ファイルに分割すると保守負荷が高く、目次性も損なわれるため、**1 ページ内でドメイン別セクション化**する方針とする。
 
 | # | slug | 言語別パス | 主読者 |
 |---|------|-----------|--------|
@@ -35,8 +36,7 @@ ISSUE.md §5 の **8 ページ構成を維持**する。ただし `Agents-Refere
 | 4 | `Triage-System` | `docs/wiki/en/Triage-System.md` / `docs/wiki/ja/Triage-System.md` | 新規ユーザー / エージェント開発者 |
 | 5 | `Agents-Reference` | `docs/wiki/en/Agents-Reference.md` / `docs/wiki/ja/Agents-Reference.md` | エージェント開発者 |
 | 6 | `Rules-Reference` | `docs/wiki/en/Rules-Reference.md` / `docs/wiki/ja/Rules-Reference.md` | エージェント開発者 |
-| 7 | `Platform-Guide` | `docs/wiki/en/Platform-Guide.md` / `docs/wiki/ja/Platform-Guide.md` | プラットフォーム移植者 |
-| 8 | `Contributing` | `docs/wiki/en/Contributing.md` / `docs/wiki/ja/Contributing.md` | エージェント開発者 |
+| 7 | `Contributing` | `docs/wiki/en/Contributing.md` / `docs/wiki/ja/Contributing.md` | エージェント開発者 |
 
 ### 1.2 Agents-Reference を 1 ページにまとめる根拠
 
@@ -51,7 +51,7 @@ ISSUE.md §5 の **8 ページ構成を維持**する。ただし `Agents-Refere
 
 - `_Sidebar.md` は**作成しない**（リポジトリ内閲覧との両立を優先）
 - 代わりに以下の方針でナビゲーションを提供:
-  - **Home.md** が唯一の目次ハブ。8 ページ全てへのリンクと 1〜2 行の要約を記載
+  - **Home.md** が唯一の目次ハブ。7 ページ全てへのリンクと 1〜2 行の要約を記載
   - 各ページ末尾に `## Related Pages` セクションを置き、関連ページへの相対リンクを列挙
   - ページ内目次（TOC）は 80 行超のページで必須、それ未満では任意
 
@@ -199,22 +199,18 @@ ISSUE.md §5 の **8 ページ構成を維持**する。ただし `Agents-Refere
 
 | 観点 | 判断理由 |
 |------|---------|
-| 読者モデル | Wiki の主読者は「Aphelion のエージェント開発者」であり、配布先（Copilot/Codex 生成物）のエンドユーザーではない |
-| 生成物の目的 | `platforms/copilot/` `platforms/codex/` は各 AI プラットフォームで動作する**実行用エージェント定義**。ドキュメント二次資料を含めると生成物サイズが肥大化し、プラットフォーム固有制約（Codex のサブエージェント不可など）と無関係なノイズになる |
-| アクセシビリティ | Wiki は GitHub 上で直接閲覧可能。Copilot/Codex ユーザーも URL でアクセスすれば十分 |
-| 保守負荷 | 生成パイプラインにリンク書き換え / 画像パス変換を追加すると `generate.py` の責務が膨張する |
+| 読者モデル | Wiki の主読者は「Aphelion のエージェント開発者」であり、特定の AI プラットフォームのエンドユーザーではない |
+| アクセシビリティ | Wiki は GitHub 上で直接閲覧可能。URL でアクセスすれば十分 |
+| 保守負荷 | 生成パイプラインにリンク書き換え / 画像パス変換を追加すると生成スクリプトの責務が膨張する |
 
 ### 4.3 運用上の対処
 
-- `scripts/generate.py` が `docs/wiki/` を誤って走査しないよう、**既存スクリプトの除外設定を確認のみ行う**（このタスクは developer が Platform-Guide 執筆時に確認し、問題があれば別 issue 化）
-- README または Platform-Guide に「Wiki は配布対象外。オンラインで参照してください」と 1 行明記する
 - `.gitignore` への追加は不要（Wiki は git 管理対象）
 
 ### 4.4 将来の再検討トリガー
 
-以下のいずれかが発生した場合、`generate.py` 拡張を再検討する:
+以下のいずれかが発生した場合、Wiki 配布方法の再検討を行う:
 - ユーザーから「オフライン環境で Wiki を読みたい」というフィードバックが複数件発生
-- Codex/Copilot 側でコンテキスト窓に Wiki を自動注入する需要が出てきたとき
 
 ---
 
@@ -230,7 +226,6 @@ docs/wiki/
 │   ├── Triage-System.md
 │   ├── Agents-Reference.md
 │   ├── Rules-Reference.md
-│   ├── Platform-Guide.md
 │   └── Contributing.md
 └── ja/
     ├── Home.md
@@ -239,11 +234,10 @@ docs/wiki/
     ├── Triage-System.md
     ├── Agents-Reference.md
     ├── Rules-Reference.md
-    ├── Platform-Guide.md
     └── Contributing.md
 ```
 
-- 合計 17 ファイル（DESIGN.md + 8 × 2）
+- 合計 15 ファイル（DESIGN.md + 7 × 2）
 - Agents-Reference の分割は行わない（§1.2 の根拠参照）
 - 画像 / 図表が必要になった場合は `docs/wiki/assets/` を後続 PR で追加する（今回のスコープ外）
 
@@ -268,8 +262,7 @@ Phase 3: 大型リファレンス（フォーマット統一が重要）
   └─ Task 3-2: docs/wiki/en/Rules-Reference.md + docs/wiki/ja/Rules-Reference.md
 
 Phase 4: 周辺ページ
-  ├─ Task 4-1: docs/wiki/en/Platform-Guide.md + docs/wiki/ja/Platform-Guide.md
-  └─ Task 4-2: docs/wiki/en/Contributing.md + docs/wiki/ja/Contributing.md
+  └─ Task 4-1: docs/wiki/en/Contributing.md + docs/wiki/ja/Contributing.md
 
 Phase 5: 仕上げ
   └─ Task 5-1: README に Wiki エントリへのリンクを 1 箇所追加
@@ -287,7 +280,6 @@ Phase 5: 仕上げ
 | 日本語訳の遅延で `ja/` が放置される | 中 | §3.1 の「英語先行マージ原則禁止」で一次防御。Contributing に違反時のフォロー手順を記載 |
 | Agents-Reference.md が肥大化し編集競合が多発 | 低〜中 | §1.2 の「40 超 or 300 行超で分割再検討」ルールを Contributing に記載 |
 | README と Wiki の内容が重複し矛盾する | 中 | README は「入口と Quick Start」、Wiki は「詳細リファレンス」という役割分担を Home.md と Contributing.md の両方に明記 |
-| プラットフォーム生成物（Copilot/Codex）側のユーザーが Wiki の存在に気づかない | 低 | Platform-Guide に「Wiki は GitHub 側で参照」のセクションを置き、生成物から誘導する |
 
 ---
 
@@ -340,6 +332,4 @@ Phase 5: 仕上げ
 - `.claude/agents/*.md`（26 エージェント定義、Agents-Reference の原典）
 - `.claude/rules/*.md`（8 ルール定義、Rules-Reference の原典）
 - `.claude/orchestrator-rules.md`（Triage-System の原典。存在確認は developer が行う）
-- `platforms/copilot/` / `platforms/codex/`（Platform-Guide の原典）
-- `scripts/generate.py`（Platform-Guide の原典）
 - `README.md`（Getting-Started の原典）

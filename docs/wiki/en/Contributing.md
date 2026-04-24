@@ -1,10 +1,10 @@
 # Contributing
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-04-24
+> **Last updated**: 2026-04-24 (updated 2026-04-24: Claude Code only, remove platform generator)
 > **Audience**: Agent developers
 
-This page covers how to contribute to Aphelion: adding or modifying agents, updating rules, maintaining the wiki, and running the platform generator. Read this before opening a pull request.
+This page covers how to contribute to Aphelion: adding or modifying agents, updating rules, and maintaining the wiki. Read this before opening a pull request.
 
 ## Table of Contents
 
@@ -14,7 +14,6 @@ This page covers how to contribute to Aphelion: adding or modifying agents, upda
 - [Updating Rules](#updating-rules)
 - [Wiki Maintenance](#wiki-maintenance)
 - [Bilingual Sync Policy](#bilingual-sync-policy)
-- [Regenerating Platform Files](#regenerating-platform-files)
 - [Pull Request Checklist](#pull-request-checklist)
 - [Related Pages](#related-pages)
 - [Canonical Sources](#canonical-sources)
@@ -25,14 +24,13 @@ This page covers how to contribute to Aphelion: adding or modifying agents, upda
 
 | Type | Changes required |
 |------|----------------|
-| New agent | `.claude/agents/{name}.md` + Agents-Reference (en+ja) + generate.mjs (if new agent) |
+| New agent | `.claude/agents/{name}.md` + Agents-Reference (en+ja) |
 | Modify agent | `.claude/agents/{name}.md` + Agents-Reference entry (en+ja) |
 | New rule | `.claude/rules/{name}.md` + Rules-Reference (en+ja) |
 | Modify rule | `.claude/rules/{name}.md` + Rules-Reference entry (en+ja) |
 | Orchestrator rules change | `.claude/orchestrator-rules.md` + Architecture.md / Triage-System.md (en+ja) |
-| New flow (orchestrator) | `.claude/agents/{flow}.md` + `.claude/commands/{flow}.md` + Architecture.md (figures + text) + Triage-System.md (new section) + Agents-Reference.md (new orchestrator + domain section) + Home.md (personas + glossary) + index.mdx (card) + `ORCHESTRATOR_NAMES` in generate.mjs |
+| New flow (orchestrator) | `.claude/agents/{flow}.md` + `.claude/commands/{flow}.md` + Architecture.md (figures + text) + Triage-System.md (new section) + Agents-Reference.md (new orchestrator + domain section) + Home.md (personas + glossary) + index.mdx (card) |
 | Wiki page update | `wiki/en/{page}.md` + `wiki/ja/{page}.md` (same PR) |
-| Platform generator change | `scripts/generate.mjs` + regenerate `platforms/` |
 
 ---
 
@@ -57,9 +55,7 @@ This page covers how to contribute to Aphelion: adding or modifying agents, upda
 
 4. **If the agent is a new flow orchestrator**, update `.claude/orchestrator-rules.md` to include the new agent in the triage or phase sequence.
 
-5. **Regenerate platform files**: Run `node scripts/generate.mjs` to update `platforms/copilot/` and `platforms/codex/`.
-
-6. **Agents-Reference split threshold**: If the total agent count exceeds 40, or any single section in `Agents-Reference.md` exceeds 300 lines, consider splitting into `wiki/en/agents/{name}.md` per-agent files and converting `Agents-Reference.md` into a list + link hub. This is a future decision — open an issue to discuss first.
+5. **Agents-Reference split threshold**: If the total agent count exceeds 40, or any single section in `Agents-Reference.md` exceeds 300 lines, consider splitting into `wiki/en/agents/{name}.md` per-agent files and converting `Agents-Reference.md` into a list + link hub. This is a future decision — open an issue to discuss first.
 
 ---
 
@@ -70,8 +66,6 @@ This page covers how to contribute to Aphelion: adding or modifying agents, upda
 2. **Update the corresponding Agents-Reference entry** in both `wiki/en/Agents-Reference.md` and `wiki/ja/Agents-Reference.md` to reflect the change.
 
    > Keeping Agents-Reference synchronized is mandatory. If you update an agent definition without updating the wiki entry, reviewers will request a correction.
-
-3. **Regenerate platform files**: Run `node scripts/generate.mjs` to propagate the change to `platforms/copilot/` and `platforms/codex/`.
 
 ---
 
@@ -85,7 +79,6 @@ This page covers how to contribute to Aphelion: adding or modifying agents, upda
 
 4. **If the rule affects triage**, also update `wiki/en/Triage-System.md` and `wiki/ja/Triage-System.md`.
 
-5. **If the rule change affects the platform-generated files** (e.g., build-verification-commands or library-and-security-policy), regenerate platform files.
 
 ---
 
@@ -117,7 +110,7 @@ Translate within 30 days and link the stub issue to the follow-up PR.
 ### README vs Wiki separation
 
 - **README**: Entry point and Quick Start. Keep it short — setup, scenarios, command reference.
-- **Wiki**: Detailed reference. Agent schemas, rule explanations, platform internals, triage logic.
+- **Wiki**: Detailed reference. Agent schemas, rule explanations, triage logic.
 - Do not add detailed reference content to README. Do not add Quick Start content to the wiki Home.md.
 
 ---
@@ -140,25 +133,6 @@ The wiki is bilingual with English as canonical. The following rules are enforce
 
 ---
 
-## Regenerating Platform Files
-
-Whenever you modify files in `.claude/agents/`, `.claude/rules/`, or `.claude/orchestrator-rules.md`, regenerate the platform files:
-
-```bash
-node scripts/generate.mjs
-```
-
-Stage the generated files alongside your canonical changes:
-
-```bash
-git add .claude/agents/{name}.md platforms/copilot/agents/{name}.agent.md
-git add platforms/codex/AGENTS.md
-```
-
-> **Never edit `platforms/` files directly.** They are generated artifacts. Direct edits will be overwritten the next time the generator runs.
-
----
-
 ## Pull Request Checklist
 
 Before opening a PR, verify:
@@ -169,8 +143,6 @@ Before opening a PR, verify:
 - [ ] `> Last updated:` line updated in modified wiki pages
 - [ ] `> EN canonical:` line updated in corresponding `wiki/ja/` pages
 - [ ] Agents-Reference or Rules-Reference entry updated (if agent/rule changed)
-- [ ] Platform files regenerated (`node scripts/generate.mjs`) if canonical changed
-- [ ] Generated `platforms/` files staged alongside canonical changes
 - [ ] If a new flow / orchestrator is added, update all 4 integration points: Architecture.md figures, Triage-System.md sections, Agents-Reference.md domain section, Home.md persona entries
 
 ---
@@ -180,11 +152,9 @@ Before opening a PR, verify:
 - [Architecture](./Architecture.md)
 - [Agents Reference](./Agents-Reference.md)
 - [Rules Reference](./Rules-Reference.md)
-- [Platform Guide](./Platform-Guide.md)
 
 ## Canonical Sources
 
 - [.claude/agents/](../../.claude/agents/) — Agent definition files (canonical)
 - [.claude/rules/](../../.claude/rules/) — Rule files (canonical)
-- [scripts/generate.mjs](../../scripts/generate.mjs) — Platform file generator
 - [wiki/DESIGN.md](../DESIGN.md) — Wiki information architecture design
