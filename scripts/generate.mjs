@@ -33,7 +33,12 @@ const COPILOT_TOOL_MAP = {
 };
 
 // オーケストレーターエージェント (orchestrator-rules をインライン展開する対象)
-const ORCHESTRATOR_NAMES = new Set(['discovery-flow', 'delivery-flow', 'operations-flow']);
+const ORCHESTRATOR_NAMES = new Set([
+  'discovery-flow',
+  'delivery-flow',
+  'operations-flow',
+  'maintenance-flow',
+]);
 
 // Codex スキルに変換するコマンド (スタンドアロンユーティリティのみ)
 const CODEX_SKILL_COMMANDS = ['vuln-scan', 'secrets-scan'];
