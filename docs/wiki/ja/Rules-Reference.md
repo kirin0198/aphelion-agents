@@ -1,8 +1,8 @@
 # ルールリファレンス
 
 > **Language**: [English](../en/Rules-Reference.md) | [日本語](../ja/Rules-Reference.md)
-> **Last updated**: 2026-04-18
-> **EN canonical**: 2026-04-18 of wiki/en/Rules-Reference.md
+> **Last updated**: 2026-04-24
+> **EN canonical**: 2026-04-24 of wiki/en/Rules-Reference.md
 > **Audience**: エージェント開発者
 
 このページは`.claude/rules/`にある10の行動ルールのコンパクトなリファレンスです。各エントリはスコープ、自動ロードの動作、他ルール・エージェントとのインタラクション、ルールが強制する主要な制約をまとめています。
@@ -31,7 +31,7 @@
 - **正規**: [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md)
 - **スコープ**: 全エージェントとオーケストレーター；トップレベルのワークフローコンテキストを提供
 - **自動ロードの動作**: `.claude/rules/`に配置され、Claude Codeが全セッション起動時に自動ロード
-- **概要**: 3ドメインモデル（Discovery / Delivery / Operations）、トリアージ階層、エージェントディレクトリの場所を定義します。全エージェントはこのフレームワーク内で動作します。
+- **概要**: 3ドメインモデル（Discovery / Delivery / Operations）、独立した Maintenance フロー（既存プロジェクト保守向けの第 4 フロー）、トリアージ階層、エージェントディレクトリの場所を定義します。全エージェントはこのフレームワーク内で動作します。
 - **インタラクション**: 全フローオーケストレーターとエージェントが権威あるワークフローモデルとして参照
 
 ---

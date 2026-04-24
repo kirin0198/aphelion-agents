@@ -1,7 +1,7 @@
 # Platform Guide
 
 > **Language**: [English](../en/Platform-Guide.md) | [日本語](../ja/Platform-Guide.md)
-> **Last updated**: 2026-04-18
+> **Last updated**: 2026-04-24
 > **Audience**: Platform porters
 
 This page explains how Aphelion is adapted for each supported platform, what the generator script does, and how to port Aphelion to a new platform.
@@ -267,7 +267,7 @@ node scripts/generate.mjs --clean
 *For Copilot:*
 1. Reads each `.claude/agents/{name}.md` file
 2. Converts YAML frontmatter (tool names, removes `model` field)
-3. Inlines `orchestrator-rules.md` content into orchestrator agents (discovery-flow, delivery-flow, operations-flow)
+3. Inlines `orchestrator-rules.md` content into orchestrator agents (discovery-flow, delivery-flow, operations-flow, maintenance-flow)
 4. Writes output to `platforms/copilot/agents/{name}.agent.md`
 5. Reads `.claude/rules/aphelion-overview.md` and writes to `platforms/copilot/copilot-instructions.md`
 

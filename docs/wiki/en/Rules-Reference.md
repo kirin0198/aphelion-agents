@@ -1,7 +1,7 @@
 # Rules Reference
 
 > **Language**: [English](../en/Rules-Reference.md) | [日本語](../ja/Rules-Reference.md)
-> **Last updated**: 2026-04-18
+> **Last updated**: 2026-04-24
 > **Audience**: Agent developers
 
 This page is a compact reference for all 10 behavioral rules in `.claude/rules/`. Each entry summarizes scope, auto-load behavior, interactions with other rules and agents, and the key constraint the rule enforces.
@@ -30,7 +30,7 @@ For full details, follow the **Canonical** link to the source file.
 - **Canonical**: [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md)
 - **Scope**: All agents and orchestrators; provides the top-level workflow context
 - **Auto-load**: Yes — placed in `.claude/rules/`, loaded by Claude Code on every session start
-- **Key constraint**: Defines the three-domain model (Discovery / Delivery / Operations), triage tiers, and agent directory location. All agents operate within this framework.
+- **Key constraint**: Defines the three-domain model (Discovery / Delivery / Operations), the independent Maintenance flow (fourth flow for existing-project maintenance), triage tiers, and agent directory location. All agents operate within this framework.
 - **Interactions**: Referenced by all flow orchestrators and agents as the authoritative workflow model
 
 ---

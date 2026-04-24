@@ -79,8 +79,8 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 
 | Term | Definition |
 |------|------------|
-| **Domain** | One of the three top-level workflow scopes: Discovery, Delivery, Operations |
-| **Flow orchestrator** | An agent that manages an entire domain (discovery-flow, delivery-flow, operations-flow) |
+| **Domain** | One of the three primary workflow scopes (Discovery, Delivery, Operations). Maintenance is a fourth, independent flow that runs alongside the primary pipeline |
+| **Flow orchestrator** | An agent that manages an entire flow (discovery-flow, delivery-flow, operations-flow, maintenance-flow) |
 | **Triage** | The process of assessing project scale at flow start and selecting a plan tier |
 | **Plan** | One of four execution tiers: Minimal / Light / Standard / Full |
 | **Handoff file** | A `.md` file used to pass information between domains (DISCOVERY_RESULT.md, DELIVERY_RESULT.md) |

@@ -1,8 +1,8 @@
 # プラットフォームガイド
 
 > **Language**: [English](../en/Platform-Guide.md) | [日本語](../ja/Platform-Guide.md)
-> **Last updated**: 2026-04-18
-> **EN canonical**: 2026-04-18 of wiki/en/Platform-Guide.md
+> **Last updated**: 2026-04-24
+> **EN canonical**: 2026-04-24 of wiki/en/Platform-Guide.md
 > **Audience**: プラットフォーム移植者
 
 このページはAphelionが各サポートプラットフォームにどのように適用されるか、ジェネレータースクリプトが何をするか、そしてAphelionを新しいプラットフォームに移植する方法を説明します。
@@ -268,7 +268,7 @@ node scripts/generate.mjs --clean
 *Copilotの場合：*
 1. 各`.claude/agents/{name}.md`ファイルを読み込む
 2. YAMLフロントマターを変換（ツール名、`model`フィールドを削除）
-3. オーケストレーターエージェント（discovery-flow、delivery-flow、operations-flow）に`orchestrator-rules.md`の内容をインライン化
+3. オーケストレーターエージェント（discovery-flow、delivery-flow、operations-flow、maintenance-flow）に`orchestrator-rules.md`の内容をインライン化
 4. `platforms/copilot/agents/{name}.agent.md`に出力を書き込む
 5. `.claude/rules/aphelion-overview.md`を読み込み`platforms/copilot/copilot-instructions.md`に書き出す
 

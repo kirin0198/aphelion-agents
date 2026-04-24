@@ -75,10 +75,12 @@ flowchart LR
     D["Discovery<br/>(6 agents)<br/>interviewer → ... → scope-planner"]
     DV["Delivery<br/>(12 agents)<br/>spec-designer → ... → releaser"]
     O["Operations<br/>(4 agents)<br/>infra-builder → ... → ops-planner"]
+    M["Maintenance<br/>(3 agents + reuse)<br/>change-classifier → impact-analyzer → analyst → ..."]
     S["Standalone<br/>analyst / codebase-analyzer / sandbox-runner"]
 
     D -->|DISCOVERY_RESULT.md| DV
     DV -->|DELIVERY_RESULT.md| O
+    M -.->|MAINTENANCE_RESULT.md<br/>Major のみ| DV
     S -.optional.-> DV
 ```
 
@@ -86,9 +88,10 @@ flowchart LR
 [Discovery](./Agents-Reference.md#discovery-domain) ·
 [Delivery](./Agents-Reference.md#delivery-domain) ·
 [Operations](./Agents-Reference.md#operations-domain) ·
+[Maintenance](./Agents-Reference.md#maintenanceドメイン) ·
 [Standalone](./Agents-Reference.md#standalone-agents)
 
-Maintenance 関連エージェント (change-classifier, impact-analyzer, maintenance-flow) は 3 ドメインパイプラインから独立して起動されるため、上図では "Standalone" クラスタに含めて表示しています。各エージェントの詳細は [エージェントリファレンス → Maintenance](./Agents-Reference.md#maintenanceドメイン) を参照してください。
+Maintenance は **Discovery → Delivery → Operations の主パイプラインから独立した第 4 のフロー**であり、`/maintenance-flow` により既存プロジェクトの保守タスクに対して起動されます。Patch / Minor プランは単独完結し、Major プランのみ `MAINTENANCE_RESULT.md` を介して Delivery に引き渡します。各エージェントの詳細は [エージェントリファレンス → Maintenance](./Agents-Reference.md#maintenanceドメイン) と [トリアージシステム → Maintenance フローのトリアージ](./Triage-System.md#maintenance-フローのトリアージ) を参照してください。
 
 ---
 
@@ -100,7 +103,7 @@ Maintenance 関連エージェント (change-classifier, impact-analyzer, mainte
 - **専門化の実現**: 各オーケストレーターは自ドメインに関連するルールとエージェントのみをロードします。
 - **明示的なチェックポイントの強制**: ユーザーは次のドメインを起動する前に各ドメインの出力をレビューする必要があり、品質ゲートのスキップを防ぎます。
 
-3つのフローオーケストレーター（`discovery-flow`、`delivery-flow`、`operations-flow`）が各セッションのエントリーポイントとなります。
+4つのフローオーケストレーター（`discovery-flow`、`delivery-flow`、`operations-flow`、`maintenance-flow`）が各セッションのエントリーポイントとなります。
 
 ---
 
@@ -178,14 +181,14 @@ PRODUCT_TYPE: {service | tool | library | cli}
 
 Discoveryフェーズで決定された `PRODUCT_TYPE` フィールドにより、実行されるドメインが決まります：
 
-| PRODUCT_TYPE | Discovery | Delivery | Operations |
-|-------------|-----------|----------|------------|
-| `service` | 実行 | 実行 | **実行** |
-| `tool` | 実行 | 実行 | スキップ |
-| `library` | 実行 | 実行 | スキップ |
-| `cli` | 実行 | 実行 | スキップ |
+| PRODUCT_TYPE | Discovery | Delivery | Maintenance | Operations |
+|-------------|-----------|----------|-------------|------------|
+| `service` | 実行 | 実行 | 実行 (必要時) | **実行** |
+| `tool` | 実行 | 実行 | 実行 (必要時) | スキップ |
+| `library` | 実行 | 実行 | 実行 (必要時) | スキップ |
+| `cli` | 実行 | 実行 | 実行 (必要時) | スキップ |
 
-インフラ・DB運用・デプロイ手順が必要なのは `service` プロダクトのみです。
+インフラ・DB運用・デプロイ手順が必要なのは `service` プロダクトのみです。Maintenance はリリース後の変更が必要な場合、全 PRODUCT_TYPE で利用できます。
 
 ---
 
