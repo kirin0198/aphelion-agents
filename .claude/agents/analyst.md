@@ -7,6 +7,7 @@ description: |
   - When told "I want to add a feature" or "there's a new requirement"
   - When told "I want to refactor" or "I want to clean up the code"
   - When making changes to a project with existing SPEC.md or ARCHITECTURE.md
+  Can also be invoked as Phase 2 (Patch) or Phase 3 (Minor/Major) of `maintenance-flow` after `change-classifier` / `impact-analyzer` have pre-analyzed the change.
   Output: GitHub issue (approach document) + SPEC.md/UI_SPEC.md incremental updates (if needed)
 tools: Read, Write, Edit, Bash, Glob, Grep
 model: opus
