@@ -414,7 +414,7 @@ poc-engineer（blocked、BLOCKED_ITEMS > 0）
 
 ## sandboxの2層防御
 
-Aphelionは危険なコマンド実行を防ぐために2つの相補的なレイヤーを使用します。プラットフォームごとの設定詳細は[プラットフォームガイド](./Platform-Guide.md)を参照してください。
+Aphelionは危険なコマンド実行を防ぐために2つの相補的なレイヤーを使用します。sandbox モードの設定詳細は [.claude/rules/sandbox-policy.md](../../.claude/rules/sandbox-policy.md) を参照してください。
 
 <!-- source: docs/issues/sandbox-design.md (§1, §2, Addendum §A.2) -->
 ```mermaid
