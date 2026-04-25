@@ -19,7 +19,7 @@ responsibility and are not listed here — run `/help` for those.
 |---------|---------|
 | `/pm` | Quick Delivery launch when requirements are already clear (skips Discovery) |
 | `/aphelion-init` | First-run project rules setup (launches `rules-designer`) |
-| `/issue-new` | Create a planning doc in `docs/design-notes/` and a GitHub issue atomically |
+| `/issue-new` | Structured intake gate — collect issue details (§1–§4) and create planning doc + GitHub issue (run `/analyst` next for §5–§8) |
 
 ## Standalone agents
 

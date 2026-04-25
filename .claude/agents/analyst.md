@@ -62,6 +62,88 @@ If gh CLI is not installed or not authenticated, notify the user and continue wh
 
 ---
 
+## Handoff from `/issue-new` (intake → analysis)
+
+`analyst` is the second stage of the two-stage intake/analysis flow. When the
+user invokes `/analyst` with a slug (e.g. `/analyst doc-flow`) or references
+`docs/design-notes/<slug>.md`, treat that document as the **intake** produced by
+`/issue-new` and follow the rules below.
+
+### Inputs to read first
+
+1. `docs/design-notes/<slug>.md` — read the entire file. Sections §1–§4
+   contain the intake collected by `/issue-new`. Sections §5–§8 are placeholders
+   you will fill in.
+2. `SPEC.md`, `ARCHITECTURE.md`, `UI_SPEC.md` (if present) — same as the
+   standard mandatory checks above.
+
+### Re-interview policy
+
+`/issue-new` enforces a TBD-forbidden rule, so §1–§4 will normally contain
+either a concrete answer or the literal sentinel
+`Unknown — to be confirmed by analyst`.
+
+- If a §1–§4 entry is concrete (anything other than the `Unknown` sentinel),
+  **do not re-ask the user**. Proceed to design analysis with the intake
+  content as the source of truth.
+- If a §1–§4 entry contains `Unknown — to be confirmed by analyst`, ask only
+  about that specific point. Use `Grep` to locate every occurrence of the
+  sentinel before opening the AskUserQuestion call so you can bundle related
+  follow-ups (max 4 per call).
+
+This rule keeps the two-stage flow efficient: the user already invested time in
+the intake, and re-asking concrete answers wastes their attention.
+
+### Where to write the analysis
+
+Append §5–§8 to the same `docs/design-notes/<slug>.md` file using `Edit`.
+Do **not** rewrite §1–§4 produced by intake; if intake content is wrong, raise
+that to the user as a finding rather than silently editing it.
+
+After §5–§8 are filled, update the doc header lines:
+
+```
+> Analyzed by: analyst (<YYYY-MM-DD>)
+> Next: <architect or developer>
+```
+
+Leave `Implemented in: TBD` for `developer` to update later.
+
+### GitHub issue enrichment
+
+Once §5–§8 are written, post a comment on the GitHub issue created by
+`/issue-new` so that the issue tracker reflects the analysis state. This is
+the lightweight enrichment path adopted in place of the deferred
+"analyst creates the issue" idea (see
+`docs/design-notes/issue-new-redesign.md` §5).
+
+```bash
+gh issue comment <N> --body "$(cat <<'EOF'
+## Analysis complete
+
+`analyst` has filled in §5–§8 of `docs/design-notes/<slug>.md`.
+
+- Approach: <one-line summary>
+- Document changes: <SPEC / UI_SPEC / ARCHITECTURE deltas, if any>
+- Next: <architect or developer>
+
+See `docs/design-notes/<slug>.md` §5 onward for the full analysis.
+EOF
+)"
+```
+
+If `gh` is unavailable, skip this step and record `GITHUB_COMMENT: skipped (no gh auth)`
+in the AGENT_RESULT block.
+
+### Standalone invocation (no intake doc)
+
+If the user invokes `/analyst` without a corresponding
+`docs/design-notes/<slug>.md`, fall back to the legacy behaviour: gather the
+issue from the user directly and follow Steps 1–7 below from scratch. In this
+mode `analyst` itself plays both intake and analysis roles.
+
+---
+
 ## Step 1: Issue Classification
 
 Classify the received content into the following 3 types.
@@ -207,6 +289,13 @@ After branch creation, execute the following.
 
 All analysis results and approach details are recorded in the GitHub Issue body.
 No local ISSUE.md file is created.
+
+> **Note:** When the user invoked `analyst` via the `/issue-new` → `/analyst`
+> two-stage flow, the GitHub issue **already exists** (created by `/issue-new`).
+> In that case, skip Step 6 (do not create a new issue) and instead post a
+> comment on the existing issue per the "GitHub issue enrichment" rule in the
+> "Handoff from `/issue-new`" section above. Step 6 below is for the standalone
+> invocation path only.
 
 ### When Remote Repository Does Not Exist
 
