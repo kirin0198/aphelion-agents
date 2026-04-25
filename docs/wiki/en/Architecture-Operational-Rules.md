@@ -155,7 +155,7 @@ poc-engineer (blocked, BLOCKED_ITEMS > 0)
 
 Aphelion uses two complementary layers to protect against dangerous command execution. See [.claude/rules/sandbox-policy.md](../../.claude/rules/sandbox-policy.md) for sandbox-mode configuration details.
 
-<!-- source: docs/issues/sandbox-design.md (§1, §2, Addendum §A.2) -->
+<!-- source: docs/issues/archived/sandbox-design.md (§1, §2, Addendum §A.2) -->
 ```mermaid
 flowchart TB
     subgraph Advisory ["Advisory Layer"]

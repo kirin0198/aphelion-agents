@@ -1,7 +1,7 @@
 # Contributing
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: /aphelion-init と /aphelion-help を追加, #39)
+> **Last updated**: 2026-04-25 (updated 2026-04-25: planning doc アーカイブワークフロー追加 + 17 件のアーカイブ移動)
 > **EN canonical**: 2026-04-25 (updated 2026-04-25) of wiki/en/Contributing.md
 > **Audience**: エージェント開発者
 
@@ -84,7 +84,7 @@
 
 `rules/*.md` の正規ソースは `src/.claude/rules/` にあり、`.claude/rules/` ではありません。これは意図的な配置です。
 
-Claude Code は `rules/*.md` を `~/.claude/rules/`（user-global）と `<project>/.claude/rules/`（project-local）の双方から **加算的に** auto-load します。Aphelion メンテナにとって、これは「リポジトリ内でセッションを開くたびに同じルールが二重に読み込まれる」状態を意味し、ルール編集中には**矛盾する 2 版が同時供給される**事態に至っていました。正規ソースを repo-root の `.claude/rules/` から退かすことで、構造的に二重ロードを排除します。詳細は `docs/issues/claude-rules-isolation.md` (#44) を参照。
+Claude Code は `rules/*.md` を `~/.claude/rules/`（user-global）と `<project>/.claude/rules/`（project-local）の双方から **加算的に** auto-load します。Aphelion メンテナにとって、これは「リポジトリ内でセッションを開くたびに同じルールが二重に読み込まれる」状態を意味し、ルール編集中には**矛盾する 2 版が同時供給される**事態に至っていました。正規ソースを repo-root の `.claude/rules/` から退かすことで、構造的に二重ロードを排除します。詳細は `docs/issues/archived/claude-rules-isolation.md` (#44) を参照。
 
 **実務上の影響**: `src/.claude/rules/` 配下のルールを編集しても、編集中のセッションには即座に反映されません。セッションは `~/.claude/rules/`（user-global mirror = デプロイ済みスナップショット）に従って動作します。編集を反映させるには:
 
@@ -185,6 +185,16 @@ PRを開く前に確認してください：
 - **Sandbox / policy denial** → `AskUserQuestion` で意図を確認します。承認後も再実行が拒否される場合は、チャット入力に `!cmd` を貼り付けて手動フォールバックを実行してください。Claude Code は会話内承認を一回限りの allowlist として扱う仕組みを現状提供していません。
 - **POSIX `Permission denied`** → `ls -la {path}` で所有者を確認し、`root` 所有なら `sudo chown -R $USER {path}` の後に再実行してください。これは sandbox-policy 起因ではないため、承認フローでは解消しません。
 - **Claude Code auto-mode の拒否**（sub-agent 境界、branch-protection ヒューリスティック、"External System Write" など）→ `settings.local.json` では制御不能です。invocation ごとに承認するか、親セッションでコマンドを実行するか、ヒューリスティックが発動しないようにワークフローを分割してください。
+
+### クローズ済み planning doc のアーカイブ
+
+`docs/issues/` 内の planning doc は、対応する GitHub issue がクローズ (実装完了) されたら `docs/issues/archived/` に移動します。これにより active なディレクトリには進行中の計画だけが残ります。
+
+移動は自動化されています: PR がマージされると [`archive-closed-plans` ワークフロー](../../../.github/workflows/archive-closed-plans.yml) がマージされた PR の本文から `Closes #N` / `Fixes #N` / `Resolves #N` キーワードを抽出し、各参照 issue が `CLOSED` であることを検証したうえで、`GitHub Issue: [#N]` ヘッダーで該当 issue を参照する planning doc を見つけ、ファイル移動の追従 PR を自動オープンします。メンテナはその PR をレビューしてマージします。
+
+手動フォールバック: `git mv docs/issues/<slug>.md docs/issues/archived/`。ワークフローが issue 参照を検出できなかった場合 (planning doc が GitHub issue と紐付いていない、PR 本文にキーワードが無い、など) はこの方法を使ってください。
+
+> アーカイブ済み planning doc は **read-only** として扱います。アーカイブ済みドキュメント間の相互参照 (旧来の相対パス) は意図的にそのまま残します — 後追いで書き換えないでください。アクティブなドキュメントからアーカイブにリンクする際は明示的に `docs/issues/archived/<slug>.md` のパスを使用します。
 
 ---
 

@@ -156,7 +156,7 @@ poc-engineer（blocked、BLOCKED_ITEMS > 0）
 
 Aphelionは危険なコマンド実行を防ぐために2つの相補的なレイヤーを使用します。sandbox モードの設定詳細は [.claude/rules/sandbox-policy.md](../../.claude/rules/sandbox-policy.md) を参照してください。
 
-<!-- source: docs/issues/sandbox-design.md (§1, §2, Addendum §A.2) -->
+<!-- source: docs/issues/archived/sandbox-design.md (§1, §2, Addendum §A.2) -->
 ```mermaid
 flowchart TB
     subgraph Advisory ["Advisory Layer"]

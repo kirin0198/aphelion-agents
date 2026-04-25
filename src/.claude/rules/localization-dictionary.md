@@ -9,7 +9,7 @@ template placeholders (`{N}`, `{M}`, `{agent}`) at render time.
 > **Prose terminology (Aphelion's own JA wiki):** This file holds *runtime UI*
 > strings only. The terminology glossary used by Aphelion's own JA wiki/README
 > prose (Flow Orchestrator, Discovery Flow, accepted vs banned katakana, …)
-> lives in `docs/issues/ja-terminology-rebalance.md` (#40). See that document
+> lives in `docs/issues/archived/ja-terminology-rebalance.md` (#40). See that document
 > when polishing JA wiki pages or README.ja.md.
 
 ---

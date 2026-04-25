@@ -20,7 +20,7 @@ Relocating only `rules/` to `src/.claude/rules/` removes the project-side
 auto-load slot, so a Claude Code session opened in this repository sees
 **exactly one** copy of each rule (the user-global one).
 
-See `docs/issues/claude-rules-isolation.md` for the full analysis and ADRs.
+See `docs/issues/archived/claude-rules-isolation.md` for the full analysis and ADRs.
 
 ## DO NOT symlink this directory upward
 
