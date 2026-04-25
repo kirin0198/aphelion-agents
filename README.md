@@ -121,6 +121,8 @@ The flow orchestrator auto-detects project scale and launches only the agents ne
 
 | Command | Purpose |
 |---------|---------|
+| `/aphelion-init` | First-run project rules setup (run immediately after `npx aphelion-agents init`) |
+| `/aphelion-help` | List all Aphelion slash commands |
 | `/discovery-flow` | Start requirements exploration flow |
 | `/pm` `/delivery-flow` | Start design & implementation flow |
 | `/operations-flow` | Start deploy & operations flow |

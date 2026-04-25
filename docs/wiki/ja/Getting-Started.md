@@ -1,7 +1,7 @@
 # Getting Started
 
 > **Language**: [English](../en/Getting-Started.md) | [日本語](../ja/Getting-Started.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: terminology rebalance per #40)
+> **Last updated**: 2026-04-25 (updated 2026-04-25: /aphelion-init と /aphelion-help を追加, #39)
 > **EN canonical**: 2026-04-25 (updated 2026-04-25) of wiki/en/Getting-Started.md
 > **Audience**: 新規ユーザー
 
@@ -79,6 +79,14 @@ cp -r /path/to/aphelion-agents/.claude /path/to/your-project/
 cd /path/to/your-project
 claude
 ```
+
+**ステップ1.5：プロジェクト固有ルールのセットアップ（推奨）**
+
+```
+/aphelion-init
+```
+
+`rules-designer` が言語 / フレームワーク、Git 慣行、ビルドコマンド、出力言語、Co-Authored-By ポリシーを対話で確認し、`.claude/rules/project-rules.md` に書き込みます。Aphelion を試すだけならスキップしても構いません。提供されているコマンドの一覧が必要な場合は `/aphelion-help` をいつでも実行できます。
 
 **ステップ2：Discoveryを開始**
 
@@ -214,6 +222,8 @@ Deliveryが完了した後（serviceプロジェクトの場合）：
 
 | コマンド | 用途 | 入口 |
 |---------|------|------|
+| `/aphelion-init` | 初回プロジェクトルール設定（`rules-designer` を起動） | `npx aphelion-agents init` 直後 |
+| `/aphelion-help` | Aphelion のスラッシュコマンド一覧を表示 | 任意のプロジェクトで随時 |
 | `/discovery-flow {説明}` | 要件探索を開始 | 新規プロジェクト |
 | `/delivery-flow` | 設計・実装を開始 | Discovery後、または既存SPEC.mdがある場合 |
 | `/pm {説明}` | Deliveryを直接開始（ショートハンド） | 要件が固まっている場合 |
@@ -223,6 +233,7 @@ Deliveryが完了した後（serviceプロジェクトの場合）：
 | `/codebase-analyzer {指示}` | 既存コードから仕様を逆生成 | SPEC.mdがないプロジェクト |
 
 > これらのコマンドは `.claude/commands/*.md` でスラッシュコマンドとして定義されています（Claude Code）。
+> 常に最新の一覧は `/aphelion-help` で確認できます。
 
 ---
 

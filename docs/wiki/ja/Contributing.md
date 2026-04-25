@@ -1,7 +1,7 @@
 # Contributing
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: deny-list settings policy / denial-categories rule, #31)
+> **Last updated**: 2026-04-25 (updated 2026-04-25: /aphelion-init と /aphelion-help を追加, #39)
 > **EN canonical**: 2026-04-25 (updated 2026-04-25) of wiki/en/Contributing.md
 > **Audience**: エージェント開発者
 
@@ -160,6 +160,7 @@ PRを開く前に確認してください：
 - [ ] 対応する`wiki/ja/`ページの`> EN canonical:`行を更新済み
 - [ ] エージェント/ルールが変更された場合、該当する `Agents-{Domain}.md` または `Rules-Reference.md` のエントリを更新済み
 - [ ] 新しいフロー / Flow Orchestrator を追加した場合、統合ポイントをすべて更新済み: Architecture-Domain-Model.md の図、Architecture-Operational-Rules.md（Phase Execution Loop）、Triage-System.md のセクション、Agents-Orchestrators.md（横断系エージェントエントリ）、Home.md のペルソナエントリ
+- [ ] `.claude/commands/` に新しいファイルを追加した場合、静的一覧と同期させるため `.claude/commands/aphelion-help.md` にも該当行を追記する（#39）
 - [ ] `.claude/agents/`、`.claude/rules/`、`.claude/commands/`、`.claude/orchestrator-rules.md` のいずれかを変更した場合、`package.json` の `version` を bump 済み（下記「バージョンbumpポリシー」参照）
 - [ ] `bash scripts/smoke-update.sh` が正常終了する（リリース前ゲート）
 

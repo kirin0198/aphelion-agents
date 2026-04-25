@@ -1,7 +1,7 @@
 # Getting Started
 
 > **Language**: [English](../en/Getting-Started.md) | [日本語](../ja/Getting-Started.md)
-> **Last updated**: 2026-04-24 (updated 2026-04-24: Claude Code only)
+> **Last updated**: 2026-04-25 (updated 2026-04-25: added /aphelion-init and /aphelion-help, #39)
 > **Audience**: New users
 
 This page covers everything you need to start using Aphelion: Claude Code setup, first-run walkthrough, usage scenarios, command reference, and troubleshooting.
@@ -84,6 +84,17 @@ cp -r /path/to/aphelion-agents/.claude /path/to/your-project/
 cd /path/to/your-project
 claude
 ```
+
+**Step 1.5: Set up project-specific rules (recommended)**
+
+```
+/aphelion-init
+```
+
+`rules-designer` walks you through language / framework, Git conventions, build commands,
+output language, and Co-Authored-By policy, then writes `.claude/rules/project-rules.md`.
+Skip this if you only want to evaluate Aphelion before committing to a setup. Run
+`/aphelion-help` at any time to see every command this repo ships.
 
 **Step 2: Start Discovery**
 
@@ -219,6 +230,8 @@ You can invoke any agent directly without a flow:
 
 | Command | Purpose | Entry Point |
 |---------|---------|-------------|
+| `/aphelion-init` | First-run project rules setup (launches `rules-designer`) | Right after `npx aphelion-agents init` |
+| `/aphelion-help` | List all Aphelion slash commands | Anytime, in any project |
 | `/discovery-flow {description}` | Start requirements exploration | New projects |
 | `/delivery-flow` | Start design & implementation | After Discovery, or with existing SPEC.md |
 | `/pm {description}` | Start Delivery directly (shorthand) | When requirements are clear |
@@ -228,6 +241,7 @@ You can invoke any agent directly without a flow:
 | `/codebase-analyzer {instruction}` | Reverse-engineer specs from existing code | Projects without SPEC.md |
 
 > These commands are defined as slash commands in `.claude/commands/*.md` (Claude Code).
+> Run `/aphelion-help` for the canonical, always-up-to-date listing.
 
 ---
 

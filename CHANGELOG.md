@@ -9,6 +9,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 (no changes)
 
+## 0.3.2 - 2026-04-25
+
+### Added
+
+- `/aphelion-init` slash command that launches `rules-designer` for first-run
+  project rules setup. Use immediately after `npx aphelion-agents init` to
+  populate `.claude/rules/project-rules.md` interactively. (#39)
+- `/aphelion-help` slash command listing all 14 Aphelion slash commands grouped
+  by category (Orchestrators / Shortcuts / Standalone agents / Safety helpers /
+  Discoverability). Static markdown table — Claude Code built-ins (`/init`,
+  `/help`, `/clear`, `/agents`, etc.) are intentionally omitted; run `/help`
+  for those. (#39)
+
+### Changed
+
+- `package.json` version bumped from `0.3.1` to `0.3.2`.
+- `docs/wiki/{en,ja}/Getting-Started.md`: added a step pointing to
+  `/aphelion-init` between install and first Discovery run. README.md and
+  README.ja.md got the same one-line pointer.
+- `docs/wiki/{en,ja}/Contributing.md` PR checklist: added a reminder that
+  any PR adding a `.claude/commands/*.md` file should also append a row to
+  `aphelion-help.md` so the static listing stays in sync with the directory.
+
 ## 0.3.1 - 2026-04-25
 
 ### Changed

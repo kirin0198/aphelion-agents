@@ -1,6 +1,6 @@
 {
   "name": "aphelion-agents",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "AI coding agent definitions for Claude Code.",
   "license": "MIT",
   "author": "kirin0198",

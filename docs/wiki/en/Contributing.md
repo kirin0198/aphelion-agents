@@ -1,7 +1,7 @@
 # Contributing
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: deny-list settings policy, denial-categories rule, #31)
+> **Last updated**: 2026-04-25 (updated 2026-04-25: /aphelion-init and /aphelion-help commands, #39)
 > **Audience**: Agent developers
 
 This page covers how to contribute to Aphelion: adding or modifying agents, updating rules, and maintaining the wiki. Read this before opening a pull request.
@@ -159,6 +159,7 @@ Before opening a PR, verify:
 - [ ] `> EN canonical:` line updated in corresponding `wiki/ja/` pages
 - [ ] Matching `Agents-{Domain}.md` or `Rules-Reference.md` entry updated (if agent/rule changed)
 - [ ] If a new flow / orchestrator is added, update all integration points: Architecture-Domain-Model.md figures, Architecture-Operational-Rules.md (Phase Execution Loop), Triage-System.md sections, Agents-Orchestrators.md (cross-cutting agent entry), and Home.md persona entries
+- [ ] If a new file is added under `.claude/commands/`, also append a row to `.claude/commands/aphelion-help.md` so the static command listing stays in sync with the directory (#39)
 - [ ] `package.json` `version` bumped if any file under `.claude/agents/`, `.claude/rules/`, `.claude/commands/`, or `.claude/orchestrator-rules.md` was modified (see "Version bumping policy" below)
 - [ ] `bash scripts/smoke-update.sh` exits 0 (release-time gate; run before tagging)
 
