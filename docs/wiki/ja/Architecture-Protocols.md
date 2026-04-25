@@ -1,7 +1,7 @@
 # アーキテクチャ: プロトコル
 
 > **Language**: [English](../en/Architecture-Protocols.md) | [日本語](../ja/Architecture-Protocols.md)
-> **Last updated**: 2026-04-25 (split from Architecture.md; #42)
+> **Last updated**: 2026-04-25 (updated 2026-04-25: terminology rebalance per #40)
 > **EN canonical**: 2026-04-25 of wiki/en/Architecture-Protocols.md
 > **Audience**: エージェント開発者
 
@@ -10,7 +10,7 @@
 ## 目次
 
 - [ハンドオフファイルスキーマ](#ハンドオフファイルスキーマ)
-- [AGENT_RESULTプロトコル](#agent_resultプロトコル)
+- [AGENT_RESULT プロトコル](#agent_result-プロトコル)
 - [blocked STATUS](#blocked-status)
 - [関連ページ](#関連ページ)
 - [正規ソース](#正規ソース)
@@ -19,7 +19,7 @@
 
 ## ハンドオフファイルスキーマ
 
-ハンドオフファイルはドメイン間の通信メカニズムです。各ファイルは受信側オーケストレーターが検証する構造化されたMarkdownドキュメントです。
+ハンドオフファイルはドメイン間の通信メカニズムです。各ファイルは受信側の Flow Orchestrator（フローオーケストレーター）が検証する構造化された Markdown ドキュメントです。
 
 各ファイルの必須フィールドと生成・消費の関係を以下に示します。
 
@@ -87,11 +87,11 @@ PRODUCT_TYPE: {service | tool | library | cli}
 
 ---
 
-## AGENT_RESULTプロトコル
+## AGENT_RESULT プロトコル
 
-すべてのエージェントは完了時に `AGENT_RESULT` ブロックを出力する必要があります。フローオーケストレーターはこのブロックを解析して次のアクションを決定します。
+すべてのエージェントは完了時に `AGENT_RESULT` ブロックを出力する必要があります。Flow Orchestrator はこのブロックを解析して次のアクションを決定します。
 
-各STATUSの遷移とオーケストレーターの対応アクションを以下に示します。
+各 STATUS の遷移と Flow Orchestrator の対応アクションを以下に示します。
 
 <!-- source: .claude/rules/agent-communication-protocol.md -->
 ```mermaid
@@ -136,7 +136,7 @@ NEXT: {次のエージェント名 | done | suspended}
 
 ### STATUSの定義
 
-| STATUS | 意味 | オーケストレーターのアクション |
+| STATUS | 意味 | Flow Orchestrator のアクション |
 |--------|------|--------------------------|
 | `success` | 正常完了 | 承認ゲートに進む |
 | `error` | エラーにより完了失敗 | ユーザーに報告し判断を求める |
@@ -149,7 +149,7 @@ NEXT: {次のエージェント名 | done | suspended}
 
 ### NEXTフィールド
 
-`NEXT` フィールドはオーケストレーターに次に起動するエージェントを伝えます。主な値：
+`NEXT` フィールドは Flow Orchestrator に次に起動するエージェントを伝えます。主な値：
 
 - 特定のエージェント名（例：`architect`、`developer`）
 - `done` — ドメインが完了
@@ -170,7 +170,7 @@ CURRENT_TASK: TASK-005
 NEXT: suspended
 ```
 
-フローオーケストレーターは `BLOCKED_TARGET` に指定されたエージェントを**ライトウェイトモード**（特定の質問に答えるだけの短いプロンプト）で起動し、回答を得た後に元のエージェントを再開します。
+Flow Orchestrator は `BLOCKED_TARGET` に指定されたエージェントを**ライトウェイトモード**（特定の質問に答えるだけの短いプロンプト）で起動し、回答を得た後に元のエージェントを再開します。
 
 ---
 
@@ -180,7 +180,7 @@ NEXT: suspended
 - [アーキテクチャ: 運用ルール](./Architecture-Operational-Rules.md)
 - [ホーム](./Home.md)
 - [トリアージシステム](./Triage-System.md)
-- [エージェントリファレンス: オーケストレーター・横断系](./Agents-Orchestrators.md)
+- [エージェントリファレンス: Flow Orchestrator・横断系](./Agents-Orchestrators.md)
 - [ルールリファレンス](./Rules-Reference.md)
 
 ## 正規ソース

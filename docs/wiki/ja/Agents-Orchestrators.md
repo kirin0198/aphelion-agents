@@ -1,15 +1,15 @@
-# エージェントリファレンス: オーケストレーター・横断系
+# エージェントリファレンス: Flow Orchestrator・横断系
 
 > **Language**: [English](../en/Agents-Orchestrators.md) | [日本語](../ja/Agents-Orchestrators.md)
-> **Last updated**: 2026-04-25 (split from Agents-Reference.md; #42)
+> **Last updated**: 2026-04-25 (updated 2026-04-25: terminology rebalance per #40)
 > **EN canonical**: 2026-04-25 of wiki/en/Agents-Orchestrators.md
 > **Audience**: エージェント開発者
 
-このページはもとの Agents-Reference.md を5ページに分割したもの（#42）です。フローオーケストレーター、セーフティエージェント、スタンドアロンエージェント（横断系エージェント）を扱います。ドメイン別エージェントは兄弟ページを参照してください: [Discovery](./Agents-Discovery.md)、[Delivery](./Agents-Delivery.md)、[Operations](./Agents-Operations.md)、[Maintenance](./Agents-Maintenance.md)。
+このページはもとの Agents-Reference.md を 5 ページに分割したもの（#42）です。Flow Orchestrator（フローオーケストレーター）、セーフティエージェント、スタンドアロンエージェント（横断系エージェント）を扱います。ドメイン別エージェントは兄弟ページを参照してください: [Discovery](./Agents-Discovery.md)、[Delivery](./Agents-Delivery.md)、[Operations](./Agents-Operations.md)、[Maintenance](./Agents-Maintenance.md)。
 
 ## 目次
 
-- [フローオーケストレーター](#フローオーケストレーター)
+- [Flow Orchestrator](#flow-orchestrator)
 - [セーフティエージェント](#セーフティエージェント)
 - [スタンドアロンエージェント](#スタンドアロンエージェント)
 - [関連ページ](#関連ページ)
@@ -17,24 +17,24 @@
 
 ---
 
-## フローオーケストレーター
+## Flow Orchestrator
 
-フローオーケストレーターはドメイン全体を管理します。トリアージで選択されるエージェントではなく、セッションエントリーポイントです。
+Flow Orchestrator はドメイン全体を管理します。トリアージで選択されるエージェントではなく、セッションエントリーポイントです。
 
 ### discovery-flow
 
 - **正規**: [.claude/agents/discovery-flow.md](../../.claude/agents/discovery-flow.md)
-- **ドメイン**: オーケストレーター（Discovery）
+- **ドメイン**: Flow Orchestrator（Discovery）
 - **責務**: 要件探索フロー全体を管理します。トリアージを実行し、エージェントを順次起動し、承認とロールバックを処理し、DISCOVERY_RESULT.mdを生成します。
 - **入力**: ユーザーのプロジェクト説明（コマンド引数経由）
 - **出力**: DISCOVERY_RESULT.md（最終ハンドオフ）、INTERVIEW_RESULT.md、RESEARCH_RESULT.md、POC_RESULT.md、CONCEPT_VALIDATION.md、SCOPE_PLAN.md
-- **AGENT_RESTULTフィールド**: N/A（オーケストレーターはAGENT_RESTULTを出力しない；ハンドオフファイルを生成する）
+- **AGENT_RESTULTフィールド**: N/A（Flow Orchestrator は `AGENT_RESULT` を出力しない；ハンドオフファイルを生成する）
 - **NEXT条件**: 完了後、ユーザーに`/delivery-flow`の実行を促す
 
 ### delivery-flow
 
 - **正規**: [.claude/agents/delivery-flow.md](../../.claude/agents/delivery-flow.md)
-- **ドメイン**: オーケストレーター（Delivery）
+- **ドメイン**: Flow Orchestrator（Delivery）
 - **責務**: 設計・実装・テスト・レビューフロー全体を管理します。DISCOVERY_RESULT.mdを読み込み、トリアージを実行し、テスト/レビュー失敗時のロールバックを処理し、DELIVERY_RESULT.mdを生成します。
 - **入力**: DISCOVERY_RESULT.md（オプション）、既存のSPEC.md / ARCHITECTURE.md
 - **出力**: DELIVERY_RESULT.md（最終ハンドオフ）、SPEC.md、ARCHITECTURE.md、実装コード、TEST_PLAN.md、SECURITY_AUDIT.md、README.md
@@ -44,7 +44,7 @@
 ### operations-flow
 
 - **正規**: [.claude/agents/operations-flow.md](../../.claude/agents/operations-flow.md)
-- **ドメイン**: オーケストレーター（Operations）
+- **ドメイン**: Flow Orchestrator（Operations）
 - **責務**: デプロイと運用フローを管理します。PRODUCT_TYPE: serviceの場合のみ実行。DELIVERY_RESULT.mdを読み込み、トリアージを実行し、OPS_RESULT.mdを生成します。
 - **入力**: DELIVERY_RESULT.md（必須）、ARCHITECTURE.md、SPEC.md
 - **出力**: OPS_RESULT.md、Dockerfile、docker-compose.yml、CI/CDパイプライン、DB_OPS.md、OBSERVABILITY.md、OPS_PLAN.md
@@ -54,7 +54,7 @@
 ### maintenance-flow
 
 - **正規**: [.claude/agents/maintenance-flow.md](../../.claude/agents/maintenance-flow.md)
-- **ドメイン**: オーケストレーター (Maintenance — 第 4 のフロー)
+- **ドメイン**: Flow Orchestrator（Maintenance — 第 4 のフロー）
 - **責務**: 既存プロジェクトの保守ライフサイクルを管理します。トリガー (バグ / CVE / パフォーマンス / 技術的負債 / 機能追加) を受け取り、`change-classifier` で Patch / Minor / Major のトリアージを行い、対応するエージェントを順次起動します。Patch と Minor は単独完結、Major は `MAINTENANCE_RESULT.md` を生成して delivery-flow に引き渡します。
 - **入力**: ユーザーが指定するトリガー情報 (ログエラー / CVE 通知 / 機能要望 等)、SPEC.md、ARCHITECTURE.md
 - **出力**: GitHub issue、PR、テスト結果。Major のみ `MAINTENANCE_RESULT.md` を生成
@@ -67,7 +67,7 @@
 
 ## セーフティエージェント
 
-これらのエージェントは他のエージェント全体にセーフティポリシーを適用します。オーケストレーターから自動的に挿入されることも、Bashを持つ任意のエージェントから明示的に委譲されることもあります。
+これらのエージェントは他のエージェント全体にセーフティポリシーを適用します。Flow Orchestrator から自動的に挿入されることも、Bash を持つ任意のエージェントから明示的に委譲されることもあります。
 
 ### sandbox-runner
 
@@ -129,4 +129,4 @@
 ## 正規ソース
 
 - [.claude/agents/](../../.claude/agents/) — エージェント定義ファイル全体（権威あるソース）
-- [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — フローオーケストレータールールとトリアージ
+- [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — Flow Orchestrator ルールとトリアージ

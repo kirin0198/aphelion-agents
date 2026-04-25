@@ -1,11 +1,11 @@
 # エージェントリファレンス: Operationsドメイン
 
 > **Language**: [English](../en/Agents-Operations.md) | [日本語](../ja/Agents-Operations.md)
-> **Last updated**: 2026-04-25 (split from Agents-Reference.md; #42)
+> **Last updated**: 2026-04-25 (updated 2026-04-25: terminology rebalance per #40)
 > **EN canonical**: 2026-04-25 of wiki/en/Agents-Operations.md
 > **Audience**: エージェント開発者
 
-このページはもとの Agents-Reference.md を5ページに分割したもの（#42）です。Operationsドメインエージェントを扱います。他のドメインは兄弟ページを参照してください: [オーケストレーター・横断系](./Agents-Orchestrators.md)、[Discovery](./Agents-Discovery.md)、[Delivery](./Agents-Delivery.md)、[Maintenance](./Agents-Maintenance.md)。
+このページはもとの Agents-Reference.md を 5 ページに分割したもの（#42）です。Operations ドメインエージェントを扱います。他のドメインは兄弟ページを参照してください: [Flow Orchestrator・横断系](./Agents-Orchestrators.md)、[Discovery](./Agents-Discovery.md)、[Delivery](./Agents-Delivery.md)、[Maintenance](./Agents-Maintenance.md)。
 
 ## 目次
 
@@ -69,7 +69,7 @@ Operationsドメイン（4エージェント）はデプロイインフラと運
 
 ## 関連ページ
 
-- [エージェントリファレンス: オーケストレーター・横断系](./Agents-Orchestrators.md)
+- [エージェントリファレンス: Flow Orchestrator・横断系](./Agents-Orchestrators.md)
 - [エージェントリファレンス: Discoveryドメイン](./Agents-Discovery.md)
 - [エージェントリファレンス: Deliveryドメイン](./Agents-Delivery.md)
 - [エージェントリファレンス: Maintenanceドメイン](./Agents-Maintenance.md)
@@ -81,4 +81,4 @@ Operationsドメイン（4エージェント）はデプロイインフラと運
 ## 正規ソース
 
 - [.claude/agents/](../../.claude/agents/) — エージェント定義ファイル全体（権威あるソース）
-- [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — フローオーケストレータールールとトリアージ
+- [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — Flow Orchestrator ルールとトリアージ

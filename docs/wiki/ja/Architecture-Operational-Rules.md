@@ -1,7 +1,7 @@
 # アーキテクチャ: 運用ルール
 
 > **Language**: [English](../en/Architecture-Operational-Rules.md) | [日本語](../ja/Architecture-Operational-Rules.md)
-> **Last updated**: 2026-04-25 (split from Architecture.md; #42)
+> **Last updated**: 2026-04-25 (updated 2026-04-25: terminology rebalance per #40)
 > **EN canonical**: 2026-04-25 of wiki/en/Architecture-Operational-Rules.md
 > **Audience**: エージェント開発者
 
@@ -10,7 +10,7 @@
 ## 目次
 
 - [自動承認モード](#自動承認モード)
-- [フローオーケストレーター](#フローオーケストレーター)
+- [Flow Orchestrator](#flow-orchestrator)
 - [トリアージティア](#トリアージティア)
 - [差し戻しルール](#差し戻しルール)
 - [sandboxの2層防御](#sandboxの2層防御)
@@ -42,9 +42,9 @@ HAS_UI: true
 
 ---
 
-## フローオーケストレーター
+## Flow Orchestrator
 
-3つのフローオーケストレーターはそれぞれドメインを管理します。`.claude/orchestrator-rules.md` で定義された以下の共通動作を共有します：
+Flow Orchestrator（フローオーケストレーター）はそれぞれドメインを管理します。`.claude/orchestrator-rules.md` で定義された以下の共通動作を共有します：
 
 1. 起動時に `orchestrator-rules.md` を読み込む
 2. **トリアージ**を実行してプランティアを選択する
@@ -70,7 +70,7 @@ HAS_UI: true
 
 ## トリアージティア
 
-各フローオーケストレーターは起動時にプロジェクトの特性を評価し、4段階のプランティアのいずれかを選択します。詳細は[トリアージシステム](./Triage-System.md)を参照してください。
+各 Flow Orchestrator は起動時にプロジェクトの特性を評価し、4段階のプランティアのいずれかを選択します。詳細は [トリアージシステム](./Triage-System.md) を参照してください。
 
 <!-- source: .claude/orchestrator-rules.md (Triage System) -->
 ```mermaid
@@ -198,7 +198,7 @@ flowchart TB
 - [アーキテクチャ: プロトコル](./Architecture-Protocols.md)
 - [ホーム](./Home.md)
 - [トリアージシステム](./Triage-System.md)
-- [エージェントリファレンス: オーケストレーター・横断系](./Agents-Orchestrators.md)
+- [エージェントリファレンス: Flow Orchestrator・横断系](./Agents-Orchestrators.md)
 - [ルールリファレンス](./Rules-Reference.md)
 
 ## 正規ソース
