@@ -12,6 +12,20 @@ trap 'rm -rf "$TMP"' EXIT
 cd "$TMP"
 node "$REPO_ROOT/bin/aphelion-agents.mjs" init >/dev/null
 
+# Assert: settings.local.json deny-list template installed by init (#31)
+if ! [ -f "$TMP/.claude/settings.local.json" ]; then
+  echo "FAIL: init did not install .claude/settings.local.json"
+  exit 1
+fi
+if ! diff -q "$REPO_ROOT/src/.claude/settings.local.json" "$TMP/.claude/settings.local.json" >/dev/null; then
+  echo "FAIL: init's settings.local.json diverges from canonical src/.claude/settings.local.json"
+  exit 1
+fi
+if ! grep -q "Bash(rm -rf /\*)" "$TMP/.claude/settings.local.json"; then
+  echo "FAIL: deny-list missing destructive_fs entries"
+  exit 1
+fi
+
 # Mutate target side so we can detect overwrite
 echo "MUTATED" > "$TMP/.claude/rules/sandbox-policy.md"
 

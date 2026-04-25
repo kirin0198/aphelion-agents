@@ -1,0 +1,51 @@
+{
+  "permissions": {
+    "allow": ["*"],
+    "deny": [
+      "Bash(rm -rf /*)",
+      "Bash(rm -rf /)",
+      "Bash(rm -rf ~)",
+      "Bash(rm -rf ~/*)",
+      "Bash(rm -rf ~/)",
+      "Bash(dd of=/dev/*)",
+      "Bash(mkfs *)",
+      "Bash(mkfs.*)",
+      "Bash(shred *)",
+      "Bash(find * -delete)",
+
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git push --force-with-lease*)",
+      "Bash(git reset --hard origin/*)",
+      "Bash(git update-ref -d*)",
+
+      "Bash(sudo *)",
+      "Bash(sudo)",
+      "Bash(su -*)",
+      "Bash(doas *)",
+      "Bash(chmod 777*)",
+      "Bash(chown root*)",
+
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(**/credentials.*)",
+      "Read(**/*.secret)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Bash(cat *.env)",
+      "Bash(cat *.env.*)",
+      "Bash(cat *credentials*)",
+      "Bash(gh auth token)",
+
+      "Bash(psql *prod*)",
+      "Bash(psql *PRODUCTION*)",
+      "Bash(mongosh *prod*)",
+      "Bash(mysql *--host=*prod*)",
+
+      "Bash(npm publish*)",
+      "Bash(cargo publish*)",
+      "Bash(twine upload*)"
+    ]
+  },
+  "outputStyle": "default"
+}

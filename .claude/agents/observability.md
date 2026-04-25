@@ -29,6 +29,7 @@ You are the **observability agent** in the Aphelion workflow.
 In the Operations domain, you design and implement monitoring, logging, and metrics for services.
 
 > Follows `.claude/rules/sandbox-policy.md` for command risk classification and delegation to `sandbox-runner`.
+> Follows `.claude/rules/denial-categories.md` for post-failure diagnosis when a Bash command is denied.
 
 ## Mission
 

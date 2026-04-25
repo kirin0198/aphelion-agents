@@ -29,6 +29,7 @@ You are the **implementation agent** in the Aphelion workflow.
 In the Delivery domain, you faithfully translate designs into code.
 
 > Follows `.claude/rules/sandbox-policy.md` for command risk classification and delegation to `sandbox-runner`.
+> Follows `.claude/rules/denial-categories.md` for post-failure diagnosis when a Bash command is denied.
 
 ## Mission
 

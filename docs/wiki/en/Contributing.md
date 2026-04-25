@@ -1,7 +1,7 @@
 # Contributing
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: Agents-Reference and Architecture pages split; matching Agents-{Domain} guidance, #42)
+> **Last updated**: 2026-04-25 (updated 2026-04-25: deny-list settings policy, denial-categories rule, #31)
 > **Audience**: Agent developers
 
 This page covers how to contribute to Aphelion: adding or modifying agents, updating rules, and maintaining the wiki. Read this before opening a pull request.
@@ -174,6 +174,33 @@ snapshot even after `git push` to `main`.
 - Bump the minor component when adding a new agent, a new flow, or a breaking
   rule.
 - Document the change in `CHANGELOG.md` under the `## [Unreleased]` section.
+
+### Settings deny-list policy
+
+`<project>/.claude/settings.local.json` ships with a deny-list shape: `allow: ["*"]` and
+explicit `deny` entries for destructive operations. Categories: `destructive_fs`,
+`destructive_git`, `privilege_escalation`, `secret_access`, `prod_db`, `external_publish`.
+The list mirrors the categories in `.claude/rules/sandbox-policy.md` §1.
+
+Customising: deny entries can be removed locally if your workflow needs a banned command
+(`git push --force-with-lease` against your own fork, for example). Removed entries are
+not propagated back when running `npx aphelion-agents update` — the filter at copy time
+preserves your local `settings.local.json`.
+
+### When a command is denied
+
+See `.claude/rules/denial-categories.md` for the full protocol. Quick reference:
+
+- **Sandbox / policy denial** → `AskUserQuestion` to confirm intent. If still blocked
+  after approval, paste `!cmd` into the chat input (manual fallback). Claude Code does
+  not currently honor in-conversation approval as a one-shot allowlist.
+- **POSIX `Permission denied`** → run `ls -la {path}`; if owned by `root`, run
+  `sudo chown -R $USER {path}` and retry. This is *not* a sandbox-policy issue; the
+  approval flow will not help.
+- **Claude Code auto-mode refusal** (sub-agent boundary, branch-protection heuristic,
+  "External System Write", etc.) — not configurable from `settings.local.json`. Either
+  approve per-invocation, run the command from the parent session, or split the
+  workflow so the heuristic does not fire.
 
 ---
 

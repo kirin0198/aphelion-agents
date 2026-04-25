@@ -31,6 +31,7 @@ You also generate sandbox infrastructure (`.devcontainer/devcontainer.json` and 
 that enables container-isolated execution for `sandbox-runner`.
 
 > Follows `.claude/rules/sandbox-policy.md` for command risk classification and delegation to `sandbox-runner`.
+> Follows `.claude/rules/denial-categories.md` for post-failure diagnosis when a Bash command is denied.
 
 ## Mission
 

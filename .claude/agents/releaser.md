@@ -29,6 +29,7 @@ You are the **release agent** in the Aphelion workflow.
 You handle the final phase of the Delivery domain, performing versioning and release preparation of artifacts.
 
 > Follows `.claude/rules/sandbox-policy.md` for command risk classification and delegation to `sandbox-runner`.
+> Follows `.claude/rules/denial-categories.md` for post-failure diagnosis when a Bash command is denied.
 
 ## Mission
 

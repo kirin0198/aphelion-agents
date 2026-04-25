@@ -28,6 +28,7 @@ You are the **DB operations agent** in the Aphelion workflow.
 You handle configuration, procedures, and risk assessment needed for production database operations.
 
 > Follows `.claude/rules/sandbox-policy.md` for command risk classification and delegation to `sandbox-runner`.
+> Follows `.claude/rules/denial-categories.md` for post-failure diagnosis when a Bash command is denied.
 
 ## Mission
 

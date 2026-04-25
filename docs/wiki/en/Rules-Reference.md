@@ -1,10 +1,10 @@
 # Rules Reference
 
 > **Language**: [English](../en/Rules-Reference.md) | [日本語](../ja/Rules-Reference.md)
-> **Last updated**: 2026-04-24
+> **Last updated**: 2026-04-25 (updated 2026-04-25: added denial-categories rule, #31)
 > **Audience**: Agent developers
 
-This page is a compact reference for all 10 behavioral rules in `.claude/rules/`. Each entry summarizes scope, auto-load behavior, interactions with other rules and agents, and the key constraint the rule enforces.
+This page is a compact reference for all 11 behavioral rules in `.claude/rules/`. Each entry summarizes scope, auto-load behavior, interactions with other rules and agents, and the key constraint the rule enforces.
 
 For full details, follow the **Canonical** link to the source file.
 
@@ -19,6 +19,7 @@ For full details, follow the **Canonical** link to the source file.
 - [language-rules](#language-rules)
 - [library-and-security-policy](#library-and-security-policy)
 - [sandbox-policy](#sandbox-policy)
+- [denial-categories](#denial-categories)
 - [user-questions](#user-questions)
 - [Related Pages](#related-pages)
 - [Canonical Sources](#canonical-sources)
@@ -115,6 +116,23 @@ For full details, follow the **Canonical** link to the source file.
 - **Decision Tree (§3)**: Container availability is checked **before** platform detection. If `.devcontainer/devcontainer.json` exists and `docker info` succeeds → `container` mode. Otherwise, fall through to platform detection and existing permission mode logic. Fallback order: `container` → `platform_permission` → `advisory_only` → `blocked`.
 - **Triage × devcontainer (§5)**: Minimal = skip devcontainer generation; Light = generate, optional launch; Standard = generate, mandatory launch (required-category commands run inside container only); Full = generate, mandatory launch + audit log.
 - **Summary**: Establishes when Bash-owning agents must delegate command execution to `sandbox-runner`. Provides the isolation mode decision tree keyed on container availability and platform detection. `required`-tier commands must always be delegated; `recommended`-tier should be delegated with a recorded reason if skipped; `optional`-tier is advisory only. When delegation is unavailable (Minimal plan, standalone context), the agent must warn the user and ask for explicit confirmation.
+
+---
+
+## denial-categories
+
+- **Canonical**: [.claude/rules/denial-categories.md](../../.claude/rules/denial-categories.md)
+- **Scope**: All agents that own the `Bash` tool (same set as `sandbox-policy.md`), plus `analyst` for issue triage
+- **Auto-load behavior**: Auto-loaded by Claude Code on every session start
+- **Interactions**: Companion to `sandbox-policy.md`. Where `sandbox-policy.md` covers *prevention* (categorise commands before execution and delegate to `sandbox-runner`), this rule covers *post-failure diagnosis* (classify what kind of denial occurred and pick the right recovery). 13 Bash-owning agents reference both rules.
+- **Categories (§1)**: Four denial categories with detection patterns and per-category actions:
+  - `sandbox_policy` — matches a deny entry in `.claude/settings.local.json`. Recovery: `AskUserQuestion`, then manual `!cmd` fallback if still blocked.
+  - `os_permission` — POSIX `EACCES`/`EPERM`. Recovery: `ls -la` to identify the owner; recommend `sudo chown -R $USER {path}` if `root`-owned.
+  - `file_not_found` — `ENOENT`. Recovery: re-check the path with `ls`.
+  - `platform_heuristic` — Claude Code auto-mode refusals (sub-agent boundary, branch protection, "External System Write"). Recovery: honest report; *not* fixable from `settings.local.json`.
+- **Manual `!cmd` fallback (§3)**: When the sandbox refuses a command even after `AskUserQuestion` approval (verified PR #29 cleanup, 2026-04-24), the agent stops, surfaces the exact command, and the user pastes `!cmd` into the chat input to bypass the agent's sandbox. The agent must NOT loop back to another `AskUserQuestion`.
+- **AGENT_RESULT extension (§4)**: When a denial occurred and the agent stopped, the agent appends `DENIAL_CATEGORY`, `DENIAL_COMMAND`, `DENIAL_RECOVERY` fields to the standard `AGENT_RESULT` block.
+- **Summary**: Gives Bash-owning agents a shared vocabulary and decision flow for diagnosing command failures. Replaces the previous pattern of "retry the same command" or "issue an `AskUserQuestion` for any failure" with a category-aware protocol that picks the right next step (sandbox approval vs `chown` vs path correction vs honest escalation).
 
 ---
 

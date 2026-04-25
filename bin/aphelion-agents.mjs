@@ -23,9 +23,11 @@ if (nodeMajor < 20) {
 // 二重ロード回避のため rules/ のみ src/.claude/rules/ から、
 // agents/ commands/ orchestrator-rules.md は <packageRoot>/.claude/ から取得する
 // (詳細: docs/issues/claude-rules-isolation.md, ADR-001)
+// settings.local.json も同様に src/.claude/ を canonical とする (#31, gitignore 衝突回避)。
 const packageRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const sourcePath = join(packageRoot, ".claude");
 const rulesSourcePath = join(packageRoot, "src", ".claude", "rules");
+const settingsLocalSourcePath = join(packageRoot, "src", ".claude", "settings.local.json");
 
 // ユーザーへのメッセージ (ANSI カラー: 最小限の直書き)
 const GREEN = "\x1b[32m";
@@ -115,6 +117,10 @@ async function cmdInit(targetPath, force) {
       recursive: true,
       force: true,
     });
+    // settings.local.json: deny-list テンプレートを配布 (#31)。init は新規配置なので上書き OK。
+    await cp(settingsLocalSourcePath, join(targetPath, "settings.local.json"), {
+      force: true,
+    });
     ok(`.claude/ を ${targetPath} に配置しました。`);
   } catch (err) {
     fail(`コピーに失敗しました: ${err.message}`);
@@ -154,6 +160,11 @@ async function cmdUpdate(targetPath) {
       recursive: true,
       force: true,
     });
+    // settings.local.json: deny-list テンプレートを配布 (#31)。
+    // 既存があれば保護し、無ければ初期テンプレートとして書き込む。
+    if (!hasSettingsLocal) {
+      await cp(settingsLocalSourcePath, settingsLocalPath, { force: true });
+    }
     const version = await getVersion();
     ok(`.claude/ を ${targetPath} に更新しました (source: aphelion-agents@${version})。`);
     if (hasSettingsLocal) {

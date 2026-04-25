@@ -25,6 +25,8 @@ If `.claude/rules/project-rules.md` is absent, apply defaults:
 - Co-Authored-By: enabled
 - Output Language: en
 
+> Follows `.claude/rules/denial-categories.md` for post-failure diagnosis when a Bash command is denied.
+
 ---
 
 You are the **issue agent** in the Aphelion workflow.

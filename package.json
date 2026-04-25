@@ -1,6 +1,6 @@
 {
   "name": "aphelion-agents",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "AI coding agent definitions for Claude Code.",
   "license": "MIT",
   "author": "kirin0198",
@@ -19,7 +19,8 @@
     ".claude/agents",
     ".claude/commands",
     ".claude/orchestrator-rules.md",
-    "src/.claude/rules"
+    "src/.claude/rules",
+    "src/.claude/settings.local.json"
   ],
   "engines": {
     "node": ">=20"

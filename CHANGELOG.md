@@ -9,6 +9,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 (no changes)
 
+## 0.3.1 - 2026-04-25
+
+### Changed
+
+- `.claude/settings.local.json` rewritten as a deny-list policy. `allow: ["*"]` plus
+  explicit `deny` entries for destructive_fs, destructive_git, privilege_escalation,
+  secret_access, prod_db, and external publish commands. Aligns settings enforcement with
+  the categories already documented in `src/.claude/rules/sandbox-policy.md`. Removed
+  the redundant trailing `allow` entries (`Bash(git commit:*)`, `Bash(git add:*)`,
+  `Bash(gh:*)`) that were no-ops under the leading `*`. (#31)
+- Canonical source for `settings.local.json` relocated to `src/.claude/settings.local.json`
+  (committed template), mirroring the post-#44 layout for `rules/`. The file at
+  `<repo>/.claude/settings.local.json` (gitignored) remains the Aphelion repo's own
+  dev-time copy. CLI ships from `src/`; `cmdInit` writes the template to consumers,
+  `cmdUpdate` preserves any pre-existing consumer customisation.
+- `bin/aphelion-agents.mjs`: `cmdInit` and `cmdUpdate` now also overlay
+  `src/.claude/settings.local.json` onto the target's `.claude/`. Previously the file
+  shipped nothing (gitignored + excluded from `files` allowlist after PR #46), so the
+  deny-list update would have been invisible to consumers.
+- `package.json` `files` allowlist extended with `src/.claude/settings.local.json`.
+- `package.json` version bumped from `0.3.0` to `0.3.1`.
+- `.gitignore` anchored to root (`/.claude/settings.local.json`) plus a negation
+  un-ignoring `src/.claude/settings.local.json` so the canonical template stays
+  trackable even when the user's global gitignore matches `**/.claude/settings.local.json`.
+- `scripts/smoke-update.sh` extended: asserts that `init` installs the deny-list template
+  and that the file matches the canonical at `src/.claude/settings.local.json` byte-for-byte.
+
+### Added
+
+- `src/.claude/rules/denial-categories.md` — auto-loaded rule that classifies Bash command
+  failures into `sandbox_policy` / `os_permission` / `file_not_found` / `platform_heuristic`
+  and prescribes per-category recovery. Documents the manual `!cmd` shell-prompt fallback
+  for cases where Claude Code's sandbox refuses a command even after `AskUserQuestion`
+  approval (verified PR #29 cleanup, 2026-04-24). (#31)
+- 13 Bash-owning agents (`developer`, `tester`, `poc-engineer`, `scaffolder`,
+  `infra-builder`, `codebase-analyzer`, `security-auditor`, `db-ops`, `releaser`,
+  `observability`, `analyst`, `change-classifier`, `impact-analyzer`) now reference
+  `denial-categories.md` alongside `sandbox-policy.md`. No behavioral change beyond the
+  documented diagnostic protocol.
+- New "Settings deny-list policy" / "When a command is denied" subsections in
+  `docs/wiki/{en,ja}/Contributing.md` covering customisation, manual fallback, and
+  per-category recovery.
+- New `denial-categories` entry in `docs/wiki/{en,ja}/Rules-Reference.md`. Page now
+  documents 11 rules instead of 10.
+
+### Notes
+
+- The `preToolUse` hook prototype for one-shot escalation is intentionally **out of scope**
+  per ADR-002 in `docs/issues/deny-list-permission-policy.md`. Claude Code does not
+  currently expose a documented hook contract that lets settings-level "approved this
+  exact invocation, just this once" semantics work — observed in PR #29 cleanup. Upstream
+  feedback to Anthropic is recommended (Q5 of the planning doc) but separate from this PR.
+
 ## 0.3.0 - 2026-04-25
 
 ### Changed

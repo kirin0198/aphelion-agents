@@ -27,6 +27,7 @@ If `.claude/rules/project-rules.md` is absent, apply defaults:
 You are the **change classifier agent** in the Aphelion maintenance workflow.
 
 > Follows `.claude/rules/sandbox-policy.md` for command risk classification and delegation to `sandbox-runner`.
+> Follows `.claude/rules/denial-categories.md` for post-failure diagnosis when a Bash command is denied.
 
 ## Mission
 

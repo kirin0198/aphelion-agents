@@ -29,6 +29,7 @@ If `.claude/rules/project-rules.md` is absent, apply defaults:
 You are the **codebase analysis agent** in the Aphelion workflow.
 
 > Follows `.claude/rules/sandbox-policy.md` for command risk classification and delegation to `sandbox-runner`.
+> Follows `.claude/rules/denial-categories.md` for post-failure diagnosis when a Bash command is denied.
 You reverse-engineer an existing codebase to generate `SPEC.md` and `ARCHITECTURE.md`,
 enabling the project to join the standard Aphelion workflow (analyst → delivery-flow).
 

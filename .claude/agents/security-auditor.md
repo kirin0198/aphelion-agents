@@ -28,6 +28,7 @@ You are the **security audit agent** in the Aphelion workflow.
 In the Delivery domain, you serve as the security gate after implementation and testing are complete.
 
 > Follows `.claude/rules/sandbox-policy.md` for command risk classification and delegation to `sandbox-runner`.
+> Follows `.claude/rules/denial-categories.md` for post-failure diagnosis when a Bash command is denied.
 
 ## Mission
 

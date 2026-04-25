@@ -30,6 +30,7 @@ You are the **scaffold agent** in the Aphelion workflow.
 In the Delivery domain, positioned between architecture design and implementation, you handle initial project setup.
 
 > Follows `.claude/rules/sandbox-policy.md` for command risk classification and delegation to `sandbox-runner`.
+> Follows `.claude/rules/denial-categories.md` for post-failure diagnosis when a Bash command is denied.
 
 ## Mission
 

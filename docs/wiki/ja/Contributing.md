@@ -1,7 +1,7 @@
 # Contributing
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: terminology rebalance per #40)
+> **Last updated**: 2026-04-25 (updated 2026-04-25: deny-list settings policy / denial-categories rule, #31)
 > **EN canonical**: 2026-04-25 (updated 2026-04-25) of wiki/en/Contributing.md
 > **Audience**: エージェント開発者
 
@@ -170,6 +170,20 @@ PRを開く前に確認してください：
 - デフォルト: patch を 1 上げる（`0.2.0` → `0.2.1`）。
 - minor bump: 新しいエージェント追加、新フロー追加、破壊的なルール変更の場合。
 - `CHANGELOG.md` の `## [Unreleased]` セクションに変更内容を記載する。
+
+### Settings deny-list policy
+
+`<project>/.claude/settings.local.json` は deny-list 形式で配布されます: `allow: ["*"]` に加えて、破壊的操作を明示的に列挙する `deny` エントリ群です。カテゴリは `destructive_fs`、`destructive_git`、`privilege_escalation`、`secret_access`、`prod_db`、`external_publish` の 6 種類で、`.claude/rules/sandbox-policy.md` §1 のカテゴリと一致しています。
+
+カスタマイズ: ローカルワークフローで deny されているコマンドが必要になった場合（自分のフォークに対する `git push --force-with-lease` など）、該当エントリをローカルで削除しても構いません。`npx aphelion-agents update` 実行時に書き戻しは発生しません — copy 時の filter が既存の `settings.local.json` を保護します。
+
+### コマンドが拒否されたとき
+
+完全なプロトコルは `.claude/rules/denial-categories.md` を参照してください。以下はクイックリファレンスです:
+
+- **Sandbox / policy denial** → `AskUserQuestion` で意図を確認します。承認後も再実行が拒否される場合は、チャット入力に `!cmd` を貼り付けて手動フォールバックを実行してください。Claude Code は会話内承認を一回限りの allowlist として扱う仕組みを現状提供していません。
+- **POSIX `Permission denied`** → `ls -la {path}` で所有者を確認し、`root` 所有なら `sudo chown -R $USER {path}` の後に再実行してください。これは sandbox-policy 起因ではないため、承認フローでは解消しません。
+- **Claude Code auto-mode の拒否**（sub-agent 境界、branch-protection ヒューリスティック、"External System Write" など）→ `settings.local.json` では制御不能です。invocation ごとに承認するか、親セッションでコマンドを実行するか、ヒューリスティックが発動しないようにワークフローを分割してください。
 
 ---
 

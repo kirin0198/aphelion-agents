@@ -1,11 +1,11 @@
 # Rules Reference
 
 > **Language**: [English](../en/Rules-Reference.md) | [日本語](../ja/Rules-Reference.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: terminology rebalance per #40)
+> **Last updated**: 2026-04-25 (updated 2026-04-25: denial-categories ルール追加, #31)
 > **EN canonical**: 2026-04-25 of wiki/en/Rules-Reference.md
 > **Audience**: エージェント開発者
 
-このページは`.claude/rules/`にある10の行動ルールのコンパクトなリファレンスです。各エントリはスコープ、自動ロードの動作、他ルール・エージェントとのインタラクション、ルールが強制する主要な制約をまとめています。
+このページは`.claude/rules/`にある 11 の行動ルールのコンパクトなリファレンスです。各エントリはスコープ、自動ロードの動作、他ルール・エージェントとのインタラクション、ルールが強制する主要な制約をまとめています。
 
 詳細については、**正規**リンクからソースファイルを参照してください。
 
@@ -20,6 +20,7 @@
 - [language-rules](#language-rules)
 - [library-and-security-policy](#library-and-security-policy)
 - [sandbox-policy](#sandbox-policy)
+- [denial-categories](#denial-categories)
 - [user-questions](#user-questions)
 - [関連ページ](#関連ページ)
 - [正規ソース](#正規ソース)
@@ -116,6 +117,23 @@
 - **決定ツリー（§3）**: コンテナ利用可能性はプラットフォーム検出の**前**に確認されます。`.devcontainer/devcontainer.json`が存在し`docker info`が成功する場合 → `container`モード。そうでなければ、プラットフォーム検出と既存のパーミッションモードロジックに降格。フォールバック順：`container` → `platform_permission` → `advisory_only` → `blocked`。
 - **トリアージ × devcontainer（§5）**: Minimal = devcontainer生成スキップ；Light = 生成・任意起動；Standard = 生成・必須起動（required カテゴリのコマンドはコンテナ内のみ実行）；Full = 生成・必須起動 + 監査ログ。
 - **概要**: Bashを持つエージェントがいつコマンド実行を`sandbox-runner`に委譲しなければならないかを確立します。コンテナ利用可能性とプラットフォーム検出に基づく隔離モード決定ツリーを提供します。`required`ティアのコマンドは常に委譲しなければなりません；`recommended`ティアはスキップ時に記録された理由とともに委譲すべきです；`optional`ティアはadvisoryのみです。委譲が利用できない場合（Minimalプラン、スタンドアロンコンテキスト）、エージェントはユーザーに警告し明示的な確認を求めなければなりません。
+
+---
+
+## denial-categories
+
+- **正規**: [.claude/rules/denial-categories.md](../../.claude/rules/denial-categories.md)
+- **スコープ**: `Bash` ツールを持つ全エージェント (`sandbox-policy.md` と同じ集合)、加えて issue triage 用の `analyst`
+- **自動ロードの動作**: Claude Code が全セッション起動時に自動ロード
+- **インタラクション**: `sandbox-policy.md` のコンパニオンルールです。`sandbox-policy.md` は実行**前**の予防 (コマンドのカテゴリ分類と `sandbox-runner` への委譲) を扱うのに対し、本ルールは実行**後**の診断 (どの種類の拒否が起きたかを分類して適切なリカバリーを選ぶ) を扱います。13 の Bash 所有エージェントが両ルールを参照します。
+- **カテゴリ (§1)**: 4 種類の拒否カテゴリと、それぞれの検出パターン・推奨アクション:
+  - `sandbox_policy` — `.claude/settings.local.json` の `deny` エントリにマッチ。リカバリ: `AskUserQuestion` で意図確認 → なお拒否される場合は手動 `!cmd` フォールバック。
+  - `os_permission` — POSIX `EACCES`/`EPERM`。リカバリ: `ls -la` で所有者を特定し、`root` 所有なら `sudo chown -R $USER {path}` を推奨。
+  - `file_not_found` — `ENOENT`。リカバリ: `ls` でパスを再確認。
+  - `platform_heuristic` — Claude Code auto-mode の拒否 (sub-agent 境界、branch protection、"External System Write" など)。リカバリ: 正直にユーザーに報告。`settings.local.json` では制御不能。
+- **手動 `!cmd` フォールバック (§3)**: `AskUserQuestion` 承認後も sandbox が拒否し続ける場合 (PR #29 cleanup, 2026-04-24 で確認)、エージェントは中断し、実行すべきコマンドを表示します。ユーザーがチャット入力に `!cmd` を貼り付けてエージェントの sandbox を迂回します。エージェントは再度 `AskUserQuestion` をループしてはいけません。
+- **AGENT_RESULT 拡張 (§4)**: 拒否によりエージェントが停止した場合、標準 `AGENT_RESULT` ブロックに `DENIAL_CATEGORY`、`DENIAL_COMMAND`、`DENIAL_RECOVERY` の 3 フィールドを追加します。
+- **概要**: Bash 所有エージェントにコマンド失敗の診断のための共通語彙と判定フローを提供します。「同じコマンドを再試行」「失敗するたびに `AskUserQuestion`」というパターンを、カテゴリに応じた適切な次の手段 (sandbox 承認 vs `chown` vs パス修正 vs 正直なエスカレーション) に置き換えます。
 
 ---
 

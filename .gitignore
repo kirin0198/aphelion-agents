@@ -1,4 +1,9 @@
-.claude/settings.local.json
+# Aphelion repo's own dev-time local overrides (the file is shipped as a deny-list
+# template via src/.claude/settings.local.json, see #31). Anchor with leading slash so
+# only the root copy is ignored; the negation un-ignores the canonical template at
+# src/.claude/ even when a user's global gitignore has `**/.claude/settings.local.json`.
+/.claude/settings.local.json
+!src/.claude/settings.local.json
 
 # Node
 node_modules/
