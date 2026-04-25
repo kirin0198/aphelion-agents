@@ -1,7 +1,7 @@
 # Contributing
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: planning doc アーカイブワークフロー追加 (PR open trigger) + 17 件のアーカイブ移動)
+> **Last updated**: 2026-04-25 (updated 2026-04-25: docs/issues/ → docs/design-notes/ リネーム (#51))
 > **EN canonical**: 2026-04-25 (updated 2026-04-25) of wiki/en/Contributing.md
 > **Audience**: エージェント開発者
 
@@ -188,17 +188,17 @@ PRを開く前に確認してください：
 
 ### クローズ済み planning doc のアーカイブ
 
-`docs/issues/` 内の planning doc は、対応する GitHub issue がクローズ (実装完了) されたら `docs/issues/archived/` に移動します。これにより active なディレクトリには進行中の計画だけが残ります。
+`docs/design-notes/` 内の planning doc は、対応する GitHub issue がクローズ (実装完了) されたら `docs/design-notes/archived/` に移動します。これにより active なディレクトリには進行中の計画だけが残ります。
 
-移動は自動化されており、**変更を行う PR と同じ PR にコミット** されます (追従 PR は作りません)。 [`archive-closed-plans` ワークフロー](../../../.github/workflows/archive-closed-plans.yml) は `pull_request: opened` / `edited` / `synchronize` で発火し、PR 本文から `Closes #N` / `Fixes #N` / `Resolves #N` キーワードを抽出し、`GitHub Issue: [#N]` ヘッダーで該当 issue を参照する planning doc を `git mv` で `docs/issues/archived/` に移動、結果のコミットを PR ブランチに push し戻します。レビュアーは作業と archive 移動が同居する 1 件の diff を確認するだけで済みます。
+移動は自動化されており、**変更を行う PR と同じ PR にコミット** されます (追従 PR は作りません)。 [`archive-closed-plans` ワークフロー](../../../.github/workflows/archive-closed-plans.yml) は `pull_request: opened` / `edited` / `synchronize` で発火し、PR 本文から `Closes #N` / `Fixes #N` / `Resolves #N` キーワードを抽出し、`GitHub Issue: [#N]` ヘッダーで該当 issue を参照する planning doc を `git mv` で `docs/design-notes/archived/` に移動、結果のコミットを PR ブランチに push し戻します。レビュアーは作業と archive 移動が同居する 1 件の diff を確認するだけで済みます。
 
 ワークフローは冪等です — 既にアーカイブ済み・該当無しの場合は no-op になります。bot 自身の push に対するループ防止は actor filter (`github.actor != 'github-actions[bot]'`) と冪等性チェックで担保しています。
 
-> **エッジケース**: ワークフローは *PR open 時点* でアーカイブを実行し、`Closes #N` キーワードを「マージすれば issue が閉じる」というコミットメントとして信頼します (GitHub がマージ時に自動で閉じる)。PR が **マージされずに close** された場合は、移動を手動で取り消してください (`git mv docs/issues/archived/<slug>.md docs/issues/<slug>.md` してから小さな chore PR を開く)。トレードオフは意図的なものです — マージ時 trigger ではすべての変更が 2 PR に分かれてしまい、PR 乱立の方が大きな運用負荷になるためです。
+> **エッジケース**: ワークフローは *PR open 時点* でアーカイブを実行し、`Closes #N` キーワードを「マージすれば issue が閉じる」というコミットメントとして信頼します (GitHub がマージ時に自動で閉じる)。PR が **マージされずに close** された場合は、移動を手動で取り消してください (`git mv docs/design-notes/archived/<slug>.md docs/design-notes/<slug>.md` してから小さな chore PR を開く)。トレードオフは意図的なものです — マージ時 trigger ではすべての変更が 2 PR に分かれてしまい、PR 乱立の方が大きな運用負荷になるためです。
 
-手動フォールバック: `git mv docs/issues/<slug>.md docs/issues/archived/`。ワークフローが issue 参照を検出できなかった場合 (planning doc が GitHub issue と紐付いていない、PR 本文にキーワードが無い、など) はこの方法を使ってください。
+手動フォールバック: `git mv docs/design-notes/<slug>.md docs/design-notes/archived/`。ワークフローが issue 参照を検出できなかった場合 (planning doc が GitHub issue と紐付いていない、PR 本文にキーワードが無い、など) はこの方法を使ってください。
 
-> アーカイブ済み planning doc は **read-only** として扱います。アーカイブ済みドキュメント間の相互参照 (旧来の相対パス) は意図的にそのまま残します — 後追いで書き換えないでください。アクティブなドキュメントからアーカイブにリンクする際は明示的に `docs/issues/archived/<slug>.md` のパスを使用します。
+> アーカイブ済み planning doc は **read-only** として扱います。アーカイブ済みドキュメント間の相互参照 (旧来の相対パス) は意図的にそのまま残します — 後追いで書き換えないでください。アクティブなドキュメントからアーカイブにリンクする際は明示的に `docs/design-notes/archived/<slug>.md` のパスを使用します。
 
 ---
 

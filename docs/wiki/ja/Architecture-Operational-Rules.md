@@ -1,7 +1,7 @@
 # Architecture: Operational Rules
 
 > **Language**: [English](../en/Architecture-Operational-Rules.md) | [日本語](../ja/Architecture-Operational-Rules.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: terminology rebalance per #40)
+> **Last updated**: 2026-04-25 (updated 2026-04-25: docs/issues/ → docs/design-notes/ リネーム (#51))
 > **EN canonical**: 2026-04-25 of wiki/en/Architecture-Operational-Rules.md
 > **Audience**: エージェント開発者
 
@@ -156,7 +156,7 @@ poc-engineer（blocked、BLOCKED_ITEMS > 0）
 
 Aphelionは危険なコマンド実行を防ぐために2つの相補的なレイヤーを使用します。sandbox モードの設定詳細は [.claude/rules/sandbox-policy.md](../../.claude/rules/sandbox-policy.md) を参照してください。
 
-<!-- source: docs/issues/archived/sandbox-design.md (§1, §2, Addendum §A.2) -->
+<!-- source: docs/design-notes/archived/sandbox-design.md (§1, §2, Addendum §A.2) -->
 ```mermaid
 flowchart TB
     subgraph Advisory ["Advisory Layer"]

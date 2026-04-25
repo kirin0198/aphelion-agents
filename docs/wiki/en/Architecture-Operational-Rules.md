@@ -1,7 +1,7 @@
 # Architecture: Operational Rules
 
 > **Language**: [English](../en/Architecture-Operational-Rules.md) | [日本語](../ja/Architecture-Operational-Rules.md)
-> **Last updated**: 2026-04-25 (split from Architecture.md; #42)
+> **Last updated**: 2026-04-25 (updated 2026-04-25: rename docs/issues/ → docs/design-notes/ (#51))
 > **Audience**: Agent developers
 
 This page is one of three pages split from the original Architecture.md (#42). It covers runtime and operational behaviors: Auto-Approve Mode, the Phase Execution Loop, Triage Tiers, Rollback Rules, and Sandbox Defense Layers. See the sibling pages for conceptual model and protocols: [Domain Model](./Architecture-Domain-Model.md), [Protocols](./Architecture-Protocols.md).
@@ -155,7 +155,7 @@ poc-engineer (blocked, BLOCKED_ITEMS > 0)
 
 Aphelion uses two complementary layers to protect against dangerous command execution. See [.claude/rules/sandbox-policy.md](../../.claude/rules/sandbox-policy.md) for sandbox-mode configuration details.
 
-<!-- source: docs/issues/archived/sandbox-design.md (§1, §2, Addendum §A.2) -->
+<!-- source: docs/design-notes/archived/sandbox-design.md (§1, §2, Addendum §A.2) -->
 ```mermaid
 flowchart TB
     subgraph Advisory ["Advisory Layer"]
