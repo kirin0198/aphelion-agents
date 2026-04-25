@@ -7,7 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-(no changes)
+### Changed
+
+- `docs/issues/` reorganised: 17 closed planning documents moved into
+  `docs/issues/archived/` so the active directory only lists work in flight.
+  Cross-references in active wiki / rule files updated to the new paths.
+  Inter-archive references kept as the original relative paths (read-only
+  policy). `docs/issues/archived/README.md` documents the convention.
+- `docs/wiki/{en,ja}/Contributing.md`: new "Archiving closed planning docs"
+  subsection.
+
+### Added
+
+- `.github/workflows/archive-closed-plans.yml` — fires on `pull_request:
+  opened` / `edited` / `synchronize`. Parses the PR body for `Closes #N` /
+  `Fixes #N` / `Resolves #N` keywords, finds the matching planning doc by
+  its `GitHub Issue: [#N]` header reference, `git mv`'s it into
+  `docs/issues/archived/`, and pushes the resulting commit back to the PR
+  branch. The archive move ships **in the same PR as the work** (no
+  follow-up PR), eliminating the PR-proliferation problem of trigger-on-
+  merge approaches. Idempotent (already-archived docs cause a no-op) plus
+  an actor filter prevents the bot's own pushes from looping.
+
+### Notes
+
+- No `package.json` version bump in this release: this PR does not modify
+  any file under `.claude/agents/`, `.claude/rules/`, `.claude/commands/`,
+  or `.claude/orchestrator-rules.md` (the four canonical sources gated by
+  the bumping policy). The repo-internal documentation move and the new CI
+  workflow are out of scope for that policy.
 
 ## 0.3.2 - 2026-04-25
 
@@ -80,7 +108,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Notes
 
 - The `preToolUse` hook prototype for one-shot escalation is intentionally **out of scope**
-  per ADR-002 in `docs/issues/deny-list-permission-policy.md`. Claude Code does not
+  per ADR-002 in `docs/issues/archived/deny-list-permission-policy.md`. Claude Code does not
   currently expose a documented hook contract that lets settings-level "approved this
   exact invocation, just this once" semantics work — observed in PR #29 cleanup. Upstream
   feedback to Anthropic is recommended (Q5 of the planning doc) but separate from this PR.
@@ -92,7 +120,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Canonical source for `.claude/rules/` relocated from `<repo>/.claude/rules/` to
   `<repo>/src/.claude/rules/` to eliminate Claude Code's additive auto-load of rules
   when working inside the Aphelion repository itself. Per ADR-001 in
-  `docs/issues/claude-rules-isolation.md`, only `rules/` is moved; `agents/`,
+  `docs/issues/archived/claude-rules-isolation.md`, only `rules/` is moved; `agents/`,
   `commands/`, and `orchestrator-rules.md` remain at repo root because their
   override semantics (project wins over user-global) already produce correct
   single-load behavior. (#44)

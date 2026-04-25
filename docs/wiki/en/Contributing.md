@@ -1,7 +1,7 @@
 # Contributing
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: /aphelion-init and /aphelion-help commands, #39)
+> **Last updated**: 2026-04-25 (updated 2026-04-25: planning-doc archive workflow (PR-open trigger) + 17-file archive sweep)
 > **Audience**: Agent developers
 
 This page covers how to contribute to Aphelion: adding or modifying agents, updating rules, and maintaining the wiki. Read this before opening a pull request.
@@ -83,7 +83,7 @@ This page covers how to contribute to Aphelion: adding or modifying agents, upda
 
 The canonical source for `rules/*.md` lives at `src/.claude/rules/`, **not** at `.claude/rules/`. This is intentional.
 
-Claude Code auto-loads `rules/*.md` from both `~/.claude/rules/` (user-global) and `<project>/.claude/rules/` (project-local) in additive fashion. For Aphelion's own maintainers, that previously meant every session opened inside the repo loaded two copies of every rule — and during the rule-edit window, two materially different versions. Relocating the source out of the repo-root `.claude/rules/` slot eliminates the structural dual-load. See `docs/issues/claude-rules-isolation.md` (#44) for the full analysis.
+Claude Code auto-loads `rules/*.md` from both `~/.claude/rules/` (user-global) and `<project>/.claude/rules/` (project-local) in additive fashion. For Aphelion's own maintainers, that previously meant every session opened inside the repo loaded two copies of every rule — and during the rule-edit window, two materially different versions. Relocating the source out of the repo-root `.claude/rules/` slot eliminates the structural dual-load. See `docs/issues/archived/claude-rules-isolation.md` (#44) for the full analysis.
 
 **Practical consequence**: when you edit a rule under `src/.claude/rules/`, your in-progress edit does **not** automatically take effect in your current Claude Code session. Your session is governed by your user-global mirror at `~/.claude/rules/`, which is the deployed snapshot. To pick up your edit:
 
@@ -202,6 +202,48 @@ See `.claude/rules/denial-categories.md` for the full protocol. Quick reference:
   "External System Write", etc.) — not configurable from `settings.local.json`. Either
   approve per-invocation, run the command from the parent session, or split the
   workflow so the heuristic does not fire.
+
+### Archiving closed planning docs
+
+Planning documents in `docs/issues/` are written by the `analyst` phase before
+implementation. Once the corresponding GitHub issue is closed (its work has
+shipped), the file moves to `docs/issues/archived/` so that the active
+directory only lists work in flight.
+
+The move is automated and lands **in the same PR as the work** (no separate
+follow-up PR). The
+[`archive-closed-plans` workflow](../../../.github/workflows/archive-closed-plans.yml)
+fires on `pull_request: opened` / `edited` / `synchronize`, parses the PR
+body for `Closes #N` / `Fixes #N` / `Resolves #N` keywords, finds matching
+planning docs by their `GitHub Issue: [#N]` header reference, `git mv`'s
+them into `docs/issues/archived/`, and pushes the resulting commit back to
+the PR branch. The reviewer then sees one diff containing both the work and
+the archive move.
+
+The workflow is idempotent — if the planning doc is already archived (or
+no match exists), it is a no-op. Loop safety against the bot's own pushes
+is provided by an actor filter (`github.actor != 'github-actions[bot]'`)
+plus the idempotency check.
+
+> **Edge case.** The workflow archives at *PR-open* time, trusting the
+> `Closes #N` keyword as a commitment that merging will close the issue
+> (which GitHub does automatically on merge). If the PR is ultimately
+> closed *without merging*, the moves must be reverted manually
+> (`git mv docs/issues/archived/<slug>.md docs/issues/<slug>.md` and
+> open a small chore PR). The trade-off is intentional: trigger-on-merge
+> would split every change into two PRs, and PR proliferation was the
+> larger ergonomic problem.
+
+Manual fallback: `git mv docs/issues/<slug>.md docs/issues/archived/`. Use
+this if the workflow could not detect the issue reference (e.g. the planning
+doc tracks something without a GitHub issue, or the PR body did not use a
+keyword).
+
+> Treat archived planning docs as **read-only**. Cross-references inside an
+> archived doc to *other* archived docs stay as the original (relative)
+> paths; do not retroactively rewrite them. Live documents that need to
+> link into the archive should use the explicit
+> `docs/issues/archived/<slug>.md` path.
 
 ---
 
