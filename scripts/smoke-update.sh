@@ -25,8 +25,9 @@ if grep -qx "MUTATED" "$TMP/.claude/rules/sandbox-policy.md"; then
 fi
 
 # Assert: target content matches repo HEAD byte-for-byte
-if ! diff -q "$REPO_ROOT/.claude/rules/sandbox-policy.md" "$TMP/.claude/rules/sandbox-policy.md" >/dev/null; then
-  echo "FAIL: rules/sandbox-policy.md diverges from repo HEAD"
+# (canonical source for rules/ lives at src/.claude/rules/ since 0.3.0; see #44)
+if ! diff -q "$REPO_ROOT/src/.claude/rules/sandbox-policy.md" "$TMP/.claude/rules/sandbox-policy.md" >/dev/null; then
+  echo "FAIL: rules/sandbox-policy.md diverges from src/.claude/rules/ HEAD"
   exit 1
 fi
 

@@ -19,9 +19,13 @@ if (nodeMajor < 20) {
 }
 
 // パッケージルートとソースパスを解決
-// bin/aphelion-agents.mjs → パッケージルート → .claude/
+// bin/aphelion-agents.mjs → パッケージルート
+// 二重ロード回避のため rules/ のみ src/.claude/rules/ から、
+// agents/ commands/ orchestrator-rules.md は <packageRoot>/.claude/ から取得する
+// (詳細: docs/issues/claude-rules-isolation.md, ADR-001)
 const packageRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const sourcePath = join(packageRoot, ".claude");
+const rulesSourcePath = join(packageRoot, "src", ".claude", "rules");
 
 // ユーザーへのメッセージ (ANSI カラー: 最小限の直書き)
 const GREEN = "\x1b[32m";
@@ -107,6 +111,10 @@ async function cmdInit(targetPath, force) {
 
   try {
     await cp(sourcePath, targetPath, { recursive: true, force: true });
+    await cp(rulesSourcePath, join(targetPath, "rules"), {
+      recursive: true,
+      force: true,
+    });
     ok(`.claude/ を ${targetPath} に配置しました。`);
   } catch (err) {
     fail(`コピーに失敗しました: ${err.message}`);
@@ -140,6 +148,11 @@ async function cmdUpdate(targetPath) {
         }
         return true;
       },
+    });
+    // rules/ は src/.claude/rules/ から overlay (二重ロード回避のため repo root に置かない構造)
+    await cp(rulesSourcePath, join(targetPath, "rules"), {
+      recursive: true,
+      force: true,
     });
     const version = await getVersion();
     ok(`.claude/ を ${targetPath} に更新しました (source: aphelion-agents@${version})。`);
