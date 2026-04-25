@@ -55,6 +55,24 @@ npx github:kirin0198/aphelion-agents update
 npx github:kirin0198/aphelion-agents update --user
 ```
 
+`update` overwrites `agents/`, `rules/`, `commands/`, and `orchestrator-rules.md`.
+`settings.local.json` is preserved if it already exists in the target.
+On success the command prints `source: aphelion-agents@<version>` so you can verify
+which package version sourced the update.
+
+#### Cache caveat
+
+`npx` caches packages by `name@version`. If your local cache already holds an
+older extraction at the same version string, `update` will silently copy that
+stale snapshot. To force a refresh:
+
+- Pin the source ref: `npx github:kirin0198/aphelion-agents#main update`
+- Or clear the cache: `npm cache clean --force`, then re-run `update`
+
+Compare the printed `source: aphelion-agents@<version>` against the latest
+`version` in [package.json on `main`](https://github.com/kirin0198/aphelion-agents/blob/main/package.json)
+to confirm freshness.
+
 ### Install via git clone (alternative)
 
 Clone the repository and copy the files manually:

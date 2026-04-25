@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# Smoke test for `aphelion-agents update`.
+# Runs in a temp directory: init -> mutate target file -> update -> assert overwrite.
+# Intended for manual / pre-release runs. Exit 0 = pass, non-zero = fail.
+
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+TMP="$(mktemp -d)"
+trap 'rm -rf "$TMP"' EXIT
+
+cd "$TMP"
+node "$REPO_ROOT/bin/aphelion-agents.mjs" init >/dev/null
+
+# Mutate target side so we can detect overwrite
+echo "MUTATED" > "$TMP/.claude/rules/sandbox-policy.md"
+
+# Run update
+node "$REPO_ROOT/bin/aphelion-agents.mjs" update >/dev/null
+
+# Assert: target file no longer contains the mutation marker
+if grep -qx "MUTATED" "$TMP/.claude/rules/sandbox-policy.md"; then
+  echo "FAIL: rules/sandbox-policy.md was not overwritten by update"
+  exit 1
+fi
+
+# Assert: target content matches repo HEAD byte-for-byte
+if ! diff -q "$REPO_ROOT/.claude/rules/sandbox-policy.md" "$TMP/.claude/rules/sandbox-policy.md" >/dev/null; then
+  echo "FAIL: rules/sandbox-policy.md diverges from repo HEAD"
+  exit 1
+fi
+
+# Assert: settings.local.json is preserved when target side has one
+echo '{"local":"keep"}' > "$TMP/.claude/settings.local.json"
+node "$REPO_ROOT/bin/aphelion-agents.mjs" update >/dev/null
+if ! grep -q '"local":"keep"' "$TMP/.claude/settings.local.json"; then
+  echo "FAIL: settings.local.json was not preserved on update"
+  exit 1
+fi
+
+echo "PASS: rules/ refreshed and settings.local.json preserved"

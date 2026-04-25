@@ -1,8 +1,8 @@
 # コントリビューティング
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-04-24
-> **EN canonical**: 2026-04-24 (updated 2026-04-24) of wiki/en/Contributing.md
+> **Last updated**: 2026-04-25
+> **EN canonical**: 2026-04-25 (updated 2026-04-25) of wiki/en/Contributing.md
 > **Audience**: エージェント開発者
 
 このページはAphelionへの貢献方法をカバーします：エージェントの追加・変更、ルールの更新、Wikiのメンテナンス。プルリクエストを開く前にこのページを読んでください。
@@ -145,6 +145,16 @@ PRを開く前に確認してください：
 - [ ] 対応する`wiki/ja/`ページの`> EN canonical:`行を更新済み
 - [ ] エージェント/ルールが変更された場合、Agents-ReferenceまたはRules-Referenceのエントリを更新済み
 - [ ] 新しいフロー / オーケストレーターを追加した場合、4 箇所の統合ポイントをすべて更新済み: Architecture.md の図、Triage-System.md のセクション、Agents-Reference.md のドメインセクション、Home.md のペルソナエントリ
+- [ ] `.claude/agents/`、`.claude/rules/`、`.claude/commands/`、`.claude/orchestrator-rules.md` のいずれかを変更した場合、`package.json` の `version` を bump 済み（下記「バージョンbumpポリシー」参照）
+- [ ] `bash scripts/smoke-update.sh` が正常終了する（リリース前ゲート）
+
+### バージョンbumpポリシー
+
+正規ソース（`.claude/agents/`、`.claude/rules/`、`.claude/commands/`、`.claude/orchestrator-rules.md`）を変更する PR は、必ず `package.json` の `version` を bump してください。これが下流の `npx` キャッシュを無効化する唯一の手段です。bump しないと、`main` に push した後でも `npx ... update` 利用者には引き続き古いスナップショットが配布されます。
+
+- デフォルト: patch を 1 上げる（`0.2.0` → `0.2.1`）。
+- minor bump: 新しいエージェント追加、新フロー追加、破壊的なルール変更の場合。
+- `CHANGELOG.md` の `## [Unreleased]` セクションに変更内容を記載する。
 
 ---
 

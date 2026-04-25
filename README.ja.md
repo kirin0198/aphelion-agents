@@ -55,6 +55,18 @@ npx github:kirin0198/aphelion-agents update
 npx github:kirin0198/aphelion-agents update --user
 ```
 
+`update` は `agents/`, `rules/`, `commands/`, `orchestrator-rules.md` を上書きします。
+`settings.local.json` は既存があれば保護されます。成功時に `source: aphelion-agents@<version>` が出力されるため、どのバージョンを取得したか確認できます。
+
+#### キャッシュに関する注意
+
+`npx` は `name@version` でパッケージをキャッシュします。`version` 文字列が同一の古いキャッシュがローカルに残っている場合、`update` はその古いスナップショットを無言でコピーします。強制的に最新を取得するには:
+
+- ref を `main` に固定する: `npx github:kirin0198/aphelion-agents#main update`
+- もしくはキャッシュをクリアする: `npm cache clean --force` 後に `update` を再実行
+
+実行時に表示される `source: aphelion-agents@<version>` を [main の package.json](https://github.com/kirin0198/aphelion-agents/blob/main/package.json) の `version` と突き合わせると、確実に最新が反映されたか判別できます。
+
 ### git clone でインストール（代替手順）
 
 リポジトリをクローンして手動でファイルをコピーする方法：

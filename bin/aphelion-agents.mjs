@@ -72,6 +72,8 @@ function showHelp() {
   init            カレントディレクトリに .claude/ を新規配置する
   init --user     ~/.claude/ (ユーザーホーム) に新規配置する
   update          カレントディレクトリの .claude/ を最新に更新する
+                  (更新: agents/, rules/, commands/, orchestrator-rules.md。
+                   保護: settings.local.json は既存があれば上書きしない)
   update --user   ~/.claude/ を最新に更新する
 
 オプション:
@@ -139,7 +141,8 @@ async function cmdUpdate(targetPath) {
         return true;
       },
     });
-    ok(`.claude/ を ${targetPath} に更新しました。`);
+    const version = await getVersion();
+    ok(`.claude/ を ${targetPath} に更新しました (source: aphelion-agents@${version})。`);
     if (hasSettingsLocal) {
       ok("settings.local.json は保護されました (既存を保持)。");
     }

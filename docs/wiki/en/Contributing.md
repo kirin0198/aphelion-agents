@@ -1,7 +1,7 @@
 # Contributing
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-04-24 (updated 2026-04-24: Claude Code only, remove platform generator)
+> **Last updated**: 2026-04-25 (updated 2026-04-25: version-bump policy for `.claude/**` changes; smoke-test gate)
 > **Audience**: Agent developers
 
 This page covers how to contribute to Aphelion: adding or modifying agents, updating rules, and maintaining the wiki. Read this before opening a pull request.
@@ -144,6 +144,21 @@ Before opening a PR, verify:
 - [ ] `> EN canonical:` line updated in corresponding `wiki/ja/` pages
 - [ ] Agents-Reference or Rules-Reference entry updated (if agent/rule changed)
 - [ ] If a new flow / orchestrator is added, update all 4 integration points: Architecture.md figures, Triage-System.md sections, Agents-Reference.md domain section, Home.md persona entries
+- [ ] `package.json` `version` bumped if any file under `.claude/agents/`, `.claude/rules/`, `.claude/commands/`, or `.claude/orchestrator-rules.md` was modified (see "Version bumping policy" below)
+- [ ] `bash scripts/smoke-update.sh` exits 0 (release-time gate; run before tagging)
+
+### Version bumping policy
+
+Any PR that modifies the canonical source under `.claude/agents/`, `.claude/rules/`,
+`.claude/commands/`, or `.claude/orchestrator-rules.md` MUST bump `package.json`
+`version`. This is the only thing that invalidates downstream `npx` caches —
+without a bump, users running `npx ... update` will keep receiving the previous
+snapshot even after `git push` to `main`.
+
+- Default: bump the patch component (`0.2.0` → `0.2.1`).
+- Bump the minor component when adding a new agent, a new flow, or a breaking
+  rule.
+- Document the change in `CHANGELOG.md` under the `## [Unreleased]` section.
 
 ---
 
