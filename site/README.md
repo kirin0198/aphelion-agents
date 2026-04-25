@@ -69,24 +69,21 @@ Output: `site/dist/`
 
 ```
 site/
-├── astro.config.mjs         # i18n, logo, customCss configuration
+├── astro.config.mjs         # i18n, customCss configuration
 ├── package.json
 ├── tsconfig.json
-├── public/                  # static assets (favicon, etc.)
+├── public/                  # static assets directory (currently empty)
 └── src/
-    ├── assets/
-    │   └── logo.png         # copied from docs/images/aphelion-logo.png
     ├── content/
     │   ├── config.ts        # Starlight content collection definition
     │   └── docs/            # output target of sync-wiki.mjs
     │       ├── en/*.md      # synced from docs/wiki/en/
     │       └── ja/*.md      # synced from docs/wiki/ja/
     └── styles/
-        └── custom.css       # logo-derived CSS variables (light/dark)
+        └── custom.css       # accent CSS variables (light/dark)
 ```
 
 ## Related
 
 - Wiki SSOT: `../docs/wiki/en/` and `../docs/wiki/ja/`
 - Sync script: `../scripts/sync-wiki.mjs` (created by developer phase)
-- Logo source: `../docs/images/aphelion-logo.png`

@@ -1,11 +1,10 @@
 /*
  * custom.css — Aphelion ブランドカラー
  *
- * ロゴ (docs/images/aphelion-logo.png) から目視サンプリングした暫定色。
- * ロゴの主要色:
- *   - パープル/バイオレット（軌道リング）: ~#7b3fe4
- *   - オレンジ/アンバー（惑星・炎）:        ~#f97316
- *   - 深黒背景:                            ~#0a0a0f
+ * 元ロゴ (削除済み, #22) から取り出した暫定色を継続採用しているテーマ。
+ * 既存サイト訪問者の視覚的継続性のため値はそのまま残す。
+ *   - パープル/バイオレット: ~#7b3fe4
+ *   - オレンジ/アンバー:    ~#f97316
  *
  * Starlight CSS 変数リファレンス:
  * https://starlight.astro.build/guides/css-and-tailwind/#css-variables
@@ -33,18 +32,3 @@
   --sl-color-text-accent: #c08eff;
 }
 
-/* --- Hero Image --- */
-/* Starlight の既定では hero 画像が 1:1 にクロップされ文字が切れるため、
- * public/hero.png を index.mdx の hero.image.html から直接参照して
- * Astro Image 最適化を回避し、CSS でアスペクト比と表示幅を制御する。
- *
- * NOTE: 画像は黒背景のため light mode では周囲と色差が出る。
- *       テーマ別の blending 対応は issue #22 で扱う。
- */
-.aphelion-hero-img {
-  width: 100%;
-  max-width: 560px;
-  height: auto;
-  aspect-ratio: 4 / 3;
-  object-fit: contain;
-}

@@ -130,8 +130,10 @@ For full details, follow the **Canonical** link to the source file.
 
 ## Related Pages
 
-- [Architecture](./Architecture.md)
-- [Agents Reference](./Agents-Reference.md)
+- [Architecture: Domain Model](./Architecture-Domain-Model.md)
+- [Architecture: Protocols](./Architecture-Protocols.md)
+- [Architecture: Operational Rules](./Architecture-Operational-Rules.md)
+- [Agents Reference: Orchestrators](./Agents-Orchestrators.md)
 - [Contributing](./Contributing.md)
 
 ## Canonical Sources

@@ -267,8 +267,9 @@ HAS_UI: true
 
 ## Related Pages
 
-- [Architecture](./Architecture.md)
-- [Agents Reference](./Agents-Reference.md)
+- [Architecture: Domain Model](./Architecture-Domain-Model.md)
+- [Architecture: Operational Rules](./Architecture-Operational-Rules.md)
+- [Agents Reference: Orchestrators](./Agents-Orchestrators.md)
 - [Getting Started](./Getting-Started.md)
 
 ## Canonical Sources

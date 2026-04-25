@@ -1,8 +1,8 @@
-# ルールリファレンス
+# Rules Reference
 
 > **Language**: [English](../en/Rules-Reference.md) | [日本語](../ja/Rules-Reference.md)
-> **Last updated**: 2026-04-24
-> **EN canonical**: 2026-04-24 of wiki/en/Rules-Reference.md
+> **Last updated**: 2026-04-25 (updated 2026-04-25: terminology rebalance per #40)
+> **EN canonical**: 2026-04-25 of wiki/en/Rules-Reference.md
 > **Audience**: エージェント開発者
 
 このページは`.claude/rules/`にある10の行動ルールのコンパクトなリファレンスです。各エントリはスコープ、自動ロードの動作、他ルール・エージェントとのインタラクション、ルールが強制する主要な制約をまとめています。
@@ -29,20 +29,20 @@
 ## aphelion-overview
 
 - **正規**: [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md)
-- **スコープ**: 全エージェントとオーケストレーター；トップレベルのワークフローコンテキストを提供
+- **スコープ**: 全エージェントと Flow Orchestrator（フローオーケストレーター）；トップレベルのワークフローコンテキストを提供
 - **自動ロードの動作**: `.claude/rules/`に配置され、Claude Codeが全セッション起動時に自動ロード
 - **概要**: 3ドメインモデル（Discovery / Delivery / Operations）、独立した Maintenance フロー（既存プロジェクト保守向けの第 4 フロー）、トリアージ階層、エージェントディレクトリの場所を定義します。全エージェントはこのフレームワーク内で動作します。
-- **インタラクション**: 全フローオーケストレーターとエージェントが権威あるワークフローモデルとして参照
+- **インタラクション**: 全 Flow Orchestrator とエージェントが権威あるワークフローモデルとして参照
 
 ---
 
 ## agent-communication-protocol
 
 - **正規**: [.claude/rules/agent-communication-protocol.md](../../.claude/rules/agent-communication-protocol.md)
-- **スコープ**: 全エージェント；フローオーケストレーターはAGENT_RESTULTの出力から免除（代わりにハンドオフファイルを生成）
+- **スコープ**: 全エージェント；Flow Orchestrator は `AGENT_RESULT` の出力から免除（代わりにハンドオフファイルを生成）
 - **自動ロードの動作**: Claude Codeが全セッション起動時に自動ロード
-- **インタラクション**: オーケストレーターはAGENT_RESULT STATUSの値を解析して承認ゲート、ロールバック、エラーハンドリングを制御（`orchestrator-rules.md`参照）。`blocked` STATUSはdeveloperが再開できるようになる前に軽量なarchitectへの問い合わせをトリガーします。
-- **概要**: 全エージェントが作業完了時に出力しなければならない必須の`AGENT_RESULT`ブロックフォーマットを定義します。7つのSTATUS値（`success`、`error`、`failure`、`suspended`、`blocked`、`approved`/`conditional`/`rejected`）とオーケストレーターの決定に対する意味を規定します。また`blocked` STATUSの使用パターンも定義します：`developer`が設計上の曖昧さを発見した場合、`BLOCKED_TARGET: architect`を出力して、オーケストレーターが再開前に曖昧さを解消できるようにします。
+- **インタラクション**: Flow Orchestrator は `AGENT_RESULT` STATUS の値を解析して承認ゲート、ロールバック、エラーハンドリングを制御（`orchestrator-rules.md` 参照）。`blocked` STATUS は `developer` が再開できるようになる前に軽量な `architect` への問い合わせをトリガーします。
+- **概要**: 全エージェントが作業完了時に出力しなければならない必須の `AGENT_RESULT` ブロックフォーマットを定義します。7 つの STATUS 値（`success`、`error`、`failure`、`suspended`、`blocked`、`approved`/`conditional`/`rejected`）と Flow Orchestrator の決定に対する意味を規定します。また `blocked` STATUS の使用パターンも定義します：`developer` が設計上の曖昧さを発見した場合、`BLOCKED_TARGET: architect` を出力して、Flow Orchestrator が再開前に曖昧さを解消できるようにします。
 
 ---
 
@@ -59,9 +59,9 @@
 ## document-versioning
 
 - **正規**: [.claude/rules/document-versioning.md](../../.claude/rules/document-versioning.md)
-- **スコープ**: `architect`、`spec-designer`、`ux-designer`、`test-designer`、`developer`、全フローオーケストレーター
+- **スコープ**: `architect`、`spec-designer`、`ux-designer`、`test-designer`、`developer`、全 Flow Orchestrator
 - **自動ロードの動作**: Claude Codeが全セッション起動時に自動ロード
-- **インタラクション**: 設計ドキュメント（`SPEC.md`、`ARCHITECTURE.md`、`UI_SPEC.md`、`TEST_PLAN.md`）を生成する各エージェントは先頭に`最終更新`と`更新履歴`を記録しなければなりません。`developer`はここで定義されたTASK.mdフォーマットを使用します。フローオーケストレーターはこれを使用してハンドオフファイルに前ドメインのアーティファクトバージョンを記録します。
+- **インタラクション**: 設計ドキュメント（`SPEC.md`、`ARCHITECTURE.md`、`UI_SPEC.md`、`TEST_PLAN.md`）を生成する各エージェントは先頭に `最終更新` と `更新履歴` を記録しなければなりません。`developer` はここで定義された TASK.md フォーマットを使用します。Flow Orchestrator はこれを使用してハンドオフファイルに前ドメインのアーティファクトバージョンを記録します。
 - **概要**: 引用ブロックフォーマットを使用して全設計ドキュメントの先頭に更新履歴の記録を義務付けます。トレーサビリティチェーンを確立します：`architect`は使用したSPEC.mdバージョンを記録し、`developer`は使用したARCHITECTURE.mdバージョンをTASK.mdに記録します。TASK.mdフォーマットはここで完全に規定されています（タスク一覧、直近のコミット、中断時のメモ）。
 
 ---
@@ -111,7 +111,7 @@
 - **正規**: [.claude/rules/sandbox-policy.md](../../.claude/rules/sandbox-policy.md)
 - **スコープ**: `Bash`ツールを持つ全エージェント：`developer`、`tester`、`poc-engineer`、`scaffolder`、`infra-builder`、`codebase-analyzer`、`security-auditor`、`db-ops`、`releaser`、`observability`。（`sandbox-runner`はポリシーの実行者であり対象外）
 - **自動ロードの動作**: Claude Codeが全セッション起動時に自動ロード
-- **インタラクション**: 5つの危険コマンドカテゴリ（`destructive_fs`、`prod_db`、`privilege_escalation`、`secret_access`、`external_net`）と3つの委譲ティア（`required`、`recommended`、`optional`）を定義します。`sandbox-runner`はこのポリシーを起動時に読み込んでコマンドを再分類します。オーケストレーターはティア定義を参照して`sandbox-runner`をいつ自動挿入するか（Standard+プラン）を決定します。Bashを持つ各エージェントの定義ファイルにはこのルールへの1行参照が含まれています。`infra-builder`は`container`隔離モードが参照するdevcontainerファイルを生成します。
+- **インタラクション**: 5 つの危険コマンドカテゴリ（`destructive_fs`、`prod_db`、`privilege_escalation`、`secret_access`、`external_net`）と 3 つの委譲ティア（`required`、`recommended`、`optional`）を定義します。`sandbox-runner` はこのポリシーを起動時に読み込んでコマンドを再分類します。Flow Orchestrator はティア定義を参照して `sandbox-runner` をいつ自動挿入するか（Standard+ プラン）を決定します。Bash を持つ各エージェントの定義ファイルにはこのルールへの 1 行参照が含まれています。`infra-builder` は `container` 隔離モードが参照する devcontainer ファイルを生成します。
 - **サンドボックスモード（§4）**: 優先順位順に5つのモード：`container`（devcontainerによる実体的な物理的隔離 — 最高優先）、`platform_permission`（Claude Codeパーミッションゲート）、`advisory_only`（警告のみ）、`blocked`（実行拒否）、`bypassed`（カテゴリ非該当）。`container`モードはプラットフォームが`auto`/`allow`モードで動作していても有効です。パーミッション設定に依存しない構造的な境界を提供するためです。
 - **決定ツリー（§3）**: コンテナ利用可能性はプラットフォーム検出の**前**に確認されます。`.devcontainer/devcontainer.json`が存在し`docker info`が成功する場合 → `container`モード。そうでなければ、プラットフォーム検出と既存のパーミッションモードロジックに降格。フォールバック順：`container` → `platform_permission` → `advisory_only` → `blocked`。
 - **トリアージ × devcontainer（§5）**: Minimal = devcontainer生成スキップ；Light = 生成・任意起動；Standard = 生成・必須起動（required カテゴリのコマンドはコンテナ内のみ実行）；Full = 生成・必須起動 + 監査ログ。
@@ -124,19 +124,21 @@
 - **正規**: [.claude/rules/user-questions.md](../../.claude/rules/user-questions.md)
 - **スコープ**: ユーザーへの確認や入力を求める必要がある全エージェント
 - **自動ロードの動作**: Claude Codeが全セッション起動時に自動ロード
-- **インタラクション**: フローオーケストレーターはトリアージインタビュー、承認ゲート、フェーズ確認に`AskUserQuestion`を使用します。（blockedになった`developer`を含む）どのエージェントも推測するのではなく止まって質問するためにこれを使用できます。
+- **インタラクション**: Flow Orchestrator はトリアージインタビュー、承認ゲート、フェーズ確認に `AskUserQuestion` を使用します。（`blocked` になった `developer` を含む）どのエージェントも推測するのではなく止まって質問するためにこれを使用できます。
 - **概要**: 不明な点がある場合は推測するのではなく止まって質問することを義務付けます。2つの質問メカニズムを定義します：`AskUserQuestion`ツール（2〜4択の質問、複数選択、コード比較に推奨）とテキスト出力のフォールバック（自由記述のみの質問に使用）。使用ガイドライン：1回の呼び出しで最大4問、関連する質問をまとめる、推奨オプションを先頭に`(推奨)`サフィックスをつけて配置。`AskUserQuestion`ツールは複数選択シナリオで`multiSelect: true`をサポートします。
 
 ---
 
 ## 関連ページ
 
-- [アーキテクチャ](./Architecture.md)
-- [エージェントリファレンス](./Agents-Reference.md)
-- [コントリビューティング](./Contributing.md)
+- [Architecture: Domain Model](./Architecture-Domain-Model.md)
+- [Architecture: Protocols](./Architecture-Protocols.md)
+- [Architecture: Operational Rules](./Architecture-Operational-Rules.md)
+- [エージェントリファレンス：Flow Orchestrator](./Agents-Orchestrators.md)
+- [Contributing](./Contributing.md)
 
 ## 正規ソース
 
 - [.claude/rules/](../../.claude/rules/) — 10のルールファイル全体（権威あるソース）
 - [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md) — ワークフロー概要（rules コレクションの一部に統合）
-- [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — agent-communication-protocolに依存するオーケストレーターの動作
+- [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — `agent-communication-protocol` に依存する Flow Orchestrator の動作

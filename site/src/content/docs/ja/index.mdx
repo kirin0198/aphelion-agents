@@ -1,22 +1,20 @@
 ---
 title: Aphelion
-description: Claude Code 向け AI コーディングエージェントワークフロー — Discovery / Delivery / Operations の3ドメイン構成。
+description: Claude Code 向け AI コーディングエージェントワークフロー — Discovery / Delivery / Operations の 3 ドメイン構成。
 template: splash
 hero:
   tagline: プロジェクトの全工程を支える AI コーディングエージェント — Discovery・Delivery・Operations。
-  image:
-    html: '<img src="/hero.png" alt="Aphelion" class="aphelion-hero-img" width="720" height="540" />'
   actions:
-    - text: はじめる
+    - text: Get Started
       link: /ja/getting-started/
       icon: right-arrow
       variant: primary
-    - text: GitHub で見る
+    - text: View on GitHub
       link: https://github.com/kirin0198/aphelion-agents
       icon: external
       variant: secondary
-    - text: エージェント一覧
-      link: /ja/agents-reference/
+    - text: Agents Reference
+      link: /ja/agents-orchestrators/
       icon: open-book
       variant: minimal
 ---
@@ -26,53 +24,53 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 ## 29 エージェント × 4 フロー
 
 <CardGrid>
-	<Card title="フローオーケストレーター" icon="rocket">
-		4 つの上位オーケストレーター: discovery-flow, delivery-flow, operations-flow, maintenance-flow。
-		[→ Flow Orchestrators](/ja/agents-reference/#flow-orchestrators)
+	<Card title="Flow Orchestrators" icon="rocket">
+		4 つの Flow Orchestrator: discovery-flow, delivery-flow, operations-flow, maintenance-flow。
+		[→ Orchestrators & Cross-Cutting](/ja/agents-orchestrators/)
 	</Card>
-	<Card title="Discovery ドメイン" icon="magnifier">
+	<Card title="Discovery Domain" icon="magnifier">
 		要件を引き出し、調査し、プロトタイプする 6 エージェント。
-		[→ Discovery Domain](/ja/agents-reference/#discovery-domain)
+		[→ Discovery Domain](/ja/agents-discovery/)
 	</Card>
-	<Card title="Delivery ドメイン" icon="puzzle">
+	<Card title="Delivery Domain" icon="puzzle">
 		設計・実装・テスト・レビュー・リリースを担う 12 エージェント。
-		[→ Delivery Domain](/ja/agents-reference/#delivery-domain)
+		[→ Delivery Domain](/ja/agents-delivery/)
 	</Card>
-	<Card title="Operations ドメイン" icon="laptop">
+	<Card title="Operations Domain" icon="laptop">
 		インフラ構築・DB 管理・可観測性・運用計画を担う 4 エージェント。
-		[→ Operations Domain](/ja/agents-reference/#operations-domain)
+		[→ Operations Domain](/ja/agents-operations/)
 	</Card>
-	<Card title="Maintenance ドメイン" icon="pencil">
+	<Card title="Maintenance Domain" icon="pencil">
 		既存プロジェクトの変更をトリアージ・範囲確定する 2 エージェント (change-classifier, impact-analyzer)。
-		[→ Maintenance Domain](/ja/agents-reference/#maintenanceドメイン)
+		[→ Maintenance Domain](/ja/agents-maintenance/)
 	</Card>
 	<Card title="Safety / Standalone" icon="approve-check">
 		隔離実行の sandbox-runner と、単独起動可能な analyst / codebase-analyzer。
-		[→ Safety Agents](/ja/agents-reference/#safety-agents)
+		[→ Orchestrators & Cross-Cutting](/ja/agents-orchestrators/)
 	</Card>
 </CardGrid>
 
-## ドキュメント
+## Documentation
 
 <CardGrid stagger>
-	<Card title="はじめる" icon="rocket">
+	<Card title="Getting Started" icon="rocket">
 		プラットフォーム別セットアップ、初回実行、ユースケース。
-		[→ はじめる](/ja/getting-started/)
+		[→ Getting Started](/ja/getting-started/)
 	</Card>
-	<Card title="アーキテクチャ" icon="puzzle">
-		3ドメインモデル、ハンドオフファイル、セッション分離、AGENT_RESULT プロトコル。
-		[→ アーキテクチャ](/ja/architecture/)
+	<Card title="Architecture" icon="puzzle">
+		3 ドメインモデル、ハンドオフファイル、セッション分離、AGENT_RESULT プロトコル、運用ルール — Domain Model / Protocols / Operational Rules の 3 ページ構成。
+		[→ Architecture: Domain Model](/ja/architecture-domain-model/)
 	</Card>
-	<Card title="トリアージシステム" icon="list-format">
+	<Card title="Triage System" icon="list-format">
 		4 ティアのプラン選択ロジックとドメイン別エージェントマトリクス。
-		[→ トリアージシステム](/ja/triage-system/)
+		[→ Triage System](/ja/triage-system/)
 	</Card>
-	<Card title="エージェントリファレンス" icon="open-book">
-		27 エージェント全ての責務・入出力・NEXT 条件。
-		[→ エージェントリファレンス](/ja/agents-reference/)
+	<Card title="Agents Reference" icon="open-book">
+		29 エージェント全ての責務・入出力・NEXT 条件 — ドメイン別 5 ページに分割（Orchestrators・Discovery・Delivery・Operations・Maintenance）。
+		[→ Orchestrators & Cross-Cutting](/ja/agents-orchestrators/)
 	</Card>
-	<Card title="ルールリファレンス" icon="setting">
+	<Card title="Rules Reference" icon="setting">
 		全動作ルールのスコープ、自動ロード、カスタマイズ。
-		[→ ルールリファレンス](/ja/rules-reference/)
+		[→ Rules Reference](/ja/rules-reference/)
 	</Card>
 </CardGrid>

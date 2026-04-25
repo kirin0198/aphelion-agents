@@ -4,8 +4,6 @@ description: AI coding agent workflow for Claude Code — Discovery, Delivery, O
 template: splash
 hero:
   tagline: AI coding agents for the full project lifecycle — Discovery, Delivery, Operations.
-  image:
-    html: '<img src="/hero.png" alt="Aphelion" class="aphelion-hero-img" width="720" height="540" />'
   actions:
     - text: Get Started
       link: /en/getting-started/
@@ -16,7 +14,7 @@ hero:
       icon: external
       variant: secondary
     - text: Agents Reference
-      link: /en/agents-reference/
+      link: /en/agents-orchestrators/
       icon: open-book
       variant: minimal
 ---
@@ -28,27 +26,27 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 <CardGrid>
 	<Card title="Flow Orchestrators" icon="rocket">
 		4 top-level orchestrators: discovery-flow, delivery-flow, operations-flow, maintenance-flow.
-		[→ Flow Orchestrators](/en/agents-reference/#flow-orchestrators)
+		[→ Orchestrators & Cross-Cutting](/en/agents-orchestrators/)
 	</Card>
 	<Card title="Discovery Domain" icon="magnifier">
 		6 agents that elicit, research, and prototype requirements.
-		[→ Discovery Domain](/en/agents-reference/#discovery-domain)
+		[→ Discovery Domain](/en/agents-discovery/)
 	</Card>
 	<Card title="Delivery Domain" icon="puzzle">
 		12 agents that design, implement, test, review, and release.
-		[→ Delivery Domain](/en/agents-reference/#delivery-domain)
+		[→ Delivery Domain](/en/agents-delivery/)
 	</Card>
 	<Card title="Operations Domain" icon="laptop">
 		4 agents that build infra, manage DB, set up observability, and plan ops.
-		[→ Operations Domain](/en/agents-reference/#operations-domain)
+		[→ Operations Domain](/en/agents-operations/)
 	</Card>
 	<Card title="Maintenance Domain" icon="pencil">
 		2 agents (change-classifier, impact-analyzer) that triage and scope changes to existing projects.
-		[→ Maintenance Domain](/en/agents-reference/#maintenance-domain)
+		[→ Maintenance Domain](/en/agents-maintenance/)
 	</Card>
 	<Card title="Safety & Standalone" icon="approve-check">
 		sandbox-runner for isolated execution, plus analyst and codebase-analyzer for standalone use.
-		[→ Safety Agents](/en/agents-reference/#safety-agents)
+		[→ Orchestrators & Cross-Cutting](/en/agents-orchestrators/)
 	</Card>
 </CardGrid>
 
@@ -60,16 +58,16 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 		[→ Getting Started](/en/getting-started/)
 	</Card>
 	<Card title="Architecture" icon="puzzle">
-		Three-domain model, handoff files, session isolation, and AGENT_RESULT protocol.
-		[→ Architecture](/en/architecture/)
+		Three-domain model, handoff files, session isolation, AGENT_RESULT protocol, and operational rules — split into Domain Model, Protocols, and Operational Rules.
+		[→ Architecture: Domain Model](/en/architecture-domain-model/)
 	</Card>
 	<Card title="Triage System" icon="list-format">
 		Four-tier plan selection logic and per-domain agent matrices.
 		[→ Triage System](/en/triage-system/)
 	</Card>
 	<Card title="Agents Reference" icon="open-book">
-		All 27 agents: responsibilities, inputs, outputs, and NEXT conditions.
-		[→ Agents Reference](/en/agents-reference/)
+		All 29 agents — split by domain (Orchestrators, Discovery, Delivery, Operations, Maintenance) with responsibilities, inputs, outputs, and NEXT conditions.
+		[→ Orchestrators & Cross-Cutting](/en/agents-orchestrators/)
 	</Card>
 	<Card title="Rules Reference" icon="setting">
 		All behavior rules with scope, auto-load, and customization notes.

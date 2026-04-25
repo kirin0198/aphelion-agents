@@ -1,7 +1,7 @@
 # Contributing
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: rules canonical source moved to src/.claude/rules/; edit-vs-effect decoupling section added)
+> **Last updated**: 2026-04-25 (updated 2026-04-25: Agents-Reference and Architecture pages split; matching Agents-{Domain} guidance, #42)
 > **Audience**: Agent developers
 
 This page covers how to contribute to Aphelion: adding or modifying agents, updating rules, and maintaining the wiki. Read this before opening a pull request.
@@ -24,12 +24,12 @@ This page covers how to contribute to Aphelion: adding or modifying agents, upda
 
 | Type | Changes required |
 |------|----------------|
-| New agent | `.claude/agents/{name}.md` + Agents-Reference (en+ja) |
-| Modify agent | `.claude/agents/{name}.md` + Agents-Reference entry (en+ja) |
+| New agent | `.claude/agents/{name}.md` + the matching Agents-{domain}.md page (en+ja) |
+| Modify agent | `.claude/agents/{name}.md` + matching Agents-{domain}.md entry (en+ja) |
 | New rule | `.claude/rules/{name}.md` + Rules-Reference (en+ja) |
 | Modify rule | `.claude/rules/{name}.md` + Rules-Reference entry (en+ja) |
-| Orchestrator rules change | `.claude/orchestrator-rules.md` + Architecture.md / Triage-System.md (en+ja) |
-| New flow (orchestrator) | `.claude/agents/{flow}.md` + `.claude/commands/{flow}.md` + Architecture.md (figures + text) + Triage-System.md (new section) + Agents-Reference.md (new orchestrator + domain section) + Home.md (personas + glossary) + index.mdx (card) |
+| Orchestrator rules change | `.claude/orchestrator-rules.md` + Architecture-Operational-Rules.md / Triage-System.md (en+ja) |
+| New flow (orchestrator) | `.claude/agents/{flow}.md` + `.claude/commands/{flow}.md` + Architecture-Domain-Model.md (figures + text) + Architecture-Operational-Rules.md (Phase Execution Loop) + Triage-System.md (new section) + Agents-Orchestrators.md (new orchestrator) + Agents-{Domain}.md (new domain section if applicable) + Home.md (personas + glossary) + index.mdx (card) |
 | Wiki page update | `wiki/en/{page}.md` + `wiki/ja/{page}.md` (same PR) |
 
 ---
@@ -49,13 +49,13 @@ This page covers how to contribute to Aphelion: adding or modifying agents, upda
    ```
    Include sections: Mission, Inputs, Workflow, Outputs, AGENT_RESULT (with all fields), NEXT conditions.
 
-2. **Update Agents-Reference** (`wiki/en/Agents-Reference.md` and `wiki/ja/Agents-Reference.md`) with a new entry following the standard schema (Canonical, Domain, Responsibility, Inputs, Outputs, AGENT_RESULT fields, NEXT conditions). Add the entry in the appropriate domain section.
+2. **Update the matching Agents-{Domain} page** in both `wiki/en/` and `wiki/ja/`: `Agents-Discovery.md`, `Agents-Delivery.md`, `Agents-Operations.md`, `Agents-Maintenance.md`, or `Agents-Orchestrators.md` for cross-cutting agents (flow orchestrators, sandbox-runner, analyst, codebase-analyzer). Add a new entry following the standard schema (Canonical, Domain, Responsibility, Inputs, Outputs, AGENT_RESULT fields, NEXT conditions).
 
 3. **If the agent is invokable as a standalone slash command**, add a corresponding command file in `.claude/commands/{name}.md`.
 
 4. **If the agent is a new flow orchestrator**, update `.claude/orchestrator-rules.md` to include the new agent in the triage or phase sequence.
 
-5. **Agents-Reference split threshold**: If the total agent count exceeds 40, or any single section in `Agents-Reference.md` exceeds 300 lines, consider splitting into `wiki/en/agents/{name}.md` per-agent files and converting `Agents-Reference.md` into a list + link hub. This is a future decision — open an issue to discuss first.
+5. **Agents-Reference split threshold**: The Agents-Reference was split into 5 domain pages in #42. If any single domain page exceeds ~250 lines, or the total agent count exceeds 50, consider further splitting into per-agent files (`wiki/en/agents/{name}.md`). This is a future decision — open an issue to discuss first.
 
 ---
 
@@ -63,9 +63,9 @@ This page covers how to contribute to Aphelion: adding or modifying agents, upda
 
 1. **Edit the canonical file** at `.claude/agents/{name}.md`.
 
-2. **Update the corresponding Agents-Reference entry** in both `wiki/en/Agents-Reference.md` and `wiki/ja/Agents-Reference.md` to reflect the change.
+2. **Update the corresponding entry** in the matching `Agents-{Domain}.md` page (en+ja) to reflect the change.
 
-   > Keeping Agents-Reference synchronized is mandatory. If you update an agent definition without updating the wiki entry, reviewers will request a correction.
+   > Keeping the Agents-{Domain} pages synchronized with `.claude/agents/` is mandatory. If you update an agent definition without updating the matching wiki entry, reviewers will request a correction.
 
 ---
 
@@ -75,7 +75,7 @@ This page covers how to contribute to Aphelion: adding or modifying agents, upda
 
 2. **Update the corresponding Rules-Reference entry** in both `wiki/en/Rules-Reference.md` and `wiki/ja/Rules-Reference.md`.
 
-3. **If the rule change affects orchestrator behavior**, also update `wiki/en/Architecture.md` and `wiki/ja/Architecture.md`.
+3. **If the rule change affects orchestrator behavior**, also update the relevant Architecture sub-page (`wiki/{en,ja}/Architecture-Operational-Rules.md` for runtime behaviors, `Architecture-Domain-Model.md` for conceptual changes, `Architecture-Protocols.md` for AGENT_RESULT / handoff schema changes).
 
 4. **If the rule affects triage**, also update `wiki/en/Triage-System.md` and `wiki/ja/Triage-System.md`.
 
@@ -157,8 +157,8 @@ Before opening a PR, verify:
 - [ ] `wiki/ja/` page updated in the same PR (bilingual sync)
 - [ ] `> Last updated:` line updated in modified wiki pages
 - [ ] `> EN canonical:` line updated in corresponding `wiki/ja/` pages
-- [ ] Agents-Reference or Rules-Reference entry updated (if agent/rule changed)
-- [ ] If a new flow / orchestrator is added, update all 4 integration points: Architecture.md figures, Triage-System.md sections, Agents-Reference.md domain section, Home.md persona entries
+- [ ] Matching `Agents-{Domain}.md` or `Rules-Reference.md` entry updated (if agent/rule changed)
+- [ ] If a new flow / orchestrator is added, update all integration points: Architecture-Domain-Model.md figures, Architecture-Operational-Rules.md (Phase Execution Loop), Triage-System.md sections, Agents-Orchestrators.md (cross-cutting agent entry), and Home.md persona entries
 - [ ] `package.json` `version` bumped if any file under `.claude/agents/`, `.claude/rules/`, `.claude/commands/`, or `.claude/orchestrator-rules.md` was modified (see "Version bumping policy" below)
 - [ ] `bash scripts/smoke-update.sh` exits 0 (release-time gate; run before tagging)
 
@@ -179,8 +179,10 @@ snapshot even after `git push` to `main`.
 
 ## Related Pages
 
-- [Architecture](./Architecture.md)
-- [Agents Reference](./Agents-Reference.md)
+- [Architecture: Domain Model](./Architecture-Domain-Model.md)
+- [Architecture: Protocols](./Architecture-Protocols.md)
+- [Architecture: Operational Rules](./Architecture-Operational-Rules.md)
+- [Agents Reference: Orchestrators](./Agents-Orchestrators.md)
 - [Rules Reference](./Rules-Reference.md)
 
 ## Canonical Sources

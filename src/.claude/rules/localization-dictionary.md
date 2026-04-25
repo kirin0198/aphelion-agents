@@ -6,6 +6,12 @@ project-rules.md and pick the matching column.
 For agents using these strings: look up the key in the table below and substitute
 template placeholders (`{N}`, `{M}`, `{agent}`) at render time.
 
+> **Prose terminology (Aphelion's own JA wiki):** This file holds *runtime UI*
+> strings only. The terminology glossary used by Aphelion's own JA wiki/README
+> prose (Flow Orchestrator, Discovery Flow, accepted vs banned katakana, …)
+> lives in `docs/issues/ja-terminology-rebalance.md` (#40). See that document
+> when polishing JA wiki pages or README.ja.md.
+
 ---
 
 ## Approval Gate

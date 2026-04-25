@@ -288,7 +288,7 @@ The orchestrator will present options:
 
 ## Related Pages
 
-- [Architecture](./Architecture.md)
+- [Architecture: Domain Model](./Architecture-Domain-Model.md)
 - [Triage System](./Triage-System.md)
 
 ## Canonical Sources

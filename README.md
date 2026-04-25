@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="docs/images/aphelion-header.png" alt="Aphelion" width="100%">
-</p>
-
 # Aphelion — Frontier AI Agents
 
 A collection of AI coding agent definitions for Claude Code that automates the entire project lifecycle with 27 specialized agents.
@@ -182,9 +178,9 @@ For detailed agent schemas, rule explanations, triage logic, and platform intern
 | Page | Description |
 |------|-------------|
 | [Getting Started](docs/wiki/en/Getting-Started.md) | Setup for all platforms, first-run walkthrough, usage scenarios |
-| [Architecture](docs/wiki/en/Architecture.md) | 3-domain model, handoff files, AGENT_RESULT protocol |
+| Architecture (3 pages) | [Domain Model](docs/wiki/en/Architecture-Domain-Model.md), [Protocols](docs/wiki/en/Architecture-Protocols.md), [Operational Rules](docs/wiki/en/Architecture-Operational-Rules.md) — 3-domain model, handoff files, AGENT_RESULT protocol, runtime rules |
 | [Triage System](docs/wiki/en/Triage-System.md) | Plan tiers, agent selection logic, HAS_UI conditions |
-| [Agents Reference](docs/wiki/en/Agents-Reference.md) | All 27 agents — inputs, outputs, NEXT conditions |
+| Agents Reference (5 pages) | [Orchestrators & Cross-Cutting](docs/wiki/en/Agents-Orchestrators.md), [Discovery](docs/wiki/en/Agents-Discovery.md), [Delivery](docs/wiki/en/Agents-Delivery.md), [Operations](docs/wiki/en/Agents-Operations.md), [Maintenance](docs/wiki/en/Agents-Maintenance.md) — all 29 agents |
 | [Rules Reference](docs/wiki/en/Rules-Reference.md) | All 8 behavioral rules — scope and interactions |
 | [Contributing](docs/wiki/en/Contributing.md) | How to add agents, bilingual sync policy, PR checklist |
 

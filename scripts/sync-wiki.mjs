@@ -2,7 +2,6 @@
 // sync-wiki.mjs
 // docs/wiki/en/*.md と docs/wiki/ja/*.md を site/src/content/docs/{en,ja}/ にコピーし、
 // Starlight 互換の frontmatter (title, description) を自動付与するスクリプト。
-// docs/images/aphelion-logo.png も site/src/assets/logo.png に同期する。
 // Node.js 22 標準ライブラリのみで動作。
 
 import * as fs from 'node:fs';
@@ -16,15 +15,6 @@ const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
 const WIKI_DIR = path.join(REPO_ROOT, 'docs', 'wiki');
 const DOCS_DIR = path.join(REPO_ROOT, 'site', 'src', 'content', 'docs');
-// docs/images → site 側に同期する画像アセット一覧。
-// logo は Starlight が Astro Image で最適化するため src/assets/ に配置する。
-// hero は Starlight のデフォルト最適化が 1:1 クロップ固定で縦横比を保てないため、
-// 最適化を経由しない site/public/ に配置し、index.mdx の hero.image.html から直接参照する。
-const IMAGE_ASSETS = [
-  { src: 'docs/images/aphelion-logo.png', dest: 'site/src/assets/logo.png', label: 'logo' },
-  { src: 'docs/images/aphelion-top.png',  dest: 'site/public/hero.png',     label: 'hero' },
-];
-
 // リポジトリ外 (wiki 外) のファイルへのリンクを置き換える先。GitHub blob URL。
 // 優先順位: 1) 環境変数 APHELION_GITHUB_REPO_URL, 2) package.json の repository.url / homepage,
 // 3) ハードコードのフォールバック値
@@ -368,40 +358,10 @@ function processFile(srcPath, destPath, locale) {
 }
 
 /**
- * docs/images 配下の画像アセットを site/src/assets/ にコピーする。
- * SSOT を一致させるため、変更があった場合のみ上書きする。
- * NI-001: src と dest の mtime/size を比較し、同一ならスキップする。
- */
-function syncImages() {
-  for (const asset of IMAGE_ASSETS) {
-    const src = path.join(REPO_ROOT, asset.src);
-    const dest = path.join(REPO_ROOT, asset.dest);
-
-    if (!fs.existsSync(src)) {
-      console.warn(`warn: ${asset.label} source not found: ${src}`);
-      continue;
-    }
-    fs.mkdirSync(path.dirname(dest), { recursive: true });
-
-    const srcStat = fs.statSync(src);
-    const destStat = fs.existsSync(dest) ? fs.statSync(dest) : null;
-    if (destStat && srcStat.size === destStat.size && srcStat.mtimeMs <= destStat.mtimeMs) {
-      console.log(`\n[${asset.label}] unchanged: ${asset.src} (skipped)`);
-      continue;
-    }
-
-    fs.copyFileSync(src, dest);
-    console.log(`\n[${asset.label}] ${asset.src} → ${asset.dest}`);
-  }
-}
-
-/**
  * メイン処理: docs/wiki/{locale}/*.md をすべて処理して site/src/content/docs/{locale}/ に出力する。
  * SH-003: 同一ロケール内で slug の重複が検出された場合は即座にエラーとして終了する。
  */
 function main() {
-  syncImages();
-
   const locales = ['en', 'ja'];
 
   for (const locale of locales) {

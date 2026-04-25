@@ -1,7 +1,7 @@
-# コントリビューティング
+# Contributing
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: ルール正規ソースを src/.claude/rules/ に移動; edit-vs-effect 分離を追記)
+> **Last updated**: 2026-04-25 (updated 2026-04-25: terminology rebalance per #40)
 > **EN canonical**: 2026-04-25 (updated 2026-04-25) of wiki/en/Contributing.md
 > **Audience**: エージェント開発者
 
@@ -25,12 +25,12 @@
 
 | 種類 | 必要な変更 |
 |-----|---------|
-| 新しいエージェント | `.claude/agents/{name}.md` + Agents-Reference（en+ja） |
-| エージェントの変更 | `.claude/agents/{name}.md` + Agents-Referenceのエントリ（en+ja） |
+| 新しいエージェント | `.claude/agents/{name}.md` + 該当する Agents-{Domain}.md ページ（en+ja） |
+| エージェントの変更 | `.claude/agents/{name}.md` + 該当する Agents-{Domain}.md のエントリ（en+ja） |
 | 新しいルール | `.claude/rules/{name}.md` + Rules-Reference（en+ja） |
 | ルールの変更 | `.claude/rules/{name}.md` + Rules-Referenceのエントリ（en+ja） |
-| オーケストレータールールの変更 | `.claude/orchestrator-rules.md` + Architecture.md / Triage-System.md（en+ja） |
-| 新フロー (オーケストレーター) | `.claude/agents/{flow}.md` + `.claude/commands/{flow}.md` + Architecture.md (図と本文) + Triage-System.md (新セクション) + Agents-Reference.md (新オーケストレーター + ドメインセクション) + Home.md (ペルソナ + 用語集) + index.mdx (カード) |
+| Flow Orchestrator ルールの変更 | `.claude/orchestrator-rules.md` + Architecture-Operational-Rules.md / Triage-System.md（en+ja） |
+| 新フロー（Flow Orchestrator） | `.claude/agents/{flow}.md` + `.claude/commands/{flow}.md` + Architecture-Domain-Model.md（図と本文）+ Architecture-Operational-Rules.md（Phase Execution Loop）+ Triage-System.md（新セクション）+ Agents-Orchestrators.md（新 Flow Orchestrator エントリ）+ 該当する Agents-{Domain}.md（ドメインセクション追加）+ Home.md（ペルソナ + 用語集）+ index.mdx（カード） |
 | Wikiページの更新 | `wiki/en/{page}.md` + `wiki/ja/{page}.md`（同一PR） |
 
 ---
@@ -50,13 +50,13 @@
    ```
    以下のセクションを含めてください：Mission、Inputs、Workflow、Outputs、AGENT_RESULT（全フィールド）、NEXT条件。
 
-2. **Agents-Referenceを更新します**（`wiki/en/Agents-Reference.md`と`wiki/ja/Agents-Reference.md`）。標準スキーマ（正規、ドメイン、責務、入力、出力、AGENT_RESTULTフィールド、NEXT条件）に従って新しいエントリを追加します。適切なドメインセクションにエントリを追加してください。
+2. **該当する Agents-{Domain} ページを更新します** — `wiki/{en,ja}/` 配下の `Agents-Discovery.md` / `Agents-Delivery.md` / `Agents-Operations.md` / `Agents-Maintenance.md`、または横断系エージェント（Flow Orchestrator、sandbox-runner、analyst、codebase-analyzer）の場合は `Agents-Orchestrators.md`。標準スキーマ（正規、ドメイン、責務、入力、出力、`AGENT_RESULT` フィールド、NEXT 条件）に従って新しいエントリを追加します。
 
 3. **エージェントをスタンドアロンスラッシュコマンドとして起動可能にする場合**、`.claude/commands/{name}.md`に対応するコマンドファイルを追加します。
 
-4. **エージェントが新しいフローオーケストレーターの場合**、新しいエージェントをトリアージまたはフェーズシーケンスに含めるよう`.claude/orchestrator-rules.md`を更新します。
+4. **エージェントが新しい Flow Orchestrator の場合**、新しいエージェントをトリアージまたはフェーズシーケンスに含めるよう `.claude/orchestrator-rules.md` を更新します。
 
-5. **Agents-Referenceの分割しきい値**：エージェントの合計数が40を超える場合、またはAgents-Reference.md内のいずれかのセクションが300行を超える場合は、エージェントごとの`wiki/en/agents/{name}.md`ファイルへの分割とAgents-Reference.mdをリスト+リンクハブに変換することを検討してください。これは将来の決定事項です — まずissueを開いて議論してください。
+5. **Agents-Reference の分割しきい値**：Agents-Reference は #42 で 5 ドメインページに分割済みです。いずれか 1 ドメインページが ~250 行を超えた場合、またはエージェント合計数が 50 を超えた場合は、エージェントごとのファイル（`wiki/en/agents/{name}.md`）へのさらなる分割を検討してください。これは将来の決定事項です — まず issue を開いて議論してください。
 
 ---
 
@@ -64,9 +64,9 @@
 
 1. **`.claude/agents/{name}.md`の正規ファイルを編集します。**
 
-2. **`wiki/en/Agents-Reference.md`と`wiki/ja/Agents-Reference.md`の両方のAgents-Referenceエントリを更新して**変更を反映させます。
+2. **該当する Agents-{Domain} ページのエントリを更新して**（en+ja）変更を反映させます。
 
-   > Agents-Referenceの同期維持は必須です。Wikiエントリを更新せずにエージェント定義を更新すると、レビュアーが修正を要求します。
+   > Agents-{Domain} ページと `.claude/agents/` の同期維持は必須です。該当する Wiki エントリを更新せずにエージェント定義を更新すると、レビュアーが修正を要求します。
 
 ---
 
@@ -76,7 +76,7 @@
 
 2. **`wiki/en/Rules-Reference.md`と`wiki/ja/Rules-Reference.md`の両方のRules-Referenceエントリを更新します。**
 
-3. **ルールの変更がオーケストレーターの動作に影響する場合**、`wiki/en/Architecture.md`と`wiki/ja/Architecture.md`も更新します。
+3. **ルールの変更が Flow Orchestrator の動作に影響する場合**、該当する Architecture サブページも更新します（ランタイム挙動なら `wiki/{en,ja}/Architecture-Operational-Rules.md`、概念モデルなら `Architecture-Domain-Model.md`、`AGENT_RESULT` /ハンドオフスキーマなら `Architecture-Protocols.md`）。
 
 4. **ルールがトリアージに影響する場合**、`wiki/en/Triage-System.md`と`wiki/ja/Triage-System.md`も更新します。
 
@@ -158,8 +158,8 @@ PRを開く前に確認してください：
 - [ ] 同一PRで`wiki/ja/`ページを更新済み（バイリンガル同期）
 - [ ] 変更したWikiページの`> Last updated:`行を更新済み
 - [ ] 対応する`wiki/ja/`ページの`> EN canonical:`行を更新済み
-- [ ] エージェント/ルールが変更された場合、Agents-ReferenceまたはRules-Referenceのエントリを更新済み
-- [ ] 新しいフロー / オーケストレーターを追加した場合、4 箇所の統合ポイントをすべて更新済み: Architecture.md の図、Triage-System.md のセクション、Agents-Reference.md のドメインセクション、Home.md のペルソナエントリ
+- [ ] エージェント/ルールが変更された場合、該当する `Agents-{Domain}.md` または `Rules-Reference.md` のエントリを更新済み
+- [ ] 新しいフロー / Flow Orchestrator を追加した場合、統合ポイントをすべて更新済み: Architecture-Domain-Model.md の図、Architecture-Operational-Rules.md（Phase Execution Loop）、Triage-System.md のセクション、Agents-Orchestrators.md（横断系エージェントエントリ）、Home.md のペルソナエントリ
 - [ ] `.claude/agents/`、`.claude/rules/`、`.claude/commands/`、`.claude/orchestrator-rules.md` のいずれかを変更した場合、`package.json` の `version` を bump 済み（下記「バージョンbumpポリシー」参照）
 - [ ] `bash scripts/smoke-update.sh` が正常終了する（リリース前ゲート）
 
@@ -175,9 +175,11 @@ PRを開く前に確認してください：
 
 ## 関連ページ
 
-- [アーキテクチャ](./Architecture.md)
-- [エージェントリファレンス](./Agents-Reference.md)
-- [ルールリファレンス](./Rules-Reference.md)
+- [Architecture: Domain Model](./Architecture-Domain-Model.md)
+- [Architecture: Protocols](./Architecture-Protocols.md)
+- [Architecture: Operational Rules](./Architecture-Operational-Rules.md)
+- [エージェントリファレンス：Flow Orchestrator](./Agents-Orchestrators.md)
+- [Rules Reference](./Rules-Reference.md)
 
 ## 正規ソース
 

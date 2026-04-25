@@ -5,24 +5,56 @@ import remarkMermaid from './src/remark-mermaid.mjs';
 
 // ページ定義を一元管理する配列。
 // ページ追加・変更時はここだけ編集すれば sidebar に反映される (SH-009, NI-003)。
-/** @type {{ slug: string; labelEn: string; labelJa: string }[]} */
+// `items` を持つエントリはサイドバー上でグループとしてネストされる (#42)。
+/** @typedef {{ slug: string; labelEn: string; labelJa: string }} LeafPage */
+/** @typedef {{ groupEn: string; groupJa: string; items: LeafPage[] }} PageGroup */
+/** @type {(LeafPage | PageGroup)[]} */
+// JA サイドバーラベルは目次・タイトル位置に出るため英語表記で統一する (#42 follow-up)。
 const PAGES = [
-	{ slug: 'home',             labelEn: 'Overview',          labelJa: '概要'                   },
-	{ slug: 'getting-started',  labelEn: 'Getting Started',   labelJa: 'はじめる'               },
-	{ slug: 'architecture',     labelEn: 'Architecture',      labelJa: 'アーキテクチャ'         },
-	{ slug: 'triage-system',    labelEn: 'Triage System',     labelJa: 'トリアージシステム'     },
-	{ slug: 'agents-reference', labelEn: 'Agents Reference',  labelJa: 'エージェントリファレンス' },
-	{ slug: 'rules-reference',  labelEn: 'Rules Reference',   labelJa: 'ルールリファレンス'     },
-	{ slug: 'contributing',     labelEn: 'Contributing',      labelJa: 'コントリビューション'   },
+	{ slug: 'home',             labelEn: 'Overview',          labelJa: 'Overview'           },
+	{ slug: 'getting-started',  labelEn: 'Getting Started',   labelJa: 'Getting Started'    },
+	{
+		groupEn: 'Architecture',
+		groupJa: 'Architecture',
+		items: [
+			{ slug: 'architecture-domain-model',      labelEn: 'Domain Model',       labelJa: 'Domain Model'       },
+			{ slug: 'architecture-protocols',         labelEn: 'Protocols',          labelJa: 'Protocols'          },
+			{ slug: 'architecture-operational-rules', labelEn: 'Operational Rules', labelJa: 'Operational Rules' },
+		],
+	},
+	{ slug: 'triage-system',    labelEn: 'Triage System',     labelJa: 'Triage System'      },
+	{
+		groupEn: 'Agents Reference',
+		groupJa: 'Agents Reference',
+		items: [
+			{ slug: 'agents-orchestrators', labelEn: 'Orchestrators & Cross-Cutting', labelJa: 'Orchestrators & Cross-Cutting' },
+			{ slug: 'agents-discovery',     labelEn: 'Discovery Domain',              labelJa: 'Discovery Domain'              },
+			{ slug: 'agents-delivery',      labelEn: 'Delivery Domain',               labelJa: 'Delivery Domain'               },
+			{ slug: 'agents-operations',    labelEn: 'Operations Domain',             labelJa: 'Operations Domain'             },
+			{ slug: 'agents-maintenance',   labelEn: 'Maintenance Domain',            labelJa: 'Maintenance Domain'            },
+		],
+	},
+	{ slug: 'rules-reference',  labelEn: 'Rules Reference',   labelJa: 'Rules Reference'    },
+	{ slug: 'contributing',     labelEn: 'Contributing',      labelJa: 'Contributing'       },
 ];
 
 // PAGES から Starlight sidebar エントリを生成する。
 // translations に en/ja 両言語を含めることで英日ラベルの対称性を保証する (NI-003)。
-const sidebar = PAGES.map(({ slug, labelEn, labelJa }) => ({
+const toLeaf = ({ slug, labelEn, labelJa }) => ({
 	label: labelEn,
 	link: slug,
 	translations: { en: labelEn, ja: labelJa },
-}));
+});
+const sidebar = PAGES.map((entry) => {
+	if ('items' in entry) {
+		return {
+			label: entry.groupEn,
+			translations: { en: entry.groupEn, ja: entry.groupJa },
+			items: entry.items.map(toLeaf),
+		};
+	}
+	return toLeaf(entry);
+});
 
 // https://astro.build/config
 export default defineConfig({
@@ -38,9 +70,6 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'Aphelion',
-			logo: {
-				src: './src/assets/logo.png',
-			},
 			customCss: ['./src/styles/custom.css'],
 			// mermaid 初期化は src/components/Head.astro で npm バンドルを使用。
 			// CDN 依存 (jsdelivr.net) と SRI なし読み込みを排除し、securityLevel を strict に変更。

@@ -1,7 +1,7 @@
 # Aphelion Wiki
 
 > **Language**: [English](../en/Home.md) | [日本語](../ja/Home.md)
-> **Last updated**: 2026-04-24 (updated 2026-04-24: remove Platform-Guide references)
+> **Last updated**: 2026-04-25 (updated 2026-04-25: link targets refreshed for Architecture / Agents-Reference page splits, #42)
 > **Audience**: All users
 
 Welcome to the **Aphelion Wiki** — the detailed reference for the Aphelion Claude Code agent workflow.
@@ -16,10 +16,10 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 
 | README | Wiki |
 |--------|------|
-| Project overview and motivation | [Architecture](./Architecture.md): 3-domain model and session isolation |
+| Project overview and motivation | [Architecture: Domain Model](./Architecture-Domain-Model.md): 3-domain model and session isolation |
 | Quick Start commands | [Getting Started](./Getting-Started.md): Claude Code setup, first-run walkthrough, scenarios, troubleshooting |
 | Triage plan table (summary) | [Triage System](./Triage-System.md): selection logic, conditions, and agent matrices |
-| Agent list (names only) | [Agents Reference](./Agents-Reference.md): all 29 agents across 4 flows with inputs, outputs, and NEXT conditions |
+| Agent list (names only) | Agents Reference (split by domain): [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md) — all 29 agents with inputs, outputs, NEXT conditions |
 | — | [Rules Reference](./Rules-Reference.md): 9 behavior rules with scope and customization notes |
 | — | [Contributing](./Contributing.md): how to add agents, rules, and maintain the wiki |
 
@@ -32,9 +32,9 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 | Page | Description | Primary Audience |
 |------|-------------|-----------------|
 | [Getting Started](./Getting-Started.md) | Claude Code setup, first run, usage scenarios, command reference | New users |
-| [Architecture](./Architecture.md) | 3-domain model, handoff files, session isolation, AGENT_RESULT protocol | Agent developers |
+| Architecture (3 pages) | [Domain Model](./Architecture-Domain-Model.md), [Protocols](./Architecture-Protocols.md), [Operational Rules](./Architecture-Operational-Rules.md) — 3-domain model, handoff files, AGENT_RESULT protocol, runtime rules | Agent developers |
 | [Triage System](./Triage-System.md) | 4-tier plan selection logic, per-domain agent matrices, mandatory agents | All users |
-| [Agents Reference](./Agents-Reference.md) | All 29 agents across Discovery / Delivery / Operations / Maintenance: responsibility, inputs, outputs, NEXT conditions | Agent developers |
+| Agents Reference (5 pages) | [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md) — all 29 agents | Agent developers |
 | [Rules Reference](./Rules-Reference.md) | All 9 behavior rules: scope, auto-load, interactions | Agent developers |
 | [Contributing](./Contributing.md) | Adding agents, rules; bilingual sync workflow | Agent developers |
 
@@ -50,14 +50,15 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 
 ### "I want to understand how Aphelion works internally"
 
-1. Read [Architecture](./Architecture.md) — domain model and handoff mechanism
-2. Read [Agents Reference](./Agents-Reference.md) — each agent's responsibility and connections
-3. Read [Rules Reference](./Rules-Reference.md) — behavioral constraints applied to all agents
+1. Read [Architecture → Domain Model](./Architecture-Domain-Model.md) — domain model and session isolation
+2. Read [Architecture → Protocols](./Architecture-Protocols.md) — handoff files and AGENT_RESULT
+3. Read [Agents Reference → Orchestrators](./Agents-Orchestrators.md) and the 4 domain pages — each agent's responsibility and connections
+4. Read [Rules Reference](./Rules-Reference.md) — behavioral constraints applied to all agents
 
 ### "I want to add a new agent or rule"
 
 1. Read [Contributing](./Contributing.md) — file templates and AGENT_RESULT contract
-2. Read [Architecture](./Architecture.md) — understand where the new agent fits
+2. Read [Architecture → Domain Model](./Architecture-Domain-Model.md) — understand where the new agent fits
 3. Read [Rules Reference](./Rules-Reference.md) — understand which rules apply automatically
 
 ### "I need to fix a bug or add a small feature to an existing project"
@@ -93,7 +94,7 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 ## Related Pages
 
 - [Getting Started](./Getting-Started.md)
-- [Architecture](./Architecture.md)
+- [Architecture: Domain Model](./Architecture-Domain-Model.md)
 - [Contributing](./Contributing.md)
 
 ## Canonical Sources
