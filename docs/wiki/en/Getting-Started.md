@@ -52,6 +52,14 @@ npx github:kirin0198/aphelion-agents update
 npx github:kirin0198/aphelion-agents update --user
 ```
 
+> **Cache caveat:** `npx` caches packages by `name@version`. If your local cache holds an
+> older extraction at the same version string, `update` will silently copy that stale snapshot.
+> To force a refresh: pin the source ref (`npx github:kirin0198/aphelion-agents#main update`)
+> or clear the cache (`npm cache clean --force`) then re-run `update`.
+> Compare the printed `source: aphelion-agents@<version>` against the latest
+> `version` in [package.json on `main`](https://github.com/kirin0198/aphelion-agents/blob/main/package.json)
+> to confirm freshness.
+
 ### Install via git clone (alternative)
 
 Clone the repository first:

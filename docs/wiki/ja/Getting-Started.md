@@ -53,6 +53,9 @@ npx github:kirin0198/aphelion-agents update
 npx github:kirin0198/aphelion-agents update --user
 ```
 
+> **キャッシュに関する注意:** `npx` は `name@version` でパッケージをキャッシュします。同じバージョン文字列の古いキャッシュがローカルに残っている場合、`update` はその古いスナップショットを無言でコピーします。強制的に最新を取得するには: ref を `main` に固定する (`npx github:kirin0198/aphelion-agents#main update`) か、キャッシュをクリアして (`npm cache clean --force`) 再実行してください。
+> 実行時に表示される `source: aphelion-agents@<version>` を [main の package.json](https://github.com/kirin0198/aphelion-agents/blob/main/package.json) の `version` と突き合わせると確実に最新が反映されたか確認できます。
+
 ### git clone でインストール（代替手順）
 
 リポジトリをクローンしてから手動でファイルをコピーする方法：
