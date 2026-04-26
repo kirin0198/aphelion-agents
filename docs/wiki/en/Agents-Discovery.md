@@ -1,7 +1,10 @@
 # Agents Reference: Discovery Domain
 
 > **Language**: [English](../en/Agents-Discovery.md) | [日本語](../ja/Agents-Discovery.md)
-> **Last updated**: 2026-04-25 (split from Agents-Reference.md; #42)
+> **Last updated**: 2026-04-26
+> **Update history**:
+>   - 2026-04-26: Sync with #74 (issue #77)
+>   - 2026-04-25: split from Agents-Reference.md; #42
 > **Audience**: Agent developers
 
 This page is one of five pages split from the original Agents-Reference.md (#42). It covers the Discovery domain agents. See the sibling pages for other domains: [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md).
@@ -71,10 +74,10 @@ The Discovery domain (6 agents) handles requirements exploration.
 
 - **Canonical**: [.claude/agents/rules-designer.md](../../.claude/agents/rules-designer.md)
 - **Domain**: Discovery
-- **Responsibility**: Interactively determines project-specific coding conventions, Git workflow, and build commands. Generates `.claude/rules/project-rules.md`. Runs on Light and above.
+- **Responsibility**: Interactively determines project-specific coding conventions, Git workflow, build commands, and **Repository declaration** (`Remote type`: `github` | `gitlab` | `gitea` | `local-only` | `none`, consumed by `git-rules.md` Startup Probe). Generates `.claude/rules/project-rules.md`. Runs on Light and above.
 - **Inputs**: INTERVIEW_RESULT.md, RESEARCH_RESULT.md (optional), POC_RESULT.md (optional)
 - **Outputs**: `.claude/rules/project-rules.md`
-- **AGENT_RESULT fields**: `LANGUAGE`, `FRAMEWORK`, `COMMIT_STYLE`, `BRANCH_STRATEGY`
+- **AGENT_RESULT fields**: `LANGUAGE`, `FRAMEWORK`, `COMMIT_STYLE`, `BRANCH_STRATEGY`, `REPO_REMOTE_TYPE`
 - **NEXT conditions**: `scope-planner`
 
 ### scope-planner
