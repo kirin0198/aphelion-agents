@@ -82,117 +82,18 @@ If required documents are missing:
 
 ## Branch & PR Strategy
 
-This agent is responsible for branch creation, commit, push, and pull request
-submission for the implementation phase. The upstream `analyst` agent only
-produces design notes and a GitHub issue (per PR #66) — branch and PR creation
-moves here.
+> Follows `.claude/rules/git-rules.md` for branch naming, lifecycle, commit/push
+> conventions, PR creation, and remote-type-aware behavior. Refer to
+> `## Startup Probe`, `## Branch & PR Strategy`, and `## Behavior by Remote Type`
+> in that file.
 
-### Branch Naming
+### Developer-specific notes
 
-| Issue Type / Source | Branch Name |
-|---------------------|-------------|
-| Bug fix | `fix/{short-description}` |
-| Feature addition | `feat/{short-description}` |
-| Refactoring | `refactor/{short-description}` |
-| Direct invocation (no upstream issue) | `feat/{short-description}` (default) |
-
-`{short-description}` uses lowercase ASCII with hyphens (e.g.,
-`fix/login-session-timeout`). Derive it from the GitHub issue title or the
-ARCHITECT_BRIEF passed in.
-
-### Branch Lifecycle
-
-1. **Branch creation (first implementation-tier agent only)**
-   - If invoked from a flow orchestrator and another implementation-tier agent
-     (e.g., `scaffolder`) has already created the branch in the same flow
-     session, **reuse that branch**. Detect this by running
-     `git rev-parse --abbrev-ref HEAD` and checking it is not `main`.
-   - Otherwise, create the branch from latest `main`:
-     ```bash
-     git checkout main
-     git pull origin main
-     git checkout -b {branch-name}
-     ```
-   - If the branch already exists locally or on the remote, ask the user
-     whether to reuse it.
-
-2. **Commit (per task)**
-   - See `## Progress Management via TASK.md` → `Task Completion Procedure`.
-   - One commit per task on the working branch. Never commit to `main`
-     directly.
-
-3. **Push (after each commit, or batched at end of session)**
-   ```bash
-   git push -u origin {branch-name}
-   ```
-   The `-u` flag is required on first push only; subsequent pushes can use
-   `git push`.
-
-4. **Pull request creation (once, after the first commit reaches the remote)**
-   - Create the PR after the first push so reviewers can follow progress.
-   - PR body must include `Closes #N` (or `Linked Issue: #N` if a partial fix)
-     so that `.github/workflows/archive-closed-plans.yml` can archive the
-     matching design note on close.
-
-   ```bash
-   gh pr create \
-     --title "{prefix}: {short summary}" \
-     --body "$(cat <<'EOF'
-   ## Summary
-   {1–3 bullet points of what changed}
-
-   ## Related Issue
-   Closes #{issue-number}
-
-   ## Linked Plan
-   docs/design-notes/{slug}.md
-
-   ## Test plan
-   - [ ] {test plan checklist}
-   EOF
-   )" \
-     --base main
-   ```
-
-5. **Resume (when TASK.md exists)**
-   - Run `git rev-parse --abbrev-ref HEAD` first.
-   - If the current branch is not `main`, continue on it.
-   - If the current branch is `main`, derive the branch name from TASK.md's
-     Phase / issue context and `git checkout` it (fetching from the remote if
-     necessary). Do not silently start committing to `main`.
-
-### When to skip branch / PR creation
-
-- **Direct main-branch commits are prohibited** by `project-rules.md`'s
-  "Branch Strategy" (GitHub Flow). Do not commit to `main` even for trivial
-  fixes.
-- The only exception is when the user explicitly overrides via project-rules.md
-  (e.g., a private experimental repo with a `Branch Strategy: trunk-based`
-  declaration). Detect this by reading `project-rules.md`'s `## Git Rules` →
-  `### Branch Strategy` section. If the policy is not GitHub Flow, follow the
-  policy declared there.
-
-### Coordination with `gh` CLI
-
-- Verify `gh auth status` succeeds before attempting `gh pr create`.
-- If `gh` is unavailable, push the branch and report the PR URL the user
-  should manually open (do not block the flow).
-- If the PR already exists for the current branch (`gh pr view` succeeds),
-  skip creation and add new commits via push only.
-
-### AGENT_RESULT additions
-
-The completion-time `AGENT_RESULT` block must include the following fields
-when branch / PR were created:
-
-```
-BRANCH: {branch name}
-PR_URL: {PR URL | skipped (gh unavailable) | reused (existing PR)}
-```
-
-These fields are additions to the existing `developer` AGENT_RESULT template
-(they were intentionally removed from `analyst` in PR #66 — they belong here
-now).
+- Branch name derivation: `developer` derives `{short-description}` from
+  TASK.md's Phase header or, if absent, from the upstream
+  `ARCHITECT_BRIEF`. Bug-fix tasks default to `fix/...`, otherwise `feat/...`.
+- Commit granularity is governed by `## Progress Management via TASK.md` →
+  `Task Completion Procedure` below; one commit per task on the working branch.
 
 ---
 

@@ -10,7 +10,7 @@
 
 ### Phase 1
 - [x] TASK-001: git-rules.md に 4 新セクション追加 | 対象ファイル: src/.claude/rules/git-rules.md
-- [ ] TASK-002: developer.md の Branch & PR Strategy を縮小 | 対象ファイル: .claude/agents/developer.md
+- [x] TASK-002: developer.md の Branch & PR Strategy を縮小 | 対象ファイル: .claude/agents/developer.md
 - [ ] TASK-003: analyst.md の重複削除 | 対象ファイル: .claude/agents/analyst.md
 - [ ] TASK-004: rules-designer.md に Repository 質問 + テンプレ追加 | 対象ファイル: .claude/agents/rules-designer.md
 - [ ] TASK-005: AC-6 動作確認 (REPO_STATE classification)
