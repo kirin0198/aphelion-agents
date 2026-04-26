@@ -94,7 +94,11 @@ sentinel set below, ask only about that specific point in a follow-up
 `AskUserQuestion`. Do not re-ask answers that are already concrete.
 
 Sentinel set (case-insensitive, trimmed):
-`TBD`, `?`, `unknown`, `tbd`, `n/a`, `idk`, empty string.
+`TBD`, `?`, `unknown`, `n/a`, `idk`, `不明`, `未定`, `なし`, `わからない`, empty string.
+
+Both English and Japanese forms are matched at runtime — this is a user-input
+detection rule, not a template emitted to a generated document. Users typing
+in either language must be detectable.
 
 Limit follow-ups to one round — if the user re-types a sentinel, accept it
 as "explicitly unknown" and proceed; record the unknown explicitly in the
