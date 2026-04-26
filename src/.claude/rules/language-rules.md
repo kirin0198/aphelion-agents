@@ -32,3 +32,7 @@ Do not cache across sessions.
   (defined in `.claude/rules/localization-dictionary.md`).
 - **Free-form narrative** (analysis summaries, explanations, error descriptions):
   the agent generates text directly in the resolved Output Language via prompt instruction.
+- **Template skeleton strings** (markdown headings, metadata blocks such as `> Last updated:` /
+  `> Update history:`, task-list scaffolding such as `## Task list` / `## Recent commits`):
+  **English-fixed**, regardless of Output Language. Free-form narrative content written
+  inside the generated document is produced in the resolved Output Language.
