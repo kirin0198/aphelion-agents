@@ -238,35 +238,9 @@ Issue analysis complete
 
 ---
 
-## Step 4: Branch Creation
+## Step 4: Document Updates
 
-After obtaining approval, create a working branch from main before making any changes.
-
-### Branch Naming Convention
-
-| Issue Type | Branch Name |
-|----------|------------|
-| Bug Fix | `fix/{short-description}` |
-| Feature Addition | `feat/{short-description}` |
-| Refactoring | `refactor/{short-description}` |
-
-`{short-description}` uses lowercase English with hyphens (e.g., `fix/login-session-timeout`).
-
-### Execution Command
-
-```bash
-git checkout main
-git pull origin main
-git checkout -b {branch-name}
-```
-
-If the branch already exists, notify the user and ask whether to reuse it or create a new one.
-
----
-
-## Step 5: Document Updates
-
-After branch creation, execute the following.
+After approval, execute the following.
 
 ### SPEC.md Update Rules
 - **Modifying existing UCs**: Use `Edit` to incrementally update the relevant section (full rewrite is not allowed)
@@ -283,7 +257,7 @@ After branch creation, execute the following.
 
 ---
 
-## Step 6: GitHub Issue Creation (gh CLI)
+## Step 5: GitHub Issue Creation (gh CLI)
 
 All analysis results and approach details are recorded in the GitHub Issue body
 and in `docs/design-notes/<slug>.md`. No local ISSUE.md file is created.
@@ -347,75 +321,6 @@ EOF
 
 ---
 
-## Step 7: Push & Pull Request Creation
-
-After document updates and GitHub issue creation, push the branch and create a PR for user review.
-
-### Execution Procedure
-
-1. **Stage and commit changes**
-
-```bash
-git add {changed-files}
-git commit -m "{prefix}: {issue summary}
-
-- {bullet points of changes}
-"
-```
-
-2. **Push the branch**
-
-```bash
-git push -u origin {branch-name}
-```
-
-3. **Create a Pull Request**
-
-```bash
-gh pr create \
-  --title "{PR title}" \
-  --body "$(cat <<'EOF'
-## Summary
-{summary of changes (bullet points)}
-
-## Related Issue
-- #{issue-number}
-
-## Changed Files
-- {list of changed files}
-
-## Handoff to architect
-{overview of design changes / additions}
-EOF
-)" \
-  --base main
-```
-
-If a GitHub issue was created in Step 6, link it using `#{issue-number}` in the PR body.
-
-4. **Request user review**
-
-Present the PR URL to the user and wait for confirmation:
-
-```json
-{
-  "questions": [{
-    "question": "PR has been created. Please review the content.",
-    "header": "PR review",
-    "options": [
-      {"label": "Approve and continue", "description": "Hand off to architect with this PR content"},
-      {"label": "Request revision", "description": "Revise the PR content"},
-      {"label": "Abort", "description": "Stop issue handling"}
-    ],
-    "multiSelect": false
-  }]
-}
-```
-
-If the user requests modifications, apply fixes, commit, push, and re-request review.
-
----
-
 ## Required Output on Completion
 
 ```
@@ -423,12 +328,10 @@ AGENT_RESULT: analyst
 STATUS: success | error
 ISSUE_TYPE: bug | feature | refactor
 ISSUE_SUMMARY: {one-line summary}
-BRANCH: {branch name}
 DOCS_UPDATED:
   - SPEC.md: updated | no_change
   - UI_SPEC.md: updated | no_change | not_exists
 GITHUB_ISSUE: {issue URL | skipped}
-PR_URL: {PR URL | skipped}
 HANDOFF_TO: architect
 ARCHITECT_BRIEF: |
   {Instructions for design changes to pass to architect. Describe specifically what should be changed or added}
@@ -439,10 +342,7 @@ NEXT: architect
 
 - [ ] The issue has been classified into one of the 3 types
 - [ ] Analysis results and approach have been presented to the user and approval obtained
-- [ ] A working branch has been created from main
 - [ ] Necessary documents have been incrementally updated
 - [ ] A GitHub issue has been created via gh CLI (or skip reason recorded in AGENT_RESULT)
-- [ ] Changes have been committed, pushed, and a PR has been created
-- [ ] The user has reviewed and approved the PR
 - [ ] The required output block has been produced
 - [ ] Handoff information for architect (ARCHITECT_BRIEF) has been clearly stated
