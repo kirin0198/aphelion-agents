@@ -7,27 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
-
-- `docs/issues/` reorganised: 17 closed planning documents moved into
-  `docs/issues/archived/` so the active directory only lists work in flight.
-  Cross-references in active wiki / rule files updated to the new paths.
-  Inter-archive references kept as the original relative paths (read-only
-  policy). `docs/issues/archived/README.md` documents the convention.
-- `docs/wiki/{en,ja}/Contributing.md`: new "Archiving closed planning docs"
-  subsection.
-
 ### Added
 
 - `.github/workflows/archive-closed-plans.yml` — fires on `pull_request:
   opened` / `edited` / `synchronize`. Parses the PR body for `Closes #N` /
   `Fixes #N` / `Resolves #N` keywords, finds the matching planning doc by
   its `GitHub Issue: [#N]` header reference, `git mv`'s it into
-  `docs/issues/archived/`, and pushes the resulting commit back to the PR
-  branch. The archive move ships **in the same PR as the work** (no
+  `docs/design-notes/archived/`, and pushes the resulting commit back to the
+  PR branch. The archive move ships **in the same PR as the work** (no
   follow-up PR), eliminating the PR-proliferation problem of trigger-on-
   merge approaches. Idempotent (already-archived docs cause a no-op) plus
   an actor filter prevents the bot's own pushes from looping.
+- `/aphelion-init` and `/aphelion-help` slash commands (#39 / #49)
+
+### Changed
+
+- `docs/design-notes/` (formerly `docs/issues/`) reorganised: 17 closed
+  planning documents moved into `docs/design-notes/archived/` so the active
+  directory only lists work in flight. Cross-references in active wiki / rule
+  files updated to the new paths. Inter-archive references kept as the
+  original relative paths (read-only policy).
+  `docs/design-notes/archived/README.md` documents the convention.
+- `docs/wiki/{en,ja}/Contributing.md`: new "Archiving closed planning docs"
+  subsection.
+- Renamed `docs/issues/` → `docs/design-notes/` and updated archive workflow
+  accordingly (#51 / #52)
+- Restructured `analyst` to absorb intake responsibilities; `/issue-new`
+  shortcut removed (#62 / #63, #66)
+- Shrank `analyst` scope to design-only — branch/PR/commit creation now
+  handled downstream by developer (#66)
+- Compressed `README.md` and `README.ja.md` (208/202 → 75 lines each),
+  deferring deep content to the wiki (#53 / #69)
+- Converted residual Japanese strings in agent-emitted document templates to
+  English (#57 / #68)
+
+### Removed
+
+- `/issue-new` slash command (replaced by enhanced `/analyst`) (#62 / #63)
+- `/pm` slash command (functionally identical to `/delivery-flow`) (#55 / #67)
+
+### Fixed
+
+- Committed orphan design notes for #53–#58 that were never `git add`-ed by
+  the legacy `/issue-new` (#61 / #64)
 
 ### Notes
 
@@ -44,7 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `/aphelion-init` slash command that launches `rules-designer` for first-run
   project rules setup. Use immediately after `npx aphelion-agents init` to
   populate `.claude/rules/project-rules.md` interactively. (#39)
-- `/aphelion-help` slash command listing all 14 Aphelion slash commands grouped
+- `/aphelion-help` slash command listing all 13 Aphelion slash commands grouped
   by category (Orchestrators / Shortcuts / Standalone agents / Safety helpers /
   Discoverability). Static markdown table — Claude Code built-ins (`/init`,
   `/help`, `/clear`, `/agents`, etc.) are intentionally omitted; run `/help`

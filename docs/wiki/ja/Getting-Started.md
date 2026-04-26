@@ -227,6 +227,11 @@ Deliveryが完了した後（serviceプロジェクトの場合）：
 | `/analyst {issue}` | 既存プロジェクトのバグ・機能を分析 | SPEC.mdがあるプロジェクト |
 | `/maintenance-flow {トリガー}` | 既存プロジェクトの保守トリアージと実行 (Patch/Minor/Major) | SPEC.md + ARCHITECTURE.md があるプロジェクト |
 | `/codebase-analyzer {指示}` | 既存コードから仕様を逆生成 | SPEC.mdがないプロジェクト |
+| `/reviewer` | SPEC.md と ARCHITECTURE.md に基づくコードレビュー | SPEC.mdがあるプロジェクト |
+| `/tester` | TEST_PLAN.md に基づいてテストを実行または生成 | TEST_PLAN.mdがあるプロジェクト |
+| `/rules-designer` | `.claude/rules/project-rules.md` を対話的に生成・更新 | 任意のプロジェクト |
+| `/secrets-scan` | リポジトリ内のハードコードされたシークレットを grep で検出 | 任意のプロジェクト |
+| `/vuln-scan` | 依存関係の脆弱性スキャン（技術スタックを自動検出） | 任意のプロジェクト |
 
 > これらのコマンドは `.claude/commands/*.md` でスラッシュコマンドとして定義されています（Claude Code）。
 > 常に最新の一覧は `/aphelion-help` で確認できます。

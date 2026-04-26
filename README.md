@@ -1,6 +1,6 @@
 # Aphelion — Frontier AI Agents
 
-A collection of AI coding agent definitions for Claude Code that automates the entire project lifecycle with 29 specialized agents.
+A collection of AI coding agent definitions for Claude Code that automates the entire project lifecycle with 31 specialized agents.
 
 [![Wiki](https://img.shields.io/badge/Wiki-aphelion--agents.pages.dev-F38020?logo=cloudflarepages&logoColor=white&style=flat)](https://aphelion-agents.pages.dev/)
 
@@ -66,7 +66,7 @@ All commands: run `/aphelion-help` after init, or see [Getting Started](docs/wik
 - [Getting Started](docs/wiki/en/Getting-Started.md) — first-run walkthrough, scenarios, troubleshooting
 - [Architecture: Domain Model](docs/wiki/en/Architecture-Domain-Model.md) — 3-domain model & handoff files
 - [Triage System](docs/wiki/en/Triage-System.md) — plan tiers & agent selection
-- [Agents Reference](docs/wiki/en/Agents-Orchestrators.md) — all 29 agents
+- [Agents Reference](docs/wiki/en/Agents-Orchestrators.md) — all 31 agents
 
 ---
 

@@ -240,6 +240,11 @@ You can invoke any agent directly without a flow:
 | `/analyst {issue}` | Analyze bugs/features for existing projects | Projects with SPEC.md |
 | `/maintenance-flow {trigger}` | Maintenance triage and execution (Patch/Minor/Major) for existing project | Projects with SPEC.md + ARCHITECTURE.md |
 | `/codebase-analyzer {instruction}` | Reverse-engineer specs from existing code | Projects without SPEC.md |
+| `/reviewer` | Code review against SPEC.md and ARCHITECTURE.md | Projects with SPEC.md |
+| `/tester` | Run or generate tests against TEST_PLAN.md | Projects with TEST_PLAN.md |
+| `/rules-designer` | Generate or update `.claude/rules/project-rules.md` interactively | Any project |
+| `/secrets-scan` | Grep-based scan for hardcoded secrets in the repo | Any project |
+| `/vuln-scan` | Dependency vulnerability scan (tech-stack auto-detected) | Any project |
 
 > These commands are defined as slash commands in `.claude/commands/*.md` (Claude Code).
 > Run `/aphelion-help` for the canonical, always-up-to-date listing.
