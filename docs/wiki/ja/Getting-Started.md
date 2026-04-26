@@ -149,13 +149,7 @@ Deliveryが完了した後（serviceプロジェクトの場合）：
 何を作るかが既に決まっている場合：
 
 ```
-/pm 連絡先管理のREST APIを作りたい
-```
-
-または同等に：
-
-```
-/delivery-flow
+/delivery-flow 連絡先管理のREST APIを作りたい
 ```
 
 `DISCOVERY_RESULT.md` がないため、Flow Orchestrator が直接インタビューします。
@@ -226,7 +220,6 @@ Deliveryが完了した後（serviceプロジェクトの場合）：
 | `/aphelion-help` | Aphelion のスラッシュコマンド一覧を表示 | 任意のプロジェクトで随時 |
 | `/discovery-flow {説明}` | 要件探索を開始 | 新規プロジェクト |
 | `/delivery-flow` | 設計・実装を開始 | Discovery後、または既存SPEC.mdがある場合 |
-| `/pm {説明}` | Deliveryを直接開始（ショートハンド） | 要件が固まっている場合 |
 | `/operations-flow` | デプロイ・運用を開始 | Delivery後、serviceタイプのみ |
 | `/analyst {issue}` | 既存プロジェクトのバグ・機能を分析 | SPEC.mdがあるプロジェクト |
 | `/maintenance-flow {トリガー}` | 既存プロジェクトの保守トリアージと実行 (Patch/Minor/Major) | SPEC.md + ARCHITECTURE.md があるプロジェクト |

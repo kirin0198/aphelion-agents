@@ -46,7 +46,7 @@ Aphelion のリポジトリの README はクイックスタートと概要をカ
 ### 「Aphelionを初めて使いたい」
 
 1. [Getting Started](./Getting-Started.md) を読む — 使用するプラットフォームのクイックスタート
-2. `/discovery-flow` を実行（要件が固まっている場合は `/pm`）
+2. `/discovery-flow` を実行
 3. [Triage System](./Triage-System.md) を読んでどのエージェントが起動するか理解する
 
 ### 「Aphelion の内部動作を理解したい」

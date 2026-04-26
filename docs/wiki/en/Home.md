@@ -45,7 +45,7 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 ### "I want to use Aphelion for the first time"
 
 1. Read [Getting Started](./Getting-Started.md) — Quick Start for your platform
-2. Run `/discovery-flow` (or `/pm` if requirements are already clear)
+2. Run `/discovery-flow`
 3. Read [Triage System](./Triage-System.md) to understand which agents will be launched
 
 ### "I want to understand how Aphelion works internally"

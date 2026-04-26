@@ -97,7 +97,7 @@ The flow orchestrator auto-detects project scale and launches only the agents ne
 **Quick build (Delivery only)** — When requirements are already clear:
 
 ```
-/pm I want to build a TODO app
+/delivery-flow I want to build a TODO app
 ```
 
 **Existing project (with SPEC / ARCHITECTURE)** — Bug fixes, features, or refactoring:
@@ -124,7 +124,7 @@ The flow orchestrator auto-detects project scale and launches only the agents ne
 | `/aphelion-init` | First-run project rules setup (run immediately after `npx aphelion-agents init`) |
 | `/aphelion-help` | List all Aphelion slash commands |
 | `/discovery-flow` | Start requirements exploration flow |
-| `/pm` `/delivery-flow` | Start design & implementation flow |
+| `/delivery-flow` | Start design & implementation flow |
 | `/operations-flow` | Start deploy & operations flow |
 | `/analyst` | Analyze issues for existing projects |
 | `/codebase-analyzer` | Analyze existing projects without specs |

@@ -17,7 +17,6 @@ responsibility and are not listed here — run `/help` for those.
 
 | Command | Purpose |
 |---------|---------|
-| `/pm` | Quick Delivery launch when requirements are already clear (skips Discovery) |
 | `/aphelion-init` | First-run project rules setup (launches `rules-designer`) |
 
 ## Standalone agents

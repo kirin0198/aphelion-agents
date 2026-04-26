@@ -157,13 +157,7 @@ After Delivery completes (for service projects):
 When you already know what to build:
 
 ```
-/pm I want to build a REST API for managing contacts
-```
-
-Or equivalently:
-
-```
-/delivery-flow
+/delivery-flow I want to build a REST API for managing contacts
 ```
 
 The orchestrator will interview you directly since there is no `DISCOVERY_RESULT.md`.
@@ -234,7 +228,6 @@ You can invoke any agent directly without a flow:
 | `/aphelion-help` | List all Aphelion slash commands | Anytime, in any project |
 | `/discovery-flow {description}` | Start requirements exploration | New projects |
 | `/delivery-flow` | Start design & implementation | After Discovery, or with existing SPEC.md |
-| `/pm {description}` | Start Delivery directly (shorthand) | When requirements are clear |
 | `/operations-flow` | Start deployment & operations | After Delivery, service type only |
 | `/analyst {issue}` | Analyze bugs/features for existing projects | Projects with SPEC.md |
 | `/maintenance-flow {trigger}` | Maintenance triage and execution (Patch/Minor/Major) for existing project | Projects with SPEC.md + ARCHITECTURE.md |
