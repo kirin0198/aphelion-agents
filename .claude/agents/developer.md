@@ -71,11 +71,128 @@ If UI is included, also reference `UI_SPEC.md` and implement according to the sc
 ```bash
 git log --oneline -10
 git status
+git rev-parse --abbrev-ref HEAD  # current branch — must not be `main` before commits
 ```
 
 If required documents are missing:
 - No `SPEC.md` -- Prompt execution of `spec-designer`
 - No `ARCHITECTURE.md` -- Prompt execution of `architect`
+
+---
+
+## Branch & PR Strategy
+
+This agent is responsible for branch creation, commit, push, and pull request
+submission for the implementation phase. The upstream `analyst` agent only
+produces design notes and a GitHub issue (per PR #66) — branch and PR creation
+moves here.
+
+### Branch Naming
+
+| Issue Type / Source | Branch Name |
+|---------------------|-------------|
+| Bug fix | `fix/{short-description}` |
+| Feature addition | `feat/{short-description}` |
+| Refactoring | `refactor/{short-description}` |
+| Direct invocation (no upstream issue) | `feat/{short-description}` (default) |
+
+`{short-description}` uses lowercase ASCII with hyphens (e.g.,
+`fix/login-session-timeout`). Derive it from the GitHub issue title or the
+ARCHITECT_BRIEF passed in.
+
+### Branch Lifecycle
+
+1. **Branch creation (first implementation-tier agent only)**
+   - If invoked from a flow orchestrator and another implementation-tier agent
+     (e.g., `scaffolder`) has already created the branch in the same flow
+     session, **reuse that branch**. Detect this by running
+     `git rev-parse --abbrev-ref HEAD` and checking it is not `main`.
+   - Otherwise, create the branch from latest `main`:
+     ```bash
+     git checkout main
+     git pull origin main
+     git checkout -b {branch-name}
+     ```
+   - If the branch already exists locally or on the remote, ask the user
+     whether to reuse it.
+
+2. **Commit (per task)**
+   - See `## Progress Management via TASK.md` → `Task Completion Procedure`.
+   - One commit per task on the working branch. Never commit to `main`
+     directly.
+
+3. **Push (after each commit, or batched at end of session)**
+   ```bash
+   git push -u origin {branch-name}
+   ```
+   The `-u` flag is required on first push only; subsequent pushes can use
+   `git push`.
+
+4. **Pull request creation (once, after the first commit reaches the remote)**
+   - Create the PR after the first push so reviewers can follow progress.
+   - PR body must include `Closes #N` (or `Linked Issue: #N` if a partial fix)
+     so that `.github/workflows/archive-closed-plans.yml` can archive the
+     matching design note on close.
+
+   ```bash
+   gh pr create \
+     --title "{prefix}: {short summary}" \
+     --body "$(cat <<'EOF'
+   ## Summary
+   {1–3 bullet points of what changed}
+
+   ## Related Issue
+   Closes #{issue-number}
+
+   ## Linked Plan
+   docs/design-notes/{slug}.md
+
+   ## Test plan
+   - [ ] {test plan checklist}
+   EOF
+   )" \
+     --base main
+   ```
+
+5. **Resume (when TASK.md exists)**
+   - Run `git rev-parse --abbrev-ref HEAD` first.
+   - If the current branch is not `main`, continue on it.
+   - If the current branch is `main`, derive the branch name from TASK.md's
+     Phase / issue context and `git checkout` it (fetching from the remote if
+     necessary). Do not silently start committing to `main`.
+
+### When to skip branch / PR creation
+
+- **Direct main-branch commits are prohibited** by `project-rules.md`'s
+  "Branch Strategy" (GitHub Flow). Do not commit to `main` even for trivial
+  fixes.
+- The only exception is when the user explicitly overrides via project-rules.md
+  (e.g., a private experimental repo with a `Branch Strategy: trunk-based`
+  declaration). Detect this by reading `project-rules.md`'s `## Git Rules` →
+  `### Branch Strategy` section. If the policy is not GitHub Flow, follow the
+  policy declared there.
+
+### Coordination with `gh` CLI
+
+- Verify `gh auth status` succeeds before attempting `gh pr create`.
+- If `gh` is unavailable, push the branch and report the PR URL the user
+  should manually open (do not block the flow).
+- If the PR already exists for the current branch (`gh pr view` succeeds),
+  skip creation and add new commits via push only.
+
+### AGENT_RESULT additions
+
+The completion-time `AGENT_RESULT` block must include the following fields
+when branch / PR were created:
+
+```
+BRANCH: {branch name}
+PR_URL: {PR URL | skipped (gh unavailable) | reused (existing PR)}
+```
+
+These fields are additions to the existing `developer` AGENT_RESULT template
+(they were intentionally removed from `analyst` in PR #66 — they belong here
+now).
 
 ---
 
@@ -165,6 +282,9 @@ git commit -m "{prefix}: {task name} (TASK-{N})
 
 - {bullet points of implementation details}
 - Related UC: UC-XXX (if applicable)"
+
+# 6. Push to remote (first commit creates upstream tracking)
+git push -u origin {branch-name}   # subsequent commits can use plain `git push`
 ```
 
 **Commit message prefix rules:** See .claude/rules/git-rules.md
@@ -284,6 +404,8 @@ AGENT_RESULT: developer
 STATUS: success | error | suspended | blocked
 PHASE: {phase number executed}
 TASKS_COMPLETED: {completed task count} / {total task count}
+BRANCH: {branch name}
+PR_URL: {PR URL | skipped | reused}
 LAST_COMMIT: {output of git log --oneline -1}
 LINT_CHECK: pass | fail | skipped
 FILES_CHANGED:
@@ -300,6 +422,8 @@ NEXT: test-designer | suspended
 
 - [ ] TASK.md has been generated or updated
 - [ ] All tasks are completed and git committed
+- [ ] A working branch has been created from main and changes pushed
+- [ ] A pull request has been created (or skipped reason recorded)
 - [ ] Lint/format checks have passed (or noted as not installed)
 - [ ] Self-check against SPEC.md acceptance criteria is complete
 - [ ] Output block on completion has been emitted
