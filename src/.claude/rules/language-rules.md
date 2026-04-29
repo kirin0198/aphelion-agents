@@ -1,7 +1,8 @@
 # Language Rules
 
-> Last updated: 2026-04-29
+> Last updated: 2026-04-30
 > Update history:
+>   - 2026-04-30: Add "Repo-root README sync convention" sub-section (#82)
 >   - 2026-04-29: Add "Hand-authored canonical narrative" section governing
 >     `docs/wiki/`, `docs/design-notes/`, and `README.md` / `README.ja.md` (#75)
 
@@ -64,8 +65,57 @@ Per-directory canonical-language declaration:
   notes that predate this declaration may use a different language; do not
   retro-translate them.
 - **`README.md` / `README.ja.md`** — bilingual at the repository root with
-  English canonical, governed by the repo-root README sync convention (not
-  by Contributing.md's wiki bilingual policy).
+  English canonical, governed by the "Repo-root README sync convention"
+  sub-section below.
+
+### Repo-root README sync convention
+
+This sub-section is the authoritative "repo-root README sync convention"
+referenced by `docs/wiki/{en,ja}/Contributing.md`. It closes the dangling
+pointer introduced in #75.
+
+**§3.1 Canonical direction**
+
+English is canonical (declared in #75). `README.md` is the source of truth;
+`README.ja.md` must track it.
+
+**§3.2 Same-PR sync rule**
+
+**Mandatory:**
+- Every PR that modifies `README.md` must also update `README.ja.md` in the
+  same PR (and vice versa).
+- English-only merges are prohibited (except for the minor-fix exception
+  below).
+
+**Minor fix exception:**
+- Typo fixes and broken-link corrections in `README.md`-only may be merged
+  without same-PR Japanese sync.
+- A follow-up issue must be opened and assigned for the Japanese update
+  within 7 days.
+
+This mirrors the wiki Bilingual Sync Policy in `wiki/en/Contributing.md`
+and applies the same rule set to the README pair.
+
+**§3.3 Heading parity**
+
+`README.md` and `README.ja.md` must have identical `^## ` heading counts
+and identical line positions for each heading. Heading **text** may be
+translated (e.g., `## Quick Start` ↔ `## クイックスタート`); **structure**
+must be lockstep.
+
+Enforced mechanically by `scripts/check-readme-wiki-sync.sh` Check 3, run
+as part of the PR Checklist (`wiki/en/Contributing.md` §"PR Checklist").
+
+**§3.4 EN canonical date marker**
+
+`README.ja.md` does **not** carry a `> EN canonical: {date}` header line.
+Unlike `wiki/ja/{slug}.md` (which uses this marker to track per-page sync
+progress across 13 pages), the README pair is a single 2-file unit governed
+by the Same-PR mandatory sync rule above. The latest sync date is
+recoverable from `git log`; a per-file marker is unnecessary and would add
+visual noise to a landing page. This is a deliberate divergence from the
+wiki convention; Check 3 already provides mechanical enforcement of
+structural parity, making the marker redundant.
 
 Out of scope for this section:
 

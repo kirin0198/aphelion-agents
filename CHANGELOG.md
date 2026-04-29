@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `language-rules.md` — "Repo-root README sync convention" sub-section closing
+  the #75 dangling pointer (#82). Covers: §3.1 English canonical direction;
+  §3.2 Same-PR mandatory sync with 7-day follow-up exception for minor fixes;
+  §3.3 `^## ` heading parity enforced by `scripts/check-readme-wiki-sync.sh`
+  Check 3; §3.4 `> EN canonical:` date marker deliberately not adopted for
+  `README.ja.md`. Also updates `docs/wiki/{en,ja}/Rules-Reference.md` with
+  a cross-reference bullet.
+
 ### Changed
 
 - `.gitignore` — added `/.claude/worktrees/` entry to prevent untracked-directory

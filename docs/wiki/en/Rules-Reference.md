@@ -1,8 +1,9 @@
 # Rules Reference
 
 > **Language**: [English](../en/Rules-Reference.md) | [日本語](../ja/Rules-Reference.md)
-> **Last updated**: 2026-04-29
+> **Last updated**: 2026-04-30
 > **Update history**:
+>   - 2026-04-30: language-rules — add "Repo-root README sync convention" sub-section (#82)
 >   - 2026-04-29: language-rules — add "Hand-authored canonical narrative" section (#75)
 >   - 2026-04-26: Sync with #62, #66, #72, #74 (issue #77)
 >   - 2026-04-25: added denial-categories rule, #31
@@ -101,6 +102,7 @@ For full details, follow the **Canonical** link to the source file.
 - **Interactions**: Sets language for every output type. Works with `agent-communication-protocol` (AGENT_RESULT keys/values must be English). Applies to all user-facing content in `user-questions`.
 - **Summary**: Defines the language to use for each output type: code/variable names/commit messages in English; agent definition files/rules/guidelines in English; code comments/user-facing docs/reports to user in Japanese; AGENT_RESULT block keys/values in English; user-facing CLI output (AskUserQuestion content, approval gates, progress displays) in Japanese.
 - **Hand-authored canonical narrative (§5)**: Per-directory canonical-language declaration for Aphelion's *own* hand-authored docs (separate from agent-emitted templates). `docs/wiki/{en,ja}/*.md` is bilingual with English canonical and English-fixed skeleton headings (`## Related Pages`, `> Last updated:`, …) in both language files. `docs/design-notes/<slug>.md` and `docs/design-notes/archived/<slug>.md` are single-file; canonical language follows `project-rules.md` → `Output Language` (no bilingual sync). `README.md` / `README.ja.md` is bilingual with English canonical, governed by repo-root README sync (not Contributing.md). Out of scope: `CHANGELOG.md` (English by release-notes convention) and `Home.md` persona/glossary blocks containing English proper nouns.
+- **Repo-root README sync convention**: The authoritative written rule set for `README.md` ↔ `README.ja.md` synchronisation lives in the "Repo-root README sync convention" sub-section of `language-rules.md` (directly under "Hand-authored canonical narrative"). It covers: §3.1 English canonical (confirmed by #75); §3.2 Same-PR mandatory sync with a 7-day follow-up exception for typo/broken-link fixes; §3.3 `^## ` heading count + line-position parity enforced by `scripts/check-readme-wiki-sync.sh` Check 3; §3.4 `> EN canonical:` date marker deliberately not adopted for `README.ja.md` (redundant given Same-PR rule + Check 3). See `language-rules.md` §"Repo-root README sync convention" for the full text. (#82)
 
 ---
 
