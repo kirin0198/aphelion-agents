@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `.gitignore` — added `/.claude/worktrees/` entry to prevent untracked-directory
+  noise when the claude CLI creates this directory during local worktree sessions.
+  Anchored to root so only the repo-level copy is matched. (#80)
+- `docs/wiki/{en,ja}/Getting-Started.md` — added a "Note on `TASK.md`" paragraph
+  in the "What to Expect: A Typical Session" section (before "Session Resume")
+  clarifying that an empty `TASK.md` at the repository root is the correct idle
+  state between `developer` phases, not a sign of incomplete work. (#80)
+
+### Removed
+
+- `ISSUE.md` — deleted obsolete analyst v1-era issue draft (wiki-addition brief
+  from 2026-04-18). The file had been superseded since `9c2b200` (`refactor:
+  replace ISSUE.md file management with GitHub Issues`); `analyst.md:265` already
+  states "No local ISSUE.md file is created." Recovery is available from git
+  history. (#80)
+
 ### Added
 
 - `scripts/check-readme-wiki-sync.sh` — new executable script that checks
