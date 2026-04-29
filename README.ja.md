@@ -2,7 +2,7 @@
 
 Claude Code 向け AI コーディングエージェント定義集です。31 の専門エージェントがプロジェクトの全工程を自動化します。
 
-[![Wiki](https://img.shields.io/badge/Wiki-aphelion--agents.pages.dev-F38020?logo=cloudflarepages&logoColor=white&style=flat)](https://aphelion-agents.pages.dev/)
+[![Wiki](https://img.shields.io/badge/Wiki-aphelion--agents.com-F38020?logo=cloudflarepages&logoColor=white&style=flat)](https://aphelion-agents.com/)
 
 **[English README](README.md)**
 

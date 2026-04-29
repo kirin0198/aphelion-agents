@@ -2,7 +2,7 @@
 
 A collection of AI coding agent definitions for Claude Code that automates the entire project lifecycle with 31 specialized agents.
 
-[![Wiki](https://img.shields.io/badge/Wiki-aphelion--agents.pages.dev-F38020?logo=cloudflarepages&logoColor=white&style=flat)](https://aphelion-agents.pages.dev/)
+[![Wiki](https://img.shields.io/badge/Wiki-aphelion--agents.com-F38020?logo=cloudflarepages&logoColor=white&style=flat)](https://aphelion-agents.com/)
 
 **[日本語版 README はこちら](README.ja.md)**
 

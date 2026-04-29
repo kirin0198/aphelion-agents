@@ -8,7 +8,7 @@
     "type": "git",
     "url": "git+https://github.com/kirin0198/aphelion-agents.git"
   },
-  "homepage": "https://aphelion-agents.pages.dev/",
+  "homepage": "https://aphelion-agents.com/",
   "private": true,
   "type": "module",
   "bin": {
