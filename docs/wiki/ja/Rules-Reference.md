@@ -1,8 +1,11 @@
 # Rules Reference
 
 > **Language**: [English](../en/Rules-Reference.md) | [日本語](../ja/Rules-Reference.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: denial-categories ルール追加, #31)
-> **EN canonical**: 2026-04-25 of wiki/en/Rules-Reference.md
+> **Last updated**: 2026-04-26
+> **Update history**:
+>   - 2026-04-26: Sync with #62, #66, #72, #74 (issue #77)
+>   - 2026-04-25: denial-categories ルール追加, #31
+> **EN canonical**: 2026-04-26 of wiki/en/Rules-Reference.md
 > **Audience**: エージェント開発者
 
 このページは`.claude/rules/`にある 11 の行動ルールのコンパクトなリファレンスです。各エントリはスコープ、自動ロードの動作、他ルール・エージェントとのインタラクション、ルールが強制する主要な制約をまとめています。
@@ -80,10 +83,13 @@
 ## git-rules
 
 - **正規**: [.claude/rules/git-rules.md](../../.claude/rules/git-rules.md)
-- **スコープ**: `developer`、`releaser`、`scaffolder`、gitコミットを行う全エージェント
+- **スコープ**: 全 Bash 保有エージェント（セッション起動時に Startup Probe を実行）；gitコミット・ブランチ・PRを作成する `developer`、`releaser`、`scaffolder` およびその他のエージェント（コミット / ブランチ / PR ルール）
 - **自動ロードの動作**: Claude Codeが全セッション起動時に自動ロード
-- **インタラクション**: `developer`はタスクごとに1コミットの粒度に従わなければなりません。`releaser`はgitタグを作成します。`git add -A`は明示的に禁止されています — `developer`は`git add {具体的なファイル名}`を使用しなければなりません。
-- **概要**: コミットの粒度（タスクごとに1コミット、テストコードは実装コードと同様）、ステージングポリシー（`git add -A`は禁止；明示的なファイルパスを使用；`.env`、`credentials.*`、`*.secret`はコミットしない）、コミットメッセージフォーマット（8つのプレフィックスタイプ（feat、fix、refactor、test、docs、chore、ci、ops）を使った`{prefix}: {タスク名} (TASK-{N})`）を定義します。
+- **インタラクション**:
+  - Bash 保有エージェントはセッションごとに `## Startup Probe` を一度実行し、`REPO_STATE`（`github` | `github_unauth` | `gitlab_scaffold` | `gitea_scaffold` | `local-only` | `none`）を解決します。その後の git/PR 操作は `## Behavior by Remote Type` でこの値に基づいて分岐します。
+  - `developer` は `## Branch & PR Strategy` に従ってブランチ作成・プッシュ・PR 作成を担い、`AGENT_RESULT` に `BRANCH` / `PR_URL` を出力します。
+  - `analyst` はブランチや PR を作成しません；設計ノートと GitHub イシューの作成のみを担います。
+- **概要**: (1) コミットの粒度、ステージングポリシー（`git add -A` は禁止；明示的なファイルパスを使用；`.env`、`credentials.*`、`*.secret` はコミットしない）、コミットメッセージフォーマット（8 つのプレフィックスタイプ: feat、fix、refactor、test、docs、chore、ci、ops）；(2) Co-Authored-By トレーラーポリシー；(3) `## Repository` — `project-rules.md` 内の `Remote type` 宣言（`github` / `gitlab` / `gitea` / `local-only` / `none`）；(4) `## Startup Probe` — `REPO_STATE` を解決するセッションごとのプローブ；(5) `## Branch & PR Strategy` — ブランチ命名（`fix/` / `feat/` / `refactor/`）、ブランチライフサイクル（作成 → コミット → プッシュ → `Closes #N` 付き PR）、`AGENT_RESULT` への追加項目（`BRANCH`、`PR_URL`）；(6) `## Behavior by Remote Type` — ブランチ / コミット / プッシュ / PR 操作のための `REPO_STATE` 別マトリックスを定義します。
 
 ---
 

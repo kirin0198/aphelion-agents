@@ -1,7 +1,10 @@
 # Agents Reference: Delivery Domain
 
 > **Language**: [English](../en/Agents-Delivery.md) | [日本語](../ja/Agents-Delivery.md)
-> **Last updated**: 2026-04-25 (split from Agents-Reference.md; #42)
+> **Last updated**: 2026-04-26
+> **Update history**:
+>   - 2026-04-26: Sync with #72, #74 (issue #77)
+>   - 2026-04-25: split from Agents-Reference.md; #42
 > **Audience**: Agent developers
 
 This page is one of five pages split from the original Agents-Reference.md (#42). It covers the Delivery domain agents. See the sibling pages for other domains: [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md).
@@ -66,10 +69,10 @@ The Delivery domain (12 agents) handles design, implementation, testing, and rel
 
 - **Canonical**: [.claude/agents/developer.md](../../.claude/agents/developer.md)
 - **Domain**: Delivery
-- **Responsibility**: Implements code following ARCHITECTURE.md implementation order. Manages progress via TASK.md (supports resume). Commits per task, runs lint/format checks after each task.
-- **Inputs**: SPEC.md, ARCHITECTURE.md, UI_SPEC.md (if HAS_UI), TASK.md (if resuming)
-- **Outputs**: Implementation code, TASK.md
-- **AGENT_RESULT fields**: `PHASE`, `TASKS_COMPLETED`, `LAST_COMMIT`, `LINT_CHECK`, `FILES_CHANGED`, `ACCEPTANCE_CHECK`
+- **Responsibility**: Implements code following ARCHITECTURE.md implementation order. Owns branch creation, push, and PR submission per `git-rules.md` `## Branch & PR Strategy`. Manages progress via TASK.md (supports resume). Commits per task, runs lint/format checks after each task.
+- **Inputs**: SPEC.md, ARCHITECTURE.md, UI_SPEC.md (if HAS_UI), TASK.md (if resuming), `docs/design-notes/<slug>.md` (if invoked from analyst handoff)
+- **Outputs**: Implementation code, TASK.md, working branch, PR
+- **AGENT_RESULT fields**: `PHASE`, `TASKS_COMPLETED`, `LAST_COMMIT`, `LINT_CHECK`, `FILES_CHANGED`, `ACCEPTANCE_CHECK`, `BRANCH`, `PR_URL`
 - **NEXT conditions**:
   - Normal completion → `test-designer`
   - Session interrupted → `suspended`

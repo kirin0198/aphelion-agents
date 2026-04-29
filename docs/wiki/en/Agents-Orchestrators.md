@@ -1,7 +1,10 @@
 # Agents Reference: Orchestrators & Cross-Cutting
 
 > **Language**: [English](../en/Agents-Orchestrators.md) | [日本語](../ja/Agents-Orchestrators.md)
-> **Last updated**: 2026-04-25 (split from Agents-Reference.md; #42)
+> **Last updated**: 2026-04-26
+> **Update history**:
+>   - 2026-04-26: Sync with #62, #66, #72, #74 (issue #77)
+>   - 2026-04-25: split from Agents-Reference.md; #42
 > **Audience**: Agent developers
 
 This page is one of five pages split from the original Agents-Reference.md (#42). It covers Flow Orchestrators, Safety Agents, and Standalone Agents (cross-cutting agents). See the sibling pages for domain-specific agents: [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md).
@@ -96,11 +99,11 @@ These two agents operate outside the triage system, invoked directly by the user
 
 - **Canonical**: [.claude/agents/analyst.md](../../.claude/agents/analyst.md)
 - **Domain**: Standalone
-- **Responsibility**: Receives bug reports, feature requests, or refactoring issues for existing projects. Classifies the issue, determines approach, updates SPEC.md / UI_SPEC.md incrementally, creates a GitHub issue, and hands off to architect.
+- **Responsibility**: Receives bug reports, feature requests, or refactoring issues for existing projects. Classifies the issue, determines approach, updates SPEC.md / UI_SPEC.md incrementally (when needed), authors the matching `docs/design-notes/<slug>.md` planning document, creates a GitHub issue, and hands off to `developer` (or `architect` when design changes are required). Branch creation, push, and PR submission are owned by the next implementation-tier agent (`developer`), not by `analyst`.
 - **Inputs**: User's issue description, existing SPEC.md, ARCHITECTURE.md, UI_SPEC.md
-- **Outputs**: Updated SPEC.md / UI_SPEC.md (incremental), GitHub issue (via gh CLI), PR
-- **AGENT_RESULT fields**: `ISSUE_TYPE`, `ISSUE_SUMMARY`, `BRANCH`, `DOCS_UPDATED`, `GITHUB_ISSUE`, `PR_URL`, `ARCHITECT_BRIEF`
-- **NEXT conditions**: `architect` (delivery-flow joins from Phase 3)
+- **Outputs**: `docs/design-notes/<slug>.md`, updated SPEC.md / UI_SPEC.md (incremental), GitHub issue (via gh CLI)
+- **AGENT_RESULT fields**: `ISSUE_TYPE`, `ISSUE_SUMMARY`, `DOCS_UPDATED`, `GITHUB_ISSUE`, `HANDOFF_TO`, `ARCHITECT_BRIEF`
+- **NEXT conditions**: `developer` (default) | `architect` (when design changes are required)
 
 ### codebase-analyzer
 

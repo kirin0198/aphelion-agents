@@ -1,7 +1,10 @@
 # Rules Reference
 
 > **Language**: [English](../en/Rules-Reference.md) | [日本語](../ja/Rules-Reference.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: added denial-categories rule, #31)
+> **Last updated**: 2026-04-26
+> **Update history**:
+>   - 2026-04-26: Sync with #62, #66, #72, #74 (issue #77)
+>   - 2026-04-25: added denial-categories rule, #31
 > **Audience**: Agent developers
 
 This page is a compact reference for all 11 behavioral rules in `.claude/rules/`. Each entry summarizes scope, auto-load behavior, interactions with other rules and agents, and the key constraint the rule enforces.
@@ -79,10 +82,13 @@ For full details, follow the **Canonical** link to the source file.
 ## git-rules
 
 - **Canonical**: [.claude/rules/git-rules.md](../../.claude/rules/git-rules.md)
-- **Scope**: `developer`, `releaser`, `scaffolder`, and any agent that makes git commits
+- **Scope**: All Bash-owning agents (run the Startup Probe at session start); `developer`, `releaser`, `scaffolder` and any agent making git commits or PRs (commit / branch / PR rules).
 - **Auto-load behavior**: Auto-loaded by Claude Code on every session start
-- **Interactions**: `developer` must follow one-commit-per-task granularity. `releaser` creates git tags. `git add -A` is explicitly prohibited — `developer` must use `git add {specific-files}`.
-- **Summary**: Defines commit granularity (one commit per task, test code same as implementation), staging policy (`git add -A` is prohibited; use explicit file paths; never commit `.env`, `credentials.*`, `*.secret`), and commit message format (`{prefix}: {task-name} (TASK-{N})` with 8 prefix types: feat, fix, refactor, test, docs, chore, ci, ops).
+- **Interactions**:
+  - Bash-owning agents run `## Startup Probe` once per session to resolve `REPO_STATE` (`github` | `github_unauth` | `gitlab_scaffold` | `gitea_scaffold` | `local-only` | `none`); subsequent git/PR ops branch on that value via `## Behavior by Remote Type`.
+  - `developer` owns branch creation, push, and PR submission per `## Branch & PR Strategy` and emits `BRANCH` / `PR_URL` in `AGENT_RESULT`.
+  - `analyst` does **not** create branches or PRs; it only authors design notes and GitHub issues.
+- **Summary**: Defines (1) commit granularity, staging policy (`git add -A` is prohibited; use explicit file paths; never commit `.env`, `credentials.*`, `*.secret`), and commit message format (8 prefix types: feat, fix, refactor, test, docs, chore, ci, ops); (2) Co-Authored-By trailer policy; (3) `## Repository` — `Remote type` declaration in `project-rules.md` (`github` / `gitlab` / `gitea` / `local-only` / `none`); (4) `## Startup Probe` — once-per-session probe resolving `REPO_STATE`; (5) `## Branch & PR Strategy` — branch naming (`fix/` / `feat/` / `refactor/`), branch lifecycle (create → commit → push → PR with `Closes #N`), and `AGENT_RESULT` additions (`BRANCH`, `PR_URL`); (6) `## Behavior by Remote Type` — per-`REPO_STATE` matrix for branch / commit / push / PR ops.
 
 ---
 
