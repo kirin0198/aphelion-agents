@@ -7,3 +7,6 @@
 
 # Node
 node_modules/
+
+# Local dev artifacts (claude CLI generates this during worktree-based sessions)
+/.claude/worktrees/
