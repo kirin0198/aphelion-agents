@@ -1,11 +1,12 @@
 # Rules Reference
 
 > **Language**: [English](../en/Rules-Reference.md) | [日本語](../ja/Rules-Reference.md)
-> **Last updated**: 2026-04-26
+> **Last updated**: 2026-04-29
 > **Update history**:
+>   - 2026-04-29: language-rules — "Hand-authored canonical narrative" セクションを追加 (#75)
 >   - 2026-04-26: Sync with #62, #66, #72, #74 (issue #77)
 >   - 2026-04-25: denial-categories ルール追加, #31
-> **EN canonical**: 2026-04-26 of wiki/en/Rules-Reference.md
+> **EN canonical**: 2026-04-29 of wiki/en/Rules-Reference.md
 > **Audience**: エージェント開発者
 
 このページは`.claude/rules/`にある 11 の行動ルールのコンパクトなリファレンスです。各エントリはスコープ、自動ロードの動作、他ルール・エージェントとのインタラクション、ルールが強制する主要な制約をまとめています。
@@ -100,6 +101,7 @@
 - **自動ロードの動作**: Claude Codeが全セッション起動時に自動ロード
 - **インタラクション**: すべての出力タイプの言語を設定します。`agent-communication-protocol`と連携します（AGENT_RESTULTのキー/値は英語でなければならない）。`user-questions`の全ユーザー向けコンテンツに適用されます。
 - **概要**: 各出力タイプに使用する言語を定義します：コード/変数名/コミットメッセージは英語；エージェント定義ファイル/ルール/ガイドラインは英語；コードコメント/ユーザー向けドキュメント/ユーザーへのレポートは日本語；AGENT_RESTULTブロックのキー/値は英語；ユーザー向けCLI出力（AskUserQuestionの内容、承認ゲート、進捗表示）は日本語。
+- **Hand-authored canonical narrative (§5)**: Aphelion 自身の hand-authored ドキュメントを対象とした、ディレクトリ別の正規言語宣言（agent-emitted テンプレートとは別系統）。`docs/wiki/{en,ja}/*.md` は英語正規のバイリンガルで、スケルトン見出し（`## Related Pages`、`> Last updated:` など）は両言語ファイルとも英語固定。`docs/design-notes/<slug>.md` と `docs/design-notes/archived/<slug>.md` は単一ファイルで、正規言語は `project-rules.md` → `Output Language` に従う（バイリンガル同期なし）。`README.md` / `README.ja.md` は英語正規のバイリンガルで、リポジトリルートの README 同期規約に従う（Contributing.md 管轄ではない）。スコープ外: `CHANGELOG.md`（リリースノート慣習で英語）、`Home.md` のペルソナ/用語集ブロック（英語の固有名詞を含むナラティブとして扱う）。
 
 ---
 

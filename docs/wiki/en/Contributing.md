@@ -1,7 +1,7 @@
 # Contributing
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: rename docs/issues/ → docs/design-notes/ (#51))
+> **Last updated**: 2026-04-29 (updated 2026-04-29: clarify wiki/design-notes/README language policy (#75))
 > **Audience**: Agent developers
 
 This page covers how to contribute to Aphelion: adding or modifying agents, updating rules, and maintaining the wiki. Read this before opening a pull request.
@@ -134,6 +134,12 @@ Translate within 30 days and link the stub issue to the follow-up PR.
 
 The wiki is bilingual with English as canonical. The following rules are enforced in PR review:
 
+> **Source of truth.** The broader language policy covering hand-authored
+> canonical narrative (wiki, design notes, README) is declared in
+> [`language-rules.md` → "Hand-authored canonical narrative"](../../src/.claude/rules/language-rules.md).
+> This section enforces only the wiki-bilingual subset. For `docs/design-notes/`
+> single-file conventions or README sync, consult `language-rules.md` directly.
+
 **Mandatory:**
 - Every PR that modifies `wiki/en/{page}.md` **must** also update `wiki/ja/{page}.md` in the same PR.
 - English-only merges are prohibited (except for minor fixes — see below).
@@ -259,4 +265,4 @@ keyword).
 
 - [.claude/agents/](../../.claude/agents/) — Agent definition files (canonical)
 - [.claude/rules/](../../.claude/rules/) — Rule files (canonical)
-- [wiki/DESIGN.md](../DESIGN.md) — Wiki information architecture design
+- [docs/design-notes/archived/wiki-information-architecture.md](../../design-notes/archived/wiki-information-architecture.md) — Wiki information architecture design (archived; relocated from `wiki/DESIGN.md` per #75)

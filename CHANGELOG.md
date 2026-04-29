@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `language-rules.md` — new "Hand-authored canonical narrative" section
+  declaring per-directory canonical-language rules for `docs/wiki/{en,ja}/`
+  (bilingual, English canonical, English-fixed skeleton),
+  `docs/design-notes/<slug>.md` and `docs/design-notes/archived/<slug>.md`
+  (single-file, follows `project-rules.md` → `Output Language`), and
+  `README.md` / `README.ja.md` (bilingual, English canonical). Closes the
+  PR #68 deferral recorded in `archived/english-rollout-residuals.md` §4-3
+  / §7. (#75)
 - `.github/workflows/archive-closed-plans.yml` — fires on `pull_request:
   opened` / `edited` / `synchronize`. Parses the PR body for `Closes #N` /
   `Fixes #N` / `Resolves #N` keywords, finds the matching planning doc by
@@ -22,6 +30,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `docs/wiki/DESIGN.md` relocated to
+  `docs/design-notes/archived/wiki-information-architecture.md`. The file
+  was a one-shot architect deliverable from 2026-04-18 (wiki IA finalisation,
+  revised 2026-04-24 for the 8→7 page change), structurally indistinguishable
+  from `docs/design-notes/<slug>.md` planning docs except for its directory.
+  Keeping it under `docs/wiki/` conflicted with `Contributing.md`'s "wiki is
+  bilingual" rule. Cross-references in archived design notes (31 occurrences)
+  are intentionally left as the original `docs/wiki/DESIGN.md` paths per the
+  read-only archive policy. (#75)
+- `docs/wiki/{en,ja}/Contributing.md` Bilingual Sync Policy: now points at
+  `language-rules.md` as the broader source of truth for hand-authored
+  canonical narrative; this section enforces only the wiki-bilingual subset.
+  Canonical Sources block updated to reference the relocated wiki IA memo.
+  (#75)
+- `docs/wiki/{en,ja}/Rules-Reference.md` — language-rules entry expanded
+  with a Hand-authored canonical narrative summary. (#75)
 - `docs/design-notes/` (formerly `docs/issues/`) reorganised: 17 closed
   planning documents moved into `docs/design-notes/archived/` so the active
   directory only lists work in flight. Cross-references in active wiki / rule
@@ -53,11 +77,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Notes
 
-- No `package.json` version bump in this release: this PR does not modify
-  any file under `.claude/agents/`, `.claude/rules/`, `.claude/commands/`,
-  or `.claude/orchestrator-rules.md` (the four canonical sources gated by
-  the bumping policy). The repo-internal documentation move and the new CI
-  workflow are out of scope for that policy.
+- `package.json` version bumped 0.3.2 → 0.3.3 because `src/.claude/rules/
+  language-rules.md` was modified, which is one of the four canonical sources
+  gated by the bumping policy. The earlier "no version bump" note in this
+  Unreleased section pre-dated the language-rules.md edit and no longer
+  applies to the release as a whole.
 
 ## 0.3.2 - 2026-04-25
 

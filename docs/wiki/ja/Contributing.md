@@ -1,8 +1,8 @@
 # Contributing
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: docs/issues/ → docs/design-notes/ リネーム (#51))
-> **EN canonical**: 2026-04-25 (updated 2026-04-25) of wiki/en/Contributing.md
+> **Last updated**: 2026-04-29 (updated 2026-04-29: wiki/design-notes/README の言語ポリシーを明確化 (#75))
+> **EN canonical**: 2026-04-29 of wiki/en/Contributing.md
 > **Audience**: エージェント開発者
 
 このページはAphelionへの貢献方法をカバーします：エージェントの追加・変更、ルールの更新、Wikiのメンテナンス。プルリクエストを開く前にこのページを読んでください。
@@ -135,6 +135,11 @@ Claude Code は `rules/*.md` を `~/.claude/rules/`（user-global）と `<projec
 
 Wikiは英語を正規とするバイリンガルです。以下のルールはPRレビューで強制されます：
 
+> **正規ソース**: hand-authored な正規ナラティブ（Wiki、design notes、README）全体を覆う言語ポリシーは
+> [`language-rules.md` → "Hand-authored canonical narrative"](../../src/.claude/rules/language-rules.md) に
+> 宣言されています。本セクションは Wiki バイリンガル部分のみを強制します。
+> `docs/design-notes/` の単一ファイル規約や README 同期については `language-rules.md` を直接参照してください。
+
 **必須：**
 - `wiki/en/{page}.md`を変更するPRはすべて、同一PRで`wiki/ja/{page}.md`も更新**しなければなりません**。
 - 英語のみのマージは禁止されています（軽微な修正を除く — 以下参照）。
@@ -214,4 +219,4 @@ PRを開く前に確認してください：
 
 - [.claude/agents/](../../.claude/agents/) — エージェント定義ファイル（正規）
 - [.claude/rules/](../../.claude/rules/) — ルールファイル（正規）
-- [wiki/DESIGN.md](../DESIGN.md) — Wiki情報アーキテクチャ設計
+- [docs/design-notes/archived/wiki-information-architecture.md](../../design-notes/archived/wiki-information-architecture.md) — Wiki 情報アーキテクチャ設計（archived; #75 で `wiki/DESIGN.md` から移設）
