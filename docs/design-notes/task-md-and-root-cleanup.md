@@ -201,7 +201,7 @@
 3. **`.claude/worktrees/` を `.gitignore` する is overkill?**: 純粋にローカル副産物なので各人で `rm` すれば済む話とも言える。ただし新規 contributor が `claude` CLI を立ち上げた際に同じディレクトリが自動生成される可能性は低くない。1 行のコストで防げるので追加推奨だが、棄却も妥当。
    > 2026-04-30 決定: `.gitignore` に `/.claude/worktrees/` を追記する。
 
-> Implemented in: TBD (PR #80)
+> Implemented in: [PR #86](https://github.com/kirin0198/aphelion-agents/pull/86)
 
 ---
 
