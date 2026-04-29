@@ -8,7 +8,7 @@
 > Author: analyst (design-only phase — implementation deferred to `developer`)
 > Scope: design / planning document; the change will be executed in a follow-up `developer` phase
 > Next: developer (実装フェーズで本ノートに従って `.github/workflows/check-readme-wiki-sync.yml` を新設する)
-> Implemented in: TBD
+> Implemented in: [PR #88](https://github.com/kirin0198/aphelion-agents/pull/88)
 
 > **Language policy note** — 本ノートは #75 の「Hand-authored canonical narrative」
 > 規定（`docs/design-notes/<slug>.md` は単一言語、Output Language に追従、現状 `ja`）
