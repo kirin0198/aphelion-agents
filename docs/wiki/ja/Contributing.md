@@ -1,8 +1,8 @@
 # Contributing
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-04-29 (updated 2026-04-29: wiki/design-notes/README の言語ポリシーを明確化 (#75))
-> **EN canonical**: 2026-04-29 of wiki/en/Contributing.md
+> **Last updated**: 2026-04-30 (updated 2026-04-30: README ↔ Wiki 責任分担を明文化, #76; updated 2026-04-29: wiki/design-notes/README の言語ポリシーを明確化 (#75))
+> **EN canonical**: 2026-04-30 of wiki/en/Contributing.md
 > **Audience**: エージェント開発者
 
 このページはAphelionへの貢献方法をカバーします：エージェントの追加・変更、ルールの更新、Wikiのメンテナンス。プルリクエストを開く前にこのページを読んでください。
@@ -123,11 +123,52 @@ Claude Code は `rules/*.md` を `~/.claude/rules/`（user-global）と `<projec
 
 30日以内に翻訳し、スタブのissueをフォローアップPRにリンクしてください。
 
-### READMEとWikiの棲み分け
+### README ↔ Wiki 責任分担
 
-- **README**：エントリーポイントとクイックスタート。短くまとめてください — セットアップ、シナリオ、コマンドリファレンス。
-- **Wiki**：詳細リファレンス。エージェントスキーマ、ルール説明、トリアージロジック。
-- 詳細なリファレンスコンテンツをREADMEに追加しないでください。クイックスタートコンテンツをwikiのHome.mdに追加しないでください。
+**役割定義**
+
+- **README** (`README.md` / `README.ja.md`) — ランディングページ。Wiki の事実のうち、厳選された小さなサブセットのスナップショットです：タグライン + エージェント数、Quick Start コマンド、Features（5 項目）、Learn-more リンク集。README はこれらのいずれに対しても**正規ソースではなく**、Wiki のミラーです。
+- **Wiki** (`docs/wiki/{en,ja}/`) — 正規リファレンス。エージェントスキーマ、ルール説明、トリアージロジック、コマンドリファレンス、トラブルシューティングはすべてここに置きます。Wiki は README が言及するすべての情報の信頼できる唯一の情報源です。
+
+**境界線運用ルール**
+
+README に**置いてよい**もの：
+- 1 行 tagline + エージェント数（landing snapshot の対象）
+- 3-domain mermaid 図 1 つ（プロジェクト一目把握用）
+- Quick Start 3 コマンド（`npx … init` / `cd && claude` / `/aphelion-init`）
+- Features 箇条書き（5 項目以下、各 1 行）
+- Wiki 主要 5 ページへのリンク群
+
+README に**置かない**もの（= Wiki に送る）：
+- スラッシュコマンドの網羅表（`/aphelion-help` への参照に留める）
+- インストール代替手段の詳細（`--user` / git clone 等）
+- cache caveat やトラブルシューティング
+- triage plan 選択ロジックの解説
+- エージェント別の入出力 / NEXT 条件
+- 任意の persona-based entry point
+
+判定基準：**「3 行を超える解説」「条件分岐ロジック」「網羅 reference」は Wiki 側**。
+
+**同時更新セット（co-update set）**
+
+以下の情報は README と Wiki の間で意図的に重複しています。
+一方を更新して他方を更新しないのは欠陥です。レビュアーは PR をブロックします。
+
+| 情報 | README の場所 | Wiki の場所 | その他 |
+|------|--------------|------------|--------|
+| エージェント数（`31`、`32`、…） | `README.md`、`README.ja.md` | `docs/wiki/en/Home.md`（×2）、`docs/wiki/ja/Home.md`（×2） | — |
+| スラッシュコマンド名 | （なし — README は `/aphelion-help` に委譲） | `docs/wiki/{en,ja}/Getting-Started.md` §Command Reference | `.claude/commands/aphelion-help.md` |
+| Quick Start コマンド（`npx … init`） | `README.md`、`README.ja.md`（Quick Start セクション） | `docs/wiki/{en,ja}/Getting-Started.md` §Quick Start | — |
+| 3-domain mermaid 図 | `README.md`、`README.ja.md` | （Wiki はプロズ + Architecture 図を使用） | — |
+| Features 箇条書き（5 項目） | `README.md`、`README.ja.md` | （Wiki Home の Persona-Based Entry Points が同内容を散文で記述） | — |
+| プランティア名（Minimal/Light/Standard/Full） | （現在なし） | `docs/wiki/{en,ja}/Triage-System.md`、`Home.md` 用語集 | `.claude/rules/aphelion-overview.md` |
+
+**README en ↔ ja のパリティ**
+
+`README.md` と `README.ja.md` はリポジトリルートに英語正規のバイリンガルで置かれています。
+同期規約は[`language-rules.md` → "Hand-authored canonical narrative"](../../src/.claude/rules/language-rules.md)
+と repo-root README sync convention によって管理されており、**この Wiki バイリンガル同期ポリシーではありません**。
+権威あるルールは `language-rules.md` を参照してください。(#75)
 
 ---
 
@@ -167,6 +208,12 @@ PRを開く前に確認してください：
 - [ ] 新しいフロー / Flow Orchestrator を追加した場合、統合ポイントをすべて更新済み: Architecture-Domain-Model.md の図、Architecture-Operational-Rules.md（Phase Execution Loop）、Triage-System.md のセクション、Agents-Orchestrators.md（横断系エージェントエントリ）、Home.md のペルソナエントリ
 - [ ] `.claude/commands/` に新しいファイルを追加した場合、静的一覧と同期させるため `.claude/commands/aphelion-help.md` にも該当行を追記する（#39）
 - [ ] `.claude/agents/`、`.claude/rules/`、`.claude/commands/`、`.claude/orchestrator-rules.md` のいずれかを変更した場合、`package.json` の `version` を bump 済み（下記「バージョンbumpポリシー」参照）
+- [ ] **README ↔ Wiki co-update set** に含まれる情報を変更した場合（「README ↔ Wiki 責任分担」参照）、
+      重複しているすべての場所を同一 PR で更新済み。以下を実行して確認してください：
+      ```
+      bash scripts/check-readme-wiki-sync.sh
+      ```
+      差分が報告されないことを確認します。
 - [ ] `bash scripts/smoke-update.sh` が正常終了する（リリース前ゲート）
 
 ### バージョンbumpポリシー

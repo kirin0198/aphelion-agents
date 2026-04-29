@@ -1,7 +1,7 @@
 # Contributing
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-04-29 (updated 2026-04-29: clarify wiki/design-notes/README language policy (#75))
+> **Last updated**: 2026-04-30 (updated 2026-04-30: README ↔ Wiki responsibility split documented, #76; updated 2026-04-29: clarify wiki/design-notes/README language policy (#75))
 > **Audience**: Agent developers
 
 This page covers how to contribute to Aphelion: adding or modifying agents, updating rules, and maintaining the wiki. Read this before opening a pull request.
@@ -122,11 +122,58 @@ If you add a new English page but cannot provide a Japanese translation in the s
 
 Translate within 30 days and link the stub issue to the follow-up PR.
 
-### README vs Wiki separation
+### README ↔ Wiki responsibility split
 
-- **README**: Entry point and Quick Start. Keep it short — setup, scenarios, command reference.
-- **Wiki**: Detailed reference. Agent schemas, rule explanations, triage logic.
-- Do not add detailed reference content to README. Do not add Quick Start content to the wiki Home.md.
+**Roles**
+
+- **README** (`README.md` / `README.ja.md`) — landing page. Snapshots a small,
+  hand-curated subset of facts from the Wiki: tagline + agent count, Quick Start
+  command, Features (5 bullet points), and a Learn-more link section. The README
+  is **not** a canonical source for any of these; it mirrors the Wiki.
+- **Wiki** (`docs/wiki/{en,ja}/`) — canonical reference. Agent schemas, rule
+  explanations, triage logic, command reference, troubleshooting all live here.
+  The Wiki is the source of truth for everything the README mentions.
+
+**Boundary rule**
+
+Items that **may stay in README**:
+- 1-line tagline + agent count (landing snapshot target)
+- 3-domain mermaid diagram (project overview at a glance)
+- Quick Start 3 commands (`npx … init` / `cd && claude` / `/aphelion-init`)
+- Features bullet list (5 items max, 1 line each)
+- Links to the 5 major Wiki pages
+
+Items that **must go to Wiki** (do not put these in README):
+- Exhaustive slash command table (README defers to `/aphelion-help`)
+- Alternative install details (`--user` / git clone etc.)
+- Cache caveats and troubleshooting
+- Triage plan selection logic
+- Per-agent input/output / NEXT conditions
+- Any persona-based entry points
+
+Decision rule: **"3+ lines of explanation", "branching logic", or "exhaustive reference" → Wiki side**.
+
+**Co-update set**
+
+The following facts are intentionally duplicated between README and Wiki.
+Updating one without the others is a defect; reviewers will block the PR.
+
+| Fact | README sites | Wiki sites | Other sites |
+|------|--------------|------------|-------------|
+| Agent count (`31`, `32`, …) | `README.md`, `README.ja.md` | `docs/wiki/en/Home.md` (×2), `docs/wiki/ja/Home.md` (×2) | — |
+| Slash command names | (none — README defers to `/aphelion-help`) | `docs/wiki/{en,ja}/Getting-Started.md` §Command Reference | `.claude/commands/aphelion-help.md` |
+| Quick Start command (`npx … init`) | `README.md`, `README.ja.md` (Quick Start section) | `docs/wiki/{en,ja}/Getting-Started.md` §Quick Start | — |
+| 3-domain mermaid figure | `README.md`, `README.ja.md` | (Wiki uses prose + Architecture diagrams instead) | — |
+| Features bullets (5 items) | `README.md`, `README.ja.md` | (Wiki Home Persona-Based Entry Points covers same ground in prose) | — |
+| Plan tier names (Minimal/Light/Standard/Full) | (none currently) | `docs/wiki/{en,ja}/Triage-System.md`, `Home.md` glossary | `.claude/rules/aphelion-overview.md` |
+
+**README en ↔ ja parity**
+
+`README.md` and `README.ja.md` are bilingual at the repository root with English
+canonical. The sync convention is governed by
+[`language-rules.md` → "Hand-authored canonical narrative"](../../src/.claude/rules/language-rules.md)
+and the repo-root README sync convention — **not** by this Wiki Bilingual Sync
+Policy. See `language-rules.md` for the authoritative rule. (#75)
 
 ---
 
@@ -167,6 +214,13 @@ Before opening a PR, verify:
 - [ ] If a new flow / orchestrator is added, update all integration points: Architecture-Domain-Model.md figures, Architecture-Operational-Rules.md (Phase Execution Loop), Triage-System.md sections, Agents-Orchestrators.md (cross-cutting agent entry), and Home.md persona entries
 - [ ] If a new file is added under `.claude/commands/`, also append a row to `.claude/commands/aphelion-help.md` so the static command listing stays in sync with the directory (#39)
 - [ ] `package.json` `version` bumped if any file under `.claude/agents/`, `.claude/rules/`, `.claude/commands/`, or `.claude/orchestrator-rules.md` was modified (see "Version bumping policy" below)
+- [ ] If the change touches anything in the **README ↔ Wiki co-update set**
+      (see "README ↔ Wiki responsibility split"), all duplicated sites are
+      updated in this PR. Run:
+      ```
+      bash scripts/check-readme-wiki-sync.sh
+      ```
+      and confirm no diffs are reported.
 - [ ] `bash scripts/smoke-update.sh` exits 0 (release-time gate; run before tagging)
 
 ### Version bumping policy
