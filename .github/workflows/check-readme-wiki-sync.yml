@@ -1,0 +1,54 @@
+# check-readme-wiki-sync.yml
+#
+# DESIGN DECISIONS FOR FUTURE MAINTAINERS
+# ========================================
+#
+# 1. Trigger: pull_request [opened, edited, synchronize] — every PR, no path filter.
+#    Rationale: scripts/check-readme-wiki-sync.sh runs in <1 s (grep-only, no external
+#    dependencies). Public repo Actions minutes are unmetered. A path filter would miss
+#    the "agent file added but only one surface (README vs Home.md) updated" case —
+#    exactly the drift this check is designed to catch (agent count parity, Check 1).
+#    Adding .claude/agents/** to a path filter would make it near-equivalent to every PR.
+#    See docs/design-notes/check-readme-wiki-sync-ci-integration.md §5.1.
+#
+# 2. Advisory tier — no branch protection at time of introduction (#81).
+#    This workflow is ADVISORY ONLY. A failing run is visible in the PR's Checks tab
+#    but does NOT block merge because main has no branch protection rule requiring this
+#    status check. Promotion to a required status check is a deliberate follow-up
+#    decision deferred to a future issue. If you want to promote, enable branch
+#    protection on main (Settings → Branches → Add rule) and add "check" from this
+#    workflow as a required check. See §5.2 of the design note linked above.
+#
+# 3. Actor filter: if: github.actor != 'github-actions[bot]'
+#    archive-closed-plans.yml runs on the same triggers and pushes a bot commit back
+#    to the PR branch (synchronize event). Without this filter the present workflow
+#    would re-run on that no-op bot commit. The filter skips that redundant run.
+#    Unlike archive-closed-plans.yml, this workflow is read-only (no push-back) so
+#    it is safe to run on fork PRs — the fork filter from archive-closed-plans.yml
+#    is intentionally NOT inherited here. See §5.4 of the design note.
+#
+# 4. Permissions: contents: read — this workflow never pushes or modifies anything.
+#    Minimal scope follows the principle of least privilege.
+
+name: check-readme-wiki-sync
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+
+      - name: Run README ↔ Wiki sync check
+        run: bash scripts/check-readme-wiki-sync.sh
