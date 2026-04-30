@@ -1,224 +1,253 @@
-# feat: add doc-flow orchestrator for HLD/LLD authoring and Aphelion doc maintenance
+# feat: add doc-flow orchestrator for customer-deliverable doc generation (MVP=6 types)
 
-> Reference: current `main` (HEAD `9bc00e5`, 2026-04-26)
+> Last updated: 2026-04-30
+> Update history:
+>   - 2026-04-26: Initial draft (HLD/LLD + Aphelion meta-doc maintenance, 系統 A/B/C × 種別 P/M)
+>   - 2026-04-30: reframe to focus on customer-deliverable generation per #54 user clarification (MVP=6 types)
+>
+> Reference: current `main` (HEAD `e56a58d`, 2026-04-30)
 > Created: 2026-04-26
-> Analyzed by: analyst (2026-04-26)
+> Reframed: 2026-04-30
+> Analyzed by: analyst (2026-04-26 / reframed 2026-04-30)
 > Author: analyst (design-only phase — no implementation yet)
-> Scope: design / planning document; the change will be executed in a follow-up `developer` phase
+> Scope: design / planning document; the change will be executed in a follow-up `architect` → `developer` phase
 > GitHub Issue: [#54](https://github.com/kirin0198/aphelion-agents/issues/54)
+> Next: architect
 > Implemented in: TBD
 
 ---
 
 ## 1. Background & Motivation
 
-### 1.1 ユーザの意図（原文）
+### 1.1 ユーザの再整理（2026-04-30 ヒアリング）
 
-> doc-flow を新設したい。Aphelion 自身のドキュメントの更新やプロジェクトの設計ドキュメントの作成 (HLD や LLD など) を目的としたフローの想定。新規作成と既存更新、既存構成見直しなど。
+初版 (2026-04-26) は「Aphelion 自身の wiki/rules 改訂」と「プロジェクトの HLD/LLD 起票」を等価並列で扱っていたが、
+ユーザの追加コンテキストで主軸が再定義された:
 
-### 1.2 既存 4 フローではカバーしきれない隙間
+> **doc-flow の主軸は、Aphelion で実装した顧客プロジェクトの "納品物 / ユーザ向け補足資料" を、
+> Discovery/Delivery/Operations が産んだ artifact から派生生成すること。**
 
-Aphelion は現状、Discovery / Delivery / Operations / Maintenance の 4 フローを持つ。
-それぞれが「ドキュメントを生成する」工程を内包しているが、いずれも **コードを伴うプロジェクトの局所工程** として
-ドキュメントを扱っており、以下のユースケースは現行フローが不得手である。
+つまり Aphelion 内部の SPEC.md / ARCHITECTURE.md / SECURITY_AUDIT.md / TEST_PLAN.md などは
+**社内設計成果物 (intra-team)** であり、それを **顧客 / 運用担当 / エンドユーザ向けに再パッケージ** する経路が
+従来 Aphelion には存在しない。doc-flow の MVP はこの再パッケージ責務に特化する。
 
-| ユースケース | 現状の取り扱い | 不足点 |
+### 1.2 既存 4 フローではカバーしきれない隙間（再整理）
+
+| 顧客成果物 | 現状の取り扱い | 不足点 |
 |---|---|---|
-| Aphelion 自身の wiki / README / ルール改訂 | Maintenance Flow を借用するが、本来 SPEC.md / ARCHITECTURE.md を持つ「プロダクト」を前提にしている | doc-only な変更に impact-analyzer / tester が空回り |
-| 既存プロジェクトに HLD / LLD を後付けで起こす | `codebase-analyzer` で SPEC/ARCHITECTURE をリバース可能だが、HLD/LLD という粒度の概念は持たない | HLD（高位設計）と LLD（詳細設計）を独立成果物として扱う仕組みがない |
-| ドキュメント構成の整理（複数の md を再分割／統合） | 該当する flow なし | 横断的な doc 構成見直しを担う担当者が居ない |
-| 設計ノート（`docs/design-notes/`）整理・棚卸し | ad-hoc に Maintenance Flow の Patch で実施 | 「コードを変更しない」フローに最適化されていない |
+| **HLD** (顧客提示用システム全体設計書) | architect が ARCHITECTURE.md（実装直前 LLD 寄り）を出すのみ | 顧客への設計説明粒度の doc が無い |
+| **LLD** (詳細設計書) | ARCHITECTURE.md が部分的に兼ねるが、顧客提出形式に整っていない | 顧客テンプレ準拠の体裁 / 章立てが無い |
+| **運用マニュアル** (運用担当者向け) | Operations Flow が runbook を出すが、社内向け | 顧客運用部門への引き渡し体裁が無い |
+| **API リファレンス** (顧客開発者向け) | doc-writer が API doc を生成するが、内部開発者視点 | 外部向け SDK / API 利用ガイドの粒度が無い |
+| **エンドユーザ利用マニュアル** | UI_SPEC.md は設計仕様 | 操作手順 / スクリーンショット入りの利用者向け doc が無い |
+| **引継ぎ資料** (案件クローズ時) | 該当 agent なし | プロジェクト終了時の保守引継ぎパッケージが無い |
 
-### 1.3 既存 doc 関連 agent との位置関係
+### 1.3 既存 doc 関連 agent との位置関係（重複を避ける境界線）
 
-`spec-designer`, `architect`, `ux-designer`, `doc-writer` は **Delivery Flow の中で** ドキュメントを作る。
-これらは「実装前段／実装後段の成果物として doc を出す」位置付けであり、
-**doc 自体を主目的にした統括フロー** が存在しない。
-結果として、wiki 改訂のような doc-only 作業は毎回 main session が手作業で
-ad-hoc に各 agent を呼び出している（例: 直近 PR #59 / #60 の `/issue-new` 設計）。
-
-### 1.4 なぜ独立 flow が必要か
-
-| 選択肢 | 採否 | 理由 |
+| 既存 agent | 既存責務 | doc-flow との境界 |
 |---|---|---|
-| Delivery Flow を拡張して doc-only モードを追加 | 不採用 | spec→architect→developer→tester… のパイプラインが doc-only では空転。triage / rollback も無意味化する |
-| Maintenance Flow に doc-only 経路を増やす | 不採用 | Maintenance は SPEC/ARCH 既存前提。doc-flow は未存在 doc を新規作成する経路も必要 |
-| 独立した doc-flow を新設 | **採用** | doc 専用の triage（新規／更新／再構成）と agent 構成を独立させ、他 flow と並列に運用できる |
+| `spec-designer` | SPEC.md (社内仕様) | doc-flow は SPEC.md を **入力** として読むのみ |
+| `architect` | ARCHITECTURE.md (社内設計) | doc-flow は ARCHITECTURE.md を **入力** として読み、HLD/LLD に再パッケージ |
+| `ux-designer` | UI_SPEC.md (社内画面設計) | doc-flow は UI_SPEC.md を **入力** として読み、エンドユーザ利用マニュアルに再パッケージ |
+| `doc-writer` | README / CHANGELOG / 内部開発者向け API doc | doc-flow の API リファレンス（顧客向け）とは粒度・読者が違う。re-use せず並列 |
+| `codebase-analyzer` | リバース SPEC/ARCH | doc-flow の前段として呼ぶ可能性はあるが MVP では呼ばない |
+
+doc-flow は **既存 agent の出力を入力に取り、顧客向け doc を派生生成するだけ** で、既存 agent と generation 責務が重複しないよう設計する。
+
+### 1.4 初版 (2026-04-26) からの変更点
+
+| 項目 | 初版 (2026-04-26) | reframe 後 (2026-04-30) |
+|---|---|---|
+| 主軸 | 「Aphelion 自身の wiki 維持」と「HLD/LLD 起票」の等価並列 | **顧客納品物の派生生成** に一本化 |
+| 種別 P/M 軸 | プロジェクト / Aphelion 自身を 1 flow で吸収 | M (Aphelion 自身) は **Phase 2 以降に降格** |
+| 系統 A/B/C 軸 | 新規 / 更新 / 再構成の 3 系統 | MVP では doc type ごとに新規生成のみ。差分更新は Phase 2 |
+| MVP scope | HLD/LLD + Aphelion 自身 | **6 doc type** (HLD / LLD / 運用マニュアル / API リファレンス / エンドユーザ利用マニュアル / 引継ぎ資料) |
+| 位置付け | 5 番目のフロー | 5 番目のフロー（変更なし） |
+| テンプレ | 暫定定義のみ | **Aphelion 内蔵テンプレ + プロジェクト側カスタムテンプレ優先** のハイブリッド |
+| 言語切替 | 未定 | **起動時引数 `--lang`**、未指定時は project-rules.md の Output Language |
 
 ---
 
-## 2. Current state
+## 2. Current state evidence
 
-### 2.1 Aphelion における doc 関連 agent の役割
+### 2.1 入力可能な Aphelion artifact 一覧
 
-| Agent | 所属 flow | 主な成果物 | 粒度 |
-|---|---|---|---|
-| `spec-designer` | Delivery (Phase 1) | SPEC.md | 機能仕様（What） |
-| `ux-designer` | Delivery (Phase 2, UI のみ) | UI_SPEC.md | 画面設計 |
-| `architect` | Delivery (Phase 3) | ARCHITECTURE.md | 技術設計（How / 実装直前） |
-| `doc-writer` | Delivery (Phase 11) | README.md / CHANGELOG.md / API doc | 利用者向け doc |
-| `codebase-analyzer` | Standalone | SPEC.md / ARCHITECTURE.md（reverse-engineering） | 既存コードからの逆算 |
-| `analyst` | Standalone (issue 起点) | docs/design-notes/<slug>.md / GitHub issue | 設計ノート / issue 詳細 |
-| `interviewer` / `researcher` / `scope-planner` | Discovery | INTERVIEW_RESULT.md など | 要件探索の中間成果 |
+| Source agent | Artifact | doc-flow の入力としての利用 |
+|---|---|---|
+| `spec-designer` | `SPEC.md` | HLD, LLD, エンドユーザ利用マニュアル, 引継ぎ資料 |
+| `architect` | `ARCHITECTURE.md` | HLD, LLD, 引継ぎ資料 |
+| `ux-designer` | `UI_SPEC.md` | エンドユーザ利用マニュアル |
+| `developer` | `TASK.md`（履歴）, src/* | LLD（実装確認用）, 引継ぎ資料 |
+| `tester` | `TEST_PLAN.md`, テスト結果 | 引継ぎ資料 |
+| `security-auditor` | `SECURITY_AUDIT.md` | 引継ぎ資料 |
+| `infra-builder` / `releaser` | infra スクリプト, deploy 手順 | 運用マニュアル |
+| `observability` | runbook, アラート定義 | 運用マニュアル |
+| `doc-writer` | README, CHANGELOG, 内部 API doc | API リファレンス（参考のみ。再生成） |
+| `analyst` | `docs/design-notes/<slug>.md` | 引継ぎ資料の補足 |
 
-### 2.2 現状の課題
+### 2.2 既存 doc 関連 agent との重複回避
 
-- **HLD と LLD の概念が無い**: ARCHITECTURE.md は実装直前の技術設計（≒ LLD 寄り）。HLD（システム全体構成、外部連携、非機能要件のハイレベル整理）に相当する独立成果物は無く、SPEC.md と ARCHITECTURE.md の中間に断絶がある。
-- **doc-only な改訂を扱う agent が居ない**: `doc-writer` は実装後段の利用者向け doc に特化。wiki 改訂や ルール改訂は対象外。
-- **doc 構成見直し（複数 md の再分割／統合）の担当が居ない**: 直近の wiki 5 分割（#42）や design-notes 整理（#51）はすべて main session が手作業で実施した。再現性のある手順が無い。
-- **Aphelion 自身の doc 更新は外部 agent から見て不可視**: `.claude/rules/aphelion-overview.md` の更新、wiki ja/en 同期、README 多言語版整合などはルール化されておらず、毎回属人的。
+doc-flow が **新規生成** する doc と、既存 agent が **既に生成している** doc は明確に分離する:
+
+- **doc-flow が生成する** (顧客 / 運用担当 / エンドユーザ向け): HLD, LLD, 運用マニュアル, API リファレンス（顧客向け）, エンドユーザ利用マニュアル, 引継ぎ資料
+- **既存 agent が生成する** (社内向け): SPEC.md, ARCHITECTURE.md, UI_SPEC.md, README, CHANGELOG, 内部 API doc, SECURITY_AUDIT.md, TEST_PLAN.md, runbook（社内向け）, design-notes
 
 ### 2.3 既に存在する周辺仕組み
 
-- `docs/design-notes/<slug>.md`: `/issue-new` → `/analyst` の 2 段階で生成される設計ノート（最近 #59 で導入）。doc-flow の入力／成果物の保管先として再利用可能。
-- `.claude/rules/aphelion-overview.md`, `orchestrator-rules.md`: フロー定義の集約点。新フロー追加時は両方の更新が必須。
-- `docs/wiki/{en,ja}/`: Aphelion 自身の利用者向け doc。同期が必要。
+- `.claude/orchestrator-rules.md`: orchestrator 共通ルールの集約点。新フロー登録時に追記
+- `.claude/rules/aphelion-overview.md`: Domain 紹介・Agent Directory・Branching by Product Type の集約点
+- `.claude/commands/`: slash command 定義置き場（`/doc-flow` 新設）
+- `.claude/templates/`: 既存テンプレ置き場（doc-flow 用サブディレクトリを新設）
 
 ---
 
-## 3. Proposed approach
+## 3. Constraints
 
-### 3.1 doc-flow の責任範囲
-
-doc-flow は **「コードを変更せず、ドキュメントだけを成果物とする」フロー** として定義する。
-扱う対象は以下の 3 系統（triage の入力にもなる）。
-
-| 系統 | 内容 | 想定トリガー |
-|---|---|---|
-| **A. プロジェクト doc 新規作成** | 既存プロジェクトに HLD / LLD / SPEC を後付け、または新規プロジェクトの doc 骨子作成 | 「HLD を起こしたい」「LLD まで降ろしたい」 |
-| **B. プロジェクト doc 既存更新** | SPEC / ARCHITECTURE / wiki / README の差分更新 | 「設計の章を書き直したい」「README を多言語化したい」 |
-| **C. doc 構成見直し** | 複数 md の分割・統合、design-notes 棚卸し、wiki 構成変更 | 「wiki を再分割したい」「古い設計ノートを archive したい」 |
-
-加えて、対象プロジェクトの種別で 2 軸に分かれる。
-
-| プロジェクト種別 | 例 | 備考 |
-|---|---|---|
-| **P. 通常プロジェクト** | アプリ / ライブラリ / ツール | SPEC.md / ARCHITECTURE.md / UI_SPEC.md などが対象 |
-| **M. Aphelion 自身（meta）** | aphelion-agents repo | wiki / README / .claude/rules / agent 定義が対象 |
-
-doc-flow はこの 2 軸（系統 × 種別）の組み合わせを 1 本のフローで吸収する。
-
-### 3.2 HLD / LLD の定義（doc-flow 文脈における暫定定義）
-
-> 詳細テンプレートは別 issue。本 issue では位置付けのみ確定する。
-
-| 成果物 | 位置付け | 既存成果物との関係 |
-|---|---|---|
-| **HLD (High-Level Design)** | システム全体の構成、サブシステム分割、外部連携、非機能要件のハイレベル整理。実装言語に依存しない | SPEC.md（What）と ARCHITECTURE.md（How / 実装直前）の中間に位置する。中規模以上のプロジェクトで「設計の地図」として参照される |
-| **LLD (Low-Level Design)** | モジュール／クラス／関数粒度の詳細設計。データ構造・アルゴリズム・API シグネチャを含む | ARCHITECTURE.md と重複する領域がある。ARCHITECTURE.md が「実装直前の集約」、LLD は「個別モジュールごとの掘り下げ」と差別化 |
-
-> **Open question**: ARCHITECTURE.md と LLD の役割重複は §4 で論点化する。
-
-### 3.3 doc-flow の構成
-
-#### 3.3.1 新規 agent
-
-| Agent | 目的 | tools |
-|---|---|---|
-| `doc-flow` (orchestrator) | フロー全体の統括 | Read, Write, Bash, Glob, Grep, Agent |
-| `doc-planner`（新規） | doc-flow の triage と doc 構成計画（DOC_PLAN.md 生成）。「何を書くか／既存とどう統合するか」を設計 | Read, Write, Glob, Grep |
-| `doc-restructurer`（新規・任意） | 系統 C 専用。複数 md の分割／統合／リネームを安全に実行 | Read, Write, Edit, Bash, Glob, Grep |
-
-> **Open question**: `doc-restructurer` を新設すべきか、`doc-writer` 拡張で済むかは §4 で論点化。
-
-#### 3.3.2 既存 agent の再利用
-
-| Agent | 利用フェーズ | 役割 |
-|---|---|---|
-| `codebase-analyzer` | 系統 A の Phase 0 | SPEC/ARCH が無い既存プロジェクトに対するリバース |
-| `spec-designer` | 系統 A・B | SPEC.md 新規 / 差分更新 |
-| `ux-designer` | UI を含む系統 A・B | UI_SPEC.md 新規 / 差分更新 |
-| `architect` | 系統 A・B | ARCHITECTURE.md / HLD / LLD 新規 / 差分更新（differential mode 既存） |
-| `doc-writer` | 系統 A・B | README / CHANGELOG / wiki ページ |
-| `analyst` | 系統 B のうち issue 駆動の場合 | 既に `/analyst` 経路が存在。doc-flow は analyst の出力を入力にできる |
-| `reviewer` | 全系統の最終フェーズ | doc 整合性レビュー（SPEC↔ARCH↔HLD↔LLD の矛盾検出） |
-
-#### 3.3.3 入出力
-
-**入力候補**:
-- ユーザが起動時に渡す自由記述（「HLD を新規作成したい」など）
-- 既存 SPEC.md / ARCHITECTURE.md / UI_SPEC.md
-- `docs/design-notes/<slug>.md`（`/analyst` 経由の場合）
-- 既存 wiki / README（系統 C / 種別 M の場合）
-
-**成果物**:
-- `DOC_PLAN.md`: doc-planner が生成する doc 構成計画（フロー全体の地図）
-- `HLD.md`（新規）: 系統 A・B で必要な場合に architect が生成
-- `LLD.md` または `LLD/<module>.md`（新規）: 同上
-- 既存 doc の差分更新（SPEC.md / ARCHITECTURE.md / UI_SPEC.md / README.md / wiki/*.md）
-- `DOC_FLOW_RESULT.md`: フロー完了時のサマリ（変更ファイル一覧 + 次フローへのハンドオフ情報）
-
-### 3.4 Triage tier
-
-| Plan | 条件 | 起動 agent シーケンス |
-|---|---|---|
-| **Minimal** | 単一 doc の単純更新（README の typo 修正、design-notes 1 件追加など） | doc-planner → doc-writer または architect 単独 |
-| **Light** | 既存 doc の差分更新（系統 B、影響範囲 1〜2 ファイル） | doc-planner → (spec-designer または architect または ux-designer または doc-writer) → reviewer |
-| **Standard** | 新規 doc 作成 / HLD or LLD 新設 / 複数 md 再構成（系統 A or B、3〜10 ファイル） | doc-planner → [codebase-analyzer (Phase 0, 任意)] → spec-designer → [ux-designer] → architect (HLD) → architect (LLD) → doc-writer → reviewer |
-| **Full** | プロジェクト全 doc の刷新 / Aphelion 自身の大規模改訂（系統 C / 種別 M、10+ ファイル） | doc-planner → [codebase-analyzer] → spec-designer → [ux-designer] → architect (HLD/LLD) → doc-restructurer → doc-writer → reviewer |
-
-triage の判定軸:
-- **系統**（A: 新規 / B: 更新 / C: 再構成）
-- **種別**（P: 通常プロジェクト / M: Aphelion 自身）
-- **影響ファイル数**
-- **HLD / LLD を含むか**
-
-### 3.5 Maintenance Flow / Delivery Flow との責務境界
-
-| シナリオ | 担当フロー | 理由 |
-|---|---|---|
-| バグ修正・機能追加（コード変更を伴う） | Maintenance Flow（Patch/Minor/Major） | 既存責務 |
-| HLD / LLD 新規作成（コード変更なし） | **doc-flow** | doc-only |
-| 既存 ARCHITECTURE.md 改訂（コード変更を伴う） | Maintenance Flow Major（architect differential mode） | 既存責務 |
-| 既存 ARCHITECTURE.md 改訂（doc 整合性のみ、コード未変更） | **doc-flow** | doc-only |
-| 新規プロジェクトの SPEC/ARCH 作成 | Delivery Flow（既存） | 実装まで一気通貫 |
-| 既存プロジェクトに doc を後付け | **doc-flow** | コード未変更 |
-| Aphelion 自身の wiki / rules 改訂 | **doc-flow**（種別 M） | 既存はどこにも属さなかった |
-| design-notes 棚卸し | **doc-flow**（系統 C） | 既存はどこにも属さなかった |
-
-> **Open question**: 「doc 改訂が結果的にコード変更を要する」と判明した場合のフェイルオーバ経路は §4 で論点化。
+- **入力は既存 Aphelion artifact のみ**: doc-flow は外部システムへのアクセスや新規ヒアリングを行わない。すべて Aphelion 内 artifact の再パッケージで完結する
+- **bilingual sync 対象外**: 顧客納品物は単一言語で生成する。`docs/wiki/{en,ja}/` のような en/ja 同時更新ルールは適用しない
+- **既存 agent との generation 重複禁止**: doc-writer / architect / spec-designer 等が既に生成する成果物を二重生成しない。既存 artifact を入力に取り、再パッケージのみ
+- **コードファイルを変更しない**: doc-flow 内で `developer` agent を呼ばない。`src/**`, `bin/**` 等は Read のみ
+- **MVP scope 固定**: 6 doc type に絞る。Phase 2 以降に拡張する doc type は §4.6 で明示
+- **テンプレ resolution 順序固定**: プロジェクト側カスタムテンプレが Aphelion 内蔵テンプレに優先する（カスタムが無ければ内蔵を採用）
+- **言語切替**: 起動時引数 `--lang` で per-invocation 切替。未指定時は project-rules.md の Output Language
 
 ---
 
-## 4. Open questions
+## 4. Approach (Decided)
 
-以下は本 issue の範囲では決着させず、developer フェーズまたは別 issue に委ねる。
+ユーザ判断 (2026-04-30):
+- **Q1 (MVP doc type set)** = **B**: 標準 6 種
+- **Q2 (位置づけ)** = **α**: 第 5 のフロー（独立 orchestrator）
+- **Q3 (テンプレート方針)** = **ii+iii ハイブリッド**: 内蔵デフォルト + プロジェクトカスタム優先
+- **Q4 (出力言語切替方針)** = **II**: 起動時引数 `--lang`
 
-### Q1. doc-flow と Maintenance Flow の責務境界の細部
+### 4.1 MVP scope: 6 doc types
 
-- doc 改訂中に「ここはコード修正も必要」と判明した場合、doc-flow 内で `developer` を呼ぶのか、それとも Maintenance Flow にハンドオフするのか
-- 提案: doc-flow は **コードを書かない** を不変条件とし、コード変更が必要と判明した時点で `STATUS: blocked` で終了し、ユーザに Maintenance Flow への切替を提案
+| # | Doc type | 派生元 (入力 artifact) | 想定読者 | 出力 path（暫定） | 採用テンプレ章立て（暫定） |
+|---|---|---|---|---|---|
+| 1 | **HLD (High-Level Design)** | SPEC.md, ARCHITECTURE.md | 顧客プロジェクト統括 / 顧客アーキテクト | `docs/deliverables/{slug}/hld.md` | 1. システム概要 / 2. システム全体構成 / 3. サブシステム分割 / 4. 外部連携 / 5. 非機能要件 / 6. 採用技術 / 7. 制約・前提 |
+| 2 | **LLD (Low-Level Design)** | ARCHITECTURE.md, src/*, TASK.md（履歴） | 顧客開発者 / 保守担当 | `docs/deliverables/{slug}/lld.md` または `docs/deliverables/{slug}/lld/<module>.md` | 1. モジュール構成 / 2. クラス・関数仕様 / 3. データ構造 / 4. API シグネチャ / 5. アルゴリズム / 6. エラーハンドリング |
+| 3 | **運用マニュアル** | infra スクリプト, deploy 手順, observability runbook | 顧客運用担当者 | `docs/deliverables/{slug}/ops-manual.md` | 1. システム構成図 / 2. 起動・停止手順 / 3. デプロイ手順 / 4. 監視・アラート対応 / 5. バックアップ・リストア / 6. トラブルシュート / 7. 連絡先 |
+| 4 | **API リファレンス** (顧客開発者向け) | SPEC.md (UC), ARCHITECTURE.md, src/* (signature) | 顧客側で API を利用する開発者 | `docs/deliverables/{slug}/api-reference.md` | 1. 認証 / 2. 共通仕様（リクエスト・レスポンス・エラー）/ 3. エンドポイント別仕様 / 4. サンプルコード / 5. レート制限 / 6. 変更履歴 |
+| 5 | **エンドユーザ利用マニュアル** | UI_SPEC.md, SPEC.md (UC) | 業務システムの実利用者 | `docs/deliverables/{slug}/user-manual.md` | 1. はじめに / 2. ログイン・基本操作 / 3. 機能別操作手順 / 4. よくある質問 / 5. 用語集 |
+| 6 | **引継ぎ資料** (案件クローズ時パッケージ) | SPEC.md, ARCHITECTURE.md, SECURITY_AUDIT.md, TEST_PLAN.md, design-notes/* | 後任保守チーム / 顧客 | `docs/deliverables/{slug}/handover.md` | 1. プロジェクト概要 / 2. 設計判断履歴 / 3. 既知の課題・宿題 / 4. テスト・セキュリティ監査結果サマリ / 5. 運用申し送り / 6. 関連 doc 索引 |
 
-### Q2. Aphelion 自身の doc メンテと プロジェクト doc 作成を 1 つの flow で扱ってよいか
+> **§7 Open question**: 出力 path を `docs/deliverables/{slug}/` で固定するか、プロジェクト側で override 可能にするかは architect で確定する。
 
-- 1 flow に統合するメリット: agent 再利用、triage で吸収可能
-- 分離するメリット: Aphelion 自身は wiki/rules という固有構造を持つので専用 agent が要るかも
-- 提案: **1 flow に統合**し、triage の「種別」軸（P / M）で挙動を分岐させる。M モードでは wiki ja/en 同期チェックなどを doc-planner が組み込む
+### 4.2 位置付け: 第 5 のフロー (α)
 
-### Q3. HLD と ARCHITECTURE.md の役割重複
+doc-flow は **Discovery / Delivery / Operations / Maintenance と並列の独立 orchestrator** として新設する。
 
-- 既存 ARCHITECTURE.md は実装直前の技術設計を集約しており、HLD と LLD の両方を含むケースが多い
-- 新たに HLD.md を立てると、ARCHITECTURE.md との粒度線引きが必要
-- 提案候補:
-  - (a) HLD は ARCHITECTURE.md の §1〜§3 をそのまま昇格（ARCHITECTURE.md は LLD 相当に縮約）
-  - (b) HLD は ARCHITECTURE.md の上位 doc として別ファイル化、ARCHITECTURE.md は現行通り
-  - (c) HLD は中規模以上のみ生成（小規模では ARCHITECTURE.md に埋め込み）
-- 本 issue では決定せず、`architect` agent 改修の別 issue で決着させる
+```
+Discovery Flow ──[DISCOVERY_RESULT.md]──▶ Delivery Flow ──[DELIVERY_RESULT.md]──▶ Operations Flow
+                                          (design & impl)                       (deploy & ops)
 
-### Q4. LLD の粒度（単一 LLD.md か モジュール別 LLD/\<module\>.md か）
+                    Maintenance Flow ──[MAINTENANCE_RESULT.md]──▶ Delivery Flow (Major only)
+                    (existing project maintenance)
 
-- モジュール数が多い場合、単一 LLD.md は肥大化する
-- 提案: 5 モジュール以下は単一 LLD.md、それ以上は `LLD/<module>.md` 構成。doc-planner が triage で判定
+                    doc-flow (NEW)
+                    (顧客納品物 / ユーザ向け補足資料の派生生成)
+                    入力: 既存 Aphelion artifact / 出力: docs/deliverables/{slug}/*.md
+```
 
-### Q5. doc-restructurer は新設すべきか
+- 起動方法: スラッシュコマンド `/doc-flow [--lang {ja|en}] [--types {hld,lld,...}]`
+- 他フローからの自動連鎖はしない（既存 4 フローと同じ方針）。ユーザが明示起動する
+- triage は doc type 数 / 出力規模で Minimal/Light/Standard/Full を判定（詳細は architect へ）
 
-- 系統 C（doc 構成見直し）専用 agent を新設するか、`doc-writer` の機能拡張で済ませるか
-- 提案: 初版では新設せず、`doc-writer` に再構成タスクを兼任させる。doc-flow を運用してから判断
+### 4.3 テンプレ方針: 内蔵デフォルト + プロジェクトカスタム優先 (ii+iii ハイブリッド)
 
-### Q6. doc-flow が他フローからハンドオフを受ける条件
+#### 4.3.1 配置
 
-- 例: Delivery Flow 完了後に「wiki 整備したい」となった場合、自動で doc-flow を起動するか
-- 提案: 自動連鎖はせず、ユーザが明示的に `/doc-flow` を起動する（既存 4 フローのファイル受け渡し方針と一致）
+```
+.claude/templates/doc-flow/         # Aphelion 内蔵デフォルト（リポジトリ同梱）
+├── hld.md
+├── lld.md
+├── ops-manual.md
+├── api-reference.md
+├── user-manual.md
+└── handover.md
+
+{project_root}/.claude/templates/doc-flow/   # プロジェクト固有カスタム（任意）
+├── hld.md          # 同名ファイルがあればこちらが優先
+└── ...
+```
+
+#### 4.3.2 Resolution order (確定)
+
+各 author agent は以下の順序でテンプレを解決する:
+
+1. `{project_root}/.claude/templates/doc-flow/{doc-type}.md` が存在 → これを採用
+2. それが無ければ Aphelion 内蔵 `.claude/templates/doc-flow/{doc-type}.md` を採用
+3. どちらも無ければ author agent 内蔵フォールバックテンプレ（最低限の章立てのみ）
+
+> **§7 Open question**: テンプレ自体に変数 (`{{project_name}}`, `{{slug}}`) を埋める方式にするか、author agent が章立てだけ参照して各章の本文を artifact から組み立てる方式にするかは architect で確定する。
+
+### 4.4 言語切替: 起動時引数 (II)
+
+#### 4.4.1 引数仕様（暫定）
+
+```
+/doc-flow                      # project-rules.md の Output Language を採用
+/doc-flow --lang ja            # 強制 ja
+/doc-flow --lang en            # 強制 en
+/doc-flow --lang ja --types hld,lld   # 種類も限定
+```
+
+#### 4.4.2 言語適用範囲
+
+- 出力 doc 本文の自然言語: `--lang` 値
+- skeleton heading（`## 1. システム概要` 等）: テンプレが en/ja 両方を持つか runtime 翻訳するかは §7 で論点化
+- 既存 artifact から引用するコード片・ID・固有名詞: そのまま転載（言語切替対象外）
+
+> **§7 Open question**: テンプレを en/ja 別ファイルにする (`hld.en.md` / `hld.ja.md`) か、単一テンプレで章タイトルを runtime 翻訳するかは architect で確定する。
+
+### 4.5 構成 agent
+
+#### 4.5.1 新規 agent
+
+| Agent | 目的 | tools (暫定) | 出力 |
+|---|---|---|---|
+| `doc-flow` (orchestrator) | フロー全体の統括、triage、author 群への dispatch | Read, Write, Bash, Glob, Grep, Agent | `DOC_FLOW_RESULT.md` |
+| `hld-author` | HLD 生成 | Read, Write, Glob, Grep | `docs/deliverables/{slug}/hld.md` |
+| `lld-author` | LLD 生成 | Read, Write, Glob, Grep | `docs/deliverables/{slug}/lld.md` |
+| `ops-manual-author` | 運用マニュアル生成 | Read, Write, Glob, Grep | `docs/deliverables/{slug}/ops-manual.md` |
+| `api-reference-author` | API リファレンス生成 | Read, Write, Glob, Grep | `docs/deliverables/{slug}/api-reference.md` |
+| `user-manual-author` | エンドユーザ利用マニュアル生成 | Read, Write, Glob, Grep | `docs/deliverables/{slug}/user-manual.md` |
+| `handover-author` | 引継ぎ資料生成 | Read, Write, Glob, Grep | `docs/deliverables/{slug}/handover.md` |
+
+> **§7 Open question**: Bash / Edit を author agent に持たせるか（例: 既存 deliverable の差分更新時に Edit が必要）は architect で確定する。
+
+#### 4.5.2 既存 agent の再利用
+
+MVP では既存 agent を **doc-flow 内から呼び出さない**（入力 artifact を Read するのみ）。
+理由: 既存 agent (architect, spec-designer 等) は社内向け artifact の生成 / 更新を責務とし、
+顧客向け doc 生成は責務範囲外。再利用すると責務境界が曖昧になる。
+
+ただし `reviewer` を **doc-flow の最終フェーズ** で呼び出し、
+6 doc 間の整合性レビュー（HLD ↔ LLD の矛盾、API リファレンスと SPEC.md の乖離など）を行うことは検討に値する。
+
+> **§7 Open question**: reviewer を doc-flow の最終フェーズに組み込むか、独立 review として後段で呼ぶかは architect で確定する。
+
+### 4.6 Phase 2 以降に降格した doc type / 機能
+
+本 MVP では扱わず、後続 issue で再検討する:
+
+- **追加 doc type 候補**:
+  - SRS (Software Requirements Specification, 顧客提出形式)
+  - セキュリティレポート (顧客版): SECURITY_AUDIT.md の顧客向けサマリ
+  - テスト結果報告書: TEST_PLAN.md + 実行結果の顧客向けサマリ
+  - SLA / SLO 定義書
+  - 移行計画書 (旧システムからの移行手順)
+  - 設計レビュー資料 (顧客レビュー用プレゼン)
+  - トレーニング資料 (顧客側担当者向けハンズオン)
+  - ADR (Architecture Decision Records) 集約
+  - CMDB (構成管理情報の顧客提出形式)
+- **追加機能**:
+  - **Aphelion 自身のメタ doc 維持系統** (旧 design-note の系統 B + 種別 M): wiki ja/en 同期チェック / rules 改訂支援 / agent 定義棚卸し。Phase 2 以降で再検討、または別 issue 切り出し
+  - **既存 doc の差分更新モード** (系統 B): MVP は新規生成のみ。差分更新は Phase 2
+  - **doc 再構成モード** (系統 C): 複数 md の分割 / 統合 / リネーム。Phase 2
+  - **archive された artifact (例: 過去版 SECURITY_AUDIT.md) の読み取り**: §7 で論点化
+  - **過去 deliverable の再生成 (re-pack)**: バージョン違いでの再パッケージ
 
 ---
 
@@ -228,110 +257,159 @@ triage の判定軸:
 
 | ファイル | 内容 |
 |---|---|
-| `.claude/agents/doc-flow.md` | orchestrator 定義（discovery-flow.md / maintenance-flow.md の構造を踏襲） |
-| `.claude/agents/doc-planner.md` | 新規 agent。triage 結果を受けて DOC_PLAN.md を生成 |
-| `.claude/commands/doc-flow.md` | スラッシュコマンド `/doc-flow` 定義 |
+| `.claude/agents/doc-flow.md` | orchestrator 定義 |
+| `.claude/agents/hld-author.md` | HLD author agent |
+| `.claude/agents/lld-author.md` | LLD author agent |
+| `.claude/agents/ops-manual-author.md` | 運用マニュアル author agent |
+| `.claude/agents/api-reference-author.md` | API リファレンス author agent |
+| `.claude/agents/user-manual-author.md` | エンドユーザ利用マニュアル author agent |
+| `.claude/agents/handover-author.md` | 引継ぎ資料 author agent |
+| `.claude/templates/doc-flow/hld.md` | HLD デフォルトテンプレ |
+| `.claude/templates/doc-flow/lld.md` | LLD デフォルトテンプレ |
+| `.claude/templates/doc-flow/ops-manual.md` | 運用マニュアルデフォルトテンプレ |
+| `.claude/templates/doc-flow/api-reference.md` | API リファレンスデフォルトテンプレ |
+| `.claude/templates/doc-flow/user-manual.md` | エンドユーザ利用マニュアルデフォルトテンプレ |
+| `.claude/templates/doc-flow/handover.md` | 引継ぎ資料デフォルトテンプレ |
+| `.claude/commands/doc-flow.md` | slash command 定義 |
 
-### 5.2 既存ファイルの更新
+> en/ja 両言語サポートのためテンプレ命名 (`hld.md` 単一 vs `hld.en.md` / `hld.ja.md`) は §7 Open questions で architect が決める。本 §5.1 は単一ファイル前提で記載しているが、二言語ファイル方式採用時は同名 + 言語サフィックスで増える。
+
+### 5.2 修正ファイル
 
 | ファイル | 変更内容 |
 |---|---|
-| `.claude/rules/aphelion-overview.md` | 「Aphelion Workflow Model」に doc-flow を 5 番目の独立フローとして追記 |
-| `.claude/orchestrator-rules.md` | doc-flow Triage の表（Minimal/Light/Standard/Full）を追記 |
-| `.claude/commands/aphelion-help.md` | Orchestrators 表に `/doc-flow` を追加 |
-| `docs/wiki/en/Agents-Orchestrators.md` | `doc-flow` セクションを追加 |
-| `docs/wiki/ja/Agents-Orchestrators.md` | 同上（ja） |
-| `docs/wiki/en/Triage-System.md` | doc-flow Triage を追加 |
-| `docs/wiki/ja/Triage-System.md` | 同上（ja） |
+| `.claude/orchestrator-rules.md` | doc-flow を 5 番目のフローとして登録、triage 表追加 |
+| `.claude/rules/aphelion-overview.md` | Domain 紹介に doc-flow 追記、Agent Directory に 7 agent 追記、Branching by Product Type 表に doc-flow 列追加 |
+| `.claude/commands/aphelion-help.md` | Orchestrators 表に `/doc-flow` 追加 |
+| `docs/wiki/en/Home.md` | agent count 更新、5th flow 追加 |
+| `docs/wiki/ja/Home.md` | 同上 (ja) |
+| `docs/wiki/en/Triage-System.md` | doc-flow Triage 表追加 |
+| `docs/wiki/ja/Triage-System.md` | 同上 (ja) |
 | `docs/wiki/en/Architecture-Domain-Model.md` | 4 フロー前提を 5 フロー前提に更新 |
-| `docs/wiki/ja/Architecture-Domain-Model.md` | 同上（ja） |
-| `docs/wiki/en/Home.md`, `docs/wiki/ja/Home.md` | フロー一覧の更新 |
-| `README.md`, `README.ja.md` | フロー数表記（4 → 5）と概要表更新 |
+| `docs/wiki/ja/Architecture-Domain-Model.md` | 同上 (ja) |
+| `docs/wiki/en/Agents-Orchestrators.md` | doc-flow セクション追加 |
+| `docs/wiki/ja/Agents-Orchestrators.md` | 同上 (ja) |
+| `README.md` | フロー数表記 (4 → 5)、agent count 更新、概要表更新 |
+| `README.ja.md` | 同上 (ja) |
+
+> **新ページ案** (architect 判断): `docs/wiki/{en,ja}/Agents-Doc.md` を新設し、6 author agent を Discovery/Delivery と同じ位置づけで独立ページ化する案あり。Agents-Orchestrators.md にまとめるか分離するかは architect で確定。
 
 ### 5.3 更新しないファイル
 
-- `SPEC.md` / `ARCHITECTURE.md`（aphelion-agents は agent 定義集約 repo であり、自身の SPEC/ARCH を持たない方針）
+- `SPEC.md` / `ARCHITECTURE.md` （aphelion-agents 自身は agent 定義集約 repo であり、自身の SPEC/ARCH を持たない方針）
 - 既存 4 フローの agent 定義（責務境界は doc-flow 側で吸収）
 
 ---
 
-## 6. Acceptance criteria
+## 6. PR Strategy
 
-- [ ] `/doc-flow` スラッシュコマンドでフロー起動できる
-- [ ] フロー起動時に triage が実行され、Minimal/Light/Standard/Full のいずれかが決定される
-- [ ] triage の入力として「系統（A/B/C）」「種別（P/M）」が確認される
-- [ ] doc-planner が DOC_PLAN.md を生成し、ユーザ承認ゲートで承認される
-- [ ] Standard 以上で HLD.md / LLD.md（または LLD/\*.md）が生成される
-- [ ] フロー完了時に `DOC_FLOW_RESULT.md` が生成される
-- [ ] フロー完了時に変更ファイル一覧がサマリ表示される
-- [ ] doc-flow 内で `developer` が呼ばれない（コード変更を伴わない不変条件の遵守）
-- [ ] `.claude/rules/aphelion-overview.md` / `orchestrator-rules.md` / `aphelion-help.md` / wiki が更新されている
-- [ ] auto-approve mode（`.aphelion-auto-approve`）が既存フローと同一の挙動で動作する
-- [ ] `/analyst` から起動された場合、`docs/design-notes/<slug>.md` を入力として受け取れる
+MVP 完成までに 3 つの PR を直列で merge する。
+
+### PR 1: Orchestrator skeleton + agent skeleton + slash command 登録
+
+- 新規: `.claude/agents/doc-flow.md`（本実装）+ `hld-author.md`〜`handover-author.md`（skeleton のみ、生成ロジックは PR 2）
+- 新規: `.claude/commands/doc-flow.md`
+- 修正: `.claude/orchestrator-rules.md`, `.claude/rules/aphelion-overview.md`, `.claude/commands/aphelion-help.md`
+- 検証: `/doc-flow` 起動 → triage 質問 → DOC_FLOW_RESULT.md 生成（中身は空でも可）まで
+- branch: `feat/doc-flow-orchestrator-skeleton`
+
+### PR 2: 6 種テンプレ + 各 author agent 本実装
+
+- 新規: `.claude/templates/doc-flow/{6 種}.md`
+- 修正: `.claude/agents/{6 author agent}.md`（本実装、テンプレ resolution + artifact 読み取り + doc 生成）
+- 検証: 既存 Aphelion artifact を入力に 6 doc を生成できるか dogfooding（aphelion-agents repo 自身を顧客プロジェクトに見立てて 1 doc を試行）
+- branch: `feat/doc-flow-authors`
+
+### PR 3: wiki + README sync
+
+- 修正: `docs/wiki/{en,ja}/Home.md`, `Triage-System.md`, `Architecture-Domain-Model.md`, `Agents-Orchestrators.md`
+- 修正: `README.md`, `README.ja.md`
+- 新規（任意・architect 判断）: `docs/wiki/{en,ja}/Agents-Doc.md`
+- 検証: `scripts/check-readme-wiki-sync.*` 等の advisory が通る
+- branch: `docs/doc-flow-wiki-readme`
+
+各 PR は MVP 完成までに直列 merge。PR 1 だけが merge された段階では機能未完だが、orchestrator 雛形のみ取り込まれる中間状態を許容する。
 
 ---
 
-## 7. Out of scope
+## 7. Open questions（architect 判断に残す）
 
-本 issue では扱わない。後続 issue として切り出す。
+本 issue の analyst 範囲では決着させない。architect が確定し ARCHITECT_BRIEF として developer に渡す。
 
-- HLD.md / LLD.md の **テンプレート詳細**（章構成・必須セクション・記述粒度）
-- 既存 4 フロー（discovery / delivery / operations / maintenance）の責任範囲変更
-- `architect` agent 自身の HLD/LLD 対応改修（Q3 の決着が必要）
-- `doc-restructurer` agent の新設（Q5、初版運用後に判断）
-- doc-flow と CI/CD（lint markdown / link check 等）の連携
-- Aphelion 自身の wiki ja↔en 同期チェッカーの実装
-- 既存 ARCHITECTURE.md を HLD / LLD に分割するマイグレーションスクリプト
+### Q-A. 各 author agent の Tools 構成
+
+- Read / Write は必須。Bash は不要に思えるが、テンプレ resolution の `ls` や git log 引用で必要かも
+- Edit は MVP では不要 (新規生成のみ) だが、Phase 2 で差分更新を入れる際に追加する想定
+- 推奨: MVP は `Read, Write, Glob, Grep` のみ。Bash は orchestrator (`doc-flow`) のみ持つ
+
+### Q-B. 出力 path 戦略
+
+- `docs/deliverables/{slug}/{doc-type}.md` で固定するか、プロジェクト側で override 可能にするか
+- `{slug}` の決定方法（プロジェクト名から派生 / `--slug` 引数で明示 / 起動時に対話質問）
+- 推奨: MVP は `docs/deliverables/{slug}/` 固定、`{slug}` は `--slug` 引数 + 未指定時は起動時質問
+
+### Q-C. テンプレ言語切替方式
+
+- (i) en/ja 別テンプレファイル方式: `.claude/templates/doc-flow/hld.en.md` / `hld.ja.md`
+- (ii) 単一テンプレ + runtime 翻訳: テンプレは en 固定、章タイトルを runtime に `--lang ja` 指定で翻訳
+- 推奨: (i) 別ファイル方式（カスタムテンプレ作成時にユーザが章名を翻訳しやすい）
+
+### Q-D. テンプレ変数埋め込み方式
+
+- (a) テンプレ自体に `{{project_name}}` 等の placeholder を持たせ author agent が置換
+- (b) author agent が章立てのみ参照し、本文は artifact から都度組み立て
+- 推奨: (a) を基本。固定値は placeholder で、artifact 由来の長文本文は agent 動的生成
+
+### Q-E. エンドユーザ利用マニュアルの section 構成
+
+- 画面別 (SCR-001 ごとに 1 章) vs UC 別 (UC-001 ごとに 1 章)
+- UI_SPEC.md が無いプロジェクト (UI 無しツール / ライブラリ) では user-manual-author をどう振る舞わせるか
+- 推奨: UC 別を基本、UI_SPEC.md がある場合は画面操作スクショ案内を補足。UI 無しプロジェクトでは user-manual-author を skip し、`AGENT_RESULT: skipped (no UI)` を返す
+
+### Q-F. アーカイブされた artifact の読み取り戦略
+
+- 引継ぎ資料は `docs/design-notes/archived/` 以下の過去ノートも参照したいか、最新 artifact のみか
+- 推奨: MVP は最新 artifact のみ。`archived/*.md` 参照は Phase 2
+
+### Q-G. reviewer を doc-flow 最終フェーズに組み込むか
+
+- HLD ↔ LLD ↔ API リファレンスの整合性チェックは reviewer の責務に入るか
+- 推奨: MVP は組み込まず、`/reviewer` を別途呼ぶ運用。doc-flow の AGENT_RESULT で reviewer 起動を suggest
+
+### Q-H. ARCHITECT_BRIEF / agent skeleton の段階で確定すべき互換性
+
+- テンプレ format が将来 PR で更新された際、既に生成済みの deliverable をどう扱うか（再生成 / 差分マージ / 放置）
+- 推奨: MVP は再生成を前提。既存 deliverable を上書きする際は AskUserQuestion で確認
 
 ---
 
-## 8. Handoff brief for developer
+## 8. Handoff brief for architect
 
-本 issue を実装する developer 向けの作業ガイド。
+### 8.1 HANDOFF_TO
 
-### 8.1 実装順序
+`architect`
 
-1. **新規 agent 定義の作成**
-   - `.claude/agents/doc-flow.md`（orchestrator）: `discovery-flow.md` を雛形にし、§3.4 の triage と §3.3 の agent シーケンスを記述
-   - `.claude/agents/doc-planner.md`: tools は `Read, Write, Glob, Grep`。出力は `DOC_PLAN.md`
-   - 雛形参照: `.claude/agents/maintenance-flow.md`（独立フローの構造として最も近い）
+### 8.2 architect で確定すべきこと
 
-2. **スラッシュコマンドの作成**
-   - `.claude/commands/doc-flow.md`: `discovery-flow` 等の既存コマンドファイルを参考に作成
+- §7 Open questions Q-A〜Q-H の全項目（推奨案を採用するか、別案を選ぶか）
+- 各 author agent の入出力契約 (`AGENT_RESULT` の必須フィールド)
+- doc-flow orchestrator の triage 仕様 (Minimal/Light/Standard/Full の判定軸)
+- `--types` 引数で doc type を限定起動した場合の依存関係 (例: `--types lld` 単独起動時に HLD 不在のままでよいか)
+- PR 分割の最終確定（§6 案を採用するか、PR 数を増減するか）
+- テンプレ命名規則と en/ja 切替方式の確定
 
-3. **ルール／overview の更新**
-   - `.claude/rules/aphelion-overview.md` の「Aphelion Workflow Model」に doc-flow を追記。フロー数を 4 → 5 に更新
-   - `.claude/orchestrator-rules.md` の Triage System に doc-flow Triage 表を追記
-   - `.claude/commands/aphelion-help.md` の Orchestrators 表に追加
+### 8.3 リスク / 留意点
 
-4. **wiki / README の更新**
-   - `docs/wiki/{en,ja}/Agents-Orchestrators.md` に `doc-flow` セクション追加
-   - `docs/wiki/{en,ja}/Triage-System.md` に doc-flow Triage 追加
-   - `docs/wiki/{en,ja}/Architecture-Domain-Model.md` の 4 フロー前提を更新
-   - `docs/wiki/{en,ja}/Home.md` の概要表更新
-   - `README.md`, `README.ja.md` のフロー数表記更新
-
-5. **動作確認（手動）**
-   - `/doc-flow` 起動 → triage 質問 → DOC_PLAN.md 生成 → 各 phase 進行 → DOC_FLOW_RESULT.md 生成までを 1 系統で確認
-   - 推奨検証ケース: 「本 repo の wiki に doc-flow ページを追加する」を doc-flow 自身で実行（dogfooding）
-
-### 8.2 設計上の不変条件（実装中の確認事項）
-
-- doc-flow は **コードファイル（`src/**`, `bin/**` 等）を変更しない**。`developer` agent を呼ばない
-- doc-flow は他フローと同様、**ファイル受け渡しのみで連携**（自動連鎖しない）
-- triage / approval gate / auto-approve / rollback は `.claude/orchestrator-rules.md` の共通ルールを継承する
-- 新規 agent の `AGENT_RESULT` 形式は `agent-communication-protocol.md` に準拠
-
-### 8.3 Open questions の取り扱い
-
-§4 の Q1〜Q6 は **本 issue の実装中に決着させない**。
-ただし、agent 定義中で参照される箇所（特に Q3: HLD と ARCHITECTURE.md の関係）については、
-暫定方針として **「ARCHITECTURE.md は現行通りに残し、HLD は新規ファイルとして並列に置く」（§4 Q3 案 (b)）** を採用する。
-Q3 の最終決着は `architect` 改修の別 issue で実施する。
+- **テンプレ更新時の互換性**: PR 2 以降でテンプレ章立てを変えると、過去 deliverable と齟齬が出る。テンプレに version 番号を持たせるか検討
+- **エンドユーザマニュアルの UI fallback**: UI_SPEC.md が無いプロジェクト（CLI / library）で user-manual-author を呼ぶと空の doc になる。skip 戦略を確定すること
+- **API リファレンスと doc-writer の重複**: doc-writer が既に内部 API doc を出している場合、顧客向け API リファレンスとの差分（公開範囲・粒度）を author agent でどう判定するか
+- **`{slug}` の衝突**: 同じ project_root で複数の slug が指定されると `docs/deliverables/{slug}/` が枝分かれする。既存 deliverable があった場合の上書き挙動を確定
+- **Aphelion 自身を dogfooding する場合**: aphelion-agents 自身は SPEC.md を持たない方針。dogfooding 時は doc-flow に「アーキテクト構成書」のみを生成させる等の特例を architect で設計
 
 ### 8.4 参照すべきファイル
 
 - 既存 orchestrator: `.claude/agents/discovery-flow.md`, `delivery-flow.md`, `operations-flow.md`, `maintenance-flow.md`
 - 既存 doc 関連 agent: `.claude/agents/doc-writer.md`, `architect.md`, `spec-designer.md`, `ux-designer.md`
-- ルール: `.claude/rules/aphelion-overview.md`, `.claude/orchestrator-rules.md`, `.claude/rules/agent-communication-protocol.md`
-- wiki テンプレート: `docs/wiki/en/Agents-Orchestrators.md`（en/ja 両方の構造把握）
+- ルール: `.claude/rules/aphelion-overview.md`, `.claude/orchestrator-rules.md`, `.claude/rules/agent-communication-protocol.md`, `.claude/rules/language-rules.md`
+- テンプレ系: `.claude/templates/`（既存 layout 把握）
+- wiki テンプレート: `docs/wiki/en/Agents-Orchestrators.md`（en/ja 構造把握）
