@@ -102,9 +102,9 @@ Then request approval via `AskUserQuestion`:
 
 ### New Development (Standard Plan Example)
 ```
-Phase 1:  Spec definition        → spec-designer      → ⏸ User approval
-Phase 2:  UI design              → ux-designer        → ⏸ User approval  (UI projects only)
-Phase 3:  Architecture design    → architect          → ⏸ User approval
+Phase 1:  Spec definition        → spec-designer      → doc-reviewer (auto) → ⏸ User approval
+Phase 2:  UI design              → ux-designer        → doc-reviewer (auto) → ⏸ User approval  (UI projects only)
+Phase 3:  Architecture design    → architect          → doc-reviewer (auto) → ⏸ User approval
 Phase 4:  Project initialization → scaffolder         → ⏸ User approval
 Phase 5:  Implementation         → developer          → ⏸ User approval
 Phase 6:  Test design            → test-designer      → ⏸ User approval
@@ -238,9 +238,24 @@ security-auditor (CRITICAL detected)
       → security-auditor (re-audit)
 ```
 
+### Rollback Flow on Doc Review FAIL
+
+```
+doc-reviewer (FAIL detected)
+  → triggering agent (spec-designer / ux-designer / architect)
+    → doc-reviewer (re-check)
+```
+
+Limit: shared via `.claude/orchestrator-rules.md` "Rollback Limit (Common)".
+On limit exceeded, the orchestrator presents the
+"Approve despite findings" gate (see orchestrator-rules.md "Approval Gate
+after Doc Review FAIL").
+
 ### Rollback Limit
 
-Rollbacks are limited to **3 times maximum**. If exceeded, report the situation to the user and ask for their decision.
+Inherits the shared limit from `.claude/orchestrator-rules.md`
+"Rollback Limit (Common)" (max 3 across test / review / security audit /
+doc review failures).
 
 When rolling back, pass the following to `developer`:
 
