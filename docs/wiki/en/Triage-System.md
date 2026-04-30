@@ -1,7 +1,7 @@
 # Triage System
 
 > **Language**: [English](../en/Triage-System.md) | [日本語](../ja/Triage-System.md)
-> **Last updated**: 2026-04-24
+> **Last updated**: 2026-04-30 (updated 2026-04-30: doc-reviewer references per #91 follow-up)
 > **Audience**: New users / Agent developers
 
 The Triage System automatically assesses project characteristics at flow start and selects the minimum set of agents needed. This page explains the 4-tier selection logic, conditions, and per-domain agent matrices.
@@ -71,11 +71,15 @@ Phase 1: Requirements interview  → interviewer  → approval
 → discovery-flow generates DISCOVERY_RESULT.md directly
 ```
 
+> **Note on Minimal**: Minimal plan ends after `interviewer`. Since `doc-reviewer`
+> is triggered post-`scope-planner`, it is not invoked in Minimal. This is by
+> structural absence, not by an explicit "skip" rule.
+
 **Light:**
 ```
 Phase 1: Requirements interview  → interviewer    → approval
 Phase 2: Rule design             → rules-designer → approval
-Phase 3: Scope planning          → scope-planner  → approval → done
+Phase 3: Scope planning          → scope-planner  → doc-reviewer (auto) → approval → done
 ```
 
 **Standard:**
@@ -84,7 +88,7 @@ Phase 1: Requirements interview  → interviewer    → approval
 Phase 2: Domain research         → researcher     → approval
 Phase 3: Technical PoC           → poc-engineer   → approval
 Phase 4: Rule design             → rules-designer → approval
-Phase 5: Scope planning          → scope-planner  → approval → done
+Phase 5: Scope planning          → scope-planner  → doc-reviewer (auto) → approval → done
 ```
 
 **Full:**
@@ -94,7 +98,7 @@ Phase 2: Domain research         → researcher        → approval
 Phase 3: Technical PoC           → poc-engineer      → approval
 Phase 4: Concept validation      → concept-validator → approval  [HAS_UI: true only]
 Phase 5: Rule design             → rules-designer    → approval
-Phase 6: Scope planning          → scope-planner     → approval → done
+Phase 6: Scope planning          → scope-planner     → doc-reviewer (auto) → approval → done
 ```
 
 ---
@@ -114,9 +118,9 @@ Phase 6: Scope planning          → scope-planner     → approval → done
 ### Delivery Phase Sequence (Standard Example)
 
 ```
-Phase 1:  Spec design         → spec-designer      → approval
-Phase 2:  UI design           → ux-designer         → approval  [HAS_UI: true only]
-Phase 3:  Architecture design → architect          → approval
+Phase 1:  Spec design         → spec-designer      → doc-reviewer (auto) → approval
+Phase 2:  UI design           → ux-designer         → doc-reviewer (auto) → approval  [HAS_UI: true only]
+Phase 3:  Architecture design → architect          → doc-reviewer (auto) → approval
 Phase 4:  Project init        → scaffolder         → approval
 Phase 5:  Implementation      → developer          → approval
 Phase 6:  Test design         → test-designer      → approval
@@ -168,7 +172,7 @@ The Maintenance Flow is a **fourth flow independent from Discovery / Delivery / 
 **Patch:**
 ```
 Phase 1: Classification         → change-classifier → approval
-Phase 2: Issue creation         → analyst           → approval
+Phase 2: Issue creation         → analyst           → doc-reviewer (conditional auto) → approval
 Phase 3: Implementation         → developer         → approval
 Phase 4: Test execution         → tester            → approval → done
 ```
@@ -177,7 +181,7 @@ Phase 4: Test execution         → tester            → approval → done
 ```
 Phase 1: Classification         → change-classifier  → approval
 Phase 2: Impact analysis        → impact-analyzer    → approval
-Phase 3: Issue creation         → analyst            → approval
+Phase 3: Issue creation         → analyst            → doc-reviewer (conditional auto) → approval
 Phase 4: Differential design    → architect          → approval
 Phase 5: Implementation         → developer          → approval
 Phase 6: Test execution         → tester             → approval
@@ -188,10 +192,15 @@ Phase 7: Review                 → reviewer           → approval → done
 ```
 Phase 1: Classification         → change-classifier  → approval
 Phase 2: Impact analysis        → impact-analyzer    → approval
-Phase 3: Issue creation         → analyst            → approval
+Phase 3: Issue creation         → analyst            → doc-reviewer (conditional auto) → approval
 Phase 4: Pre-audit              → security-auditor   → approval
 Phase 5: Handoff                → MAINTENANCE_RESULT.md → delivery-flow
 ```
+
+> **Conditional auto for doc-reviewer**: doc-reviewer is auto-inserted after
+> `analyst` only when `analyst.DOCS_UPDATED` reports SPEC.md (or ARCHITECTURE.md)
+> as updated. If both are `no_change`, doc-reviewer is skipped (Patch only).
+> Minor and Major always invoke doc-reviewer after analyst.
 
 ### SPEC.md / ARCHITECTURE.md Preconditions
 
@@ -210,10 +219,15 @@ Certain agents run on **all plans** regardless of triage outcome:
 | Agent | Domain | Why Mandatory |
 |-------|--------|--------------|
 | `security-auditor` | Delivery | Security audit cannot be omitted. OWASP Top 10 + dependency scans run even on Minimal |
+| `doc-reviewer` | Quality (cross-cutting) | Markdown artifact consistency must be verified on all plans (Minimal+). Read-only, no destructive ops; auto-inserted after spec / design / scope / analyst agents |
 
 The `security-auditor` mandate is defined in [.claude/rules/library-and-security-policy.md](../../.claude/rules/library-and-security-policy.md):
 
 > `security-auditor` **must run on all Delivery plans (including Minimal)**.
+
+The `doc-reviewer` mandate is defined in
+[.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) §Doc Reviewer
+Auto-insertion. It runs as a post-insert step after the trigger agents listed there.
 
 ---
 
@@ -280,3 +294,4 @@ HAS_UI: true
 - [.claude/agents/operations-flow.md](../../.claude/agents/operations-flow.md) — Operations triage implementation
 - [.claude/agents/maintenance-flow.md](../../.claude/agents/maintenance-flow.md) — Maintenance triage implementation
 - [.claude/rules/library-and-security-policy.md](../../.claude/rules/library-and-security-policy.md) — security-auditor mandatory rule
+- [.claude/agents/doc-reviewer.md](../../.claude/agents/doc-reviewer.md) — doc-reviewer agent definition and trigger conditions
