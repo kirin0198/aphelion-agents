@@ -115,6 +115,60 @@ Parse the returned `AGENT_RESULT` block:
 
 ---
 
+## Doc Reviewer Auto-insertion
+
+This section defines how flow orchestrators insert `doc-reviewer`
+automatically after agents that produce or update markdown artifacts.
+
+> **Insertion direction**: Unlike `sandbox-runner` (pre-insertion before a
+> Bash command runs), `doc-reviewer` is **post-inserted** after the
+> upstream agent emits its AGENT_RESULT. The Trigger Conditions /
+> Double-Execution Prevention / Standalone Agent Fallback structure mirrors
+> Sandbox Runner Auto-insertion but applies to the agent's exit, not entry.
+
+### Trigger Conditions
+
+The orchestrator inserts `doc-reviewer` **after** receiving an
+`AGENT_RESULT` from the following agents:
+
+| Flow | Trigger agents | Conditions |
+|------|----------------|------------|
+| delivery-flow | spec-designer, ux-designer, architect | All plans (Minimal+). ux-designer triggers only when HAS_UI=true |
+| discovery-flow | scope-planner | Light/Standard/Full only. Minimal has no scope-planner so doc-reviewer is not triggered structurally. |
+| maintenance-flow | analyst | Patch: only if `analyst.DOCS_UPDATED` contains SPEC.md (no_change → skip). Minor/Major: always |
+
+### Double-Execution Prevention
+
+The orchestrator tracks a per-phase insertion flag
+`doc_reviewer_inserted_for_phase_id`. If set for the current phase, skip
+auto-insertion. On rollback, the flag is reset before re-insertion.
+
+### Standalone Agent Fallback
+
+When a triggering agent (e.g., spec-designer) is invoked outside a flow
+orchestrator, no auto-insertion happens. The user may invoke
+`/doc-reviewer` manually.
+
+### Invocation Format
+
+```
+Agent(
+  subagent_type: "doc-reviewer",
+  prompt: "Review markdown artifacts for cross-document consistency.
+           triggered_by: {agent_name}
+           target_artifacts: {paths}
+           phase_id: {phase_id}",
+  description: "doc review after {agent_name}"
+)
+```
+
+Parse the returned `AGENT_RESULT` block:
+- `STATUS: success` and `DOC_REVIEW_RESULT: pass` → proceed to approval gate
+- `STATUS: failure` and `DOC_REVIEW_RESULT: fail` → enter Doc Review FAIL Rollback Flow (§Rollback Rules)
+- `STATUS: error` → follow Common Error Handling
+
+---
+
 ## Handoff File Specification
 
 Common format for handoff files used to connect domains.
@@ -417,10 +471,24 @@ Phase {N} complete: {agent name}
 
 ## Rollback Rules
 
-Test failures and review CRITICAL findings are automatically rolled back by the flow orchestrator.
-Rollbacks are limited to **3 times maximum**. If exceeded, report the situation to the user and ask for their decision.
+Test failures, review CRITICAL findings, and doc review FAIL results are automatically
+rolled back by the flow orchestrator.
 
 **Test failure determination:** tester returns `STATUS: failure` if there is 1 or more failure. Partial success (only some tests passing) is treated as failure.
+
+### Rollback Limit (Common)
+
+Rollbacks are limited to **3 times maximum**, applied as a single shared
+limit across:
+- Test failure rollback
+- Review CRITICAL rollback
+- Security audit CRITICAL rollback
+- Doc review FAIL rollback
+
+If the limit is exceeded, report to the user and ask for their decision
+(see "Approve despite findings" option in Approval Gate after Doc Review FAIL, when applicable).
+The per-flow rollback sections below inherit this limit and must not
+declare their own.
 
 ### Test Failure Rollback Flow
 
@@ -443,3 +511,62 @@ tester (failure detected)
 ```
 reviewer (CRITICAL detected) → developer (fix) → tester (re-run) → reviewer (re-review)
 ```
+
+### Doc Review FAIL Rollback Flow
+
+```
+doc-reviewer (DOC_REVIEW_RESULT: fail)
+  → triggering agent (spec-designer / ux-designer / architect /
+                      scope-planner / analyst) for fix
+    → doc-reviewer (re-check)
+```
+
+Rollback prompt to the triggering agent:
+
+```
+## Doc Review Rollback
+
+### Rollback source
+doc-reviewer
+
+### Inconsistencies
+{INCONSISTENCY_ITEMS list with perspective and evidence}
+
+### Files to fix
+{file paths from INCONSISTENCY_ITEMS}
+
+### Constraints
+- Do not break existing UCs or other documents
+- Re-emit AGENT_RESULT after fixing
+- If editing both ARCHITECTURE.md and SPEC.md, update Last updated in both
+```
+
+After rollback, the orchestrator clears the
+`doc_reviewer_inserted_for_phase_id` flag and re-runs `doc-reviewer`.
+
+---
+
+### Approval Gate after Doc Review FAIL (rollback limit exceeded)
+
+When `doc-reviewer` repeatedly fails and the shared rollback limit is
+reached, the orchestrator presents a special gate:
+
+```json
+{
+  "questions": [{
+    "question": "doc-reviewer reported {N} inconsistencies after 3 rollbacks. How would you like to proceed?",
+    "header": "Doc review failed",
+    "options": [
+      {"label": "Continue rollback", "description": "Override the 3-time limit and try once more"},
+      {"label": "Approve despite findings", "description": "Accept INCONSISTENCY findings and continue to next phase"},
+      {"label": "Abort", "description": "Stop the workflow"}
+    ],
+    "multiSelect": false
+  }]
+}
+```
+
+If "Approve despite findings" is selected, record this in the phase
+completion log and tag the eventual AGENT_RESULT chain with
+`DOC_REVIEW_OVERRIDE: true` so downstream artifacts (e.g.,
+DELIVERY_RESULT.md) reflect that an override occurred.
