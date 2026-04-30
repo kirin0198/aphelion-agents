@@ -3,6 +3,7 @@
 > **Language**: [English](../en/Rules-Reference.md) | [日本語](../ja/Rules-Reference.md)
 > **Last updated**: 2026-04-30
 > **Update history**:
+>   - 2026-04-30: add missing localization-dictionary entry, sync rule count to 12 (#105)
 >   - 2026-04-30: language-rules — "Repo-root README sync convention" sub-section を追加 (#82)
 >   - 2026-04-29: language-rules — "Hand-authored canonical narrative" セクションを追加 (#75)
 >   - 2026-04-26: Sync with #62, #66, #72, #74 (issue #77)
@@ -10,7 +11,7 @@
 > **EN canonical**: 2026-04-30 of wiki/en/Rules-Reference.md
 > **Audience**: エージェント開発者
 
-このページは`.claude/rules/`にある 11 の行動ルールのコンパクトなリファレンスです。各エントリはスコープ、自動ロードの動作、他ルール・エージェントとのインタラクション、ルールが強制する主要な制約をまとめています。
+このページは`.claude/rules/`にある 12 の行動ルールのコンパクトなリファレンスです。各エントリはスコープ、自動ロードの動作、他ルール・エージェントとのインタラクション、ルールが強制する主要な制約をまとめています。
 
 詳細については、**正規**リンクからソースファイルを参照してください。
 
@@ -24,6 +25,7 @@
 - [git-rules](#git-rules)
 - [language-rules](#language-rules)
 - [library-and-security-policy](#library-and-security-policy)
+- [localization-dictionary](#localization-dictionary)
 - [sandbox-policy](#sandbox-policy)
 - [denial-categories](#denial-categories)
 - [user-questions](#user-questions)
@@ -100,8 +102,8 @@
 - **正規**: [.claude/rules/language-rules.md](../../.claude/rules/language-rules.md)
 - **スコープ**: テキスト出力を生成する全エージェント
 - **自動ロードの動作**: Claude Codeが全セッション起動時に自動ロード
-- **インタラクション**: すべての出力タイプの言語を設定します。`agent-communication-protocol`と連携します（AGENT_RESTULTのキー/値は英語でなければならない）。`user-questions`の全ユーザー向けコンテンツに適用されます。
-- **概要**: 各出力タイプに使用する言語を定義します：コード/変数名/コミットメッセージは英語；エージェント定義ファイル/ルール/ガイドラインは英語；コードコメント/ユーザー向けドキュメント/ユーザーへのレポートは日本語；AGENT_RESTULTブロックのキー/値は英語；ユーザー向けCLI出力（AskUserQuestionの内容、承認ゲート、進捗表示）は日本語。
+- **インタラクション**: すべての出力タイプの言語を設定します。`agent-communication-protocol`と連携します（AGENT_RESULTのキー/値は英語でなければならない）。`user-questions`の全ユーザー向けコンテンツに適用されます。
+- **概要**: 各出力タイプに使用する言語を定義します：コード/変数名/コミットメッセージは英語；エージェント定義ファイル/ルール/ガイドラインは英語；コードコメント/ユーザー向けドキュメント/ユーザーへのレポートは日本語；AGENT_RESULTブロックのキー/値は英語；ユーザー向けCLI出力（AskUserQuestionの内容、承認ゲート、進捗表示）は日本語。
 - **Hand-authored canonical narrative (§5)**: Aphelion 自身の hand-authored ドキュメントを対象とした、ディレクトリ別の正規言語宣言（agent-emitted テンプレートとは別系統）。`docs/wiki/{en,ja}/*.md` は英語正規のバイリンガルで、スケルトン見出し（`## Related Pages`、`> Last updated:` など）は両言語ファイルとも英語固定。`docs/design-notes/<slug>.md` と `docs/design-notes/archived/<slug>.md` は単一ファイルで、正規言語は `project-rules.md` → `Output Language` に従う（バイリンガル同期なし）。`README.md` / `README.ja.md` は英語正規のバイリンガルで、リポジトリルートの README 同期規約に従う（Contributing.md 管轄ではない）。スコープ外: `CHANGELOG.md`（リリースノート慣習で英語）、`Home.md` のペルソナ/用語集ブロック（英語の固有名詞を含むナラティブとして扱う）。
 - **Repo-root README sync convention**: `README.md` ↔ `README.ja.md` の同期に関する権威ある書面規約は、`language-rules.md` の "Hand-authored canonical narrative" セクション直下の "Repo-root README sync convention" sub-section に記載されています。カバー内容：§3.1 英語正規（#75 で確定）；§3.2 同一 PR 必須の同期ルール（typo/broken-link 修正に限り 7 日 follow-up 例外あり）；§3.3 `^## ` 見出し数 + 行位置の一致を `scripts/check-readme-wiki-sync.sh` Check 3 で機械的に強制；§3.4 `> EN canonical:` 日付マーカーは README.ja.md には**導入しない**（Same-PR ルール + Check 3 で代替できるため冗長、かつランディングページへの視覚的ノイズを避ける意図的な判断）。全文は `language-rules.md` §"Repo-root README sync convention" を参照。(#82)
 
@@ -114,6 +116,16 @@
 - **自動ロードの動作**: Claude Codeが全セッション起動時に自動ロード
 - **インタラクション**: `architect`はARCHITECTURE.mdに採用根拠とともに選択したライブラリを記録します。`developer`はARCHITECTURE.mdに従いますが、必要に応じてライブラリを追加できます（まず採用基準を検証しなければならない）。`security-auditor`は依存関係スキャンによって最終検証を実施します。security-auditorの必須実行ルールはトリアージの決定を上書きします — Minimalプランでも実行されます。
 - **概要**: ライブラリに関する3つの核心原則：標準ライブラリを優先、車輪の再発明を避ける、依存関係を最小化。採用基準：アクティブにメンテナンスされている、広く採用されている、既知のCVEなし、ライセンス互換性あり、適切な依存関係の深さ。責任分担：architectが選択、developerが追従・拡張、security-auditorがスキャン。**必須ルール**：`security-auditor`はMinimalを含む全Deliveryプランで実行しなければなりません。OWASP Top 10、依存関係の脆弱性、認証ギャップ、ハードコードされたシークレット、入力バリデーション、CWEチェックリストをカバーします。
+
+---
+
+## localization-dictionary
+
+- **正規**: [.claude/rules/localization-dictionary.md](../../.claude/rules/localization-dictionary.md)
+- **スコープ**: 固定 UI 文字列（承認ゲート、AskUserQuestion ボイラープレート、進捗表示、"Phase N complete" ヘッダーなど）を出力する全エージェント
+- **自動ロードの動作**: Claude Code が全セッション起動時に自動ロード
+- **インタラクション**: 実行時に `project-rules.md` → `## Localization` → `Output Language` に対して解決します。`language-rules.md` のハイブリッドローカライゼーション戦略と連携します：辞書エントリは固定 UI 文字列をカバーし、自由形式のナラティブはエージェントが解決済み言語で直接生成します。
+- **概要**: 3 つのセクション（Approval Gate / AskUserQuestion Fallback / Progress Display）に整理された固定 UI 文字列の en/ja 正規訳語を提供します。テンプレートプレースホルダー（`{N}`、`{M}`、`{agent}`）はレンダリング時に置換されます。また、Aphelion 自身の JA wiki/README で使用される散文用語については、実行時 UI 文字列とは別に `docs/design-notes/archived/ja-terminology-rebalance.md` を参照するよう案内します。
 
 ---
 
@@ -167,6 +179,6 @@
 
 ## 正規ソース
 
-- [.claude/rules/](../../.claude/rules/) — 10のルールファイル全体（権威あるソース）
+- [.claude/rules/](../../.claude/rules/) — 12のルールファイル全体（権威あるソース）
 - [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md) — ワークフロー概要（rules コレクションの一部に統合）
 - [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — `agent-communication-protocol` に依存する Flow Orchestrator の動作
