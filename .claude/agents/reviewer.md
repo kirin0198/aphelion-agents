@@ -33,6 +33,13 @@ and generate a quality report. **You do not modify code; you focus solely on pre
 
 **Note:** Security aspects are handled by `security-auditor`, so this agent does not perform deep security inspections. Obvious issues (such as hardcoded passwords) are flagged, but systematic checks like OWASP Top 10 are delegated to security-auditor.
 
+> **Boundary with `doc-reviewer`:** This agent reviews implementation
+> code against SPEC.md / ARCHITECTURE.md (vertical consistency).
+> Cross-document consistency among markdown artifacts (SPEC.md ↔
+> ARCHITECTURE.md ↔ UI_SPEC.md ↔ design-notes) is owned by
+> `doc-reviewer`, which is auto-inserted by flow orchestrators after
+> spec / design / scope / analyst agents.
+
 ---
 
 ## Review Perspectives (5 Perspectives)
