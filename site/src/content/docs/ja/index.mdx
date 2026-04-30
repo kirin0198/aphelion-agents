@@ -1,9 +1,9 @@
 ---
 title: Aphelion
-description: Claude Code 向け AI コーディングエージェントワークフロー — Discovery / Delivery / Operations の 3 ドメイン構成。
+description: Claude Code 向け AI コーディングエージェントワークフロー — Discovery / Delivery / Operations / Maintenance / Doc の 5 ドメイン構成。
 template: splash
 hero:
-  tagline: プロジェクトの全工程を支える AI コーディングエージェント — Discovery・Delivery・Operations。
+  tagline: プロジェクトの全工程を支える AI コーディングエージェント — Discovery・Delivery・Operations・Maintenance・Doc。
   actions:
     - text: Get Started
       link: /ja/getting-started/
@@ -21,11 +21,11 @@ hero:
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## 29 エージェント × 4 フロー
+## 39 エージェント × 5 フロー
 
 <CardGrid>
 	<Card title="Flow Orchestrators" icon="rocket">
-		4 つの Flow Orchestrator: discovery-flow, delivery-flow, operations-flow, maintenance-flow。
+		5 つの Flow Orchestrator: discovery-flow, delivery-flow, operations-flow, maintenance-flow, doc-flow。
 		[→ Orchestrators & Cross-Cutting](/ja/agents-orchestrators/)
 	</Card>
 	<Card title="Discovery Domain" icon="magnifier">
@@ -44,8 +44,12 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 		既存プロジェクトの変更をトリアージ・範囲確定する 2 エージェント (change-classifier, impact-analyzer)。
 		[→ Maintenance Domain](/ja/agents-maintenance/)
 	</Card>
+	<Card title="Doc Domain" icon="document">
+		7 エージェント（1 オーケストレーター + 6 オーサー: hld-author, lld-author, api-reference-author, ops-manual-author, user-manual-author, handover-author）が HLD / LLD / API リファレンス / 運用マニュアル / ユーザーマニュアル / 引継ぎ資料を生成。
+		[→ Doc Domain](/ja/agents-doc/)
+	</Card>
 	<Card title="Safety / Standalone" icon="approve-check">
-		隔離実行の sandbox-runner と、単独起動可能な analyst / codebase-analyzer。
+		隔離実行の sandbox-runner、横断的なドキュメント整合性レビューの doc-reviewer、単独起動可能な analyst / codebase-analyzer。
 		[→ Orchestrators & Cross-Cutting](/ja/agents-orchestrators/)
 	</Card>
 </CardGrid>
@@ -66,7 +70,7 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 		[→ Triage System](/ja/triage-system/)
 	</Card>
 	<Card title="Agents Reference" icon="open-book">
-		29 エージェント全ての責務・入出力・NEXT 条件 — ドメイン別 5 ページに分割（Orchestrators・Discovery・Delivery・Operations・Maintenance）。
+		39 エージェント全ての責務・入出力・NEXT 条件 — ドメイン別 6 ページに分割（Orchestrators・Discovery・Delivery・Operations・Maintenance・Doc）。
 		[→ Orchestrators & Cross-Cutting](/ja/agents-orchestrators/)
 	</Card>
 	<Card title="Rules Reference" icon="setting">

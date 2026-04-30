@@ -1,9 +1,9 @@
 ---
 title: Aphelion
-description: AI coding agent workflow for Claude Code — Discovery, Delivery, Operations in three independent domains.
+description: AI coding agent workflow for Claude Code — Discovery, Delivery, Operations, Maintenance, and on-demand Doc generation across five independent domains.
 template: splash
 hero:
-  tagline: AI coding agents for the full project lifecycle — Discovery, Delivery, Operations.
+  tagline: AI coding agents for the full project lifecycle — Discovery, Delivery, Operations, Maintenance, and Doc.
   actions:
     - text: Get Started
       link: /en/getting-started/
@@ -21,11 +21,11 @@ hero:
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## Meet the 29 Agents across 4 Flows
+## Meet the 39 Agents across 5 Flows
 
 <CardGrid>
 	<Card title="Flow Orchestrators" icon="rocket">
-		4 top-level orchestrators: discovery-flow, delivery-flow, operations-flow, maintenance-flow.
+		5 top-level orchestrators: discovery-flow, delivery-flow, operations-flow, maintenance-flow, doc-flow.
 		[→ Orchestrators & Cross-Cutting](/en/agents-orchestrators/)
 	</Card>
 	<Card title="Discovery Domain" icon="magnifier">
@@ -44,8 +44,12 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 		2 agents (change-classifier, impact-analyzer) that triage and scope changes to existing projects.
 		[→ Maintenance Domain](/en/agents-maintenance/)
 	</Card>
+	<Card title="Doc Domain" icon="document">
+		7 agents (1 orchestrator + 6 authors: hld-author, lld-author, api-reference-author, ops-manual-author, user-manual-author, handover-author) generating customer-facing deliverables (HLD / LLD / API reference / operations manual / user manual / handover).
+		[→ Doc Domain](/en/agents-doc/)
+	</Card>
 	<Card title="Safety & Standalone" icon="approve-check">
-		sandbox-runner for isolated execution, plus analyst and codebase-analyzer for standalone use.
+		sandbox-runner for isolated execution, doc-reviewer for cross-cutting documentation consistency review, plus analyst and codebase-analyzer for standalone use.
 		[→ Orchestrators & Cross-Cutting](/en/agents-orchestrators/)
 	</Card>
 </CardGrid>
@@ -66,7 +70,7 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 		[→ Triage System](/en/triage-system/)
 	</Card>
 	<Card title="Agents Reference" icon="open-book">
-		All 29 agents — split by domain (Orchestrators, Discovery, Delivery, Operations, Maintenance) with responsibilities, inputs, outputs, and NEXT conditions.
+		All 39 agents — split by domain (Orchestrators, Discovery, Delivery, Operations, Maintenance, Doc) with responsibilities, inputs, outputs, and NEXT conditions.
 		[→ Orchestrators & Cross-Cutting](/en/agents-orchestrators/)
 	</Card>
 	<Card title="Rules Reference" icon="setting">
