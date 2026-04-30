@@ -1,6 +1,6 @@
 # Aphelion — Frontier AI Agents
 
-Claude Code 向け AI コーディングエージェント定義集です。31 の専門エージェントがプロジェクトの全工程を自動化します。
+Claude Code 向け AI コーディングエージェント定義集です。32 の専門エージェントがプロジェクトの全工程を自動化します。
 
 [![Wiki](https://img.shields.io/badge/Wiki-aphelion--agents.com-F38020?logo=cloudflarepages&logoColor=white&style=flat)](https://aphelion-agents.com/)
 
@@ -66,7 +66,7 @@ cd /path/to/your-project && claude
 - [Getting Started](docs/wiki/ja/Getting-Started.md) — 初回実行ウォークスルー、利用シナリオ、トラブルシューティング
 - [Architecture: Domain Model](docs/wiki/ja/Architecture-Domain-Model.md) — 3領域モデルとハンドオフファイル
 - [Triage System](docs/wiki/ja/Triage-System.md) — プランティアとエージェント選択
-- [Agents Reference](docs/wiki/ja/Agents-Orchestrators.md) — 全 31 エージェント
+- [Agents Reference](docs/wiki/ja/Agents-Orchestrators.md) — 全 32 エージェント
 
 ---
 
