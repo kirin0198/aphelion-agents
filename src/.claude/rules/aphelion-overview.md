@@ -1,9 +1,10 @@
 # Aphelion Workflow Overview
 
-> **Last updated**: 2026-04-24
+> **Last updated**: 2026-04-30
 > **Auto-loaded**: Yes — placed in `.claude/rules/`, loaded by Claude Code on every session start
 > 更新履歴:
 >   - 2026-04-24: Maintenance Flow (第4フロー) を追加
+>   - 2026-04-30: doc-reviewer (cross-cutting agent) を追加 (#91)
 
 This file provides a high-level overview of the Aphelion workflow.
 Behavioral rules are defined in `.claude/rules/` (auto-loaded).
@@ -43,6 +44,10 @@ tech debt, or small feature requests on existing projects with SPEC.md/ARCHITECT
 Performs Patch/Minor/Major triage and completes independently for Patch/Minor.
 Major handoff targets Delivery Flow as a pre-processing stage.
 
+> **Cross-cutting agents** (`sandbox-runner`, `doc-reviewer`) are not
+> tied to a single domain. They are auto-inserted by flow orchestrators
+> at trigger conditions defined in `.claude/orchestrator-rules.md`.
+
 ### Branching by Product Type
 
 | PRODUCT_TYPE | Discovery | Delivery | Maintenance | Operations |
@@ -56,6 +61,13 @@ Major handoff targets Delivery Flow as a pre-processing stage.
 
 Agent definitions are stored in `.claude/agents/` (the standard Claude Code location).
 Orchestrator-specific rules are in `.claude/orchestrator-rules.md` (read on-demand by orchestrators).
+
+### Cross-cutting agents
+
+| Agent | Tools | Purpose | Invocation |
+|-------|-------|---------|------------|
+| `sandbox-runner` | Read, Bash, Grep | High-risk command execution | Auto-insert (Standard+) / explicit delegation |
+| `doc-reviewer` | Read, Glob, Grep | Markdown artifact consistency review | Auto-insert (all plans) / standalone |
 
 ---
 
