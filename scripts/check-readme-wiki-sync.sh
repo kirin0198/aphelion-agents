@@ -23,12 +23,17 @@ fail=0
 # ---------------------------------------------------------------------------
 ACTUAL=$(ls "$REPO_ROOT/.claude/agents/" | wc -l | tr -d ' ')
 
-# README.md: "31 specialized agents"
-README_EN=$(grep -oE '[0-9]+ specialized agents' "$REPO_ROOT/README.md" | grep -oE '[0-9]+' | head -1)
-# README.ja.md: "31 の専門エージェント"
-README_JA=$(grep -oE '[0-9]+ の専門エージェント' "$REPO_ROOT/README.ja.md" | grep -oE '[0-9]+' | head -1)
-# wiki/en/Home.md: "all 31 agents"
-HOME_EN=$(grep -oE 'all [0-9]+ agents' "$REPO_ROOT/docs/wiki/en/Home.md" | head -1 | grep -oE '[0-9]+')
+# README.md: "N specialized agents" (L3) and "all N agents" (L70 link line) — collect both, dedup
+README_EN=$(grep -hoE '[0-9]+ specialized agents|all [0-9]+ agents' \
+  "$REPO_ROOT/README.md" | grep -oE '[0-9]+' | sort -u \
+  | tr '\n' ',' | sed 's/,$//')
+# README.ja.md: "N の専門エージェント" (L3) and "N エージェント" (L70 link line) — collect both, dedup
+README_JA=$(grep -hoE '[0-9]+ の専門エージェント|[0-9]+ エージェント' \
+  "$REPO_ROOT/README.ja.md" | grep -oE '[0-9]+' | sort -u \
+  | tr '\n' ',' | sed 's/,$//')
+# wiki/en/Home.md: "all N agents" (appears on multiple lines — collect all, dedup)
+HOME_EN=$(grep -oE 'all [0-9]+ agents' "$REPO_ROOT/docs/wiki/en/Home.md" \
+  | grep -oE '[0-9]+' | sort -u | tr '\n' ',' | sed 's/,$//')
 # wiki/ja/Home.md: "31 エージェント" (appears twice on L23, L38 — deduplicate with sort -u)
 HOME_JA=$(grep -oE '[0-9]+ エージェント' "$REPO_ROOT/docs/wiki/ja/Home.md" | grep -oE '[0-9]+' | sort -u | tr '\n' ',' | sed 's/,$//')
 
