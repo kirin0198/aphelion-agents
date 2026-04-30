@@ -224,6 +224,7 @@ Deliveryが完了した後（serviceプロジェクトの場合）：
 | `/discovery-flow {説明}` | 要件探索を開始 | 新規プロジェクト |
 | `/delivery-flow` | 設計・実装を開始 | Discovery後、または既存SPEC.mdがある場合 |
 | `/operations-flow` | デプロイ・運用を開始 | Delivery後、serviceタイプのみ |
+| `/doc-flow` | 顧客向け成果物を生成（HLD / LLD / API リファレンス / 運用マニュアル / ユーザーマニュアル / 引継ぎ資料） | SPEC.md + ARCHITECTURE.md があるプロジェクト |
 | `/analyst {issue}` | 既存プロジェクトのバグ・機能を分析 | SPEC.mdがあるプロジェクト |
 | `/maintenance-flow {トリガー}` | 既存プロジェクトの保守トリアージと実行 (Patch/Minor/Major) | SPEC.md + ARCHITECTURE.md があるプロジェクト |
 | `/codebase-analyzer {指示}` | 既存コードから仕様を逆生成 | SPEC.mdがないプロジェクト |

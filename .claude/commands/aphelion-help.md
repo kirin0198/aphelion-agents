@@ -12,6 +12,7 @@ responsibility and are not listed here — run `/help` for those.
 | `/delivery-flow` | Design & implementation: spec → ux → architect → … → releaser |
 | `/operations-flow` | Deploy & operate (service only): infra → db-ops → observability → ops-planner |
 | `/maintenance-flow` | Existing-project changes: Patch / Minor / Major triage and execution |
+| `/doc-flow` | Customer-deliverable docs: HLD / LLD / API reference / ops manual / user manual / handover |
 
 ## Shortcuts
 

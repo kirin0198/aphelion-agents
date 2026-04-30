@@ -237,6 +237,7 @@ You can invoke any agent directly without a flow:
 | `/discovery-flow {description}` | Start requirements exploration | New projects |
 | `/delivery-flow` | Start design & implementation | After Discovery, or with existing SPEC.md |
 | `/operations-flow` | Start deployment & operations | After Delivery, service type only |
+| `/doc-flow` | Generate customer-facing deliverables (HLD / LLD / API reference / ops manual / user manual / handover) | Projects with SPEC.md + ARCHITECTURE.md |
 | `/analyst {issue}` | Analyze bugs/features for existing projects | Projects with SPEC.md |
 | `/maintenance-flow {trigger}` | Maintenance triage and execution (Patch/Minor/Major) for existing project | Projects with SPEC.md + ARCHITECTURE.md |
 | `/codebase-analyzer {instruction}` | Reverse-engineer specs from existing code | Projects without SPEC.md |
