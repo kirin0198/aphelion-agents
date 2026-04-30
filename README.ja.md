@@ -67,7 +67,7 @@ cd /path/to/your-project && claude
 - [Getting Started](docs/wiki/ja/Getting-Started.md) — 初回実行ウォークスルー、利用シナリオ、トラブルシューティング
 - [Architecture: Domain Model](docs/wiki/ja/Architecture-Domain-Model.md) — 3領域モデルとハンドオフファイル
 - [Triage System](docs/wiki/ja/Triage-System.md) — プランティアとエージェント選択
-- [Agents Reference](docs/wiki/ja/Agents-Orchestrators.md) — 全 32 エージェント
+- [Agents Reference](docs/wiki/ja/Agents-Orchestrators.md) — 全 39 エージェント
 
 ---
 
