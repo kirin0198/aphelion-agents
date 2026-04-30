@@ -1,7 +1,7 @@
 # Architecture: Operational Rules
 
 > **Language**: [English](../en/Architecture-Operational-Rules.md) | [日本語](../ja/Architecture-Operational-Rules.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: rename docs/issues/ → docs/design-notes/ (#51))
+> **Last updated**: 2026-04-30 (updated 2026-04-30: doc-reviewer rollback references per #91 follow-up)
 > **Audience**: Agent developers
 
 This page is one of three pages split from the original Architecture.md (#42). It covers runtime and operational behaviors: Auto-Approve Mode, the Phase Execution Loop, Triage Tiers, Rollback Rules, and Sandbox Defense Layers. See the sibling pages for conceptual model and protocols: [Domain Model](./Architecture-Domain-Model.md), [Protocols](./Architecture-Protocols.md).
@@ -37,7 +37,10 @@ HAS_UI: true
 
 **Safety limits in auto-approve mode:**
 - Maximum 3 retries per agent on error
-- Maximum 3 rollbacks total
+- Rollback limit: shared across test / review CRITICAL / security audit CRITICAL /
+  doc review FAIL rollbacks (max 3 total). See
+  [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) §Rollback Rules
+  → Rollback Limit (Common) for the canonical definition.
 
 ---
 
@@ -105,13 +108,16 @@ flowchart LR
     end
 ```
 
-> **Note**: `security-auditor` runs on all Delivery plans. `ux-designer` runs only when `HAS_UI: true`.
+> **Note**: `security-auditor` runs on all Delivery plans. `doc-reviewer` runs on all plans (Delivery / Discovery / Maintenance) as a post-insert after spec / design / scope / analyst agents. `ux-designer` runs only when `HAS_UI: true`.
 
 ---
 
 ## Rollback Rules
 
-Rollbacks are triggered automatically by test failures and review CRITICAL findings. All rollbacks are limited to **3 times maximum**.
+Rollbacks are triggered automatically by test failures, review CRITICAL findings,
+security audit CRITICAL findings, and doc review FAIL results. The shared rollback
+limit (max 3 across all four types) is defined as **Rollback Limit (Common)** in
+[.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) §Rollback Rules.
 
 ### Test Failure Rollback (Delivery domain)
 
@@ -139,6 +145,23 @@ security-auditor (CRITICAL detected)
     → tester (re-run)
       → security-auditor (re-audit)
 ```
+
+### Doc Review FAIL Rollback (cross-domain; post-insert)
+
+```
+doc-reviewer (DOC_REVIEW_RESULT: fail)
+  → triggering agent (spec-designer / ux-designer / architect /
+                      scope-planner / analyst) for fix
+    → doc-reviewer (re-check)
+```
+
+Unlike the other four rollback flows above (which are pre-insert against tester /
+reviewer / security-auditor), this rollback fires **after** an upstream
+markdown-producing agent finishes. The triggering agent is identified by
+`doc-reviewer`'s `TRIGGERED_BY` field. See
+[.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md)
+§Doc Review FAIL Rollback Flow for the rollback prompt template, and §Approval Gate
+after Doc Review FAIL for the rollback-limit-exceeded handling.
 
 ### Discovery Rollback: Infeasible Requirements
 

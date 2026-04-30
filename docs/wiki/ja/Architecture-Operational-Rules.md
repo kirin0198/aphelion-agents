@@ -1,8 +1,8 @@
 # Architecture: Operational Rules
 
 > **Language**: [English](../en/Architecture-Operational-Rules.md) | [日本語](../ja/Architecture-Operational-Rules.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: docs/issues/ → docs/design-notes/ リネーム (#51))
-> **EN canonical**: 2026-04-25 of wiki/en/Architecture-Operational-Rules.md
+> **Last updated**: 2026-04-30 (updated 2026-04-30: doc-reviewer ロールバック参照を反映 (#91 follow-up))
+> **EN canonical**: 2026-04-30 of wiki/en/Architecture-Operational-Rules.md
 > **Audience**: エージェント開発者
 
 このページはもとの Architecture.md を3ページに分割したもの（#42）です。自動承認モード・フェーズ実行ループ・トリアージティア・差し戻しルール・sandbox防御レイヤーといったランタイム・運用挙動を扱います。概念モデルとプロトコルは関連ページを参照してください: [ドメインモデル](./Architecture-Domain-Model.md)、[プロトコル](./Architecture-Protocols.md)。
@@ -38,7 +38,10 @@ HAS_UI: true
 
 **自動承認モードの安全制限：**
 - エージェントごとの最大リトライ回数：3回
-- ロールバックの最大回数：3回
+- ロールバック上限: テスト失敗 / レビュー CRITICAL / セキュリティ監査 CRITICAL /
+  ドキュメントレビュー FAIL の差し戻しで共有（合計最大3回）。正規の定義は
+  [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) §Rollback Rules
+  → Rollback Limit (Common) を参照。
 
 ---
 
@@ -106,13 +109,17 @@ flowchart LR
     end
 ```
 
-> **注意**: `security-auditor` は全Deliveryプランで実行されます。`ux-designer` は `HAS_UI: true` の場合のみ実行されます。
+> **注意**: `security-auditor` は全Deliveryプランで実行されます。`doc-reviewer` は全プラン（Delivery / Discovery / Maintenance）で spec / design / scope / analyst エージェントの後にポスト挿入として実行されます。`ux-designer` は `HAS_UI: true` の場合のみ実行されます。
 
 ---
 
 ## 差し戻しルール
 
-差し戻しはテスト失敗とレビューのCRITICAL指摘によって自動的にトリガーされます。すべての差し戻しは**最大3回**までに制限されます。
+差し戻しはテスト失敗、レビューの CRITICAL 指摘、セキュリティ監査の CRITICAL 指摘、
+およびドキュメントレビューの FAIL 結果によって自動的にトリガーされます。共有の差し戻し上限
+（4 種すべてを通じて最大 3 回）は
+[.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) §Rollback Rules
+で **Rollback Limit (Common)** として定義されています。
 
 ### テスト失敗による差し戻し（Deliveryドメイン）
 
@@ -140,6 +147,23 @@ security-auditor（CRITICAL検知）
     → tester（再実行）
       → security-auditor（再監査）
 ```
+
+### ドキュメントレビューFAIL差し戻し（横断ドメイン；ポスト挿入型）
+
+```
+doc-reviewer（DOC_REVIEW_RESULT: fail）
+  → トリガーエージェント（spec-designer / ux-designer / architect /
+                        scope-planner / analyst）による修正
+    → doc-reviewer（再チェック）
+```
+
+上記の他の 4 種の差し戻しフロー（tester / reviewer / security-auditor に対するプリ挿入型）
+とは異なり、この差し戻しは上流のマークダウン生成エージェントが完了した**後**に発動します。
+トリガーエージェントは `doc-reviewer` の `TRIGGERED_BY` フィールドで特定されます。差し戻し
+プロンプトテンプレートは
+[.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md)
+§Doc Review FAIL Rollback Flow を、差し戻し上限超過時の処理は §Approval Gate after Doc
+Review FAIL を参照してください。
 
 ### Discoveryの差し戻し：実現不可能な要件
 
