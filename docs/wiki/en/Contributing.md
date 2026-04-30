@@ -1,7 +1,11 @@
 # Contributing
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-04-30 (updated 2026-04-30: README ↔ Wiki responsibility split documented, #76; updated 2026-04-29: clarify wiki/design-notes/README language policy (#75))
+> **Last updated**: 2026-04-30
+> **Update history**:
+>   - 2026-04-30: Update Agents-Reference split threshold to 6 pages + New flow checklist (#54)
+>   - 2026-04-30: README ↔ Wiki responsibility split documented (#76)
+>   - 2026-04-29: clarify wiki/design-notes/README language policy (#75)
 > **Audience**: Agent developers
 
 This page covers how to contribute to Aphelion: adding or modifying agents, updating rules, and maintaining the wiki. Read this before opening a pull request.
@@ -29,7 +33,7 @@ This page covers how to contribute to Aphelion: adding or modifying agents, upda
 | New rule | `.claude/rules/{name}.md` + Rules-Reference (en+ja) |
 | Modify rule | `.claude/rules/{name}.md` + Rules-Reference entry (en+ja) |
 | Orchestrator rules change | `.claude/orchestrator-rules.md` + Architecture-Operational-Rules.md / Triage-System.md (en+ja) |
-| New flow (orchestrator) | `.claude/agents/{flow}.md` + `.claude/commands/{flow}.md` + Architecture-Domain-Model.md (figures + text) + Architecture-Operational-Rules.md (Phase Execution Loop) + Triage-System.md (new section) + Agents-Orchestrators.md (new orchestrator) + Agents-{Domain}.md (new domain section if applicable) + Home.md (personas + glossary) + index.mdx (card) |
+| New flow (orchestrator) | `.claude/agents/{flow}.md` + `.claude/commands/{flow}.md` + Architecture-Domain-Model.md (figures + text) + Architecture-Operational-Rules.md (Phase Execution Loop) + Triage-System.md (new section) + Agents-Orchestrators.md (new orchestrator) + Agents-{Domain}.md (new domain page if applicable; e.g. Agents-Doc.md for Doc domain) + Home.md (personas + glossary + page count) + index.mdx (card) |
 | Wiki page update | `wiki/en/{page}.md` + `wiki/ja/{page}.md` (same PR) |
 
 ---
@@ -55,7 +59,7 @@ This page covers how to contribute to Aphelion: adding or modifying agents, upda
 
 4. **If the agent is a new flow orchestrator**, update `.claude/orchestrator-rules.md` to include the new agent in the triage or phase sequence.
 
-5. **Agents-Reference split threshold**: The Agents-Reference was split into 5 domain pages in #42. If any single domain page exceeds ~250 lines, or the total agent count exceeds 50, consider further splitting into per-agent files (`wiki/en/agents/{name}.md`). This is a future decision — open an issue to discuss first.
+5. **Agents-Reference split threshold**: The Agents-Reference was split into 6 domain pages (#42 for the initial 5, #54 added Agents-Doc.md as the 6th). If any single domain page exceeds ~250 lines, or the total agent count exceeds 50, consider further splitting into per-agent files (`wiki/en/agents/{name}.md`). This is a future decision — open an issue to discuss first.
 
 ---
 

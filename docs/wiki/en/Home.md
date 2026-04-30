@@ -1,7 +1,10 @@
 # Aphelion Wiki
 
 > **Language**: [English](../en/Home.md) | [日本語](../ja/Home.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: link targets refreshed for Architecture / Agents-Reference page splits, #42)
+> **Last updated**: 2026-04-30
+> **Update history**:
+>   - 2026-04-30: Add Agents-Doc.md to Agents Reference (5→6 pages), Doc Flow to glossary (#54)
+>   - 2026-04-25: link targets refreshed for Architecture / Agents-Reference page splits, #42
 > **Audience**: All users
 
 Welcome to the **Aphelion Wiki** — the detailed reference for the Aphelion Claude Code agent workflow.
@@ -19,7 +22,7 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 | Project overview and motivation | [Architecture: Domain Model](./Architecture-Domain-Model.md): 3-domain model and session isolation |
 | Quick Start commands | [Getting Started](./Getting-Started.md): Claude Code setup, first-run walkthrough, scenarios, troubleshooting |
 | Triage plan table (summary) | [Triage System](./Triage-System.md): selection logic, conditions, and agent matrices |
-| Agent list (names only) | Agents Reference (split by domain): [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md) — all 39 agents with inputs, outputs, NEXT conditions |
+| Agent list (names only) | Agents Reference (split by domain): [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md), [Doc](./Agents-Doc.md) — all 39 agents with inputs, outputs, NEXT conditions |
 | — | [Rules Reference](./Rules-Reference.md): 9 behavior rules with scope and customization notes |
 | — | [Contributing](./Contributing.md): how to add agents, rules, and maintain the wiki |
 
@@ -34,7 +37,7 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 | [Getting Started](./Getting-Started.md) | Claude Code setup, first run, usage scenarios, command reference | New users |
 | Architecture (3 pages) | [Domain Model](./Architecture-Domain-Model.md), [Protocols](./Architecture-Protocols.md), [Operational Rules](./Architecture-Operational-Rules.md) — 3-domain model, handoff files, AGENT_RESULT protocol, runtime rules | Agent developers |
 | [Triage System](./Triage-System.md) | 4-tier plan selection logic, per-domain agent matrices, mandatory agents | All users |
-| Agents Reference (5 pages) | [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md) — all 39 agents | Agent developers |
+| Agents Reference (6 pages) | [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md), [Doc](./Agents-Doc.md) — all 39 agents | Agent developers |
 | [Rules Reference](./Rules-Reference.md) | All 9 behavior rules: scope, auto-load, interactions | Agent developers |
 | [Contributing](./Contributing.md) | Adding agents, rules; bilingual sync workflow | Agent developers |
 
@@ -52,7 +55,7 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 
 1. Read [Architecture → Domain Model](./Architecture-Domain-Model.md) — domain model and session isolation
 2. Read [Architecture → Protocols](./Architecture-Protocols.md) — handoff files and AGENT_RESULT
-3. Read [Agents Reference → Orchestrators](./Agents-Orchestrators.md) and the 4 domain pages — each agent's responsibility and connections
+3. Read [Agents Reference → Orchestrators](./Agents-Orchestrators.md) and the 5 domain pages — each agent's responsibility and connections
 4. Read [Rules Reference](./Rules-Reference.md) — behavioral constraints applied to all agents
 
 ### "I want to add a new agent or rule"
@@ -73,8 +76,8 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 
 | Term | Definition |
 |------|------------|
-| **Domain** | One of the three primary workflow scopes (Discovery, Delivery, Operations). Maintenance is a fourth, independent flow that runs alongside the primary pipeline |
-| **Flow orchestrator** | An agent that manages an entire flow (discovery-flow, delivery-flow, operations-flow, maintenance-flow) |
+| **Domain** | One of the three primary workflow scopes (Discovery, Delivery, Operations). Maintenance is a fourth independent flow; Doc is a fifth, on-demand flow for customer-deliverable document generation |
+| **Flow orchestrator** | An agent that manages an entire flow (discovery-flow, delivery-flow, operations-flow, maintenance-flow, doc-flow) |
 | **Triage** | The process of assessing project scale at flow start and selecting a plan tier |
 | **Plan** | One of four execution tiers: Minimal / Light / Standard / Full |
 | **Handoff file** | A `.md` file used to pass information between domains (DISCOVERY_RESULT.md, DELIVERY_RESULT.md) |
@@ -88,6 +91,8 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 | **Auto-approve mode** | Mode activated by `.aphelion-auto-approve` file; skips approval gates for automated evaluation |
 | **Maintenance Flow** | Fourth flow independent from the 3-domain pipeline; invoked via `/maintenance-flow` for existing-project maintenance (bugs, CVEs, refactors, small features). Triage: Patch / Minor / Major |
 | **MAINTENANCE_RESULT.md** | Handoff file generated only on Major plan; passed to Delivery Flow as a pre-processing stage |
+| **Doc Flow** | Fifth flow, on-demand; invoked via `/doc-flow` to generate customer-deliverable documents (HLD, LLD, API reference, ops manual, user manual, handover). Triage: doc-type count (1–2 → Minimal, 3–4 → Light, 5–6 → Standard, all 6 + verify → Full). No automatic chaining |
+| **DOC_FLOW_RESULT.md** | Final output of Doc Flow; lists generated deliverables, skipped types, and next steps |
 
 ---
 

@@ -1,8 +1,11 @@
 # Aphelion Wiki
 
 > **Language**: [English](../en/Home.md) | [日本語](../ja/Home.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: terminology rebalance per #40)
-> **EN canonical**: 2026-04-25 (updated 2026-04-25) of wiki/en/Home.md
+> **Last updated**: 2026-04-30
+> **Update history**:
+>   - 2026-04-30: Agents-Doc.md を Agents Reference に追加（5 → 6 ページ）、Doc Flow を用語集に追加 (#54)
+>   - 2026-04-25: terminology rebalance per #40
+> **EN canonical**: 2026-04-30 of wiki/en/Home.md
 > **Audience**: 全ユーザー
 
 **Aphelion Wiki** へようこそ。このWikiはAphelion Claude Codeエージェントワークフローの詳細リファレンスです。
@@ -20,7 +23,7 @@ Aphelion のリポジトリの README はクイックスタートと概要をカ
 | プロジェクト概要と背景 | [Architecture: Domain Model](./Architecture-Domain-Model.md): 3 ドメインモデルとセッション分離 |
 | クイックスタートコマンド | [Getting Started](./Getting-Started.md): Claude Code セットアップ、初回実行ウォークスルー、シナリオ、トラブルシューティング |
 | トリアージプラン表（概要） | [Triage System](./Triage-System.md): 選択ロジック、条件、エージェントマトリクス |
-| エージェント一覧（名前のみ） | Agents Reference（ドメイン別）: [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md) — 39 エージェントの入出力と NEXT 条件 |
+| エージェント一覧（名前のみ） | Agents Reference（ドメイン別）: [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md), [Doc](./Agents-Doc.md) — 39 エージェントの入出力と NEXT 条件 |
 | — | [Rules Reference](./Rules-Reference.md): 9 つの行動ルールのスコープとカスタマイズ方法 |
 | — | [Contributing](./Contributing.md): エージェント・ルールの追加方法、Wiki メンテナンス |
 
@@ -35,7 +38,7 @@ Aphelion のリポジトリの README はクイックスタートと概要をカ
 | [Getting Started](./Getting-Started.md) | Claude Code セットアップ、初回実行、利用シナリオ、コマンドリファレンス | 新規ユーザー |
 | Architecture（3 ページ） | [Domain Model](./Architecture-Domain-Model.md), [Protocols](./Architecture-Protocols.md), [Operational Rules](./Architecture-Operational-Rules.md) — 3 ドメインモデル、ハンドオフファイル、`AGENT_RESULT` プロトコル、ランタイム挙動 | エージェント開発者 |
 | [Triage System](./Triage-System.md) | 4 ティアプラン選択ロジック、ドメイン別エージェントマトリクス、必須エージェント | 全ユーザー |
-| Agents Reference（5 ページ） | [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md) — 39 エージェント全件 | エージェント開発者 |
+| Agents Reference（6 ページ） | [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md), [Doc](./Agents-Doc.md) — 39 エージェント全件 | エージェント開発者 |
 | [Rules Reference](./Rules-Reference.md) | 9 つの行動ルール: スコープ・自動ロード・相互関係 | エージェント開発者 |
 | [Contributing](./Contributing.md) | エージェント・ルールの追加、バイリンガル同期ワークフロー | エージェント開発者 |
 
@@ -53,7 +56,7 @@ Aphelion のリポジトリの README はクイックスタートと概要をカ
 
 1. [Architecture: Domain Model](./Architecture-Domain-Model.md) を読む — ドメインモデルとセッション分離
 2. [Architecture: Protocols](./Architecture-Protocols.md) を読む — ハンドオフファイルと AGENT_RESULT
-3. [Agents Reference: Orchestrators & Cross-Cutting](./Agents-Orchestrators.md) と各ドメイン 4 ページを読む — 各エージェントの責務と連携
+3. [Agents Reference: Orchestrators & Cross-Cutting](./Agents-Orchestrators.md) と各ドメイン 5 ページを読む — 各エージェントの責務と連携
 4. [Rules Reference](./Rules-Reference.md) を読む — 全エージェントに適用される行動制約
 
 ### 「新しいエージェントやルールを追加したい」
@@ -74,8 +77,8 @@ Aphelion のリポジトリの README はクイックスタートと概要をカ
 
 | 用語 | 定義 |
 |------|------|
-| **ドメイン** | ワークフローの3つの主要スコープのいずれか：Discovery（要件探索）、Delivery（設計・実装）、Operations（デプロイ・運用）。Maintenance は主パイプラインと並列で動く独立した第 4 のフロー |
-| **Flow Orchestrator**（フローオーケストレーター） | フロー全体を管理する agent（discovery-flow / delivery-flow / operations-flow / maintenance-flow） |
+| **ドメイン** | ワークフローの3つの主要スコープのいずれか：Discovery（要件探索）、Delivery（設計・実装）、Operations（デプロイ・運用）。Maintenance は独立した第 4 のフロー、Doc は顧客向けドキュメント生成のための独立した第 5 のオンデマンドフロー |
+| **Flow Orchestrator**（フローオーケストレーター） | フロー全体を管理する agent（discovery-flow / delivery-flow / operations-flow / maintenance-flow / doc-flow） |
 | **トリアージ** | フロー開始時にプロジェクト規模を評価してプランティアを選択するプロセス |
 | **プラン** | 4段階の実行ティアのいずれか：Minimal / Light / Standard / Full |
 | **ハンドオフファイル** | ドメイン間で情報を受け渡すために使用される `.md` ファイル（DISCOVERY_RESULT.md、DELIVERY_RESULT.md） |
@@ -89,6 +92,8 @@ Aphelion のリポジトリの README はクイックスタートと概要をカ
 | **自動承認モード** | `.aphelion-auto-approve` ファイルで有効化されるモード。自動評価のために承認ゲートをスキップ |
 | **Maintenance フロー** | 3 ドメインパイプラインから独立した第 4 のフロー。`/maintenance-flow` で起動し、既存プロジェクトの保守 (バグ・CVE・リファクタ・小機能追加) を扱う。トリアージは Patch / Minor / Major |
 | **MAINTENANCE_RESULT.md** | Major プランでのみ生成されるハンドオフファイル。Delivery Flow の前処理として引き渡される |
+| **Doc フロー** | 第 5 のフロー、オンデマンド。`/doc-flow` で起動し、顧客向け納品ドキュメント（HLD・LLD・API リファレンス・運用マニュアル・ユーザーマニュアル・引継ぎ資料）を生成する。トリアージは doc type 数ベース（1〜2→Minimal・3〜4→Light・5〜6→Standard・全 6 種+検証→Full）。自動連鎖なし |
+| **DOC_FLOW_RESULT.md** | Doc フローの最終出力。生成済み deliverable・スキップ種別・次のステップを記録 |
 
 ---
 

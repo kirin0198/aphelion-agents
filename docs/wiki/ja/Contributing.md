@@ -1,7 +1,11 @@
 # Contributing
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-04-30 (updated 2026-04-30: README ↔ Wiki 責任分担を明文化, #76; updated 2026-04-29: wiki/design-notes/README の言語ポリシーを明確化 (#75))
+> **Last updated**: 2026-04-30
+> **Update history**:
+>   - 2026-04-30: Agents-Reference 分割しきい値を 6 ページに更新 + 新フローチェックリスト (#54)
+>   - 2026-04-30: README ↔ Wiki 責任分担を明文化 (#76)
+>   - 2026-04-29: wiki/design-notes/README の言語ポリシーを明確化 (#75)
 > **EN canonical**: 2026-04-30 of wiki/en/Contributing.md
 > **Audience**: エージェント開発者
 
@@ -30,7 +34,7 @@
 | 新しいルール | `.claude/rules/{name}.md` + Rules-Reference（en+ja） |
 | ルールの変更 | `.claude/rules/{name}.md` + Rules-Referenceのエントリ（en+ja） |
 | Flow Orchestrator ルールの変更 | `.claude/orchestrator-rules.md` + Architecture-Operational-Rules.md / Triage-System.md（en+ja） |
-| 新フロー（Flow Orchestrator） | `.claude/agents/{flow}.md` + `.claude/commands/{flow}.md` + Architecture-Domain-Model.md（図と本文）+ Architecture-Operational-Rules.md（Phase Execution Loop）+ Triage-System.md（新セクション）+ Agents-Orchestrators.md（新 Flow Orchestrator エントリ）+ 該当する Agents-{Domain}.md（ドメインセクション追加）+ Home.md（ペルソナ + 用語集）+ index.mdx（カード） |
+| 新フロー（Flow Orchestrator） | `.claude/agents/{flow}.md` + `.claude/commands/{flow}.md` + Architecture-Domain-Model.md（図と本文）+ Architecture-Operational-Rules.md（Phase Execution Loop）+ Triage-System.md（新セクション）+ Agents-Orchestrators.md（新 Flow Orchestrator エントリ）+ 該当する Agents-{Domain}.md（新ドメインページ、例：Agents-Doc.md）+ Home.md（ペルソナ + 用語集 + ページ数更新）+ index.mdx（カード） |
 | Wikiページの更新 | `wiki/en/{page}.md` + `wiki/ja/{page}.md`（同一PR） |
 
 ---
@@ -56,7 +60,7 @@
 
 4. **エージェントが新しい Flow Orchestrator の場合**、新しいエージェントをトリアージまたはフェーズシーケンスに含めるよう `.claude/orchestrator-rules.md` を更新します。
 
-5. **Agents-Reference の分割しきい値**：Agents-Reference は #42 で 5 ドメインページに分割済みです。いずれか 1 ドメインページが ~250 行を超えた場合、またはエージェント合計数が 50 を超えた場合は、エージェントごとのファイル（`wiki/en/agents/{name}.md`）へのさらなる分割を検討してください。これは将来の決定事項です — まず issue を開いて議論してください。
+5. **Agents-Reference の分割しきい値**：Agents-Reference は #42 で最初の 5 ドメインページに分割し、#54 で Agents-Doc.md を 6 つ目のページとして追加しました。いずれか 1 ドメインページが ~250 行を超えた場合、またはエージェント合計数が 50 を超えた場合は、エージェントごとのファイル（`wiki/en/agents/{name}.md`）へのさらなる分割を検討してください。これは将来の決定事項です — まず issue を開いて議論してください。
 
 ---
 
