@@ -1,7 +1,10 @@
 # Triage System
 
 > **Language**: [English](../en/Triage-System.md) | [日本語](../ja/Triage-System.md)
-> **Last updated**: 2026-04-30 (updated 2026-04-30: doc-reviewer references per #91 follow-up)
+> **Last updated**: 2026-04-30
+> **Update history**:
+>   - 2026-04-30: Add Doc Flow Triage section (#54)
+>   - 2026-04-30: doc-reviewer references per #91 follow-up
 > **Audience**: New users / Agent developers
 
 The Triage System automatically assesses project characteristics at flow start and selects the minimum set of agents needed. This page explains the 4-tier selection logic, conditions, and per-domain agent matrices.
@@ -14,6 +17,7 @@ The Triage System automatically assesses project characteristics at flow start a
 - [Delivery Flow Triage](#delivery-flow-triage)
 - [Operations Flow Triage](#operations-flow-triage)
 - [Maintenance Flow Triage](#maintenance-flow-triage)
+- [Doc Flow Triage](#doc-flow-triage)
 - [Mandatory Agents (Always Run)](#mandatory-agents-always-run)
 - [Conditional Agents (HAS_UI)](#conditional-agents-has_ui)
 - [Triage Assessment Questions](#triage-assessment-questions)
@@ -212,6 +216,60 @@ When the plan is Major, `maintenance-flow` generates `MAINTENANCE_RESULT.md` wit
 
 ---
 
+## Doc Flow Triage
+
+Doc Flow is a **fifth flow independent from Discovery / Delivery / Operations / Maintenance**, invoked manually via `/doc-flow` at any point in the project lifecycle after SPEC.md and ARCHITECTURE.md exist. No automatic chaining from other flows.
+
+**Key distinction**: Doc Flow triage is based on **doc type count** (how many of the 6 document types are selected), not on project scale or complexity like the other flows. Any product type can invoke Doc Flow.
+
+| Plan | Condition | Author Agents Launched |
+|------|-----------|----------------------|
+| **Minimal** | 1–2 doc types selected | Selected author agents only |
+| **Light** | 3–4 doc types selected | Selected author agents only |
+| **Standard** | 5–6 doc types selected | All selected author agents |
+| **Full** | All 6 types + post-generation verification | All 6 authors + `template_version` consistency check |
+
+**Available doc types**: `hld` / `lld` / `api-reference` / `ops-manual` / `user-manual` / `handover`
+
+**Dependency hints** (recommended order, not enforced in MVP):
+- `hld` → `lld`: both read ARCHITECTURE.md, LLD builds on HLD structure
+- `hld` / `lld` → `api-reference`: API reference references architecture chapters
+- All 5 types → `handover`: handover includes cross-references to all other deliverables
+
+When `--types` specifies partial types, `handover-author` will note in the deliverable that some referenced docs were not generated in this run.
+
+### Doc Flow Phase Sequence
+
+```
+[Triage] → [Approval]
+Phase 1: HLD           → hld-author           → approval
+Phase 2: LLD           → lld-author           → approval
+Phase 3: API Reference → api-reference-author → approval
+Phase 4: Ops Manual    → ops-manual-author    → approval  [skipped if no infra artifacts]
+Phase 5: User Manual   → user-manual-author   → approval  [skipped if no UI_SPEC.md]
+Phase 6: Handover      → handover-author      → approval  [recommended last]
+→ DOC_FLOW_RESULT.md generated → completion summary
+```
+
+Only the selected doc types are launched; non-selected phases are skipped entirely.
+
+### Auto-skip Rules
+
+| Author Agent | Auto-skip Condition |
+|---|---|
+| `user-manual-author` | `UI_SPEC.md` absent (typical for `PRODUCT_TYPE: tool / library / cli`) |
+| `ops-manual-author` | No infra artifacts (`Dockerfile`, `docker-compose.yml`, `infra/**` all absent) |
+
+Auto-skipped agents report `STATUS: skipped` and are listed in `SKIPPED_TYPES` in the final `DOC_FLOW_RESULT.md`.
+
+### Doc Flow and Mandatory Agents
+
+Doc Flow does **not** trigger `doc-reviewer` (Quality Agent). The author agents produce customer-facing deliverables derived from Aphelion artifacts, not the design artifacts themselves that `doc-reviewer` monitors. Doc Flow does suggest running `/doc-reviewer` after completion to verify cross-deliverable consistency (`SUGGEST_DOC_REVIEW: true` in `AGENT_RESULT`).
+
+Doc Flow is not listed in the [Mandatory Agents](#mandatory-agents-always-run) table — it is always optional.
+
+---
+
 ## Mandatory Agents (Always Run)
 
 Certain agents run on **all plans** regardless of triage outcome:
@@ -293,5 +351,6 @@ HAS_UI: true
 - [.claude/agents/delivery-flow.md](../../.claude/agents/delivery-flow.md) — Delivery triage implementation
 - [.claude/agents/operations-flow.md](../../.claude/agents/operations-flow.md) — Operations triage implementation
 - [.claude/agents/maintenance-flow.md](../../.claude/agents/maintenance-flow.md) — Maintenance triage implementation
+- [.claude/agents/doc-flow.md](../../.claude/agents/doc-flow.md) — Doc Flow triage implementation
 - [.claude/rules/library-and-security-policy.md](../../.claude/rules/library-and-security-policy.md) — security-auditor mandatory rule
 - [.claude/agents/doc-reviewer.md](../../.claude/agents/doc-reviewer.md) — doc-reviewer agent definition and trigger conditions

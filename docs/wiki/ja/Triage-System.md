@@ -1,7 +1,10 @@
 # Triage System
 
 > **Language**: [English](../en/Triage-System.md) | [日本語](../ja/Triage-System.md)
-> **Last updated**: 2026-04-30 (updated 2026-04-30: doc-reviewer 参照を反映 (#91 follow-up))
+> **Last updated**: 2026-04-30
+> **Update history**:
+>   - 2026-04-30: Doc フロートリアージセクション追加 (#54)
+>   - 2026-04-30: doc-reviewer 参照を反映 (#91 follow-up)
 > **EN canonical**: 2026-04-30 of wiki/en/Triage-System.md
 > **Audience**: 新規ユーザー / エージェント開発者
 
@@ -15,6 +18,7 @@
 - [Delivery フローのトリアージ](#delivery-フローのトリアージ)
 - [Operations フローのトリアージ](#operations-フローのトリアージ)
 - [Maintenance フローのトリアージ](#maintenance-フローのトリアージ)
+- [Doc フローのトリアージ](#doc-フローのトリアージ)
 - [必須エージェント（常時実行）](#必須エージェント常時実行)
 - [条件付きエージェント（HAS_UI）](#条件付きエージェントhas_ui)
 - [トリアージ評価質問](#トリアージ評価質問)
@@ -213,6 +217,60 @@ Phase 5: 引き渡し        → MAINTENANCE_RESULT.md → delivery-flow
 
 ---
 
+## Doc フローのトリアージ
+
+Doc フローは **Discovery / Delivery / Operations / Maintenance から独立した第 5 のフロー**であり、SPEC.md と ARCHITECTURE.md が揃ったプロジェクトライフサイクルの任意のタイミングで `/doc-flow` で手動起動します。他のフローからの自動連鎖はありません。
+
+**重要な特徴**: Doc フローのトリアージは、他のフローのようにプロジェクト規模や複雑さではなく、**doc type の数**（6 種のドキュメントタイプのうち何種類を選択するか）に基づきます。全 PRODUCT_TYPE で利用できます。
+
+| プラン | 条件 | 起動 author エージェント |
+|--------|------|----------------------|
+| **Minimal** | 1〜2 doc type 選択 | 選択した author エージェントのみ |
+| **Light** | 3〜4 doc type 選択 | 選択した author エージェントのみ |
+| **Standard** | 5〜6 doc type 選択 | 選択した全 author エージェント |
+| **Full** | 全 6 種 + 生成後の検証 | 全 6 種 author + `template_version` 整合チェック |
+
+**利用可能な doc type**: `hld` / `lld` / `api-reference` / `ops-manual` / `user-manual` / `handover`
+
+**依存関係ヒント**（推奨順序、MVP では強制しない）:
+- `hld` → `lld`: 両方が ARCHITECTURE.md を読み込み、LLD は HLD の構造を前提とする
+- `hld` / `lld` → `api-reference`: API リファレンスはアーキテクチャ章を参照する
+- 全 5 種 → `handover`: 引継ぎ資料は他の全 deliverable への相互参照を含む
+
+`--types` で部分的な doc type を指定した場合、`handover-author` は deliverable 内に「今回の実行で参照ドキュメントが生成されていない」旨を注記します。
+
+### Doc フローフェーズシーケンス
+
+```
+[トリアージ] → [承認]
+Phase 1: HLD           → hld-author           → 承認
+Phase 2: LLD           → lld-author           → 承認
+Phase 3: API リファレンス → api-reference-author → 承認
+Phase 4: 運用マニュアル  → ops-manual-author    → 承認  [インフラ成果物なしなら skip]
+Phase 5: ユーザーマニュアル → user-manual-author → 承認  [UI_SPEC.md なしなら skip]
+Phase 6: 引継ぎ資料     → handover-author      → 承認  [最後に推奨]
+→ DOC_FLOW_RESULT.md 生成 → 完了サマリー
+```
+
+選択した doc type のみ起動され、未選択フェーズは完全にスキップされます。
+
+### 自動スキップルール
+
+| Author エージェント | 自動スキップ条件 |
+|---|---|
+| `user-manual-author` | `UI_SPEC.md` 不在（`PRODUCT_TYPE: tool / library / cli` で典型） |
+| `ops-manual-author` | インフラ成果物なし（`Dockerfile`、`docker-compose.yml`、`infra/**` がすべて不在） |
+
+自動スキップされたエージェントは `STATUS: skipped` を返し、最終 `DOC_FLOW_RESULT.md` の `SKIPPED_TYPES` に記録されます。
+
+### Doc フローと必須エージェント
+
+Doc フローは `doc-reviewer`（品質エージェント）をトリガーしません。author エージェントが生成するのは Aphelion 成果物から派生した顧客向け deliverable であり、`doc-reviewer` が監視する設計成果物（SPEC.md 等）そのものではないためです。Doc フローは完了後に `/doc-reviewer` の実行を提案します（`AGENT_RESULT` に `SUGGEST_DOC_REVIEW: true` を出力）。
+
+Doc フローは [必須エージェント](#必須エージェント常時実行) テーブルには含まれません — 常にオプションです。
+
+---
+
 ## 必須エージェント（常時実行）
 
 特定のエージェントはトリアージ結果に関わらず**全プランで**実行されます：
@@ -294,5 +352,6 @@ HAS_UI: true
 - [.claude/agents/delivery-flow.md](../../.claude/agents/delivery-flow.md) — Delivery トリアージの実装
 - [.claude/agents/operations-flow.md](../../.claude/agents/operations-flow.md) — Operations トリアージの実装
 - [.claude/agents/maintenance-flow.md](../../.claude/agents/maintenance-flow.md) — Maintenance トリアージの実装
+- [.claude/agents/doc-flow.md](../../.claude/agents/doc-flow.md) — Doc フロートリアージの実装
 - [.claude/rules/library-and-security-policy.md](../../.claude/rules/library-and-security-policy.md) — security-auditor 必須ルール
 - [.claude/agents/doc-reviewer.md](../../.claude/agents/doc-reviewer.md) — doc-reviewer エージェント定義とトリガー条件
