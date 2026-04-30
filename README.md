@@ -1,6 +1,6 @@
 # Aphelion — Frontier AI Agents
 
-A collection of AI coding agent definitions for Claude Code that automates the entire project lifecycle with 32 specialized agents.
+A collection of AI coding agent definitions for Claude Code that automates the entire project lifecycle with 39 specialized agents.
 
 [![Wiki](https://img.shields.io/badge/Wiki-aphelion--agents.com-F38020?logo=cloudflarepages&logoColor=white&style=flat)](https://aphelion-agents.com/)
 

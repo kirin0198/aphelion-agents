@@ -1,6 +1,6 @@
 # Aphelion — Frontier AI Agents
 
-Claude Code 向け AI コーディングエージェント定義集です。32 の専門エージェントがプロジェクトの全工程を自動化します。
+Claude Code 向け AI コーディングエージェント定義集です。39 の専門エージェントがプロジェクトの全工程を自動化します。
 
 [![Wiki](https://img.shields.io/badge/Wiki-aphelion--agents.com-F38020?logo=cloudflarepages&logoColor=white&style=flat)](https://aphelion-agents.com/)
 

@@ -19,7 +19,7 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 | Project overview and motivation | [Architecture: Domain Model](./Architecture-Domain-Model.md): 3-domain model and session isolation |
 | Quick Start commands | [Getting Started](./Getting-Started.md): Claude Code setup, first-run walkthrough, scenarios, troubleshooting |
 | Triage plan table (summary) | [Triage System](./Triage-System.md): selection logic, conditions, and agent matrices |
-| Agent list (names only) | Agents Reference (split by domain): [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md) — all 32 agents with inputs, outputs, NEXT conditions |
+| Agent list (names only) | Agents Reference (split by domain): [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md) — all 39 agents with inputs, outputs, NEXT conditions |
 | — | [Rules Reference](./Rules-Reference.md): 9 behavior rules with scope and customization notes |
 | — | [Contributing](./Contributing.md): how to add agents, rules, and maintain the wiki |
 
@@ -34,7 +34,7 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 | [Getting Started](./Getting-Started.md) | Claude Code setup, first run, usage scenarios, command reference | New users |
 | Architecture (3 pages) | [Domain Model](./Architecture-Domain-Model.md), [Protocols](./Architecture-Protocols.md), [Operational Rules](./Architecture-Operational-Rules.md) — 3-domain model, handoff files, AGENT_RESULT protocol, runtime rules | Agent developers |
 | [Triage System](./Triage-System.md) | 4-tier plan selection logic, per-domain agent matrices, mandatory agents | All users |
-| Agents Reference (5 pages) | [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md) — all 32 agents | Agent developers |
+| Agents Reference (5 pages) | [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md) — all 39 agents | Agent developers |
 | [Rules Reference](./Rules-Reference.md) | All 9 behavior rules: scope, auto-load, interactions | Agent developers |
 | [Contributing](./Contributing.md) | Adding agents, rules; bilingual sync workflow | Agent developers |
 

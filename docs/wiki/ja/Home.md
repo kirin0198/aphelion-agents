@@ -20,7 +20,7 @@ Aphelion のリポジトリの README はクイックスタートと概要をカ
 | プロジェクト概要と背景 | [Architecture: Domain Model](./Architecture-Domain-Model.md): 3 ドメインモデルとセッション分離 |
 | クイックスタートコマンド | [Getting Started](./Getting-Started.md): Claude Code セットアップ、初回実行ウォークスルー、シナリオ、トラブルシューティング |
 | トリアージプラン表（概要） | [Triage System](./Triage-System.md): 選択ロジック、条件、エージェントマトリクス |
-| エージェント一覧（名前のみ） | Agents Reference（ドメイン別）: [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md) — 32 エージェントの入出力と NEXT 条件 |
+| エージェント一覧（名前のみ） | Agents Reference（ドメイン別）: [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md) — 39 エージェントの入出力と NEXT 条件 |
 | — | [Rules Reference](./Rules-Reference.md): 9 つの行動ルールのスコープとカスタマイズ方法 |
 | — | [Contributing](./Contributing.md): エージェント・ルールの追加方法、Wiki メンテナンス |
 
@@ -35,7 +35,7 @@ Aphelion のリポジトリの README はクイックスタートと概要をカ
 | [Getting Started](./Getting-Started.md) | Claude Code セットアップ、初回実行、利用シナリオ、コマンドリファレンス | 新規ユーザー |
 | Architecture（3 ページ） | [Domain Model](./Architecture-Domain-Model.md), [Protocols](./Architecture-Protocols.md), [Operational Rules](./Architecture-Operational-Rules.md) — 3 ドメインモデル、ハンドオフファイル、`AGENT_RESULT` プロトコル、ランタイム挙動 | エージェント開発者 |
 | [Triage System](./Triage-System.md) | 4 ティアプラン選択ロジック、ドメイン別エージェントマトリクス、必須エージェント | 全ユーザー |
-| Agents Reference（5 ページ） | [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md) — 32 エージェント全件 | エージェント開発者 |
+| Agents Reference（5 ページ） | [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md) — 39 エージェント全件 | エージェント開発者 |
 | [Rules Reference](./Rules-Reference.md) | 9 つの行動ルール: スコープ・自動ロード・相互関係 | エージェント開発者 |
 | [Contributing](./Contributing.md) | エージェント・ルールの追加、バイリンガル同期ワークフロー | エージェント開発者 |
 
