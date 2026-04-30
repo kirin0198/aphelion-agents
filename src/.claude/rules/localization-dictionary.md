@@ -25,6 +25,10 @@ template placeholders (`{N}`, `{M}`, `{agent}`) at render time.
 | approve_and_continue   | "Approve and continue"                                                               | "承認して続行"                                                                |
 | request_modification   | "Request modification"                                                               | "修正を指示"                                                                  |
 | abort                  | "Abort"                                                                              | "中断"                                                                        |
+| approve_despite_findings | "Approve despite findings"                                                         | "指摘を承知の上で承認"                                                       |
+| continue_rollback      | "Continue rollback"                                                                  | "rollback を継続"                                                            |
+| doc_review_failed_header | "Doc review failed"                                                                | "ドキュメントレビュー失敗"                                                   |
+| doc_review_failed_question | "doc-reviewer reported {N} inconsistencies after {M} rollbacks. How would you like to proceed?" | "doc-reviewer が {M} 回の rollback 後も {N} 件の不整合を報告しています。どう進めますか？" |
 
 ---
 
