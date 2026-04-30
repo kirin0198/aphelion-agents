@@ -69,6 +69,8 @@ jobs:
 
           # Idempotent search: only matches planning docs still in the active
           # directory. Already-archived docs cause a no-op (loop safety).
+          # Iterate over ALL matching design-notes per issue (no `break`),
+          # since one issue can be backed by multiple notes (analyst + architect).
           moved=()
           for n in "${referenced_issues[@]}"; do
             for f in docs/design-notes/*.md; do
@@ -78,7 +80,6 @@ jobs:
                 git mv "$f" "$target"
                 echo "  archived: $f -> $target (issue #$n)"
                 moved+=("$(basename "$f" .md):#${n}")
-                break
               fi
             done
           done
