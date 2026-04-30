@@ -3,13 +3,14 @@
 > **Language**: [English](../en/Rules-Reference.md) | [日本語](../ja/Rules-Reference.md)
 > **Last updated**: 2026-04-30
 > **Update history**:
+>   - 2026-04-30: add missing localization-dictionary entry, sync rule count to 12 (#105)
 >   - 2026-04-30: language-rules — add "Repo-root README sync convention" sub-section (#82)
 >   - 2026-04-29: language-rules — add "Hand-authored canonical narrative" section (#75)
 >   - 2026-04-26: Sync with #62, #66, #72, #74 (issue #77)
 >   - 2026-04-25: added denial-categories rule, #31
 > **Audience**: Agent developers
 
-This page is a compact reference for all 11 behavioral rules in `.claude/rules/`. Each entry summarizes scope, auto-load behavior, interactions with other rules and agents, and the key constraint the rule enforces.
+This page is a compact reference for all 12 behavioral rules in `.claude/rules/`. Each entry summarizes scope, auto-load behavior, interactions with other rules and agents, and the key constraint the rule enforces.
 
 For full details, follow the **Canonical** link to the source file.
 
@@ -23,6 +24,7 @@ For full details, follow the **Canonical** link to the source file.
 - [git-rules](#git-rules)
 - [language-rules](#language-rules)
 - [library-and-security-policy](#library-and-security-policy)
+- [localization-dictionary](#localization-dictionary)
 - [sandbox-policy](#sandbox-policy)
 - [denial-categories](#denial-categories)
 - [user-questions](#user-questions)
@@ -116,6 +118,16 @@ For full details, follow the **Canonical** link to the source file.
 
 ---
 
+## localization-dictionary
+
+- **Canonical**: [.claude/rules/localization-dictionary.md](../../.claude/rules/localization-dictionary.md)
+- **Scope**: All agents that emit fixed UI strings (approval gates, AskUserQuestion boilerplate, progress displays, "Phase N complete" headers)
+- **Auto-load behavior**: Auto-loaded by Claude Code on every session start
+- **Interactions**: Resolves at runtime against `project-rules.md` → `## Localization` → `Output Language`. Cooperates with `language-rules.md` Hybrid Localization Strategy: dictionary entries cover fixed UI strings, while free-form narrative is generated directly by the agent in the resolved language.
+- **Summary**: Provides the canonical en/ja translations for fixed UI strings organized into three sections (Approval Gate, AskUserQuestion Fallback, Progress Display). Template placeholders (`{N}`, `{M}`, `{agent}`) are substituted at render time. The file also points to `docs/design-notes/archived/ja-terminology-rebalance.md` for prose terminology used by Aphelion's own JA wiki/README (kept separate from runtime UI strings).
+
+---
+
 ## sandbox-policy
 
 - **Canonical**: [.claude/rules/sandbox-policy.md](../../.claude/rules/sandbox-policy.md)
@@ -166,6 +178,6 @@ For full details, follow the **Canonical** link to the source file.
 
 ## Canonical Sources
 
-- [.claude/rules/](../../.claude/rules/) — All 10 rule files (authoritative source)
+- [.claude/rules/](../../.claude/rules/) — All 12 rule files (authoritative source)
 - [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md) — Workflow overview (now part of the rules collection)
 - [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — Orchestrator behavior that depends on agent-communication-protocol
