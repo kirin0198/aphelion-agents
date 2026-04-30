@@ -9,6 +9,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **doc-reviewer** cross-cutting agent for SPEC ↔ ARCHITECTURE ↔ design-note consistency review.
+  Auto-inserted by orchestrators per `orchestrator-rules.md` triggers. (#91, PR #92 / #93 / #95)
+- **doc-flow** 5th orchestrator with 6 author agents (`hld-author`, `lld-author`,
+  `api-reference-author`, `ops-manual-author`, `user-manual-author`, `handover-author`)
+  for customer-deliverable generation (HLD / LLD / API reference / ops manual / user manual /
+  handover). Invoked via `/doc-flow`. (#54, PR #96 / #97 / #98)
+- 12 markdown templates under `.claude/templates/doc-flow/` (6 doc types × en/ja). (#54)
+- `docs/wiki/{en,ja}/Agents-Doc.md` — 6th Agents Reference wiki page covering the 6
+  Doc domain author agents (5 → 6 pages). (#54)
+- shields.io badges in README.md / README.ja.md (`agents-39` / `commands-14` / `rules-12` /
+  `license-MIT`) plus a Cloudflare Pages "Wiki" badge linking to https://aphelion-agents.com/.
+  (#101, PR #102)
+
+### Changed
+
+- Agent count bumped 31 → 32 (`doc-reviewer`, #91) → 39 (`doc-flow` + 6 authors, #54).
+  Reflected in README.md / README.ja.md body, `aphelion-overview.md`, and
+  `docs/wiki/{en,ja}/Home.md`. (#54 / #91)
+- Aphelion expanded from 4-domain to 5-domain workflow (added Doc domain). (#54)
+- Agents Reference split from 5 pages to 6 pages (`agents-doc` added to wiki and sidebar). (#54)
+- `docs/wiki/{en,ja}/Home.md` rule count corrected 9 → 12 to match actual files in
+  `src/.claude/rules/` (catch-up after `denial-categories` #31 and
+  `localization-dictionary` addition). (#103)
+- `site/src/content/docs/{en,ja}/index.mdx` (Cloudflare Pages landing) refreshed for
+  39 agents / 5 flows / Doc domain card / doc-reviewer mention. (#103)
+- `site/astro.config.mjs` PAGES array: `Agents Reference` group now lists `agents-doc`
+  so the Doc domain page appears in the sidebar. (#103)
+
+### Added (continued)
+
 - `.github/workflows/check-readme-wiki-sync.yml` — advisory CI check for README ↔ Wiki
   drift; runs on every PR (`pull_request: [opened, edited, synchronize]`). Read-only
   check; does not block merge. Promotion to a required status check is a deliberate

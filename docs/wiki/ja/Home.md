@@ -3,6 +3,7 @@
 > **Language**: [English](../en/Home.md) | [日本語](../ja/Home.md)
 > **Last updated**: 2026-04-30
 > **Update history**:
+>   - 2026-04-30: ルール数 9 → 12 に修正 (#103)
 >   - 2026-04-30: Agents-Doc.md を Agents Reference に追加（5 → 6 ページ）、Doc Flow を用語集に追加 (#54)
 >   - 2026-04-25: terminology rebalance per #40
 > **EN canonical**: 2026-04-30 of wiki/en/Home.md
@@ -24,7 +25,7 @@ Aphelion のリポジトリの README はクイックスタートと概要をカ
 | クイックスタートコマンド | [Getting Started](./Getting-Started.md): Claude Code セットアップ、初回実行ウォークスルー、シナリオ、トラブルシューティング |
 | トリアージプラン表（概要） | [Triage System](./Triage-System.md): 選択ロジック、条件、エージェントマトリクス |
 | エージェント一覧（名前のみ） | Agents Reference（ドメイン別）: [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md), [Doc](./Agents-Doc.md) — 39 エージェントの入出力と NEXT 条件 |
-| — | [Rules Reference](./Rules-Reference.md): 9 つの行動ルールのスコープとカスタマイズ方法 |
+| — | [Rules Reference](./Rules-Reference.md): 12 つの行動ルールのスコープとカスタマイズ方法 |
 | — | [Contributing](./Contributing.md): エージェント・ルールの追加方法、Wiki メンテナンス |
 
 ---
@@ -39,7 +40,7 @@ Aphelion のリポジトリの README はクイックスタートと概要をカ
 | Architecture（3 ページ） | [Domain Model](./Architecture-Domain-Model.md), [Protocols](./Architecture-Protocols.md), [Operational Rules](./Architecture-Operational-Rules.md) — 3 ドメインモデル、ハンドオフファイル、`AGENT_RESULT` プロトコル、ランタイム挙動 | エージェント開発者 |
 | [Triage System](./Triage-System.md) | 4 ティアプラン選択ロジック、ドメイン別エージェントマトリクス、必須エージェント | 全ユーザー |
 | Agents Reference（6 ページ） | [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md), [Doc](./Agents-Doc.md) — 39 エージェント全件 | エージェント開発者 |
-| [Rules Reference](./Rules-Reference.md) | 9 つの行動ルール: スコープ・自動ロード・相互関係 | エージェント開発者 |
+| [Rules Reference](./Rules-Reference.md) | 12 つの行動ルール: スコープ・自動ロード・相互関係 | エージェント開発者 |
 | [Contributing](./Contributing.md) | エージェント・ルールの追加、バイリンガル同期ワークフロー | エージェント開発者 |
 
 ---

@@ -67,7 +67,7 @@ All commands: run `/aphelion-help` after init, or see [Getting Started](docs/wik
 - [Getting Started](docs/wiki/en/Getting-Started.md) — first-run walkthrough, scenarios, troubleshooting
 - [Architecture: Domain Model](docs/wiki/en/Architecture-Domain-Model.md) — 3-domain model & handoff files
 - [Triage System](docs/wiki/en/Triage-System.md) — plan tiers & agent selection
-- [Agents Reference](docs/wiki/en/Agents-Orchestrators.md) — all 32 agents
+- [Agents Reference](docs/wiki/en/Agents-Orchestrators.md) — all 39 agents
 
 ---
 

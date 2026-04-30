@@ -32,6 +32,7 @@ const PAGES = [
 			{ slug: 'agents-delivery',      labelEn: 'Delivery Domain',               labelJa: 'Delivery Domain'               },
 			{ slug: 'agents-operations',    labelEn: 'Operations Domain',             labelJa: 'Operations Domain'             },
 			{ slug: 'agents-maintenance',   labelEn: 'Maintenance Domain',            labelJa: 'Maintenance Domain'            },
+			{ slug: 'agents-doc',           labelEn: 'Doc Domain',                    labelJa: 'Doc Domain'                    },
 		],
 	},
 	{ slug: 'rules-reference',  labelEn: 'Rules Reference',   labelJa: 'Rules Reference'    },

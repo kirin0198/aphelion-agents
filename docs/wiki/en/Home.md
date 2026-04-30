@@ -3,6 +3,7 @@
 > **Language**: [English](../en/Home.md) | [日本語](../ja/Home.md)
 > **Last updated**: 2026-04-30
 > **Update history**:
+>   - 2026-04-30: Bump rule count 9 → 12 (#103)
 >   - 2026-04-30: Add Agents-Doc.md to Agents Reference (5→6 pages), Doc Flow to glossary (#54)
 >   - 2026-04-25: link targets refreshed for Architecture / Agents-Reference page splits, #42
 > **Audience**: All users
@@ -23,7 +24,7 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 | Quick Start commands | [Getting Started](./Getting-Started.md): Claude Code setup, first-run walkthrough, scenarios, troubleshooting |
 | Triage plan table (summary) | [Triage System](./Triage-System.md): selection logic, conditions, and agent matrices |
 | Agent list (names only) | Agents Reference (split by domain): [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md), [Doc](./Agents-Doc.md) — all 39 agents with inputs, outputs, NEXT conditions |
-| — | [Rules Reference](./Rules-Reference.md): 9 behavior rules with scope and customization notes |
+| — | [Rules Reference](./Rules-Reference.md): 12 behavior rules with scope and customization notes |
 | — | [Contributing](./Contributing.md): how to add agents, rules, and maintain the wiki |
 
 ---
@@ -38,7 +39,7 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 | Architecture (3 pages) | [Domain Model](./Architecture-Domain-Model.md), [Protocols](./Architecture-Protocols.md), [Operational Rules](./Architecture-Operational-Rules.md) — 3-domain model, handoff files, AGENT_RESULT protocol, runtime rules | Agent developers |
 | [Triage System](./Triage-System.md) | 4-tier plan selection logic, per-domain agent matrices, mandatory agents | All users |
 | Agents Reference (6 pages) | [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md), [Doc](./Agents-Doc.md) — all 39 agents | Agent developers |
-| [Rules Reference](./Rules-Reference.md) | All 9 behavior rules: scope, auto-load, interactions | Agent developers |
+| [Rules Reference](./Rules-Reference.md) | All 12 behavior rules: scope, auto-load, interactions | Agent developers |
 | [Contributing](./Contributing.md) | Adding agents, rules; bilingual sync workflow | Agent developers |
 
 ---
