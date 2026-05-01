@@ -36,6 +36,7 @@ const PAGES = [
 		],
 	},
 	{ slug: 'rules-reference',  labelEn: 'Rules Reference',   labelJa: 'Rules Reference'    },
+	{ slug: 'hooks-reference',  labelEn: 'Hooks Reference',   labelJa: 'Hooks Reference'    },
 	{ slug: 'contributing',     labelEn: 'Contributing',      labelJa: 'Contributing'       },
 ];
 
