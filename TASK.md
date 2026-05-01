@@ -11,9 +11,9 @@ Status: In progress
 ### Phase 1c
 - [x] TASK-001: Create branch feat/aphelion-hooks-mvp-1c | Target: git branch
 - [x] TASK-002: Add .gitignore entry to ensure .claude/settings.json is commit target | Target: .gitignore
-- [ ] TASK-003: Create aphelion-md-sync.sh dogfooding hook | Target: src/.claude/hooks/aphelion-md-sync.sh
-- [ ] TASK-004: Create aphelion-agent-count-check.sh (discretionary) | Target: src/.claude/hooks/aphelion-agent-count-check.sh
-- [ ] TASK-005: Create aphelion-task-md-lifecycle.sh (discretionary) | Target: src/.claude/hooks/aphelion-task-md-lifecycle.sh
+- [x] TASK-003: Create aphelion-md-sync.sh dogfooding hook | Target: src/.claude/hooks/aphelion-md-sync.sh
+- [x] TASK-004: Create aphelion-agent-count-check.sh (discretionary, implemented) | Target: src/.claude/hooks/aphelion-agent-count-check.sh
+- [x] TASK-005: Create aphelion-task-md-lifecycle.sh (discretionary, implemented) | Target: src/.claude/hooks/aphelion-task-md-lifecycle.sh
 - [ ] TASK-006: Create this repo's .claude/settings.json with 3 user hooks + 3 dogfooding hooks | Target: .claude/settings.json
 - [ ] TASK-007: Shellcheck all hooks | Target: src/.claude/hooks/*.sh
 - [ ] TASK-008: Run dogfooding pass (10 commits through hook A) and record false-positive rate | Target: measurement
