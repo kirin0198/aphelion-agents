@@ -16,7 +16,7 @@ Status: In progress
 - [x] TASK-004: hook B — sensitive-file-guard | Target file: src/.claude/hooks/aphelion-sensitive-file-guard.sh
 - [x] TASK-005: hook E — deps-postinstall | Target file: src/.claude/hooks/aphelion-deps-postinstall.sh
 - [x] TASK-006: settings.json template | Target file: src/.claude/settings.json
-- [ ] TASK-007: bin/aphelion-agents.mjs extensions | Target file: bin/aphelion-agents.mjs
+- [x] TASK-007: bin/aphelion-agents.mjs extensions | Target file: bin/aphelion-agents.mjs
 - [ ] TASK-008: package.json#files extensions | Target file: package.json
 - [ ] TASK-009: smoke-update.sh regression tests | Target file: scripts/smoke-update.sh
 - [ ] TASK-010: PR 1a submission | (gh pr create)

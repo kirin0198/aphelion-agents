@@ -3,7 +3,7 @@
 // zero-dependency: Node 標準ライブラリのみ使用 (node:fs/promises, node:path, node:os, node:url)
 // 配布方式: npx github:kirin0198/aphelion-agents <command>
 
-import { cp, access, readFile, constants } from "node:fs/promises";
+import { cp, access, readFile, chmod, readdir, constants } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { homedir } from "node:os";
@@ -28,6 +28,9 @@ const packageRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const sourcePath = join(packageRoot, ".claude");
 const rulesSourcePath = join(packageRoot, "src", ".claude", "rules");
 const settingsLocalSourcePath = join(packageRoot, "src", ".claude", "settings.local.json");
+// hooks MVP (#107): settings.json template and hooks/ canonical path
+const settingsSourcePath = join(packageRoot, "src", ".claude", "settings.json");
+const hooksSourcePath = join(packageRoot, "src", ".claude", "hooks");
 
 // ユーザーへのメッセージ (ANSI カラー: 最小限の直書き)
 const GREEN = "\x1b[32m";
@@ -57,6 +60,28 @@ async function exists(path) {
   }
 }
 
+// hooks/ 配下の .sh ファイルに実行権限 (0755) を付与する (#107, R8 mitigation)
+// Windows 経由の git clone で実行ビットが落ちることがあるため、init / update の両方で実行する。
+async function chmodHooks(hooksDir) {
+  async function walk(dir) {
+    let entries;
+    try {
+      entries = await readdir(dir, { withFileTypes: true });
+    } catch {
+      return; // ディレクトリ不在は silent skip
+    }
+    for (const entry of entries) {
+      const p = join(dir, entry.name);
+      if (entry.isDirectory()) {
+        await walk(p);
+      } else if (entry.name.endsWith(".sh")) {
+        await chmod(p, 0o755);
+      }
+    }
+  }
+  await walk(hooksDir);
+}
+
 // package.json からバージョンを読み込む
 async function getVersion() {
   const pkgPath = join(packageRoot, "package.json");
@@ -78,8 +103,8 @@ function showHelp() {
   init            カレントディレクトリに .claude/ を新規配置する
   init --user     ~/.claude/ (ユーザーホーム) に新規配置する
   update          カレントディレクトリの .claude/ を最新に更新する
-                  (更新: agents/, rules/, commands/, orchestrator-rules.md。
-                   保護: settings.local.json は既存があれば上書きしない)
+                  (更新: agents/, rules/, commands/, orchestrator-rules.md, hooks/。
+                   保護: settings.local.json / settings.json は既存があれば上書きしない)
   update --user   ~/.claude/ を最新に更新する
 
 オプション:
@@ -121,6 +146,16 @@ async function cmdInit(targetPath, force) {
     await cp(settingsLocalSourcePath, join(targetPath, "settings.local.json"), {
       force: true,
     });
+    // settings.json: hooks MVP テンプレートを配布 (#107)。init は新規配置なので上書き OK。
+    await cp(settingsSourcePath, join(targetPath, "settings.json"), {
+      force: true,
+    });
+    // hooks/: canonical 配布物を overlay copy し、実行ビットを付与 (#107, R8 mitigation)
+    await cp(hooksSourcePath, join(targetPath, "hooks"), {
+      recursive: true,
+      force: true,
+    });
+    await chmodHooks(join(targetPath, "hooks"));
     ok(`.claude/ を ${targetPath} に配置しました。`);
   } catch (err) {
     fail(`コピーに失敗しました: ${err.message}`);
@@ -142,6 +177,10 @@ async function cmdUpdate(targetPath) {
   // settings.local.json の保護: ターゲット側に既存ファイルがある場合のみスキップ
   const settingsLocalPath = join(targetPath, "settings.local.json");
   const hasSettingsLocal = await exists(settingsLocalPath);
+
+  // settings.json の保護: 既存があれば保護 (利用者カスタム hook を保持するため) (#107, R1 mitigation)
+  const settingsPath = join(targetPath, "settings.json");
+  const hasSettings = await exists(settingsPath);
 
   try {
     // Option A: cp の filter でsettings.local.json をスキップ (ターゲット既存の場合のみ)
@@ -165,10 +204,33 @@ async function cmdUpdate(targetPath) {
     if (!hasSettingsLocal) {
       await cp(settingsLocalSourcePath, settingsLocalPath, { force: true });
     }
+    // settings.json: hooks MVP テンプレートを配布 (#107)。
+    // 既存があれば保護 (利用者カスタム hook を保持)、無ければ初期テンプレートとして書き込む。
+    if (!hasSettings) {
+      await cp(settingsSourcePath, settingsPath, { force: true });
+      ok("settings.json (hooks template) を初期配置しました。");
+    } else {
+      // Q7 確定文言: 英語固定、warn() 経由で表示
+      warn(
+        "Aphelion hooks template (.claude/settings.json) was preserved. " +
+        "To enable hooks, manually merge from " +
+        "https://github.com/kirin0198/aphelion-agents/blob/main/src/.claude/settings.json " +
+        "or remove .claude/settings.json and re-run `aphelion-agents update`."
+      );
+    }
+    // hooks/: canonical 更新を毎回反映 (regex / バグ修正の配布のため overlay copy) (#107)
+    await cp(hooksSourcePath, join(targetPath, "hooks"), {
+      recursive: true,
+      force: true,
+    });
+    await chmodHooks(join(targetPath, "hooks"));
     const version = await getVersion();
     ok(`.claude/ を ${targetPath} に更新しました (source: aphelion-agents@${version})。`);
     if (hasSettingsLocal) {
       ok("settings.local.json は保護されました (既存を保持)。");
+    }
+    if (hasSettings) {
+      ok("settings.json は保護されました (既存を保持)。");
     }
   } catch (err) {
     fail(`更新に失敗しました: ${err.message}`);
