@@ -3,8 +3,8 @@
 > Source: ARCHITECTURE.md equivalent = docs/design-notes/aphelion-hooks-architecture.md (Last updated: 2026-04-30)
 
 ## Phase: hooks MVP PR 1a (scripts + bin)
-Last updated: 2026-05-01T01:00:00+09:00
-Status: In progress
+Last updated: 2026-05-01T09:00:00+09:00
+Status: Completed (all tasks done, PR #111 created)
 
 ## Task List
 
@@ -19,10 +19,13 @@ Status: In progress
 - [x] TASK-007: bin/aphelion-agents.mjs extensions | Target file: bin/aphelion-agents.mjs
 - [x] TASK-008: package.json#files extensions | Target file: package.json
 - [x] TASK-009: smoke-update.sh regression tests | Target file: scripts/smoke-update.sh
-- [ ] TASK-010: PR 1a submission | (gh pr create)
+- [x] TASK-010: PR 1a submission | (gh pr create)
 
 ## Recent Commits
-(Record git log --oneline -3 after each task completion.)
+
+a0fbec1 test: add hooks MVP regression tests to smoke-update.sh (TASK-009)
+4b5b217 feat: add hooks/ and settings.json to package.json#files (TASK-008)
+87878a2 feat: extend bin/aphelion-agents.mjs for hooks MVP (TASK-007)
 
 ## Session Interruption Notes
 (Record the situation here when a session is interrupted.)
