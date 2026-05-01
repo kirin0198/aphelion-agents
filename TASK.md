@@ -18,7 +18,7 @@ Status: In progress
 - [x] TASK-007: `docs/wiki/en/Home.md` Related Pages に Hooks-Reference 追加 + 12→13 | Target file: docs/wiki/en/Home.md
 - [x] TASK-008: `docs/wiki/ja/Home.md` 同期 + 12→13 | Target file: docs/wiki/ja/Home.md
 - [x] TASK-009: `site/astro.config.mjs` PAGES 配列に Hooks-Reference エントリ追加 | Target file: site/astro.config.mjs
-- [ ] TASK-010: `README.md` / `README.ja.md` rules badge 12→13 | Target file: README.md, README.ja.md
+- [x] TASK-010: `README.md` / `README.ja.md` rules badge 12→13 | Target file: README.md, README.ja.md
 
 ## Recent Commits
 (Record git log --oneline -3 after each task completion.)
