@@ -3,15 +3,15 @@
 > Source: ARCHITECTURE.md equivalent = docs/design-notes/aphelion-hooks-architecture.md (Last updated: 2026-04-30)
 
 ## Phase: hooks MVP PR 1a (scripts + bin)
-Last updated: 2026-05-01T00:00:00+09:00
+Last updated: 2026-05-01T01:00:00+09:00
 Status: In progress
 
 ## Task List
 
 ### Phase 1a (PR 1a — code only: scripts + bin)
 
-- [ ] TASK-001: branch creation + initial commit (design notes) | Target file: docs/design-notes/*.md
-- [ ] TASK-002: secret-patterns.sh canonical lib | Target file: src/.claude/hooks/lib/secret-patterns.sh
+- [x] TASK-001: branch creation + initial commit (design notes) | Target file: docs/design-notes/*.md
+- [x] TASK-002: secret-patterns.sh canonical lib | Target file: src/.claude/hooks/lib/secret-patterns.sh
 - [ ] TASK-003: hook A — secrets-precommit | Target file: src/.claude/hooks/aphelion-secrets-precommit.sh
 - [ ] TASK-004: hook B — sensitive-file-guard | Target file: src/.claude/hooks/aphelion-sensitive-file-guard.sh
 - [ ] TASK-005: hook E — deps-postinstall | Target file: src/.claude/hooks/aphelion-deps-postinstall.sh
