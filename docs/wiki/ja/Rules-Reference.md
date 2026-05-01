@@ -1,17 +1,18 @@
 # Rules Reference
 
 > **Language**: [English](../en/Rules-Reference.md) | [日本語](../ja/Rules-Reference.md)
-> **Last updated**: 2026-04-30
+> **Last updated**: 2026-05-01
 > **Update history**:
+>   - 2026-05-01: hooks-policy エントリ追加、ルール数 12 → 13 に更新 (#107)
 >   - 2026-04-30: add missing localization-dictionary entry, sync rule count to 12 (#105)
 >   - 2026-04-30: language-rules — "Repo-root README sync convention" sub-section を追加 (#82)
 >   - 2026-04-29: language-rules — "Hand-authored canonical narrative" セクションを追加 (#75)
 >   - 2026-04-26: Sync with #62, #66, #72, #74 (issue #77)
 >   - 2026-04-25: denial-categories ルール追加, #31
-> **EN canonical**: 2026-04-30 of wiki/en/Rules-Reference.md
+> **EN canonical**: 2026-05-01 of wiki/en/Rules-Reference.md
 > **Audience**: エージェント開発者
 
-このページは`.claude/rules/`にある 12 の行動ルールのコンパクトなリファレンスです。各エントリはスコープ、自動ロードの動作、他ルール・エージェントとのインタラクション、ルールが強制する主要な制約をまとめています。
+このページは`.claude/rules/`にある 13 の行動ルールのコンパクトなリファレンスです。各エントリはスコープ、自動ロードの動作、他ルール・エージェントとのインタラクション、ルールが強制する主要な制約をまとめています。
 
 詳細については、**正規**リンクからソースファイルを参照してください。
 
@@ -23,6 +24,7 @@
 - [document-versioning](#document-versioning)
 - [file-operation-principles](#file-operation-principles)
 - [git-rules](#git-rules)
+- [hooks-policy](#hooks-policy)
 - [language-rules](#language-rules)
 - [library-and-security-policy](#library-and-security-policy)
 - [localization-dictionary](#localization-dictionary)
@@ -94,6 +96,26 @@
   - `developer` は `## Branch & PR Strategy` に従ってブランチ作成・プッシュ・PR 作成を担い、`AGENT_RESULT` に `BRANCH` / `PR_URL` を出力します。
   - `analyst` はブランチや PR を作成しません；設計ノートと GitHub イシューの作成のみを担います。
 - **概要**: (1) コミットの粒度、ステージングポリシー（`git add -A` は禁止；明示的なファイルパスを使用；`.env`、`credentials.*`、`*.secret` はコミットしない）、コミットメッセージフォーマット（8 つのプレフィックスタイプ: feat、fix、refactor、test、docs、chore、ci、ops）；(2) Co-Authored-By トレーラーポリシー；(3) `## Repository` — `project-rules.md` 内の `Remote type` 宣言（`github` / `gitlab` / `gitea` / `local-only` / `none`）；(4) `## Startup Probe` — `REPO_STATE` を解決するセッションごとのプローブ；(5) `## Branch & PR Strategy` — ブランチ命名（`fix/` / `feat/` / `refactor/`）、ブランチライフサイクル（作成 → コミット → プッシュ → `Closes #N` 付き PR）、`AGENT_RESULT` への追加項目（`BRANCH`、`PR_URL`）；(6) `## Behavior by Remote Type` — ブランチ / コミット / プッシュ / PR 操作のための `REPO_STATE` 別マトリックスを定義します。
+
+---
+
+## hooks-policy
+
+- **正規**: [.claude/rules/hooks-policy.md](../../.claude/rules/hooks-policy.md)
+- **スコープ**: `git commit`・ファイル書き込み（`Write`/`Edit`）・依存関係インストールを推奨または実施する全エージェント；フック bypass マーカーと連携するエージェント
+- **自動ロードの動作**: Claude Code が全セッション起動時に自動ロード
+- **インタラクション**:
+  - `sandbox-policy.md` および `denial-categories.md` のコンパニオンルール。フックは**第 4 層**（積極的なコンテンツスキャン）として、`settings.local.json` deny（第 1 層）・`sandbox-runner`（第 2 層）・`denial-categories` 事後診断（第 3 層）の上に位置します。
+  - フック A は `git commit` の前に実行され、`library-and-security-policy.md` のシークレット検出要件と統合します。
+  - フック E は依存関係インストール後に実行され、`library-and-security-policy.md` で定義された `/vuln-scan` ワークフローをトリガーします。
+  - `developer` はフック A が安全なプレースホルダーで発動した場合、`[skip-secrets-check]` bypass をユーザーに案内してください。
+- **フック一覧（MVP）**:
+  - **A** `aphelion-secrets-precommit.sh` — `PreToolUse Bash(git commit*)` — ステージ差分を 8 つのシークレットパターン（P1〜P8）でスキャン；マッチ時は exit 2。bypass: コミットメッセージに `[skip-secrets-check]` を追加。
+  - **B** `aphelion-sensitive-file-guard.sh` — `PreToolUse Write|Edit` — 慣習的なシークレットファイル名（`.env*`・`*.pem`・`*.key` 等）への書き込みをブロック。`tests/`・`fixtures/` ディレクトリや `.example`/`.template`/`.sample`/`.dist` サフィックスは許可。bypass マーカーなし — 無効化には `settings.json` 編集が必要。
+  - **E** `aphelion-deps-postinstall.sh` — `PostToolUse Bash(npm install*|uv add*|pip install*|cargo add*|go get*)` — 非ブロッキングの勧告のみ；依存関係変更後に `/vuln-scan` を推奨。
+- **フェイルセーフ**: 全フックは `trap ERR → exit 0` でラップされており、スクリプト内部エラーがユーザーの作業を止めることはありません（フェイルオープン設計）。
+- **配布**: `src/.claude/hooks/`（正規）から `npx aphelion-agents init/update` で配布。`settings.json` は init 後は保護される（ユーザーのカスタマイズを保持）；`hooks/` スクリプトは毎回 update で上書きコピーされます。
+- **概要**: Aphelion の MVP 3 フックが積極的なコンテンツスキャン層として機能することを定めます。エージェントは bypass ルール（フック A: `[skip-secrets-check]`；フック B: bypass なし・`settings.json` 編集が必要；フック E: bypass 不要）を知っておく必要があります。全フックはフェイルオープン設計です。正規パターンライブラリ（`secret-patterns.sh`・ID P1〜P8）はフック A と `/secrets-scan` slash command が共有する単一の信頼ソースです。
 
 ---
 
@@ -179,6 +201,7 @@
 
 ## 正規ソース
 
-- [.claude/rules/](../../.claude/rules/) — 12のルールファイル全体（権威あるソース）
+- [.claude/rules/](../../.claude/rules/) — 13 のルールファイル全体（権威あるソース）
 - [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md) — ワークフロー概要（rules コレクションの一部に統合）
 - [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — `agent-communication-protocol` に依存する Flow Orchestrator の動作
+- [Hooks Reference](./Hooks-Reference.md) — フックセットのユーザー向けガイド
