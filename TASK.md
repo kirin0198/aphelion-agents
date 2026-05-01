@@ -14,7 +14,7 @@ Status: In progress
 - [x] TASK-003: `docs/wiki/en/Rules-Reference.md` ルール追加 + 12→13 bump | Target file: docs/wiki/en/Rules-Reference.md
 - [x] TASK-004: `docs/wiki/ja/Rules-Reference.md` 同期 (EN canonical date 更新) | Target file: docs/wiki/ja/Rules-Reference.md
 - [x] TASK-005: `docs/wiki/en/Hooks-Reference.md` 新規作成 | Target file: docs/wiki/en/Hooks-Reference.md
-- [ ] TASK-006: `docs/wiki/ja/Hooks-Reference.md` 新規作成 (Bilingual Sync) | Target file: docs/wiki/ja/Hooks-Reference.md
+- [x] TASK-006: `docs/wiki/ja/Hooks-Reference.md` 新規作成 (Bilingual Sync) | Target file: docs/wiki/ja/Hooks-Reference.md
 - [ ] TASK-007: `docs/wiki/en/Home.md` Related Pages に Hooks-Reference 追加 + 12→13 | Target file: docs/wiki/en/Home.md
 - [ ] TASK-008: `docs/wiki/ja/Home.md` 同期 + 12→13 | Target file: docs/wiki/ja/Home.md
 - [ ] TASK-009: `site/astro.config.mjs` PAGES 配列に Hooks-Reference エントリ追加 | Target file: site/astro.config.mjs
