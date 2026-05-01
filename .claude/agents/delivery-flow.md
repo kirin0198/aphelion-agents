@@ -61,13 +61,30 @@ If `DISCOVERY_RESULT.md` is available, determine from it. Otherwise, interview t
 |------|-----------|-----------------|
 | Minimal | Single-function tool | spec-designer → architect → developer → tester (test-designer integrated) → security-auditor |
 | Light | Personal side project | spec-designer → [ux-designer] → architect → developer → test-designer → [e2e-test-designer] → tester → reviewer → security-auditor |
-| Standard | Multi-file project | spec-designer → [ux-designer] → architect → scaffolder → developer → test-designer → [e2e-test-designer] → tester → reviewer → security-auditor → doc-writer |
-| Full | Public project / OSS | spec-designer → [ux-designer] → architect → scaffolder → developer → test-designer → [e2e-test-designer] → tester → reviewer → security-auditor → doc-writer → releaser |
+| Standard | Multi-file project | spec-designer → [ux-designer → [visual-designer]] → architect → scaffolder → developer → test-designer → [e2e-test-designer] → tester → reviewer → security-auditor → doc-writer |
+| Full | Public project / OSS | spec-designer → [ux-designer → [visual-designer]] → architect → scaffolder → developer → test-designer → [e2e-test-designer] → tester → reviewer → security-auditor → doc-writer → releaser |
 
-- **[ux-designer]** runs only for projects that include a UI
+- **[ux-designer]** runs only for projects that include a UI (`HAS_UI: true`)
+- **[visual-designer]** runs only for `HAS_UI: true` projects on **Standard or Full**. Minimal / Light skip it; in those plans, `ux-designer` applies the lightweight visual default documented in its definition file
 - **[e2e-test-designer]** runs only for projects that include a UI (`HAS_UI: true`)
 - **security-auditor** **must run on all plans** (cannot be omitted)
 - **Minimal** integrates test-designer into tester and skips reviewer
+
+### HAS_UI × Plan agent matrix (UI sub-flow)
+
+When `HAS_UI: true`, the design phase expands as follows. When `HAS_UI: false`, all three rows are skipped and the flow goes directly `spec-designer → architect`.
+
+| Agent | Minimal | Light | Standard | Full |
+|-------|---------|-------|----------|------|
+| ux-designer | ✗ | ○ | ○ | ○ |
+| visual-designer | ✗ | ✗ | ○ | ○ |
+| e2e-test-designer | ✗ | ○ | ○ | ○ |
+
+When `visual-designer` is skipped (Minimal / Light), the resulting `UI_SPEC.md`
+includes an explicit lightweight-default block in its Section 1 stating
+that visual-designer was not launched (see `ux-designer.md` "Design Policy").
+This makes the visual decision auditable and lets a future Standard/Full
+re-run regenerate `VISUAL_SPEC.md` cleanly.
 
 Output the triage result as text, then request approval via `AskUserQuestion`.
 
@@ -102,22 +119,27 @@ Then request approval via `AskUserQuestion`:
 
 ### New Development (Standard Plan Example)
 ```
-Phase 1:  Spec definition        → spec-designer      → doc-reviewer (auto) → ⏸ User approval
-Phase 2:  UI design              → ux-designer        → doc-reviewer (auto) → ⏸ User approval  (UI projects only)
-Phase 3:  Architecture design    → architect          → doc-reviewer (auto) → ⏸ User approval
-Phase 4:  Project initialization → scaffolder         → ⏸ User approval
-Phase 5:  Implementation         → developer          → ⏸ User approval
-Phase 6:  Test design            → test-designer      → ⏸ User approval
-Phase 7:  E2E test design        → e2e-test-designer  → ⏸ User approval  (UI projects only)
-Phase 8:  Test execution         → tester             → ⏸ User approval
-Phase 9:  Review                 → reviewer           → ⏸ User approval
-Phase 10: Security audit         → security-auditor   → ⏸ User approval
-Phase 11: Documentation          → doc-writer         → ⏸ User approval → Done
+Phase 1:  Spec definition         → spec-designer       → doc-reviewer (auto) → ⏸ User approval
+Phase 2a: UI design               → ux-designer         → doc-reviewer (auto) → ⏸ User approval  (UI projects only)
+Phase 2b: Visual design           → visual-designer     → doc-reviewer (auto) → ⏸ User approval  (UI projects, Standard+ only)
+Phase 3:  Architecture design     → architect           → doc-reviewer (auto) → ⏸ User approval
+Phase 4:  Project initialization  → scaffolder          → ⏸ User approval
+Phase 5:  Implementation          → developer           → ⏸ User approval
+Phase 6:  Test design             → test-designer       → ⏸ User approval
+Phase 7:  E2E test design         → e2e-test-designer   → ⏸ User approval  (UI projects only)
+Phase 8:  Test execution          → tester              → ⏸ User approval
+Phase 9:  Review                  → reviewer            → ⏸ User approval
+Phase 10: Security audit          → security-auditor    → ⏸ User approval
+Phase 11: Documentation           → doc-writer          → ⏸ User approval → Done
 ```
 
-**Branching based on UI presence:**
-- If `spec-designer`'s `AGENT_RESULT` contains `HAS_UI: true` → execute Phase 2 (ux-designer) and Phase 7 (e2e-test-designer)
-- If `HAS_UI: false` → skip Phase 2 and Phase 7, proceed directly to next applicable phase
+**Branching based on UI presence and plan tier:**
+- If `spec-designer`'s `AGENT_RESULT` contains `HAS_UI: true`:
+  - Execute Phase 2a (`ux-designer`)
+  - Execute Phase 2b (`visual-designer`) **only if plan is Standard or Full**
+  - Execute Phase 7 (`e2e-test-designer`)
+- If `HAS_UI: true` and plan is Minimal / Light: skip Phase 2b. `ux-designer` writes the lightweight-default block into `UI_SPEC.md` Section 1; downstream agents read that block instead of `VISUAL_SPEC.md`.
+- If `HAS_UI: false`: skip Phases 2a, 2b, and 7; proceed directly to next applicable phase.
 
 ### Side Entry: analyst (Joining via Issue)
 
@@ -242,7 +264,7 @@ security-auditor (CRITICAL detected)
 
 ```
 doc-reviewer (FAIL detected)
-  → triggering agent (spec-designer / ux-designer / architect)
+  → triggering agent (spec-designer / ux-designer / visual-designer / architect)
     → doc-reviewer (re-check)
 ```
 
@@ -317,21 +339,23 @@ After all phases complete and final approval:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Delivery complete
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  Phase 1  Spec definition          ✅ Approved
-  Phase 2  UI design                ✅ Approved / ⏭ Skipped (no UI)
-  Phase 3  Architecture design      ✅ Approved
-  Phase 4  Project initialization   ✅ Approved / ⏭ Skipped
-  Phase 5  Implementation           ✅ Approved
-  Phase 6  Test design              ✅ Approved
-  Phase 7  E2E test design          ✅ Approved / ⏭ Skipped (no UI)
-  Phase 8  Test execution           ✅ Approved ({N} tests passed)
-  Phase 9  Review                   ✅ Approved (no CRITICALs)
-  Phase 10 Security audit           ✅ Approved (no CRITICALs)
-  Phase 11 Documentation            ✅ Approved
+  Phase 1   Spec definition          ✅ Approved
+  Phase 2a  UI design                ✅ Approved / ⏭ Skipped (no UI)
+  Phase 2b  Visual design            ✅ Approved / ⏭ Skipped (no UI / Minimal / Light)
+  Phase 3   Architecture design      ✅ Approved
+  Phase 4   Project initialization   ✅ Approved / ⏭ Skipped
+  Phase 5   Implementation           ✅ Approved
+  Phase 6   Test design              ✅ Approved
+  Phase 7   E2E test design          ✅ Approved / ⏭ Skipped (no UI)
+  Phase 8   Test execution           ✅ Approved ({N} tests passed)
+  Phase 9   Review                   ✅ Approved (no CRITICALs)
+  Phase 10  Security audit           ✅ Approved (no CRITICALs)
+  Phase 11  Documentation            ✅ Approved
 
 Artifacts:
   SPEC.md          ✅
   UI_SPEC.md       ✅ / (no UI)
+  VISUAL_SPEC.md   ✅ / (no UI / Minimal / Light)
   ARCHITECTURE.md  ✅
   TEST_PLAN.md     ✅
   Implementation   ✅
@@ -354,6 +378,7 @@ After all phases are complete, generate the handoff file that serves as input fo
 - SPEC.md: {present/absent}
 - ARCHITECTURE.md: {present/absent}
 - UI_SPEC.md: {present/absent/N/A}
+- VISUAL_SPEC.md: {present/absent/N/A}
 - TEST_PLAN.md: {present/absent}
 - Implementation code: {file count}
 - README.md: {present/absent}

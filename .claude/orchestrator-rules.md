@@ -22,10 +22,10 @@ Each orchestrator must `Read` this file at startup before beginning work.
 |------|-----------|-----------------|
 | Minimal | Single-function tool | spec-designer → architect → developer → tester (test-designer integrated) → security-auditor |
 | Light | Personal side project | + ux-designer (if UI) + test-designer + reviewer |
-| Standard | Multi-file project | + scaffolder + doc-writer |
+| Standard | Multi-file project | + scaffolder + visual-designer (if UI) + doc-writer |
 | Full | Public project / OSS | + releaser |
 
-`security-auditor` **must run on all plans**. `ux-designer` runs only for projects with UI.
+`security-auditor` **must run on all plans**. `ux-designer` runs only for projects with UI. `visual-designer` runs only for projects with UI **and** plan ≥ Standard; on Minimal / Light it is skipped and `ux-designer` applies its lightweight visual default (see `.claude/agents/ux-designer.md` "Design Policy").
 
 > **sandbox-runner placement**: In Standard and above, `sandbox-runner` is automatically inserted by the orchestrator when a `required`-tier command (per `sandbox-policy.md`) is detected. In Light, only explicit delegation from the calling agent is permitted. In Minimal, `sandbox-runner` is not used — policy violations trigger an advisory warning to the user only.
 
@@ -152,7 +152,7 @@ The orchestrator inserts `doc-reviewer` **after** receiving an
 
 | Flow | Trigger agents | Conditions |
 |------|----------------|------------|
-| delivery-flow | spec-designer, ux-designer, architect | All plans (Minimal+). ux-designer triggers only when HAS_UI=true |
+| delivery-flow | spec-designer, ux-designer, visual-designer, architect | All plans (Minimal+). ux-designer triggers only when HAS_UI=true. visual-designer triggers only when HAS_UI=true AND plan ≥ Standard |
 | discovery-flow | scope-planner | Light/Standard/Full only. Minimal has no scope-planner so doc-reviewer is not triggered structurally. |
 | maintenance-flow | analyst | Patch: only if `analyst.DOCS_UPDATED` contains SPEC.md (no_change → skip). Minor/Major: always |
 
@@ -259,6 +259,7 @@ Final output of Delivery Flow. Input for Operations Flow (for service type).
 - SPEC.md: {present/absent}
 - ARCHITECTURE.md: {present/absent}
 - UI_SPEC.md: {present/absent/N/A}
+- VISUAL_SPEC.md: {present/absent/N/A}
 - TEST_PLAN.md: {present/absent}
 - Implementation code: {file count}
 - README.md: {present/absent}
@@ -547,8 +548,8 @@ reviewer (CRITICAL detected) → developer (fix) → tester (re-run) → reviewe
 
 ```
 doc-reviewer (DOC_REVIEW_RESULT: fail)
-  → triggering agent (spec-designer / ux-designer / architect /
-                      scope-planner / analyst) for fix
+  → triggering agent (spec-designer / ux-designer / visual-designer /
+                      architect / scope-planner / analyst) for fix
     → doc-reviewer (re-check)
 ```
 

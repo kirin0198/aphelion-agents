@@ -1,11 +1,12 @@
 # Aphelion Workflow Overview
 
-> **Last updated**: 2026-04-30
+> **Last updated**: 2026-05-01
 > **Auto-loaded**: Yes — placed in `.claude/rules/`, loaded by Claude Code on every session start
 > 更新履歴:
 >   - 2026-04-24: Maintenance Flow (第4フロー) を追加
 >   - 2026-04-30: doc-reviewer (cross-cutting agent) を追加 (#91)
 >   - 2026-04-30: doc-flow (5th flow, customer deliverable generation) を追加 (#54)
+>   - 2026-05-01: Delivery 12 → 13 agents (visual-designer 追加) (#109)
 
 This file provides a high-level overview of the Aphelion workflow.
 Behavioral rules are defined in `.claude/rules/` (auto-loaded).
@@ -32,7 +33,7 @@ Aphelion divides the entire project lifecycle into three primary domains — **D
 ```
 Discovery Flow ──[DISCOVERY_RESULT.md]──▶ Delivery Flow ──[DELIVERY_RESULT.md]──▶ Operations Flow
  (requirements)                         (design & impl)                       (deploy & ops)
- 6 agents                               12 agents                              4 agents
+ 6 agents                               13 agents                              4 agents
 
                     Maintenance Flow ──[MAINTENANCE_RESULT.md]──▶ Delivery Flow (Major only)
                     (existing project maintenance)
