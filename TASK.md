@@ -14,7 +14,7 @@ Status: In progress
 - [x] TASK-002: secret-patterns.sh canonical lib | Target file: src/.claude/hooks/lib/secret-patterns.sh
 - [x] TASK-003: hook A — secrets-precommit | Target file: src/.claude/hooks/aphelion-secrets-precommit.sh
 - [x] TASK-004: hook B — sensitive-file-guard | Target file: src/.claude/hooks/aphelion-sensitive-file-guard.sh
-- [ ] TASK-005: hook E — deps-postinstall | Target file: src/.claude/hooks/aphelion-deps-postinstall.sh
+- [x] TASK-005: hook E — deps-postinstall | Target file: src/.claude/hooks/aphelion-deps-postinstall.sh
 - [ ] TASK-006: settings.json template | Target file: src/.claude/settings.json
 - [ ] TASK-007: bin/aphelion-agents.mjs extensions | Target file: bin/aphelion-agents.mjs
 - [ ] TASK-008: package.json#files extensions | Target file: package.json
