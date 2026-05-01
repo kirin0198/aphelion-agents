@@ -1,9 +1,9 @@
 # Aphelion — Frontier AI Agents
 
-Claude Code 向け AI コーディングエージェント定義集です。39 の専門エージェントがプロジェクトの全工程を自動化します。
+Claude Code 向け AI コーディングエージェント定義集です。40 の専門エージェントがプロジェクトの全工程を自動化します。
 
 [![Wiki](https://img.shields.io/badge/Wiki-aphelion--agents.com-F38020?logo=cloudflarepages&logoColor=white&style=flat)](https://aphelion-agents.com/)
-![agents](https://img.shields.io/badge/agents-39-blueviolet) ![commands](https://img.shields.io/badge/commands-14-blue) ![rules](https://img.shields.io/badge/rules-12-green) ![license](https://img.shields.io/badge/license-MIT-blue)
+![agents](https://img.shields.io/badge/agents-40-blueviolet) ![commands](https://img.shields.io/badge/commands-14-blue) ![rules](https://img.shields.io/badge/rules-12-green) ![license](https://img.shields.io/badge/license-MIT-blue)
 
 **[English README](README.md)**
 
@@ -20,7 +20,7 @@ flowchart LR
     OPR["OPS_RESULT.md"]
 
     Discovery["Discovery Flow\n(6 agents)"] -->|generates| DR
-    DR -->|input for| Delivery["Delivery Flow\n(12 agents)"]
+    DR -->|input for| Delivery["Delivery Flow\n(13 agents)"]
     Delivery -->|generates| DLR
     DLR -->|input for| Ops["Operations Flow\n(4 agents)\nservice only"]
     Ops -->|generates| OPR
@@ -67,7 +67,7 @@ cd /path/to/your-project && claude
 - [Getting Started](docs/wiki/ja/Getting-Started.md) — 初回実行ウォークスルー、利用シナリオ、トラブルシューティング
 - [Architecture: Domain Model](docs/wiki/ja/Architecture-Domain-Model.md) — 3領域モデルとハンドオフファイル
 - [Triage System](docs/wiki/ja/Triage-System.md) — プランティアとエージェント選択
-- [Agents Reference](docs/wiki/ja/Agents-Orchestrators.md) — 全 39 エージェント
+- [Agents Reference](docs/wiki/ja/Agents-Orchestrators.md) — 全 40 エージェント
 
 ---
 

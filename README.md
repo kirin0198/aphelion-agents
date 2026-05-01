@@ -1,9 +1,9 @@
 # Aphelion — Frontier AI Agents
 
-A collection of AI coding agent definitions for Claude Code that automates the entire project lifecycle with 39 specialized agents.
+A collection of AI coding agent definitions for Claude Code that automates the entire project lifecycle with 40 specialized agents.
 
 [![Wiki](https://img.shields.io/badge/Wiki-aphelion--agents.com-F38020?logo=cloudflarepages&logoColor=white&style=flat)](https://aphelion-agents.com/)
-![agents](https://img.shields.io/badge/agents-39-blueviolet) ![commands](https://img.shields.io/badge/commands-14-blue) ![rules](https://img.shields.io/badge/rules-12-green) ![license](https://img.shields.io/badge/license-MIT-blue)
+![agents](https://img.shields.io/badge/agents-40-blueviolet) ![commands](https://img.shields.io/badge/commands-14-blue) ![rules](https://img.shields.io/badge/rules-12-green) ![license](https://img.shields.io/badge/license-MIT-blue)
 
 **[日本語版 README はこちら](README.ja.md)**
 
@@ -20,7 +20,7 @@ flowchart LR
     OPR["OPS_RESULT.md"]
 
     Discovery["Discovery Flow\n(6 agents)"] -->|generates| DR
-    DR -->|input for| Delivery["Delivery Flow\n(12 agents)"]
+    DR -->|input for| Delivery["Delivery Flow\n(13 agents)"]
     Delivery -->|generates| DLR
     DLR -->|input for| Ops["Operations Flow\n(4 agents)\nservice only"]
     Ops -->|generates| OPR
@@ -67,7 +67,7 @@ All commands: run `/aphelion-help` after init, or see [Getting Started](docs/wik
 - [Getting Started](docs/wiki/en/Getting-Started.md) — first-run walkthrough, scenarios, troubleshooting
 - [Architecture: Domain Model](docs/wiki/en/Architecture-Domain-Model.md) — 3-domain model & handoff files
 - [Triage System](docs/wiki/en/Triage-System.md) — plan tiers & agent selection
-- [Agents Reference](docs/wiki/en/Agents-Orchestrators.md) — all 39 agents
+- [Agents Reference](docs/wiki/en/Agents-Orchestrators.md) — all 40 agents
 
 ---
 
