@@ -7,6 +7,7 @@
 >   - 2026-04-30: doc-reviewer (cross-cutting agent) を追加 (#91)
 >   - 2026-04-30: doc-flow (5th flow, customer deliverable generation) を追加 (#54)
 >   - 2026-05-01: Delivery 12 → 13 agents (visual-designer 追加) (#109)
+>   - 2026-05-01: Hook layer section 追加 (MVP 3 hooks, rules count 12→13) (#107)
 
 This file provides a high-level overview of the Aphelion workflow.
 Behavioral rules are defined in `.claude/rules/` (auto-loaded).
@@ -86,6 +87,17 @@ Orchestrator-specific rules are in `.claude/orchestrator-rules.md` (read on-dema
 | `api-reference-author` | Read, Write, Glob, Grep | API reference (customer) | via doc-flow / standalone |
 | `user-manual-author` | Read, Write, Glob, Grep | End-user manual | via doc-flow / standalone |
 | `handover-author` | Read, Write, Glob, Grep | Handover package | via doc-flow / standalone |
+
+### Hook layer
+
+Aphelion ships a small set of Claude Code hooks under `.claude/hooks/` to provide a
+fourth defense layer (proactive content scan) on top of `settings.local.json` deny
+rules, `sandbox-runner` isolation, and `denial-categories` post-mortem classification.
+The MVP hook set focuses on user-project safety: secrets pre-commit guard, sensitive
+file write block, and dependency-install vuln-scan reminder.
+
+See `hooks-policy.md` (rule, auto-loaded) and `docs/wiki/en/Hooks-Reference.md`
+(user-facing) for details.
 
 ---
 

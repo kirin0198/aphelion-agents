@@ -10,7 +10,7 @@ Status: In progress
 
 ### Phase 1b
 - [x] TASK-001: `src/.claude/rules/hooks-policy.md` 新規作成 | Target file: src/.claude/rules/hooks-policy.md
-- [ ] TASK-002: `src/.claude/rules/aphelion-overview.md` に Hook layer 段落追加 | Target file: src/.claude/rules/aphelion-overview.md
+- [x] TASK-002: `src/.claude/rules/aphelion-overview.md` に Hook layer 段落追加 | Target file: src/.claude/rules/aphelion-overview.md
 - [ ] TASK-003: `docs/wiki/en/Rules-Reference.md` ルール追加 + 12→13 bump | Target file: docs/wiki/en/Rules-Reference.md
 - [ ] TASK-004: `docs/wiki/ja/Rules-Reference.md` 同期 (EN canonical date 更新) | Target file: docs/wiki/ja/Rules-Reference.md
 - [ ] TASK-005: `docs/wiki/en/Hooks-Reference.md` 新規作成 | Target file: docs/wiki/en/Hooks-Reference.md
