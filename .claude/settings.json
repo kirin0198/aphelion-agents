@@ -1,0 +1,72 @@
+{
+  "_comment": "This repo's own dogfooding hook registration (PR 1c/4, #107). NOT the user-facing template (src/.claude/settings.json). References hooks from src/.claude/hooks/ (canonical source in this repo).",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/src/.claude/hooks/aphelion-secrets-precommit.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/src/.claude/hooks/aphelion-sensitive-file-guard.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/src/.claude/hooks/aphelion-md-sync.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/src/.claude/hooks/aphelion-deps-postinstall.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/src/.claude/hooks/aphelion-md-sync.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/src/.claude/hooks/aphelion-agent-count-check.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/src/.claude/hooks/aphelion-task-md-lifecycle.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

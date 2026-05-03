@@ -5,6 +5,11 @@
 /.claude/settings.local.json
 !src/.claude/settings.local.json
 
+# Dogfooding: this repo's own hook registration is a shared asset (PR 1c/4, #107).
+# settings.json (not settings.local.json) must remain committed.
+# Explicit negation protects against user-level gitignore patterns like `**/.claude/settings.json`.
+!/.claude/settings.json
+
 # Node
 node_modules/
 
