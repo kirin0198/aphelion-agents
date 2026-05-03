@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Aphelion hooks** (3 MVP): `aphelion-secrets-precommit` (hook A), `aphelion-sensitive-file-guard`
+  (hook B), and `aphelion-deps-postinstall` (hook E). Fourth defense layer for user-project safety:
+  secrets pre-commit guard, sensitive file write block, and dependency-install vuln-scan reminder.
+  Distributed via `src/.claude/hooks/` + `src/.claude/settings.json`; deployed by `npx aphelion-agents init/update`.
+  `/secrets-scan` slash command refactored to source patterns from the canonical `secret-patterns.sh`
+  library (P1–P8), eliminating double maintenance. (#107, PR #111 / #112 / #113 / #115 / this PR)
 - **doc-reviewer** cross-cutting agent for SPEC ↔ ARCHITECTURE ↔ design-note consistency review.
   Auto-inserted by orchestrators per `orchestrator-rules.md` triggers. (#91, PR #92 / #93 / #95)
 - **doc-flow** 5th orchestrator with 6 author agents (`hld-author`, `lld-author`,

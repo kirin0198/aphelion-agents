@@ -263,3 +263,36 @@ echo "PASS [merge-s7]: update + malformed settings.json → skipped + warning, u
 
 rm -rf "$TMP_MERGE"
 echo "PASS: all settings.json merge regression tests passed (#114)"
+
+# ────────────────────────────────────────────────────────────────────
+# P7 regex regression test (PR 1d #107)
+# Verifies that the `--` separator fix allows grep to match a PEM
+# private key header without interpreting `-----BEGIN` as flags.
+# ────────────────────────────────────────────────────────────────────
+
+# Source the lib into a subshell so we don't pollute this script's env
+PRIVATE_KEY_FIXTURE="-----BEGIN RSA PRIVATE KEY-----
+MIIEowIBAAKCAQEA0Z3VS5JJcds3xHn/ygWep4PAtEsHAjVCnhk=
+-----END RSA PRIVATE KEY-----"
+
+TMP_LIB_TEST="$(mktemp -d)"
+# Copy lib from init'd dir (already exists in TMP)
+cp "$REPO_ROOT/src/.claude/hooks/lib/secret-patterns.sh" "$TMP_LIB_TEST/secret-patterns.sh"
+
+P7_RESULT=$(bash -c "
+  source '$TMP_LIB_TEST/secret-patterns.sh'
+  if aphelion_secret_grep \"\$1\"; then
+    echo 'matched'
+  else
+    echo 'no-match'
+  fi
+" -- "$PRIVATE_KEY_FIXTURE" 2>&1)
+
+rm -rf "$TMP_LIB_TEST"
+
+if [ "$P7_RESULT" = "P7" ] || echo "$P7_RESULT" | grep -q "^P7"; then
+  echo "PASS [P7-regression]: PEM private key header correctly detected after -- fix"
+else
+  echo "FAIL [P7-regression]: PEM private key header not detected (got: $P7_RESULT)"
+  exit 1
+fi

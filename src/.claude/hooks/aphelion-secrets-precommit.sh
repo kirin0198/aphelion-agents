@@ -76,7 +76,9 @@ HIT_PATTERN=""
 for entry in "${APHELION_SECRET_PATTERNS[@]}"; do
   pid="${entry%%|*}"
   regex="${entry#*|}"
-  if printf '%s' "$ADDED_LINES" | grep -qiE "$regex"; then
+  # Use `--` to prevent grep from interpreting regex starting with `-`
+  # (P7 starts with `-----BEGIN`, which grep would parse as flags without `--`)
+  if printf '%s' "$ADDED_LINES" | grep -qiE -- "$regex"; then
     HIT_PATTERN="$pid"
     break
   fi

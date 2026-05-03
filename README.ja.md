@@ -3,7 +3,7 @@
 Claude Code 向け AI コーディングエージェント定義集です。40 の専門エージェントがプロジェクトの全工程を自動化します。
 
 [![Wiki](https://img.shields.io/badge/Wiki-aphelion--agents.com-F38020?logo=cloudflarepages&logoColor=white&style=flat)](https://aphelion-agents.com/)
-![agents](https://img.shields.io/badge/agents-40-blueviolet) ![commands](https://img.shields.io/badge/commands-14-blue) ![rules](https://img.shields.io/badge/rules-13-green) ![license](https://img.shields.io/badge/license-MIT-blue)
+![agents](https://img.shields.io/badge/agents-40-blueviolet) ![commands](https://img.shields.io/badge/commands-14-blue) ![rules](https://img.shields.io/badge/rules-13-green) ![hooks](https://img.shields.io/badge/hooks-3-orange) ![license](https://img.shields.io/badge/license-MIT-blue)
 
 **[English README](README.md)**
 

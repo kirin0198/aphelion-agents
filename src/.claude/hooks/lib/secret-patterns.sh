@@ -42,7 +42,9 @@ aphelion_secret_grep() {
   for entry in "${APHELION_SECRET_PATTERNS[@]}"; do
     pid="${entry%%|*}"
     regex="${entry#*|}"
-    if printf '%s' "$input" | grep -qiE "$regex"; then
+    # Use `--` to prevent grep from interpreting regex starting with `-`
+    # (P7 starts with `-----BEGIN`, which grep would parse as flags without `--`)
+    if printf '%s' "$input" | grep -qiE -- "$regex"; then
       printf '%s\n' "$pid"
       return 0
     fi
