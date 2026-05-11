@@ -204,7 +204,7 @@ Each flow orchestrator validates required fields of the handoff file at startup.
 
 **DELIVERY_RESULT.md required fields:**
 - `PRODUCT_TYPE`
-- "Artifacts" section (must include SPEC.md and ARCHITECTURE.md status)
+- "Artifacts" section (must include SPEC.md and ARCHITECTURE.md status; paths resolved per `document-locations.md`, default: `docs/<NAME>.md`)
 - "Tech Stack" section (must not be empty)
 - "Test Results" section
 - "Security Audit Results" section
@@ -256,11 +256,11 @@ Final output of Delivery Flow. Input for Operations Flow (for service type).
 > PRODUCT_TYPE: {service | tool}
 
 ## Artifacts
-- SPEC.md: {present/absent}
-- ARCHITECTURE.md: {present/absent}
-- UI_SPEC.md: {present/absent/N/A}
-- VISUAL_SPEC.md: {present/absent/N/A}
-- TEST_PLAN.md: {present/absent}
+- SPEC.md: {present/absent} (resolved path: {docs/SPEC.md | SPEC.md})
+- ARCHITECTURE.md: {present/absent} (resolved path: {docs/ARCHITECTURE.md | ARCHITECTURE.md})
+- UI_SPEC.md: {present/absent/N/A} (resolved path: {docs/UI_SPEC.md | UI_SPEC.md | N/A})
+- VISUAL_SPEC.md: {present/absent/N/A} (resolved path: {docs/VISUAL_SPEC.md | VISUAL_SPEC.md | N/A})
+- TEST_PLAN.md: {present/absent} (resolved path: {docs/TEST_PLAN.md | TEST_PLAN.md})
 - Implementation code: {file count}
 - README.md: {present/absent}
 
@@ -415,7 +415,13 @@ Each phase follows this common loop. Domain-specific steps (rollback checks, etc
 [Phase N Start]
   1. Notify the user that the phase is starting:
      "▶ Phase N/{total phases}: launching {agent name}"
-  2. Launch the agent with instructions that include the preceding artifact paths
+  2. Launch the agent with instructions that include the preceding artifact paths.
+     ─ MUST carry ARTIFACT_PATHS from the previous agent's AGENT_RESULT into the
+       next agent's prompt (verbatim). This prevents per-agent re-resolution from
+       drifting between docs/ and root mid-flow (see document-locations.md).
+     ─ On the first phase of a flow, build ARTIFACT_PATHS by running
+       Glob("{docs/<NAME>.md,<NAME>.md}") once per artifact name. Prefer docs/ on tie
+       and emit WARNING_LEGACY_DUPLICATE when both exist.
   3. Verify the agent's AGENT_RESULT block
   4. Evaluate STATUS and handle error / blocked / failure
      (for failure, follow domain-specific rollback rules)

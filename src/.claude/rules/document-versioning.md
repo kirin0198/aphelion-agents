@@ -2,7 +2,10 @@
 
 ## Recording Update History
 
-When updating any design document (SPEC.md, ARCHITECTURE.md, UI_SPEC.md, TEST_PLAN.md), record the update date at the beginning of the file.
+When updating any design document (`docs/SPEC.md` or legacy `SPEC.md`, `docs/ARCHITECTURE.md`
+or legacy `ARCHITECTURE.md`, `docs/UI_SPEC.md`, `docs/TEST_PLAN.md`, etc.), record the update
+date at the beginning of the file. Resolve the actual file path per `document-locations.md`
+before reading or writing.
 
 ```markdown
 > Last updated: {YYYY-MM-DD}
@@ -12,8 +15,8 @@ When updating any design document (SPEC.md, ARCHITECTURE.md, UI_SPEC.md, TEST_PL
 
 ## Traceability
 
-- `architect` records which version of SPEC.md was used as the basis for design at the top of `ARCHITECTURE.md`
-- `developer` records which version of ARCHITECTURE.md was used as the basis for implementation in `TASK.md`
+- `architect` records which version of SPEC.md (e.g., `docs/SPEC.md`, or legacy `SPEC.md`) was used as the basis for design at the top of `ARCHITECTURE.md`
+- `developer` records which version of ARCHITECTURE.md (e.g., `docs/ARCHITECTURE.md`, or legacy `ARCHITECTURE.md`) was used as the basis for implementation in `TASK.md`
 - Each flow orchestrator records the artifact version from the previous domain in the handoff file
 
 ## TASK.md Format

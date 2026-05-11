@@ -11,8 +11,54 @@ Each domain's flow orchestrator parses this output to determine next-phase decis
 AGENT_RESULT: {agent-name}
 STATUS: success | error | failure | suspended | blocked | approved | conditional | rejected
 ...(agent-specific fields)
+ARTIFACT_PATHS:                      # MUST when STATUS=success and the agent wrote ≥1 artifact
+  - SPEC: docs/SPEC.md               # or `SPEC.md` if legacy-root mode
+  - ARCHITECTURE: docs/ARCHITECTURE.md
 NEXT: {next-agent-name | done | suspended}
 ```
+
+### ARTIFACT_PATHS Field
+
+`ARTIFACT_PATHS` records the resolved file paths for all artifacts written or read during the
+session. The orchestrator carries this field verbatim into subsequent agent prompts to prevent
+per-agent re-resolution from drifting between `docs/` and root mid-flow.
+
+**MUST / OPTIONAL matrix:**
+
+| Agent role | ARTIFACT_PATHS output |
+|------------|----------------------|
+| Write agents (spec-designer, architect, ux-designer, visual-designer, codebase-analyzer, analyst, security-auditor, test-designer, flow orchestrators that write RESULT.md, etc.) | **MUST** — list all artifacts written in this session. Required when STATUS=success. |
+| Read-only agents (developer, reviewer, tester, doc-reviewer, handover-author, hld/lld/api-reference/ops-manual/user-manual-author, etc.) | OPTIONAL — list resolved read paths as reference information. |
+
+**Before/after example (spec-designer):**
+
+Before:
+```
+AGENT_RESULT: spec-designer
+STATUS: success
+NEXT: architect
+```
+
+After:
+```
+AGENT_RESULT: spec-designer
+STATUS: success
+ARTIFACT_PATHS:
+  - SPEC: docs/SPEC.md
+NEXT: architect
+```
+
+**WARNING_LEGACY_DUPLICATE** (emitted when both `docs/<NAME>.md` and `<NAME>.md` exist):
+```
+AGENT_RESULT: architect
+STATUS: success
+ARTIFACT_PATHS:
+  - ARCHITECTURE: docs/ARCHITECTURE.md
+WARNING_LEGACY_DUPLICATE: ARCHITECTURE
+NEXT: developer
+```
+
+See `document-locations.md` for the full resolution algorithm and hybrid-state handling.
 
 ## STATUS Definitions
 

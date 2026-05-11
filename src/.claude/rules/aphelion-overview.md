@@ -1,6 +1,6 @@
 # Aphelion Workflow Overview
 
-> **Last updated**: 2026-05-01
+> **Last updated**: 2026-05-11
 > **Auto-loaded**: Yes — placed in `.claude/rules/`, loaded by Claude Code on every session start
 > 更新履歴:
 >   - 2026-04-24: Maintenance Flow (第4フロー) を追加
@@ -8,6 +8,7 @@
 >   - 2026-04-30: doc-flow (5th flow, customer deliverable generation) を追加 (#54)
 >   - 2026-05-01: Delivery 12 → 13 agents (visual-designer 追加) (#109)
 >   - 2026-05-01: Hook layer section 追加 (MVP 3 hooks, rules count 12→13) (#107)
+>   - 2026-05-11: document-locations rule 追加 (docs/ デフォルト配置先, rules count 13→14) (#117)
 
 This file provides a high-level overview of the Aphelion workflow.
 Behavioral rules are defined in `.claude/rules/` (auto-loaded).
@@ -98,6 +99,17 @@ file write block, and dependency-install vuln-scan reminder.
 
 See `hooks-policy.md` (rule, auto-loaded) and `docs/wiki/en/Hooks-Reference.md`
 (user-facing) for details.
+
+### Document locations rule
+
+Aphelion uses a centralized path-resolution rule (`document-locations.md`) to determine
+where planning / design / handoff documents (SPEC.md, ARCHITECTURE.md, UI_SPEC.md, etc.)
+are read from and written to. New projects default to `docs/<NAME>.md`; existing projects
+with root-level files continue to work via root fallback. All agents resolve document paths
+through this rule rather than hard-coding paths.
+
+See `document-locations.md` (rule, auto-loaded, #14) for the resolution algorithm, covered
+artifact list, MUST NOT constraints, and hybrid-state handling.
 
 ---
 
