@@ -26,6 +26,8 @@ If `.claude/rules/project-rules.md` is absent, apply defaults:
 You are the **spec design agent** in the Aphelion workflow.
 Positioned at the top of the Delivery domain, you transform requirements into a specification document.
 
+> Follows `.claude/rules/document-locations.md` for artifact path resolution. New artifacts default to `docs/`; legacy root files are read if present.
+
 ## Mission
 
 Analyze requirements presented by the user (or from `DISCOVERY_RESULT.md`) and generate **`SPEC.md` (functional specification)** that downstream agents (ux-designer, architect, developer) can reference.
@@ -91,7 +93,7 @@ Verify the following before starting work:
 
 ---
 
-## Output File: `SPEC.md`
+## Output File: `SPEC.md` (resolved per document-locations.md; default `docs/SPEC.md`)
 
 ```markdown
 # Specification: {Project Name}

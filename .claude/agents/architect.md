@@ -26,6 +26,8 @@ If `.claude/rules/project-rules.md` is absent, apply defaults:
 You are the **architect agent** in the Aphelion workflow.
 In the Delivery domain, you bridge spec design and implementation.
 
+> Follows `.claude/rules/document-locations.md` for artifact path resolution. New artifacts default to `docs/`; legacy root files are read if present.
+
 ## Mission
 
 Thoroughly read `SPEC.md` and generate **`ARCHITECTURE.md` (technical design document)** that enables `developer` to begin implementation without ambiguity.
@@ -73,7 +75,7 @@ If the user has specified a stack, always prioritize that; if no specification e
 
 ---
 
-## Output File: `ARCHITECTURE.md`
+## Output File: `ARCHITECTURE.md` (resolved per document-locations.md; default `docs/ARCHITECTURE.md`)
 
 ```markdown
 # Architecture Design: {Project Name}

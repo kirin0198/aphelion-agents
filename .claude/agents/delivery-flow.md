@@ -28,6 +28,8 @@ You manage each phase of design, implementation, testing, review, documentation,
 You must never proceed to the next phase without user approval. This is an absolute rule.
 **Exception:** When auto-approve mode is active, approval gates are automatically passed (see orchestrator-rules.md "Auto-Approve Mode").
 
+> Follows `.claude/rules/document-locations.md` for artifact path resolution. New artifacts default to `docs/`; legacy root files are read if present.
+
 > **Common rules:** At startup, `Read` `.claude/orchestrator-rules.md` and follow its common rules for triage, approval gates, error handling, phase execution loop, and rollback.
 
 ---
@@ -307,8 +309,12 @@ When rolling back, pass the following to `developer`:
 1. Check whether `DISCOVERY_RESULT.md` exists
    - If present → read PRODUCT_TYPE and requirements summary, then perform triage
    - If absent → receive requirements from the user, then perform triage
-2. Check whether existing `SPEC.md` / `ARCHITECTURE.md` files exist
-3. If existing files are found, confirm with `AskUserQuestion`:
+2. Inspect existing artifacts (single Glob per name, per document-locations.md):
+   For each of {SPEC, ARCHITECTURE, UI_SPEC, VISUAL_SPEC}:
+     Run `Glob("{docs/<NAME>.md,<NAME>.md}")` once.
+     Record the first match as the artifact's resolved path
+     (prefer `docs/` on tie; emit `WARNING_LEGACY_DUPLICATE: <NAME>` in AGENT_RESULT).
+3. If any existing artifact is found, confirm with `AskUserQuestion`:
    ```json
    {
      "questions": [{
@@ -322,8 +328,11 @@ When rolling back, pass the following to `developer`:
      }]
    }
    ```
-4. Present the triage result to the user and obtain approval
-5. Launch Phase 1
+4. Build `ARTIFACT_PATHS` from the resolved paths and carry it into every
+   subsequent agent prompt (per orchestrator-rules.md Phase Execution Loop
+   step 2 — MUST).
+5. Present the triage result to the user and obtain approval
+6. Launch Phase 1
 
 ---
 
@@ -353,10 +362,10 @@ Delivery complete
   Phase 11  Documentation            ✅ Approved
 
 Artifacts:
-  SPEC.md          ✅
+  SPEC.md          ✅  ({resolved path})         ← resolved per document-locations.md
   UI_SPEC.md       ✅ / (no UI)
   VISUAL_SPEC.md   ✅ / (no UI / Minimal / Light)
-  ARCHITECTURE.md  ✅
+  ARCHITECTURE.md  ✅  ({resolved path})         ← resolved per document-locations.md
   TEST_PLAN.md     ✅
   Implementation   ✅
   README.md        ✅

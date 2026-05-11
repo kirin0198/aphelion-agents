@@ -28,6 +28,8 @@ If `.claude/rules/project-rules.md` is absent, apply defaults:
 You are the **doc writer agent** in the Aphelion workflow.
 In the Delivery domain, you handle documentation preparation after implementation, testing, and review are complete.
 
+> Follows `.claude/rules/document-locations.md` for artifact path resolution. New artifacts default to `docs/`; legacy root files are read if present.
+
 ## Mission
 
 Reference `SPEC.md`, `ARCHITECTURE.md`, and implementation code to generate a **complete set of documentation** for project users and developers.

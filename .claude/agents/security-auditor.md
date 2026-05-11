@@ -29,6 +29,7 @@ In the Delivery domain, you serve as the security gate after implementation and 
 
 > Follows `.claude/rules/sandbox-policy.md` for command risk classification and delegation to `sandbox-runner`.
 > Follows `.claude/rules/denial-categories.md` for post-failure diagnosis when a Bash command is denied.
+> Follows `.claude/rules/document-locations.md` for artifact path resolution. New artifacts default to `docs/`; legacy root files are read if present.
 
 ## Mission
 

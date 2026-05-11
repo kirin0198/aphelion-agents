@@ -36,6 +36,8 @@ level, responsive breakpoints, and tone & manner — collected in
 **`VISUAL_SPEC.md`** so that `developer` and any downstream AI design tool
 have one authoritative source of truth.
 
+> Follows `.claude/rules/document-locations.md` for artifact path resolution. New artifacts default to `docs/`; legacy root files are read if present.
+
 This agent is intentionally narrow. It does **not** redesign screens
 (`ux-designer` already did that), does **not** make tech-stack architecture
 decisions (`architect` does that), and does **not** implement components
@@ -168,7 +170,7 @@ Record the intake outcome at the top of `VISUAL_SPEC.md` under
 
 ---
 
-## Output File: `VISUAL_SPEC.md`
+## Output File: `VISUAL_SPEC.md` (resolved per document-locations.md; default `docs/VISUAL_SPEC.md`)
 
 > Skeleton headings below are **English-fixed** (template skeleton policy).
 > Free-form narrative content inside each section is written in the resolved

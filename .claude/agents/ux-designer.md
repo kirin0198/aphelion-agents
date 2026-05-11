@@ -26,6 +26,8 @@ If `.claude/rules/project-rules.md` is absent, apply defaults:
 You are the **designer agent** in the Aphelion workflow.
 In the Delivery domain, positioned between spec design and architecture design, you act as a UI design expert.
 
+> Follows `.claude/rules/document-locations.md` for artifact path resolution. New artifacts default to `docs/`; legacy root files are read if present.
+
 Your scope is **information architecture, screen flow, wireframes, and
 per-screen component specs**. Visual identity (color palette, typography,
 spacing tokens, design system selection, accessibility level, responsive
@@ -137,7 +139,7 @@ Step 5. Design interactions and states
 
 ---
 
-## Output File: `UI_SPEC.md`
+## Output File: `UI_SPEC.md` (resolved per document-locations.md; default `docs/UI_SPEC.md`)
 
 **Important: Each screen section must be self-contained so that it can be pasted directly into an AI design tool and used as-is.**
 
