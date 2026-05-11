@@ -1,18 +1,19 @@
 # Rules Reference
 
 > **Language**: [English](../en/Rules-Reference.md) | [日本語](../ja/Rules-Reference.md)
-> **Last updated**: 2026-05-01
+> **Last updated**: 2026-05-12
 > **Update history**:
+>   - 2026-05-12: document-locations エントリ追加、ルール数 13 → 14 に更新 (#117)
 >   - 2026-05-01: hooks-policy エントリ追加、ルール数 12 → 13 に更新 (#107)
 >   - 2026-04-30: add missing localization-dictionary entry, sync rule count to 12 (#105)
 >   - 2026-04-30: language-rules — "Repo-root README sync convention" sub-section を追加 (#82)
 >   - 2026-04-29: language-rules — "Hand-authored canonical narrative" セクションを追加 (#75)
 >   - 2026-04-26: Sync with #62, #66, #72, #74 (issue #77)
 >   - 2026-04-25: denial-categories ルール追加, #31
-> **EN canonical**: 2026-05-01 of wiki/en/Rules-Reference.md
+> **EN canonical**: 2026-05-12 of wiki/en/Rules-Reference.md
 > **Audience**: エージェント開発者
 
-このページは`.claude/rules/`にある 13 の行動ルールのコンパクトなリファレンスです。各エントリはスコープ、自動ロードの動作、他ルール・エージェントとのインタラクション、ルールが強制する主要な制約をまとめています。
+このページは`.claude/rules/`にある 14 の行動ルールのコンパクトなリファレンスです。各エントリはスコープ、自動ロードの動作、他ルール・エージェントとのインタラクション、ルールが強制する主要な制約をまとめています。
 
 詳細については、**正規**リンクからソースファイルを参照してください。
 
@@ -21,6 +22,7 @@
 - [aphelion-overview](#aphelion-overview)
 - [agent-communication-protocol](#agent-communication-protocol)
 - [build-verification-commands](#build-verification-commands)
+- [document-locations](#document-locations)
 - [document-versioning](#document-versioning)
 - [file-operation-principles](#file-operation-principles)
 - [git-rules](#git-rules)
@@ -63,6 +65,27 @@
 - **自動ロードの動作**: Claude Codeが全セッション起動時に自動ロード
 - **インタラクション**: `developer`が各タスクをコミットする前に通過しなければならないlint/formatゲートを定義します。`tester`はテスト実行コマンド列を使用します。`e2e-test-designer`と`tester`はE2Eコマンドテーブルを使用します（`HAS_UI: true`の場合のみ）。
 - **概要**: Python、TypeScript、Go、Rust、Node.jsの構文チェック、lint/format、テスト実行コマンドを提供します。lintゲートは必須 — lintエラーはテスト前に修正しなければなりません。lintツールがインストールされていない場合は、タスクレポートに注記した上で構文チェックのみ許容されます。E2EコマンドはPlaywright（Web）、pywinauto（Windowsデスクトップ）、pyautogui（クロスプラットフォーム）、ElectronアプリのPlaywrightをカバーします。
+
+---
+
+## document-locations
+
+- **正規**: [.claude/rules/document-locations.md](../../.claude/rules/document-locations.md)
+- **スコープ**: Aphelion が生成する計画 / 設計 / ハンドオフドキュメント（SPEC.md・ARCHITECTURE.md・UI_SPEC.md 等）を読み書きする全エージェントおよび Flow Orchestrator
+- **自動ロードの動作**: `.claude/rules/` に配置され、Claude Code が全セッション起動時に自動ロード
+- **主要制約**: Aphelion が生成するドキュメントのパス解決アルゴリズムを一元定義します。新規プロジェクトはデフォルトで `docs/<NAME>.md` に書き込み、既存プロジェクトのルート直下ファイルは `Glob("{docs/<NAME>.md,<NAME>.md}")` 1 回呼び出しによるフォールバックで認識されます。
+- **解決アルゴリズム**:
+  - **Read（読み取り）**: `Glob("{docs/<NAME>.md,<NAME>.md}")` を 1 回実行し、最初のマッチを採用。両方が見つかった場合は `docs/` を優先。2 回に分けた Read 呼び出しは禁止（`denial-categories.md` の `file_not_found` 誤検知を防ぐ）。
+  - **Write（新規作成）**: 必ず `docs/<NAME>.md` に書き込む。新規ファイルをリポジトリルートに置くことは禁止。
+  - **Write（既存更新）**: 直前の Read で解決されたパスをそのまま使用する。Flow Orchestrator が `ARTIFACT_PATHS` で解決済みパスを引き継ぐため、書き込み agent は再解決してはならない。
+- **対象成果物**: SPEC.md、ARCHITECTURE.md、UI_SPEC.md、VISUAL_SPEC.md、DISCOVERY_RESULT.md、DELIVERY_RESULT.md、OPS_RESULT.md、MAINTENANCE_RESULT.md、HANDOVER.{en,ja}.md、TEST_PLAN.md、SECURITY_AUDIT.md、SCOPE_PLAN.md、RELEASE_NOTES.md、OBSERVABILITY.md、OPS_PLAN.md。
+- **対象外**: `TASK.md`（root 固定、中間状態ファイル）、`docs/design-notes/`、`docs/deliverables/{slug}/`、`.claude/**/*`、README.md、CHANGELOG.md。
+- **ハイブリッド状態**: `docs/<NAME>.md` と `<NAME>.md` の両方が存在する場合、`docs/` 側を権威ある正規として扱い、`AGENT_RESULT` に `WARNING_LEGACY_DUPLICATE: <NAME>` を出力します。Aphelion はレガシーファイルを自動削除しません。
+- **インタラクション**:
+  - `agent-communication-protocol.md` と連携: Write を行う agent は `ARTIFACT_PATHS` を必須出力（一級フィールド）し、Flow Orchestrator が後続 agent prompt に carry することで mid-flow の path 不整合を防ぎます。
+  - `file-operation-principles.md` と連携: 「対象成果物のパスは `document-locations.md` を参照」と明記されています。
+  - `denial-categories.md` と連携: Glob 1 回パターンにより、2 段 Read による `file_not_found` 誤検知を防ぎます。
+- **概要**: ドキュメントのパス解決ロジックを 1 つのルールに集約し、各 agent がパスをハードコードしないようにします。41 の全 agent は冒頭に「Follows `.claude/rules/document-locations.md`」と参照宣言を持ち、このルールが唯一の情報源となります。`TASK.md` は明示的に対象外として root 固定が維持されます。
 
 ---
 
@@ -201,7 +224,7 @@
 
 ## 正規ソース
 
-- [.claude/rules/](../../.claude/rules/) — 13 のルールファイル全体（権威あるソース）
+- [.claude/rules/](../../.claude/rules/) — 14 のルールファイル全体（権威あるソース）
 - [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md) — ワークフロー概要（rules コレクションの一部に統合）
 - [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — `agent-communication-protocol` に依存する Flow Orchestrator の動作
 - [Hooks Reference](./Hooks-Reference.md) — フックセットのユーザー向けガイド

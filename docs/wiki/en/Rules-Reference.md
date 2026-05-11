@@ -1,8 +1,9 @@
 # Rules Reference
 
 > **Language**: [English](../en/Rules-Reference.md) | [日本語](../ja/Rules-Reference.md)
-> **Last updated**: 2026-05-01
+> **Last updated**: 2026-05-12
 > **Update history**:
+>   - 2026-05-12: add document-locations entry, sync rule count 13 → 14 (#117)
 >   - 2026-05-01: add hooks-policy entry, sync rule count 12 → 13 (#107)
 >   - 2026-04-30: add missing localization-dictionary entry, sync rule count to 12 (#105)
 >   - 2026-04-30: language-rules — add "Repo-root README sync convention" sub-section (#82)
@@ -11,7 +12,7 @@
 >   - 2026-04-25: added denial-categories rule, #31
 > **Audience**: Agent developers
 
-This page is a compact reference for all 13 behavioral rules in `.claude/rules/`. Each entry summarizes scope, auto-load behavior, interactions with other rules and agents, and the key constraint the rule enforces.
+This page is a compact reference for all 14 behavioral rules in `.claude/rules/`. Each entry summarizes scope, auto-load behavior, interactions with other rules and agents, and the key constraint the rule enforces.
 
 For full details, follow the **Canonical** link to the source file.
 
@@ -20,6 +21,7 @@ For full details, follow the **Canonical** link to the source file.
 - [aphelion-overview](#aphelion-overview)
 - [agent-communication-protocol](#agent-communication-protocol)
 - [build-verification-commands](#build-verification-commands)
+- [document-locations](#document-locations)
 - [document-versioning](#document-versioning)
 - [file-operation-principles](#file-operation-principles)
 - [git-rules](#git-rules)
@@ -62,6 +64,27 @@ For full details, follow the **Canonical** link to the source file.
 - **Auto-load behavior**: Auto-loaded by Claude Code on every session start
 - **Interactions**: Defines the lint/format gate that `developer` must pass before committing each task. `tester` uses the test execution commands column. `e2e-test-designer` and `tester` use the E2E commands table (only when `HAS_UI: true`).
 - **Summary**: Provides syntax check, lint/format, and test execution commands for Python, TypeScript, Go, Rust, and Node.js. The lint gate is mandatory — lint errors must be fixed before testing. If lint tools are not installed, syntax check only is acceptable with a note in the task report. E2E commands cover Playwright (Web), pywinauto (Windows desktop), pyautogui (cross-platform), and Playwright for Electron apps.
+
+---
+
+## document-locations
+
+- **Canonical**: [.claude/rules/document-locations.md](../../.claude/rules/document-locations.md)
+- **Scope**: All agents and flow orchestrators that read or write Aphelion-generated planning / design / handoff documents (SPEC.md, ARCHITECTURE.md, UI_SPEC.md, etc.)
+- **Auto-load**: Yes — placed in `.claude/rules/`, loaded by Claude Code on every session start
+- **Key constraint**: Defines the canonical path-resolution algorithm for Aphelion-generated documents. New projects default to `docs/<NAME>.md`; existing projects with root-level files continue to work via a root fallback (`Glob("{docs/<NAME>.md,<NAME>.md}")` single call).
+- **Resolution algorithm**:
+  - **Read**: Run `Glob("{docs/<NAME>.md,<NAME>.md}")` once. Use the first match; prefer `docs/` on tie. Never perform two sequential Read calls (triggers `file_not_found` false-positive in `denial-categories.md`).
+  - **Write (new artifact)**: Always write to `docs/<NAME>.md`. Never default to the repository root for new files.
+  - **Write (update existing artifact)**: Use the same path returned by the preceding Read. The orchestrator carries the resolved path forward via `ARTIFACT_PATHS`; the writing agent MUST NOT re-resolve.
+- **Covered artifacts**: SPEC.md, ARCHITECTURE.md, UI_SPEC.md, VISUAL_SPEC.md, DISCOVERY_RESULT.md, DELIVERY_RESULT.md, OPS_RESULT.md, MAINTENANCE_RESULT.md, HANDOVER.{en,ja}.md, TEST_PLAN.md, SECURITY_AUDIT.md, SCOPE_PLAN.md, RELEASE_NOTES.md, OBSERVABILITY.md, OPS_PLAN.md.
+- **Excluded from this rule**: `TASK.md` (root-fixed, intermediate state file), `docs/design-notes/`, `docs/deliverables/{slug}/`, `.claude/**/*`, README.md, CHANGELOG.md.
+- **Hybrid state**: If both `docs/<NAME>.md` and `<NAME>.md` exist, the `docs/` copy is authoritative and `WARNING_LEGACY_DUPLICATE: <NAME>` is emitted in `AGENT_RESULT`. Aphelion never auto-deletes the legacy file.
+- **Interactions**:
+  - Works with `agent-communication-protocol.md`: Write agents MUST output `ARTIFACT_PATHS` (a first-class field) listing resolved paths so orchestrators can carry them forward without per-agent re-resolution.
+  - Works with `file-operation-principles.md`: the principle "resolve paths per document-locations.md" is declared there.
+  - Works with `denial-categories.md`: the single-Glob rule prevents the two-step Read pattern from generating spurious `file_not_found` denial events.
+- **Summary**: Centralizes document path resolution in one rule instead of hard-coding paths in each agent. All 41 agents declare "Follows `.claude/rules/document-locations.md`" in their prompt prelude; the rule is the single source of truth. `TASK.md` is explicitly out of scope and remains root-fixed.
 
 ---
 
@@ -200,7 +223,7 @@ For full details, follow the **Canonical** link to the source file.
 
 ## Canonical Sources
 
-- [.claude/rules/](../../.claude/rules/) — All 13 rule files (authoritative source)
+- [.claude/rules/](../../.claude/rules/) — All 14 rule files (authoritative source)
 - [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md) — Workflow overview (now part of the rules collection)
 - [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — Orchestrator behavior that depends on agent-communication-protocol
 - [Hooks Reference](./Hooks-Reference.md) — User-facing guide for the hook set
