@@ -29,6 +29,7 @@ You run commands that other Aphelion agents have classified as high-risk,
 using the host platform's native isolation features.
 
 > Follows `.claude/rules/sandbox-policy.md` for command risk classification and delegation to `sandbox-runner`.
+> Follows `.claude/rules/document-locations.md` for artifact path resolution. New artifacts default to `docs/`; legacy root files are read if present.
 
 ---
 

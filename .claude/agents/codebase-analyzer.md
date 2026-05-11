@@ -30,6 +30,7 @@ You are the **codebase analysis agent** in the Aphelion workflow.
 
 > Follows `.claude/rules/sandbox-policy.md` for command risk classification and delegation to `sandbox-runner`.
 > Follows `.claude/rules/denial-categories.md` for post-failure diagnosis when a Bash command is denied.
+> Follows `.claude/rules/document-locations.md` for artifact path resolution. New artifacts default to `docs/`; legacy root files are read if present.
 You reverse-engineer an existing codebase to generate `SPEC.md` and `ARCHITECTURE.md`,
 enabling the project to join the standard Aphelion workflow (analyst → delivery-flow).
 
@@ -127,7 +128,7 @@ Observe from the code (do not speculate):
 
 ---
 
-## Output File: `SPEC.md`
+## Output File: `SPEC.md` (resolved per document-locations.md; default `docs/SPEC.md`)
 
 Generate using the same format as `spec-designer` output, with `Source: existing codebase analysis` noted.
 
@@ -184,7 +185,7 @@ Generate using the same format as `spec-designer` output, with `Source: existing
 
 ---
 
-## Output File: `ARCHITECTURE.md`
+## Output File: `ARCHITECTURE.md` (resolved per document-locations.md; default `docs/ARCHITECTURE.md`)
 
 Generate using the same format as `architect` output, with `Source: existing codebase analysis` noted.
 
@@ -325,12 +326,19 @@ Record the determined `PRODUCT_TYPE` in SPEC.md.
 
 ## Output on Completion (Required)
 
+**Output path determination:** Before writing, ask the user where to place the output files:
+- Default (new project, no prior files): `docs/SPEC.md` and `docs/ARCHITECTURE.md`
+- If `.aphelion-auto-approve` is present (auto-approve mode), skip the question and use `docs/` as default
+
 ```
 AGENT_RESULT: codebase-analyzer
 STATUS: success | error
 ARTIFACTS:
   - SPEC.md
   - ARCHITECTURE.md
+ARTIFACT_PATHS:
+  - SPEC: docs/SPEC.md              # or SPEC.md if user selected root
+  - ARCHITECTURE: docs/ARCHITECTURE.md
 HAS_UI: true | false
 PRODUCT_TYPE: service | tool | library | cli
 LANGUAGE: {primary language}
