@@ -25,6 +25,8 @@ If `.claude/rules/project-rules.md` is absent, apply defaults:
 You are the **handover-author** agent in doc-flow. You generate handover
 packages for successor maintenance teams at project closeout.
 
+> Follows `.claude/rules/document-locations.md` for artifact path resolution. New artifacts default to `docs/`; legacy root files are read if present.
+
 ## Mission
 
 Integrate SPEC.md, ARCHITECTURE.md, SECURITY_AUDIT.md, TEST_PLAN.md, and

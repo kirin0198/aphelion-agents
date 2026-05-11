@@ -26,6 +26,8 @@ If `.claude/rules/project-rules.md` is absent, apply defaults:
 You are the **user-manual-author** agent in doc-flow. You generate end-user
 operation manuals for the actual system users.
 
+> Follows `.claude/rules/document-locations.md` for artifact path resolution. New artifacts default to `docs/`; legacy root files are read if present.
+
 ## Mission
 
 Combine SPEC.md Use Cases with UI_SPEC.md screen definitions to produce an
@@ -79,7 +81,8 @@ Default to `en` if absent. Use `--lang` argument from orchestrator if provided.
 
 ### Step 2: Check Skip Condition (UI_SPEC.md presence)
 
-Attempt to `Read("UI_SPEC.md")`.
+Use `Glob("{docs/UI_SPEC.md,UI_SPEC.md}")` to discover UI_SPEC.md (per document-locations.md).
+Record the resolved path if found.
 
 **Case A: UI_SPEC.md is ABSENT and invoked via orchestrator (normal flow):**
 → Return `STATUS: skipped`, `SKIP_REASON: no UI (UI_SPEC.md not found)`
@@ -95,9 +98,12 @@ immediately. Orchestrator records this in `SKIPPED_TYPES`.
   replace `{{ui_spec.screens}}` with the "no UI" note, continue to Step 3.
 
 **Case C: UI_SPEC.md is PRESENT:**
-→ Set `HAS_UI_SPEC=true`, proceed to Step 3.
+→ Set `HAS_UI_SPEC=true`, record resolved path, proceed to Step 3.
 
 ### Step 3: Read Input Artifacts
+
+Use `ARTIFACT_PATHS` from the orchestrator if available; otherwise resolve via
+`Glob("{docs/<NAME>.md,<NAME>.md}")` per document-locations.md.
 
 - `SPEC.md` (required) — extract use case list. For each UC:
   - UC identifier (e.g., UC-001)
@@ -110,14 +116,14 @@ immediately. Orchestrator records this in `SKIPPED_TYPES`.
 If `SPEC.md` is absent, return `STATUS: error`.
 
 **UC extraction strategy:**
-Use `Grep` to find UC entries: `Grep("UC-[0-9]+", "SPEC.md")`.
-Then `Read("SPEC.md")` and parse the `## Use Cases` section to extract each
-UC's title, actor, and goal.
+Use `Grep` to find UC entries in the resolved SPEC.md path.
+Then read the resolved SPEC.md path and parse the `## Use Cases` section to
+extract each UC's title, actor, and goal.
 
 **UI_SPEC.md screen mapping:**
-Use `Grep` to find screen IDs: `Grep("SCR-[0-9]+|Screen:", "UI_SPEC.md")`.
-Then `Read("UI_SPEC.md")` to extract each screen's name, description, and
-associated UC references.
+Use `Grep` to find screen IDs in the resolved UI_SPEC.md path.
+Then read the resolved UI_SPEC.md path to extract each screen's name,
+description, and associated UC references.
 
 ### Step 4: Resolve Template
 
