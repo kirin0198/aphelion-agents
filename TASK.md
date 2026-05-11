@@ -14,7 +14,7 @@ Status: In progress
 - [x] TASK-C02: Update en/ja Home.md (rule count 13→14) | Target: docs/wiki/en/Home.md, docs/wiki/ja/Home.md
 - [x] TASK-C03: Check Contributing.md for SPEC.md/ARCHITECTURE.md path examples (update if needed) | Target: docs/wiki/en/Contributing.md, docs/wiki/ja/Contributing.md — No changes needed (no SPEC.md/ARCHITECTURE.md path examples found)
 - [x] TASK-C04: Check README.md / README.ja.md for docs/ default location mentions (update badges if needed) | Target: README.md, README.ja.md — Updated rules badge 13 → 14
-- [ ] TASK-C05: Add Issue #117 entry to CHANGELOG.md | Target: CHANGELOG.md
+- [x] TASK-C05: Add Issue #117 entry to CHANGELOG.md | Target: CHANGELOG.md
 - [ ] TASK-C06: Annotate handover.en.md + handover.ja.md Source artifacts table (WR-002 follow-up) | Target: .claude/templates/doc-flow/handover.en.md, .claude/templates/doc-flow/handover.ja.md
 
 ## Recent Commits

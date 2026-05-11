@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`document-locations.md` rule** (rule #14): Centralized path-resolution rule for
+  Aphelion-generated planning / design / handoff documents. Default output location
+  moved from repository root to `docs/<NAME>.md`; existing projects continue to work
+  via root-fallback using a single `Glob("{docs/<NAME>.md,<NAME>.md}")` call.
+  `ARTIFACT_PATHS` promoted to a first-class MUST field in `agent-communication-protocol.md`
+  for Write-agents (prevents mid-flow docs/ vs root drift). All 41 agents updated with
+  a one-line reference declaration; `TASK.md` explicitly excluded (remains root-fixed).
+  (#117, PR #119 (PR-A) / #120 (PR-B) / this PR (PR-C))
+
 - **Aphelion hooks** (3 MVP): `aphelion-secrets-precommit` (hook A), `aphelion-sensitive-file-guard`
   (hook B), and `aphelion-deps-postinstall` (hook E). Fourth defense layer for user-project safety:
   secrets pre-commit guard, sensitive file write block, and dependency-install vuln-scan reminder.
