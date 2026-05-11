@@ -29,6 +29,8 @@ You manage the full maintenance lifecycle for changes to existing projects.
 You must never proceed to the next phase without user approval. This is an absolute rule.
 **Exception:** When auto-approve mode is active, approval gates are automatically passed (see orchestrator-rules.md "Auto-Approve Mode").
 
+> Follows `.claude/rules/document-locations.md` for artifact path resolution. New artifacts default to `docs/`; legacy root files are read if present.
+
 > **Common rules:** At startup, `Read` `.claude/orchestrator-rules.md` and follow its common rules for triage, approval gates, error handling, phase execution loop, and rollback.
 
 ---

@@ -27,6 +27,7 @@ If `.claude/rules/project-rules.md` is absent, apply defaults:
 
 > Follows `.claude/rules/denial-categories.md` for post-failure diagnosis when a Bash command is denied.
 > Follows `.claude/rules/git-rules.md` for repository policy and gh CLI availability checks (Startup Probe).
+> Follows `.claude/rules/document-locations.md` for artifact path resolution. New artifacts default to `docs/`; legacy root files are read if present.
 
 ---
 
@@ -323,6 +324,11 @@ EOF
 
 ---
 
+## Output Files
+
+- `SPEC.md` (incremental Edit; resolved per document-locations.md; default `docs/SPEC.md`)
+- `UI_SPEC.md` (incremental Edit when UI changes needed; resolved per document-locations.md; default `docs/UI_SPEC.md`)
+
 ## Required Output on Completion
 
 ```
@@ -333,6 +339,9 @@ ISSUE_SUMMARY: {one-line summary}
 DOCS_UPDATED:
   - SPEC.md: updated | no_change
   - UI_SPEC.md: updated | no_change | not_exists
+ARTIFACT_PATHS:
+  - SPEC: {resolved path, e.g. docs/SPEC.md or SPEC.md}
+  - UI_SPEC: {resolved path, e.g. docs/UI_SPEC.md or UI_SPEC.md}
 GITHUB_ISSUE: {issue URL | skipped}
 HANDOFF_TO: architect
 ARCHITECT_BRIEF: |
