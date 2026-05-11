@@ -176,11 +176,11 @@ language: en
 
 | Artifact | Path | Description |
 |----------|------|-------------|
-| SPEC.md | `SPEC.md` | System specification |
-| ARCHITECTURE.md | `ARCHITECTURE.md` | Architecture document |
-| SECURITY_AUDIT.md | `SECURITY_AUDIT.md` | Security audit report |
-| TEST_PLAN.md | `TEST_PLAN.md` | Test plan |
-| OPS_PLAN.md | `OPS_PLAN.md` | Operations plan |
+| SPEC.md | `docs/SPEC.md` (or `SPEC.md` if legacy root; resolved per `document-locations.md`) | System specification |
+| ARCHITECTURE.md | `docs/ARCHITECTURE.md` (or `ARCHITECTURE.md` if legacy root; resolved per `document-locations.md`) | Architecture document |
+| SECURITY_AUDIT.md | `docs/SECURITY_AUDIT.md` (or `SECURITY_AUDIT.md` if legacy root; resolved per `document-locations.md`) | Security audit report |
+| TEST_PLAN.md | `docs/TEST_PLAN.md` (or `TEST_PLAN.md` if legacy root; resolved per `document-locations.md`) | Test plan |
+| OPS_PLAN.md | `docs/OPS_PLAN.md` (or `OPS_PLAN.md` if legacy root; resolved per `document-locations.md`) | Operations plan |
 
 ### 6.3 Design Notes
 

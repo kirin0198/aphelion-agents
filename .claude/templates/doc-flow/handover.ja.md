@@ -176,11 +176,11 @@ language: ja
 
 | Artifact | パス | 説明 |
 |---------|------|------|
-| SPEC.md | `SPEC.md` | システム仕様書 |
-| ARCHITECTURE.md | `ARCHITECTURE.md` | アーキテクチャドキュメント |
-| SECURITY_AUDIT.md | `SECURITY_AUDIT.md` | セキュリティ監査レポート |
-| TEST_PLAN.md | `TEST_PLAN.md` | テスト計画書 |
-| OPS_PLAN.md | `OPS_PLAN.md` | 運用計画書 |
+| SPEC.md | `docs/SPEC.md`（legacy root の場合は `SPEC.md`；`document-locations.md` で解決） | システム仕様書 |
+| ARCHITECTURE.md | `docs/ARCHITECTURE.md`（legacy root の場合は `ARCHITECTURE.md`；`document-locations.md` で解決） | アーキテクチャドキュメント |
+| SECURITY_AUDIT.md | `docs/SECURITY_AUDIT.md`（legacy root の場合は `SECURITY_AUDIT.md`；`document-locations.md` で解決） | セキュリティ監査レポート |
+| TEST_PLAN.md | `docs/TEST_PLAN.md`（legacy root の場合は `TEST_PLAN.md`；`document-locations.md` で解決） | テスト計画書 |
+| OPS_PLAN.md | `docs/OPS_PLAN.md`（legacy root の場合は `OPS_PLAN.md`；`document-locations.md` で解決） | 運用計画書 |
 
 ### 6.3 設計ノート一覧
 
