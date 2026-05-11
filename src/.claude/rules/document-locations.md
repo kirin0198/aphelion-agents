@@ -45,7 +45,7 @@ Files **NOT** covered by this rule (their paths are stable and absolute):
 
 | Operation | Rule |
 |-----------|------|
-| **Read** an existing artifact | Run `Glob("{docs/<NAME>.md,<NAME>.md}")` **once**. Use the first match. When both paths match, prefer the `docs/` copy and emit `WARNING_LEGACY_DUPLICATE: <NAME>` in `AGENT_RESULT`. If no match, the artifact is treated as missing (caller decides: error vs. proceed). |
+| **Read** an existing artifact | Run `Glob("{docs/<NAME>.md,<NAME>.md}")` **once**. Use the first match. When both paths match, the `docs/` copy wins (see § *Hybrid state* below for the full WARNING contract). If no match, the artifact is treated as missing (caller decides: error vs. proceed). |
 | **Write (new)** a fresh artifact | Always write to `docs/<NAME>.md`. Never default to the repository root for new files. |
 | **Write (update)** an existing artifact | Use the same path that the most recent Read returned. The orchestrator carries the resolved path forward via `ARTIFACT_PATHS` (see `agent-communication-protocol.md`); the writing agent MUST NOT re-resolve and risk a docs/-vs-root switch mid-flow. |
 
