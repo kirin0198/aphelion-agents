@@ -11,7 +11,7 @@ Status: In progress
 ### Phase C (PR-C: wiki / README / CHANGELOG / templates)
 
 - [x] TASK-C01: Update en/ja Rules-Reference.md (add document-locations rule, count 13→14) | Target: docs/wiki/en/Rules-Reference.md, docs/wiki/ja/Rules-Reference.md
-- [ ] TASK-C02: Update en/ja Home.md (rule count 13→14) | Target: docs/wiki/en/Home.md, docs/wiki/ja/Home.md
+- [x] TASK-C02: Update en/ja Home.md (rule count 13→14) | Target: docs/wiki/en/Home.md, docs/wiki/ja/Home.md
 - [ ] TASK-C03: Check Contributing.md for SPEC.md/ARCHITECTURE.md path examples (update if needed) | Target: docs/wiki/en/Contributing.md, docs/wiki/ja/Contributing.md
 - [ ] TASK-C04: Check README.md / README.ja.md for docs/ default location mentions (update badges if needed) | Target: README.md, README.ja.md
 - [ ] TASK-C05: Add Issue #117 entry to CHANGELOG.md | Target: CHANGELOG.md

@@ -1,8 +1,9 @@
 # Aphelion Wiki
 
 > **Language**: [English](../en/Home.md) | [日本語](../ja/Home.md)
-> **Last updated**: 2026-05-01
+> **Last updated**: 2026-05-12
 > **Update history**:
+>   - 2026-05-12: Bump rule count 13 → 14 for document-locations rule (#117)
 >   - 2026-05-01: Add Hooks-Reference link, bump rule count 12 → 13 (#107)
 >   - 2026-05-01: Bump agent count 39 → 40 for visual-designer (#109)
 >   - 2026-04-30: Bump rule count 9 → 12 (#103)
@@ -26,7 +27,7 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 | Quick Start commands | [Getting Started](./Getting-Started.md): Claude Code setup, first-run walkthrough, scenarios, troubleshooting |
 | Triage plan table (summary) | [Triage System](./Triage-System.md): selection logic, conditions, and agent matrices |
 | Agent list (names only) | Agents Reference (split by domain): [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md), [Doc](./Agents-Doc.md) — all 40 agents with inputs, outputs, NEXT conditions |
-| — | [Rules Reference](./Rules-Reference.md): 13 behavior rules with scope and customization notes |
+| — | [Rules Reference](./Rules-Reference.md): 14 behavior rules with scope and customization notes |
 | — | [Hooks Reference](./Hooks-Reference.md): Claude Code hooks distributed by Aphelion (MVP 3 hooks) |
 | — | [Contributing](./Contributing.md): how to add agents, rules, and maintain the wiki |
 
@@ -42,7 +43,7 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 | Architecture (3 pages) | [Domain Model](./Architecture-Domain-Model.md), [Protocols](./Architecture-Protocols.md), [Operational Rules](./Architecture-Operational-Rules.md) — 3-domain model, handoff files, AGENT_RESULT protocol, runtime rules | Agent developers |
 | [Triage System](./Triage-System.md) | 4-tier plan selection logic, per-domain agent matrices, mandatory agents | All users |
 | Agents Reference (6 pages) | [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md), [Doc](./Agents-Doc.md) — all 40 agents | Agent developers |
-| [Rules Reference](./Rules-Reference.md) | All 13 behavior rules: scope, auto-load, interactions | Agent developers |
+| [Rules Reference](./Rules-Reference.md) | All 14 behavior rules: scope, auto-load, interactions | Agent developers |
 | [Hooks Reference](./Hooks-Reference.md) | Aphelion hooks: usage, bypass, disable, customisation | All users |
 | [Contributing](./Contributing.md) | Adding agents, rules; bilingual sync workflow | Agent developers |
 
