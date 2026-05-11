@@ -84,7 +84,7 @@ For full details, follow the **Canonical** link to the source file.
   - Works with `agent-communication-protocol.md`: Write agents MUST output `ARTIFACT_PATHS` (a first-class field) listing resolved paths so orchestrators can carry them forward without per-agent re-resolution.
   - Works with `file-operation-principles.md`: the principle "resolve paths per document-locations.md" is declared there.
   - Works with `denial-categories.md`: the single-Glob rule prevents the two-step Read pattern from generating spurious `file_not_found` denial events.
-- **Summary**: Centralizes document path resolution in one rule instead of hard-coding paths in each agent. All 41 agents declare "Follows `.claude/rules/document-locations.md`" in their prompt prelude; the rule is the single source of truth. `TASK.md` is explicitly out of scope and remains root-fixed.
+- **Summary**: Centralizes document path resolution in one rule instead of hard-coding paths in each agent. All 40 agents declare "Follows `.claude/rules/document-locations.md`" in their prompt prelude; the rule is the single source of truth. `TASK.md` is explicitly out of scope and remains root-fixed.
 
 ---
 

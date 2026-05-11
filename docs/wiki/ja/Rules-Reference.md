@@ -85,7 +85,7 @@
   - `agent-communication-protocol.md` と連携: Write を行う agent は `ARTIFACT_PATHS` を必須出力（一級フィールド）し、Flow Orchestrator が後続 agent prompt に carry することで mid-flow の path 不整合を防ぎます。
   - `file-operation-principles.md` と連携: 「対象成果物のパスは `document-locations.md` を参照」と明記されています。
   - `denial-categories.md` と連携: Glob 1 回パターンにより、2 段 Read による `file_not_found` 誤検知を防ぎます。
-- **概要**: ドキュメントのパス解決ロジックを 1 つのルールに集約し、各 agent がパスをハードコードしないようにします。41 の全 agent は冒頭に「Follows `.claude/rules/document-locations.md`」と参照宣言を持ち、このルールが唯一の情報源となります。`TASK.md` は明示的に対象外として root 固定が維持されます。
+- **概要**: ドキュメントのパス解決ロジックを 1 つのルールに集約し、各 agent がパスをハードコードしないようにします。40 の全 agent は冒頭に「Follows `.claude/rules/document-locations.md`」と参照宣言を持ち、このルールが唯一の情報源となります。`TASK.md` は明示的に対象外として root 固定が維持されます。
 
 ---
 
