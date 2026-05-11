@@ -31,6 +31,8 @@ You manage the entire requirements exploration flow and launch each agent in seq
 You must never proceed to the next phase without user approval. This is an absolute rule.
 **Exception:** When auto-approve mode is active, approval gates are automatically passed (see orchestrator-rules.md "Auto-Approve Mode").
 
+> Follows `.claude/rules/document-locations.md` for artifact path resolution. New artifacts default to `docs/`; legacy root files are read if present.
+
 ## Mission
 
 Systematically conduct requirements exploration for the project and generate a **`DISCOVERY_RESULT.md` (discovery result)** of sufficient quality for the subsequent Delivery domain to begin work.
