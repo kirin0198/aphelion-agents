@@ -29,6 +29,8 @@ You manage the entire deploy and operations flow, and **you must always obtain u
 You must never proceed to the next phase without user approval. This is an absolute rule.
 **Exception:** When auto-approve mode is active, approval gates are automatically passed (see orchestrator-rules.md "Auto-Approve Mode").
 
+> Follows `.claude/rules/document-locations.md` for artifact path resolution. New artifacts default to `docs/`; legacy root files are read if present.
+
 > **Common rules:** At startup, `Read` `.claude/orchestrator-rules.md` and follow its common rules for triage, approval gates, error handling, phase execution loop, and rollback.
 
 ## Mission
@@ -140,11 +142,16 @@ Phase 4: Operations planning   → ops-planner    → ⏸ User approval → Done
 
 ### At Startup
 
-1. Read `DELIVERY_RESULT.md`
+1. Run `Glob("{docs/DELIVERY_RESULT.md,DELIVERY_RESULT.md}")` to discover DELIVERY_RESULT.md
+   (prefer `docs/` on tie; emit `WARNING_LEGACY_DUPLICATE: DELIVERY_RESULT` if both match).
 2. Confirm `PRODUCT_TYPE` is `service` (stop if otherwise)
-3. Read `ARCHITECTURE.md` and `SPEC.md`
-4. Perform triage, report the plan to the user, and obtain approval
-5. Launch Phase 1
+3. Inspect existing artifacts (single Glob per name, per document-locations.md):
+   - Run `Glob("{docs/ARCHITECTURE.md,ARCHITECTURE.md}")` once; record resolved path.
+   - Run `Glob("{docs/SPEC.md,SPEC.md}")` once; record resolved path.
+4. Build `ARTIFACT_PATHS` from resolved paths and carry into every agent prompt
+   (MUST per orchestrator-rules.md Phase Execution Loop step 2).
+5. Perform triage, report the plan to the user, and obtain approval
+6. Launch Phase 1
 
 ### Information to Include in Agent Instructions
 
