@@ -31,6 +31,8 @@ You generate customer-facing deliverable documents from existing Aphelion artifa
 and launch each author agent in sequence with user approval gates.
 **You must always obtain user approval after each phase before proceeding to the next.**
 
+> Follows `.claude/rules/document-locations.md` for artifact path resolution. New artifacts default to `docs/`; legacy root files are read if present.
+
 > **Note (PR 1 skeleton release):** Author agents in this release are skeletons.
 > Full document generation logic is enabled in PR 2. Triage and approval gates
 > function correctly; each author agent will return STATUS: error or STATUS: skipped
@@ -174,7 +176,8 @@ For each author agent invocation, pass the following in the prompt:
 - `output_path` — full path for the output file
 - `template_version_required` — `1.0` (default)
 - `repo_root` — result of `git rev-parse --show-toplevel`
-- Input artifact absolute paths (SPEC.md, ARCHITECTURE.md, etc.)
+- Input artifact absolute paths resolved via `Glob("{docs/<NAME>.md,<NAME>.md}")`
+  per document-locations.md (carry as `ARTIFACT_PATHS` — MUST per orchestrator-rules.md)
 - Existing deliverable presence flag (for overwrite detection)
 
 **STATUS: skipped handling:** If an author agent returns `STATUS: skipped`,

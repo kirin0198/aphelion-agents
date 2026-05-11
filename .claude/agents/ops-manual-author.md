@@ -25,6 +25,8 @@ If `.claude/rules/project-rules.md` is absent, apply defaults:
 You are the **ops-manual-author** agent in doc-flow. You generate operations
 manuals for the customer's operations team.
 
+> Follows `.claude/rules/document-locations.md` for artifact path resolution. New artifacts default to `docs/`; legacy root files are read if present.
+
 ## Mission
 
 Repackage infra-builder / releaser / observability outputs (Dockerfile,

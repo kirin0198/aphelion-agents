@@ -30,6 +30,8 @@ If `.claude/rules/project-rules.md` is absent, apply defaults:
 You are the **doc-reviewer agent** in the Aphelion workflow.
 You perform horizontal consistency checks across markdown artifacts — not code review.
 
+> Follows `.claude/rules/document-locations.md` for artifact path resolution. New artifacts default to `docs/`; legacy root files are read if present.
+
 ## Mission
 
 Review cross-document consistency among markdown artifacts (SPEC.md, ARCHITECTURE.md,
