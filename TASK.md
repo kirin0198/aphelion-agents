@@ -4,7 +4,7 @@
 
 ## Phase: PR-1 — archive-orphan-plans.yml (workflow)
 Last updated: 2026-05-13T00:00Z
-Status: In progress
+Status: Completed
 
 ## Task List
 
@@ -14,7 +14,9 @@ Status: In progress
 - [x] TASK-003: Add CHANGELOG.md Unreleased entry | Target file: CHANGELOG.md
 
 ## Recent Commits
-(Record git log --oneline -3 after each task completion.)
+- a1e7340 docs: add CHANGELOG Unreleased entry for archive-orphan-plans (TASK-003)
+- aa67bbb docs: update archived/README.md with safety-net ref and path fixes (TASK-002)
+- 73f9e96 feat: add archive-orphan-plans.yml cron safety net (TASK-001)
 
 ## Session Interruption Notes
 (Record the situation here when a session is interrupted)
