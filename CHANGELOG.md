@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`archive-orphan-plans.yml`** (weekly safety-net workflow): Cron job (Mon 03:00 UTC)
+  that scans active planning docs in `docs/design-notes/*.md`, queries each linked
+  GitHub issue's state, and opens a single `chore:` PR to move any CLOSED-issue docs
+  into `archived/`. Complements the PR-driven `archive-closed-plans.yml` by catching
+  cases where the PR body lacked a `Closes #N` keyword or the issue was closed without
+  a PR. Supports `workflow_dispatch` with `dry_run` input for pre-merge verification.
+  Also updated `docs/design-notes/archived/README.md`: added cross-links to active
+  planning docs and `proposals/`, fixed stale `docs/issues/` path references.
+  (#118, PR-1 of 3)
+
 - **`document-locations.md` rule** (rule #14): Centralized path-resolution rule for
   Aphelion-generated planning / design / handoff documents. Default output location
   moved from repository root to `docs/<NAME>.md`; existing projects continue to work
