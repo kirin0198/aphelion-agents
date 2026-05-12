@@ -10,7 +10,7 @@ Status: In progress
 
 ### Phase 1 (PR-2)
 - [x] TASK-001: Create docs/design-notes/README.md | Target file: docs/design-notes/README.md
-- [ ] TASK-002: Update .claude/agents/doc-reviewer.md (add proposals/ exclusion) | Target file: .claude/agents/doc-reviewer.md
+- [x] TASK-002: Update .claude/agents/doc-reviewer.md (add proposals/ exclusion) | Target file: .claude/agents/doc-reviewer.md
 - [ ] TASK-003: Update .claude/agents/handover-author.md (add proposals/ exclusion) | Target file: .claude/agents/handover-author.md
 - [ ] TASK-004: Update .claude/agents/analyst.md (add proposals/ promotion paragraph) | Target file: .claude/agents/analyst.md
 - [ ] TASK-005: Update docs/wiki/en/Contributing.md (add design-notes lifecycle section) | Target file: docs/wiki/en/Contributing.md

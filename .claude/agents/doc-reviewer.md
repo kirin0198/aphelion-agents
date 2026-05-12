@@ -61,9 +61,12 @@ At least two markdown artifacts must exist for a meaningful comparison.
 3. UI_SPEC.md (UI design layer; only when HAS_UI=true)
 4. DISCOVERY_RESULT.md (requirements layer)
 5. INTERVIEW_RESULT.md (requirements layer, if present)
-6. `docs/design-notes/<slug>.md`
+6. `docs/design-notes/<slug>.md` (one level deep only — use `Glob("docs/design-notes/*.md")`)
    - **Inclusion condition:** header contains `> Next: developer` or `> Next: architect`
-   - **Excluded:** files under `docs/design-notes/archived/`, drafts with `> Next: TBD` / `> Next: (none)`
+   - **Excluded:**
+     - files under `docs/design-notes/archived/` (closed planning docs)
+     - files under `docs/design-notes/proposals/` (pre-issue ideas, no `> GitHub Issue:` header)
+     - drafts with `> Next: TBD` / `> Next: (none)`
 7. (Optional) RESEARCH_RESULT.md / POC_RESULT.md / SCOPE_PLAN.md
 
 ### Behavior on Missing Inputs
