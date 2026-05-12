@@ -10,7 +10,7 @@ Status: In progress
 
 ### Phase 1 (PR-1)
 - [x] TASK-001: Create .github/workflows/archive-orphan-plans.yml | Target file: .github/workflows/archive-orphan-plans.yml
-- [ ] TASK-002: Update docs/design-notes/archived/README.md (add cross-links, fix docs/issues/ references) | Target file: docs/design-notes/archived/README.md
+- [x] TASK-002: Update docs/design-notes/archived/README.md (add cross-links, fix docs/issues/ references) | Target file: docs/design-notes/archived/README.md
 - [ ] TASK-003: Add CHANGELOG.md Unreleased entry | Target file: CHANGELOG.md
 
 ## Recent Commits
