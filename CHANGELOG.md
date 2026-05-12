@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`docs/design-notes/proposals/`** directory: New opt-in staging area for
+  pre-issue ideas and exploration notes. Files here are intentionally not tied
+  to a GitHub issue and are excluded from all archive automation
+  (`archive-closed-plans.yml` and `archive-orphan-plans.yml`). Includes
+  `proposals/README.md` with header conventions, promotion lifecycle (draft →
+  promote to active planning doc → reject/pending), and cross-references to
+  the active and archived README files. (#118, PR-3 of 3)
+
 - **`document-locations.md` rule** (rule #14): Centralized path-resolution rule for
   Aphelion-generated planning / design / handoff documents. Default output location
   moved from repository root to `docs/<NAME>.md`; existing projects continue to work
