@@ -13,8 +13,8 @@ Status: In progress
 - [x] TASK-002: Update .claude/agents/doc-reviewer.md (add proposals/ exclusion) | Target file: .claude/agents/doc-reviewer.md
 - [x] TASK-003: Update .claude/agents/handover-author.md (add proposals/ exclusion) | Target file: .claude/agents/handover-author.md
 - [x] TASK-004: Update .claude/agents/analyst.md (add proposals/ promotion paragraph) | Target file: .claude/agents/analyst.md
-- [ ] TASK-005: Update docs/wiki/en/Contributing.md (add design-notes lifecycle section) | Target file: docs/wiki/en/Contributing.md
-- [ ] TASK-006: Update docs/wiki/ja/Contributing.md (mirror EN, Same-PR sync) | Target file: docs/wiki/ja/Contributing.md
+- [x] TASK-005: Update docs/wiki/en/Contributing.md (add design-notes lifecycle section) | Target file: docs/wiki/en/Contributing.md
+- [x] TASK-006: Update docs/wiki/ja/Contributing.md (mirror EN, Same-PR sync) | Target file: docs/wiki/ja/Contributing.md
 - [ ] TASK-007: Update CHANGELOG.md and package.json | Target files: CHANGELOG.md, package.json
 
 ## Recent Commits

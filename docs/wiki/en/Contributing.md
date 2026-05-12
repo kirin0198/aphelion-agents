@@ -1,8 +1,9 @@
 # Contributing
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-04-30
+> **Last updated**: 2026-05-13
 > **Update history**:
+>   - 2026-05-13: Add design-notes lifecycle section (proposals/, safety-net, evergreen notes) (#118)
 >   - 2026-04-30: Update Agents-Reference split threshold to 6 pages + New flow checklist (#54)
 >   - 2026-04-30: README ↔ Wiki responsibility split documented (#76)
 >   - 2026-04-29: clarify wiki/design-notes/README language policy (#75)
@@ -17,6 +18,7 @@ This page covers how to contribute to Aphelion: adding or modifying agents, upda
 - [Modifying an Existing Agent](#modifying-an-existing-agent)
 - [Updating Rules](#updating-rules)
 - [Wiki Maintenance](#wiki-maintenance)
+- [Design Notes Lifecycle](#design-notes-lifecycle)
 - [Bilingual Sync Policy](#bilingual-sync-policy)
 - [Pull Request Checklist](#pull-request-checklist)
 - [Related Pages](#related-pages)
@@ -178,6 +180,113 @@ canonical. The sync convention is governed by
 [`language-rules.md` → "Hand-authored canonical narrative"](../../src/.claude/rules/language-rules.md)
 and the repo-root README sync convention — **not** by this Wiki Bilingual Sync
 Policy. See `language-rules.md` for the authoritative rule. (#75)
+
+---
+
+## Design Notes Lifecycle
+
+Planning documents in `docs/design-notes/` record analyst-phase decisions
+for features, bug investigations, and refactoring. Each directory level
+has a distinct purpose.
+
+### Directory structure
+
+| Directory | Contents | Archive automation |
+|-----------|----------|-------------------|
+| `docs/design-notes/*.md` | Active planning docs (issue open) | Yes — moved automatically when issue closes |
+| `docs/design-notes/archived/*.md` | Closed planning docs (read-only) | Destination only |
+| `docs/design-notes/proposals/*.md` | Pre-issue ideas (no issue yet) | Excluded from automation |
+
+### Header conventions
+
+**Active planning docs** (`docs/design-notes/<slug>.md`) must start with:
+
+```markdown
+> Last updated: <YYYY-MM-DD>
+> GitHub Issue: [#N](<URL>)
+> Analyzed by: analyst (<YYYY-MM-DD>)
+> Next: <architect | developer | TBD>
+```
+
+The `> GitHub Issue: [#N](...)` line is required so that the archive
+automation can match the file to its issue.
+
+**Proposals** (`docs/design-notes/proposals/<slug>.md`) use a different
+header — no `> GitHub Issue:` line:
+
+```markdown
+> Status: proposal
+> Author: <name or handle>
+> Created: <YYYY-MM-DD>
+> Last updated: <YYYY-MM-DD>
+```
+
+### Lifecycle flow
+
+```
+docs/design-notes/proposals/<slug>.md     (idea, no issue)
+              │
+              │ analyst promotes the idea, creates a GitHub issue
+              ▼
+docs/design-notes/<slug>.md               (active planning doc)
+              │
+              │ PR merges with `Closes #N` body  (reactive path)
+              │   .github/workflows/archive-closed-plans.yml
+              │   moves file inside the merging PR
+              │ ─── OR ───
+              │ weekly cron finds the linked issue is CLOSED
+              │   .github/workflows/archive-orphan-plans.yml
+              │   opens a separate "chore: archive orphaned" PR
+              ▼
+docs/design-notes/archived/<slug>.md      (historical record)
+```
+
+### Automated archive paths
+
+1. **Reactive (default)** — `archive-closed-plans.yml` fires on
+   `pull_request: opened / edited / synchronize`. It parses `Closes #N` /
+   `Fixes #N` / `Resolves #N` in the PR body, finds matching planning docs
+   by their `> GitHub Issue: [#N]` header, and `git mv`'s them into
+   `archived/` in the same PR.
+
+2. **Weekly safety net** — `archive-orphan-plans.yml` runs every Monday at
+   03:00 UTC (and on-demand via `workflow_dispatch --dry_run`). It catches
+   planning docs whose linked issue was already closed but were missed by
+   the reactive workflow (e.g. the PR body lacked `Closes #N`, or the issue
+   was closed without a PR). It opens a single `chore: archive orphaned
+   planning docs` PR for human review.
+
+3. **Manual fallback** — if neither automated path applied:
+   ```bash
+   git mv docs/design-notes/<slug>.md docs/design-notes/archived/
+   git commit -m "chore: archive <slug> manually"
+   ```
+
+### Evergreen notes
+
+Files without a `> GitHub Issue:` header in `docs/design-notes/` are
+treated as **evergreen reference notes** (standing guidelines, glossaries,
+long-lived architectural overviews). Archive automation skips them.
+Do not move them unless the content has become stale.
+
+### Proposals lifecycle
+
+1. **Draft** — write `proposals/<slug>.md` with any level of detail. No
+   PR template, no review gate.
+2. **Promote** — when ready to act on, the `analyst` agent:
+   - opens a GitHub issue,
+   - moves (or rewrites) the file to `docs/design-notes/<slug>.md`,
+   - replaces the `> Status: proposal` header with the standard
+     `> GitHub Issue: [#N](...)` header.
+3. **Reject / pending** — leave in place. `proposals/` has no automated
+   cleanup; periodic manual review is expected.
+
+`proposals/` files are **excluded** from agent reads (`doc-reviewer`,
+`handover-author`) — they are human scratch space, not part of the formal
+design-decision history.
+
+See [`docs/design-notes/README.md`](../../design-notes/README.md) for
+the authoritative active-side guide.
 
 ---
 
