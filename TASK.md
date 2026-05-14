@@ -11,7 +11,7 @@ Status: In progress
 ### Phase 1 — Agent and rules changes for #136
 - [x] TASK-001: Promote analyst to Planning-tier with commit-on-work-branch | Target file: .claude/agents/analyst.md
 - [x] TASK-002: Add Design Note Artifact section to architect | Target file: .claude/agents/architect.md
-- [ ] TASK-003: Detect orphan planning docs in developer Startup Probe | Target file: .claude/agents/developer.md
+- [x] TASK-003: Detect orphan planning docs in developer Startup Probe | Target file: .claude/agents/developer.md
 - [ ] TASK-004: Declare Planning-tier in git-rules + design-notes README + CHANGELOG | Target files: src/.claude/rules/git-rules.md, docs/design-notes/README.md, CHANGELOG.md
 
 ## Recent Commits
