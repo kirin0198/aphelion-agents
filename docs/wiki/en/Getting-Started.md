@@ -1,7 +1,7 @@
 # Getting Started
 
 > **Language**: [English](../en/Getting-Started.md) | [日本語](../ja/Getting-Started.md)
-> **Last updated**: 2026-04-30 (updated 2026-04-30: clarify TASK.md placeholder convention, #80)
+> **Last updated**: 2026-05-15 (updated 2026-05-15: expand TASK.md lifecycle to 3-state description, #128)
 > **Audience**: New users
 
 This page covers everything you need to start using Aphelion: Claude Code setup, first-run walkthrough, usage scenarios, command reference, and troubleshooting.
@@ -275,7 +275,19 @@ Each agent generates one or more files:
 | Delivery | SPEC.md, UI_SPEC.md, ARCHITECTURE.md, TASK.md, implementation code, TEST_PLAN.md, SECURITY_AUDIT.md, README.md |
 | Operations | Dockerfile, docker-compose.yml, .github/workflows/ci.yml, DB_OPS.md, OBSERVABILITY.md, OPS_PLAN.md |
 
-**Note on `TASK.md`:** The `developer` agent creates and updates `TASK.md` during a Delivery phase to track per-task progress. When no phase is running, `TASK.md` sits at the repository root as an empty placeholder file — this is the correct idle state, not a sign of incomplete work.
+**Note on `TASK.md`:** `TASK.md` follows a 3-state lifecycle:
+1. **At phase start** — `developer` generates `TASK.md` populated with the
+   task checklist from `ARCHITECTURE.md`.
+2. **During the phase** — `developer` ticks completed checkboxes and updates
+   the "Recent Commits" section after each task.
+3. **At phase completion** — `developer` resets `TASK.md` to an empty
+   placeholder so the next phase starts clean. A fully-ticked `TASK.md`
+   committed to `main` is a rule violation (see
+   `.claude/rules/document-versioning.md` §"TASK.md Lifecycle"); the phase's
+   analysis and outcome belong in `docs/design-notes/<slug>.md` instead.
+
+An empty `TASK.md` at the repository root is the correct idle state, not a
+sign of incomplete work.
 
 ### Session Resume
 

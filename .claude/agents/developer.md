@@ -219,6 +219,34 @@ To resume, say "please resume using developer".
 TASK.md and git log will be checked to resume automatically.
 ```
 
+### Phase Completion Reset (required, execute once per phase)
+
+After the FINAL task in a phase is committed, **reset `TASK.md` to the empty
+placeholder template** so the next developer invocation starts from a clean
+state. This is required by `.claude/rules/document-versioning.md` §"TASK.md
+Lifecycle".
+
+```bash
+# 1. Overwrite TASK.md with the placeholder template
+cat > TASK.md <<'EOF'
+# TASK.md
+
+> Empty placeholder. The `developer` agent will populate this file when the
+> next implementation phase begins. See `.claude/rules/document-versioning.md`
+> §"TASK.md Lifecycle" for the reset rule.
+EOF
+
+# 2. Commit the reset as a trailing chore: commit
+git add TASK.md
+git commit -m "chore: reset TASK.md at phase completion"
+git push
+```
+
+Rationale (per document-versioning.md): a fully-ticked TASK.md is not a design
+artifact — the phase's analysis and outcome belong in
+`docs/design-notes/<slug>.md`. Leaving a completed TASK.md risks the next
+`developer` session misreading it as a resume target.
+
 ---
 
 ## Implementation Rules
@@ -329,3 +357,5 @@ NEXT: test-designer | suspended
 - [ ] Lint/format checks have passed (or noted as not installed)
 - [ ] Self-check against SPEC.md acceptance criteria is complete
 - [ ] Output block on completion has been emitted
+- [ ] TASK.md has been reset to the empty placeholder template (if this commit
+      concludes the phase)

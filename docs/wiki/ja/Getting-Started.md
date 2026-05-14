@@ -1,8 +1,8 @@
 # Getting Started
 
 > **Language**: [English](../en/Getting-Started.md) | [日本語](../ja/Getting-Started.md)
-> **Last updated**: 2026-04-30 (updated 2026-04-30: TASK.md プレースホルダー規約を明記, #80)
-> **EN canonical**: 2026-04-30 (updated 2026-04-30) of wiki/en/Getting-Started.md
+> **Last updated**: 2026-05-15 (updated 2026-05-15: TASK.md ライフサイクルを3段階記述に拡張, #128)
+> **EN canonical**: 2026-05-15 (updated 2026-05-15) of wiki/en/Getting-Started.md
 > **Audience**: 新規ユーザー
 
 このページはAphelionを使い始めるために必要なすべてをカバーします：Claude Code のセットアップ、初回実行のウォークスルー、利用シナリオ、コマンドリファレンス、トラブルシューティング。
@@ -262,7 +262,18 @@ Deliveryが完了した後（serviceプロジェクトの場合）：
 | Delivery | SPEC.md、UI_SPEC.md、ARCHITECTURE.md、TASK.md、実装コード、TEST_PLAN.md、SECURITY_AUDIT.md、README.md |
 | Operations | Dockerfile、docker-compose.yml、.github/workflows/ci.yml、DB_OPS.md、OBSERVABILITY.md、OPS_PLAN.md |
 
-**`TASK.md` について:** `developer` エージェントは Delivery フェーズ中にタスクごとの進捗を管理するために `TASK.md` を作成・更新します。フェーズが実行されていない間は、`TASK.md` はリポジトリルートに空のプレースホルダーファイルとして存在します。これは正常なアイドル状態であり、未完了の作業があることを示すものではありません。
+**`TASK.md` について:** `TASK.md` は3つの状態を持つライフサイクルに従います：
+1. **フェーズ開始時** — `developer` が `ARCHITECTURE.md` のタスクチェックリストを
+   元に `TASK.md` を生成します。
+2. **フェーズ実行中** — `developer` が各タスク完了後にチェックボックスをチェック済みにし、
+   「Recent Commits」セクションを更新します。
+3. **フェーズ完了時** — `developer` が `TASK.md` を空のプレースホルダーにリセットして、
+   次のフェーズがクリーンな状態で開始できるようにします。チェック済みの `TASK.md` が
+   `main` にコミットされている場合はルール違反です（`.claude/rules/document-versioning.md`
+   §"TASK.md Lifecycle" 参照）。フェーズの分析と成果は
+   `docs/design-notes/<slug>.md` に記録します。
+
+リポジトリルートの空の `TASK.md` は正常なアイドル状態であり、未完了の作業があることを示すものではありません。
 
 ### セッション再開
 
