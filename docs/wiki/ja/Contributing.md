@@ -1,12 +1,13 @@
 # Contributing
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-04-30
+> **Last updated**: 2026-05-13
 > **Update history**:
+>   - 2026-05-13: design-notes ライフサイクル節を追加（proposals/、safety-net、evergreen notes）(#118)
 >   - 2026-04-30: Agents-Reference 分割しきい値を 6 ページに更新 + 新フローチェックリスト (#54)
 >   - 2026-04-30: README ↔ Wiki 責任分担を明文化 (#76)
 >   - 2026-04-29: wiki/design-notes/README の言語ポリシーを明確化 (#75)
-> **EN canonical**: 2026-04-30 of wiki/en/Contributing.md
+> **EN canonical**: 2026-05-13 of wiki/en/Contributing.md
 > **Audience**: エージェント開発者
 
 このページはAphelionへの貢献方法をカバーします：エージェントの追加・変更、ルールの更新、Wikiのメンテナンス。プルリクエストを開く前にこのページを読んでください。
@@ -18,6 +19,7 @@
 - [既存エージェントの変更](#既存エージェントの変更)
 - [ルールの更新](#ルールの更新)
 - [Wikiのメンテナンス](#wikiのメンテナンス)
+- [Design Notes ライフサイクル](#design-notes-ライフサイクル)
 - [バイリンガル同期ポリシー](#バイリンガル同期ポリシー)
 - [プルリクエストチェックリスト](#プルリクエストチェックリスト)
 - [関連ページ](#関連ページ)
@@ -173,6 +175,106 @@ README に**置かない**もの（= Wiki に送る）：
 同期規約は[`language-rules.md` → "Hand-authored canonical narrative"](../../src/.claude/rules/language-rules.md)
 と repo-root README sync convention によって管理されており、**この Wiki バイリンガル同期ポリシーではありません**。
 権威あるルールは `language-rules.md` を参照してください。(#75)
+
+---
+
+## Design Notes ライフサイクル
+
+`docs/design-notes/` 内の planning doc は analyst フェーズでの設計決定を記録します。
+各ディレクトリ階層には明確な役割があります。
+
+### ディレクトリ構成
+
+| ディレクトリ | 内容 | アーカイブ自動化 |
+|------------|------|----------------|
+| `docs/design-notes/*.md` | アクティブな planning doc（issue open 中） | あり — issue クローズ時に自動移動 |
+| `docs/design-notes/archived/*.md` | クローズ済み planning doc（読み取り専用） | 移動先のみ |
+| `docs/design-notes/proposals/*.md` | issue 化前のアイデア（issue なし） | 自動化対象外 |
+
+### ヘッダー規約
+
+**アクティブな planning doc** (`docs/design-notes/<slug>.md`) は先頭に以下が必要です：
+
+```markdown
+> Last updated: <YYYY-MM-DD>
+> GitHub Issue: [#N](<URL>)
+> Analyzed by: analyst (<YYYY-MM-DD>)
+> Next: <architect | developer | TBD>
+```
+
+`> GitHub Issue: [#N](...)` 行はアーカイブ自動化がファイルと issue を照合するために必須です。
+
+**Proposals** (`docs/design-notes/proposals/<slug>.md`) は異なるヘッダーを使用します（`> GitHub Issue:` 行なし）：
+
+```markdown
+> Status: proposal
+> Author: <name or handle>
+> Created: <YYYY-MM-DD>
+> Last updated: <YYYY-MM-DD>
+```
+
+### ライフサイクルフロー
+
+```
+docs/design-notes/proposals/<slug>.md     (アイデア、issue なし)
+              │
+              │ analyst がアイデアを昇格し、GitHub issue を作成
+              ▼
+docs/design-notes/<slug>.md               (アクティブな planning doc)
+              │
+              │ PR が `Closes #N` 本文でマージ (リアクティブパス)
+              │   .github/workflows/archive-closed-plans.yml
+              │   同一 PR 内でファイルを移動
+              │ ─── または ───
+              │ 週次 cron が linked issue の CLOSED を検出
+              │   .github/workflows/archive-orphan-plans.yml
+              │   "chore: archive orphaned" PR を別途作成
+              ▼
+docs/design-notes/archived/<slug>.md      (履歴レコード)
+```
+
+### 自動アーカイブパス
+
+1. **リアクティブ（デフォルト）** — `archive-closed-plans.yml` が
+   `pull_request: opened / edited / synchronize` で発火します。PR 本文の
+   `Closes #N` / `Fixes #N` / `Resolves #N` を解析し、対応する planning doc を
+   `archived/` に `git mv` して同一 PR 内に含めます。
+
+2. **週次 safety net** — `archive-orphan-plans.yml` が毎週月曜日 03:00 UTC
+   （および `workflow_dispatch --dry_run` でオンデマンド）に実行されます。
+   PR 本文に `Closes #N` がなかった、または PR を使わずに issue がクローズされた
+   などでリアクティブ側に漏れた planning doc を救済します。単一の
+   `chore: archive orphaned planning docs` PR を人間によるレビュー用に作成します。
+
+3. **手動フォールバック** — 自動化が適用されなかった場合：
+   ```bash
+   git mv docs/design-notes/<slug>.md docs/design-notes/archived/
+   git commit -m "chore: archive <slug> manually"
+   ```
+
+### Evergreen notes
+
+`docs/design-notes/` 内で `> GitHub Issue:` ヘッダーを持たないファイルは
+**evergreen reference notes**（定常ガイドライン、用語集、長期的なアーキテクチャ概要）
+として扱われます。アーカイブ自動化はこれらをスキップします。
+内容が古くなった場合を除いて移動しないでください。
+
+### Proposals ライフサイクル
+
+1. **Draft** — `proposals/<slug>.md` に詳細度を問わず記載します。PR テンプレートも
+   レビューゲートも不要です。
+2. **Promote** — 実行する準備ができたら、`analyst` エージェントが：
+   - GitHub issue を作成し、
+   - ファイルを `docs/design-notes/<slug>.md` に移動（または新規作成）し、
+   - `> Status: proposal` ヘッダーを標準の `> GitHub Issue: [#N](...)` ヘッダーに置き換えます。
+3. **Reject / pending** — そのまま残します。`proposals/` には自動クリーンアップ機能がなく、
+   定期的な手動レビューが期待されます。
+
+`proposals/` ファイルはエージェントの読み取り対象から**除外**されています
+（`doc-reviewer`、`handover-author`）— これらは人間の作業メモであり、
+正式な設計決定履歴の一部ではありません。
+
+詳細は [`docs/design-notes/README.md`](../../design-notes/README.md) を参照してください。
 
 ---
 

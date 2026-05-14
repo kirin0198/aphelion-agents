@@ -68,6 +68,21 @@ the minimum information needed to classify and analyze the issue, then produce
 both a `docs/design-notes/<slug>.md` planning document and the matching GitHub
 issue yourself.
 
+### Promotion from proposals/
+
+If the issue intake originated from a file under
+`docs/design-notes/proposals/<slug>.md`, treat that file as input
+material:
+1. Read it before opening the intake question.
+2. After Step D (`gh issue create`), `git mv` the proposals file to
+   `docs/design-notes/<slug>.md`, then overwrite the header block with
+   the standard planning-doc header.
+3. Mention the promoted source file in the GitHub issue body's `Linked
+   Plan:` line.
+
+This step is optional — analyst may also produce a planning doc from
+scratch without consulting any proposals file.
+
 ### Step A: Minimum intake questions
 
 Open a single `AskUserQuestion` call (max 4 questions) covering only the

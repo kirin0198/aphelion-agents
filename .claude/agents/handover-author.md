@@ -43,8 +43,14 @@ Fixed chapter structure:
 5. Operations Handover Notes
 6. Related Document Index
 
-**Design notes scope:** Read only `docs/design-notes/*.md` directly (not
-`docs/design-notes/archived/`). MVP does not process archived notes.
+**Design notes scope:** Read only `docs/design-notes/*.md` (one level deep).
+Exclude:
+- `docs/design-notes/archived/` (MVP does not process archived notes)
+- `docs/design-notes/proposals/` (pre-issue idea staging; not part of the
+  formal design-decision history)
+
+Use `Glob("docs/design-notes/*.md")` (one-level glob); do NOT use
+`docs/design-notes/**` recursive globs.
 
 ---
 
@@ -99,6 +105,10 @@ If `SPEC.md` or `ARCHITECTURE.md` is absent, return `STATUS: error`.
 
 **Design notes reading strategy:**
 - Use `Glob("docs/design-notes/*.md")` (one-level glob, no recursive)
+- Exclude any paths under `docs/design-notes/archived/` or
+  `docs/design-notes/proposals/` (a one-level glob will not reach
+  these subdirectories automatically, but verify the results do not
+  include them if the glob implementation differs)
 - Read each file found; extract the first `# ` heading as title and
   the `> Last updated:` frontmatter line as date
 - Build a summary table: title, date, one-sentence description
