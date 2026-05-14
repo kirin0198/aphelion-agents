@@ -1,5 +1,9 @@
 # Archived Planning Documents
 
+> For active planning docs (issue still open), see
+> [`../README.md`](../README.md).
+> For issue-less ideas, see [`../proposals/README.md`](../proposals/README.md).
+
 Historical record of planning documents whose corresponding GitHub issues are
 **closed** and whose work has shipped. Files here are preserved verbatim from the
 analyst phase that produced them, including superseded line numbers, ADR
@@ -12,13 +16,13 @@ references to since-removed code, and decisions that later evolved.
   rejected; that reasoning is still useful when revisiting the same problem.
 - **Onboarding** — new contributors who want to understand a feature's design
   history can read the planning doc before the code.
-- **Cross-reference** — newer planning documents (in `docs/issues/`) cite older
+- **Cross-reference** — newer planning documents (in `docs/design-notes/`) cite older
   ones by relative path. Moving rather than deleting preserves those links.
 
 ## What does NOT belong here
 
 - Planning docs whose corresponding issue is still **open**. Those live in
-  `docs/issues/` (one level up).
+  `docs/design-notes/` (one level up).
 - Documents that were never tied to an issue / PR. Those should be elsewhere
   (e.g. `docs/wiki/` for evergreen reference).
 - Files modified after archival. Once archived, treat the file as read-only;
@@ -41,13 +45,20 @@ references to since-removed code, and decisions that later evolved.
 
    **Edge case.** The workflow trusts `Closes #N` as a commitment that
    merging will close the issue. If the PR is ultimately closed *without
-   merging*, manually move the file back: `git mv docs/issues/archived/<slug>.md
-   docs/issues/<slug>.md` and open a small chore PR.
+   merging*, manually move the file back: `git mv docs/design-notes/archived/<slug>.md
+   docs/design-notes/<slug>.md` and open a small chore PR.
 
-2. **Manual fallback** — `git mv docs/issues/<slug>.md docs/issues/archived/`
-   then commit. Use this if the workflow could not detect the issue reference
-   (e.g. the planning doc tracks a problem that has no GitHub issue, or the
-   PR did not use a `Closes #N` keyword).
+2. **Weekly safety net** — `.github/workflows/archive-orphan-plans.yml`
+   runs every Monday at 03:00 UTC and on-demand via `workflow_dispatch`.
+   It catches planning docs whose linked issue was closed but were not
+   picked up by the PR-driven workflow (e.g. the PR body lacked a
+   `Closes #N` keyword, or the issue was closed without a PR).
+   The workflow opens a `chore: archive orphaned planning docs` PR for
+   human review; it never commits directly to main.
+
+3. **Manual fallback** — `git mv docs/design-notes/<slug>.md docs/design-notes/archived/`
+   then commit. Use this if neither automated path applied (e.g. the
+   planning doc has no `> GitHub Issue:` header).
 
 See [Contributing.md](../../wiki/en/Contributing.md) for the full PR checklist
 and policy.
