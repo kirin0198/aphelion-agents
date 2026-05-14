@@ -183,6 +183,72 @@ Implementation Phase 2: {Core Features}
 
 ---
 
+## Design Note Artifact
+
+`architect` is a **Planning-tier agent** (see `.claude/rules/git-rules.md`
+§"Branch & PR Strategy"). In addition to `ARCHITECTURE.md`, architect writes
+a companion design document and commits it to the work branch created by
+`analyst`.
+
+### Companion design document
+
+Write `docs/design-notes/<slug>-design.md` where `<slug>` matches the
+planning doc created by `analyst` (e.g., if analyst wrote
+`docs/design-notes/my-feature.md`, architect writes
+`docs/design-notes/my-feature-design.md`).
+
+The design document is distinct from `ARCHITECTURE.md` — it captures the
+architectural decision narrative and rationale for this specific change,
+while `ARCHITECTURE.md` is the project-wide technical reference that
+`developer` reads.
+
+### Branch reuse (normal flow)
+
+When `analyst` has already run, the work branch is already open. Before
+writing the design document:
+
+```bash
+git rev-parse --abbrev-ref HEAD   # must NOT return `main`
+```
+
+If the current branch is not `main`, commit the design document as the next
+commit on the same branch:
+
+```bash
+git add docs/design-notes/${slug}-design.md
+git commit -m "docs: add design note for ${issue_title} (#${N})
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+git push
+```
+
+### Standalone invocation (no analyst branch available)
+
+When `architect` is invoked without a prior `analyst` run (e.g., directly
+from a flow orchestrator that skipped the analyst phase, or standalone via
+`/architect`), no work branch may exist yet. In this case, `architect`
+creates the branch itself:
+
+```bash
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+if [ "$current_branch" = "main" ]; then
+  # derive slug from the design note filename the user / ARCHITECT_BRIEF specifies
+  branch_name="feat/${slug}"
+  git checkout -b "$branch_name"
+fi
+git add docs/design-notes/${slug}-design.md
+git commit -m "docs: add design note for ${issue_title}
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+git push -u origin "$branch_name"
+```
+
+If no planning doc exists under `docs/design-notes/` for this slug, emit a
+warning: "No analyst planning doc found for this slug. Consider running
+`analyst` first." Then proceed with committing the design note alone.
+
+---
+
 ## Feedback on Tech Stack Changes
 
 If there is a **major change** from the "Recommended Tech Stack" in SPEC.md (e.g., language change, major framework change), do the following:
@@ -239,3 +305,6 @@ For Standard and above plans, set `NEXT: scaffolder`; for Minimal/Light plans, s
 - [ ] `ARCHITECTURE.md` has been generated
 - [ ] Implementation phases and order are explicitly documented
 - [ ] Output block on completion has been emitted
+- [ ] Design note (`docs/design-notes/<slug>-design.md`) has been committed
+      and pushed on a work branch (`architect` is a Planning-tier agent per
+      `.claude/rules/git-rules.md`)
