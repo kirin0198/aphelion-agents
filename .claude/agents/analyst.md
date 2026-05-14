@@ -339,6 +339,60 @@ EOF
 
 ---
 
+## Commit on Work Branch (required after gh issue create)
+
+`analyst` is a **Planning-tier agent** (see `.claude/rules/git-rules.md`
+§"Branch & PR Strategy"). After `gh issue create` completes and the design
+note header has been updated with the issue URL, commit the planning doc and
+any updated SPEC/UI_SPEC files to a work branch.
+
+`${slug}` in the snippet below is the slug of the planning doc filename the
+analyst has already written (e.g. `docs/design-notes/my-feature.md` → slug
+is `my-feature`). `${issue_title}` and `${N}` are the title and number from
+`gh issue create`.
+
+```bash
+# 1. Check current branch
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+
+# 2. Create work branch from main only if currently on main
+if [ "$current_branch" = "main" ]; then
+  case "$ISSUE_TYPE" in
+    bug)      branch_prefix=fix ;;
+    refactor) branch_prefix=refactor ;;
+    *)        branch_prefix=feat ;;
+  esac
+  branch_name="${branch_prefix}/${slug}"
+  git checkout -b "$branch_name"
+fi
+
+# 3. Stage the planning doc and any edited SPEC / UI_SPEC files
+git add docs/design-notes/${slug}.md
+git add docs/SPEC.md 2>/dev/null || git add SPEC.md 2>/dev/null || true
+git add docs/UI_SPEC.md 2>/dev/null || git add UI_SPEC.md 2>/dev/null || true
+
+# 4. Commit (do NOT open a PR — that is the implementation tier's job)
+git commit -m "docs: add planning doc for ${issue_title} (#${N})
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+
+# 5. Push so the branch is visible to subsequent agents
+git push -u origin "$branch_name"
+```
+
+**If the branch already exists** on the remote (slug collision), follow the
+branch-reuse rule in `.claude/rules/git-rules.md` §"Branch Lifecycle": ask
+the user whether to reuse the existing branch or choose a different slug.
+
+**Promotion from proposals/**: when `git mv` was used to promote a proposals
+file (§"Promotion from proposals/" above), stage the rename too:
+```bash
+git add docs/design-notes/proposals/${slug}.md   # deleted source
+git add docs/design-notes/${slug}.md             # promoted destination
+```
+
+---
+
 ## Output Files
 
 - `SPEC.md` (incremental Edit; resolved per document-locations.md; default `docs/SPEC.md`)
@@ -358,11 +412,15 @@ ARTIFACT_PATHS:
   - SPEC: {resolved path, e.g. docs/SPEC.md or SPEC.md}
   - UI_SPEC: {resolved path, e.g. docs/UI_SPEC.md or UI_SPEC.md}
 GITHUB_ISSUE: {issue URL | skipped}
+BRANCH: {branch name}
 HANDOFF_TO: architect
 ARCHITECT_BRIEF: |
   {Instructions for design changes to pass to architect. Describe specifically what should be changed or added}
 NEXT: architect
 ```
+
+`BRANCH` is **MUST** when `STATUS: success`. It tells `architect` and `developer`
+which branch to reuse so they do not create a duplicate.
 
 ## Completion Conditions
 
@@ -372,3 +430,6 @@ NEXT: architect
 - [ ] A GitHub issue has been created via gh CLI (or skip reason recorded in AGENT_RESULT)
 - [ ] The required output block has been produced
 - [ ] Handoff information for architect (ARCHITECT_BRIEF) has been clearly stated
+- [ ] Planning doc has been committed and pushed on a work branch (`analyst` is a
+      Planning-tier agent per `.claude/rules/git-rules.md`); `BRANCH:` field populated
+      in AGENT_RESULT
