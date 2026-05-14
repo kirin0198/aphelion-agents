@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **TASK.md reset enforcement** (#128): The `developer` agent now explicitly
+  resets `TASK.md` to an empty placeholder at phase completion, enforcing the
+  rule already stated in `document-versioning.md` §"TASK.md Lifecycle". Adds a
+  "Phase Completion Reset" procedure section (with bash snippet) and a new
+  Completion Conditions checkbox to `.claude/agents/developer.md`. Expands the
+  "Note on TASK.md" in `docs/wiki/{en,ja}/Getting-Started.md` to describe the
+  full 3-state lifecycle (generate → tick → reset). Updates developer row in
+  `docs/wiki/{en,ja}/Agents-Delivery.md` to document the reset responsibility.
+  Also resets the currently-stale `TASK.md` on `main` to the empty placeholder.
+  (#128)
+
 ### Added
 
 - **`archive-orphan-plans.yml`** (weekly safety-net workflow): Cron job (Mon 03:00 UTC)

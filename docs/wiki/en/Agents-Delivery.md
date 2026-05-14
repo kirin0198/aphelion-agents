@@ -1,8 +1,9 @@
 # Agents Reference: Delivery Domain
 
 > **Language**: [English](../en/Agents-Delivery.md) | [日本語](../ja/Agents-Delivery.md)
-> **Last updated**: 2026-05-01
+> **Last updated**: 2026-05-15
 > **Update history**:
+>   - 2026-05-15: Add TASK.md reset responsibility to developer row (#128)
 >   - 2026-05-01: Add visual-designer (HAS_UI + Standard/Full only); update ux-designer NEXT (#109)
 >   - 2026-04-26: Sync with #72, #74 (issue #77)
 >   - 2026-04-25: split from Agents-Reference.md; #42
@@ -82,7 +83,7 @@ The Delivery domain (13 agents) handles design, implementation, testing, and rel
 
 - **Canonical**: [.claude/agents/developer.md](../../.claude/agents/developer.md)
 - **Domain**: Delivery
-- **Responsibility**: Implements code following ARCHITECTURE.md implementation order. Owns branch creation, push, and PR submission per `git-rules.md` `## Branch & PR Strategy`. Manages progress via TASK.md (supports resume). Commits per task, runs lint/format checks after each task.
+- **Responsibility**: Implements code following ARCHITECTURE.md implementation order. Owns branch creation, push, and PR submission per `git-rules.md` `## Branch & PR Strategy`. Manages progress via TASK.md (supports resume). Commits per task, runs lint/format checks after each task. **Resets TASK.md to the empty placeholder at phase completion** per `document-versioning.md` §"TASK.md Lifecycle".
 - **Inputs**: SPEC.md, ARCHITECTURE.md, UI_SPEC.md (if HAS_UI), VISUAL_SPEC.md (if HAS_UI and plan ≥ Standard), TASK.md (if resuming), `docs/design-notes/<slug>.md` (if invoked from analyst handoff)
 - **Outputs**: Implementation code, TASK.md, working branch, PR
 - **AGENT_RESULT fields**: `PHASE`, `TASKS_COMPLETED`, `LAST_COMMIT`, `LINT_CHECK`, `FILES_CHANGED`, `ACCEPTANCE_CHECK`, `BRANCH`, `PR_URL`
