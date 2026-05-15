@@ -43,8 +43,20 @@ Current evergreen notes: `compliance-auditor.md`, `performance-optimizer.md`.
 docs/design-notes/proposals/<slug>.md     (idea, no issue)
               │
               │ analyst promotes the idea, creates a GitHub issue
+              │   → writes docs/design-notes/<slug>.md
+              │   → creates work branch feat/<slug> (or fix/ / refactor/)
+              │   → commits planning doc + any SPEC/UI_SPEC edits
+              │   → pushes branch  (NO PR yet)
               ▼
 docs/design-notes/<slug>.md               (active planning doc, this directory)
+              │
+              │ architect writes docs/design-notes/<slug>-design.md
+              │   → reuses the analyst branch (must not be main)
+              │   → commits design note on same branch
+              │   → pushes
+              │
+              │ developer reuses branch, implements, opens PR with
+              │   `Closes #N` in the body
               │
               │ PR merges with `Closes #N` body  (reactive path)
               │   .github/workflows/archive-closed-plans.yml

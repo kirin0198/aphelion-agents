@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Planning-doc-on-work-branch rule** (#136): `analyst` is now a
+  Planning-tier agent responsible for branch creation and committing the
+  planning doc + any SPEC/UI_SPEC edits immediately after `gh issue create`.
+  `architect` reuses that branch and commits the companion design note
+  (`<slug>-design.md`). `developer`'s Startup Probe detects untracked files
+  under `docs/design-notes/` and emits a warning (fail-safe; no auto-add).
+  `git-rules.md` §"Branch & PR Strategy" now defines the Planning-tier /
+  Implementation-tier split. `docs/design-notes/README.md` Lifecycle diagram
+  updated to show the full agent handoff chain. (#136)
+
 - **TASK.md reset enforcement** (#128): The `developer` agent now explicitly
   resets `TASK.md` to an empty placeholder at phase completion, enforcing the
   rule already stated in `document-versioning.md` §"TASK.md Lifecycle". Adds a

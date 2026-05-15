@@ -52,7 +52,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 ### Applicable Agents
 
 developer, scaffolder, infra-builder, db-ops, observability, releaser, analyst,
-codebase-analyzer, rules-designer, doc-writer, tester.
+architect, codebase-analyzer, rules-designer, doc-writer, tester.
 
 (i.e., all agents owning `Bash` that may run `git commit`.)
 
@@ -147,8 +147,17 @@ fi
 
 ## Branch & PR Strategy
 
-Implementation-tier agents (`developer`, `scaffolder`, etc.) are responsible for
-branch creation, commit, push, and pull request submission.
+**Planning-tier and Implementation-tier agents** are both responsible for
+branch creation (where applicable), commit, and push. Only Implementation-tier
+agents open pull requests.
+
+- **Planning-tier**: `analyst`, `architect`. `analyst` creates the work branch
+  from `main` and commits the planning doc + SPEC/UI_SPEC edits; `architect`
+  reuses the branch and commits the design note. **Planning-tier agents do NOT
+  open PRs** — that is the implementation tier's job.
+- **Implementation-tier**: `developer`, `scaffolder`, etc. Reuse the branch
+  created by `analyst` (or create one if invoked standalone), commit
+  implementation code, open the PR.
 
 > For agent-specific branch name derivation (e.g., slug from TASK.md or
 > ARCHITECT_BRIEF), see the individual agent definition file.

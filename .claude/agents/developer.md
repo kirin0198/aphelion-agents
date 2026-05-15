@@ -75,6 +75,20 @@ git status
 git rev-parse --abbrev-ref HEAD  # current branch — must not be `main` before commits
 ```
 
+4. Detect orphaned planning docs (fail-safe — `analyst` should have committed
+   them already per the planning-doc-on-work-branch rule):
+```bash
+orphan_docs=$(git ls-files --others --exclude-standard 'docs/design-notes/*.md' 2>/dev/null)
+if [ -n "$orphan_docs" ]; then
+  echo "Warning: Untracked planning docs detected:"
+  echo "$orphan_docs"
+  echo "  These should have been committed by analyst per planning-doc-on-work-branch rule."
+  echo "  Stage and commit them before proceeding, or invoke analyst to redo the planning step."
+fi
+```
+This is a **warning only** — do not auto-add the files. The developer must
+inspect the content before staging.
+
 If required documents are missing:
 - No `SPEC.md` -- Prompt execution of `spec-designer`
 - No `ARCHITECTURE.md` -- Prompt execution of `architect`
