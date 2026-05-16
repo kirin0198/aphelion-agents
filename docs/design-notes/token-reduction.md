@@ -1,31 +1,99 @@
-> Last updated: 2026-05-15
+> Last updated: 2026-05-16
 > GitHub Issue: [#132](https://github.com/kirin0198/aphelion-agents/issues/132)
-> Authored by: analyst (2026-05-15)
+> Authored by: analyst (2026-05-15, refined 2026-05-16 post-#131 merge)
 > Promoted from: docs/design-notes/proposals/token-reduction-memo.md
-> Related: [agent-definition-simplification.md](./agent-definition-simplification.md) (#131) — §B と §② が aphelion-overview.md 上で衝突
-> Next: architect (mandatory — §C agent split / §E cache 戦略は設計判断)
+> Related: [agent-definition-simplification.md](./archived/agent-definition-simplification.md) (#131, closed) — §B baseline 確定
+> Next: developer for PR-1 (§B mechanical), architect for PR-2 (§C model split)
 
 # トークン消費削減
 
 本書は user 起票の proposal を analyst が promotion したもの。
 proposal 段階で「設計確定・未着手」と評価されていたため、内容は元メモを保持し、
 ヘッダのみ標準フォーマットへ書き換えている。
+2026-05-16: #131 マージ後の baseline で refined design を追加。
 
-## #131 との座標合わせ
+## #131 との座標合わせ (Resolved — 2026-05-16)
 
-| 本 issue (#132) | agent-definition-simplification (#131) | 衝突点 |
+#131 マージ完了状態で aphelion-overview.md は 131 行 (Project-rules consultation 節 6 行
+を含む)。#131 §② で agent から削除された Project-Specific Behavior の代替として、
+auto-load される rule (git-rules / language-rules / denial-categories / document-locations)
+が機能を引き継いだ。#132 §B はこの baseline をスタート地点として軽量化を行う。
+
+**触らない箇所**: `### Project-rules consultation (all agents)` 節 (#131 で追加された 6 行)。
+
+## Refined design (2026-05-16)
+
+### PR-1 = §B aphelion-overview.md slim (本フェーズ着手)
+
+`src/.claude/rules/aphelion-overview.md` 131 → 81 行 (**-50 行, -38%**) を目指す。
+全 agent 起動時に auto-load されるため、削減効果は invocation × tokens で累積。
+
+#### 削減対象一覧
+
+| 候補 | 現在 | 提案 | 削減 | 理由 |
+|---|---|---|---|---|
+| Update history (l.5-12) | 8 行 | 1 行 (`git log` 参照) | -7 | 履歴は git log で十分 |
+| Cross-cutting agents 表 (l.74-79) | 6 行 | 削除 | -6 | 各 agent (sandbox-runner.md / doc-reviewer.md) に同情報あり |
+| Doc Flow agents 表 (l.81-91) | 11 行 | 削除 | -11 | 各 agent (hld-author.md 他) に同情報あり |
+| Hook layer 節 (l.93-102) | 10 行 | 2 行 pointer (`hooks-policy.md` 参照) | -8 | hooks-policy.md (auto-load) に同情報あり |
+| Document locations rule 参照 (l.104-113) | 10 行 | 2 行 pointer | -8 | document-locations.md (auto-load) に同情報あり |
+| Tech Stack Flexibility (l.125-131) | 7 行 | 3 行 | -4 | 重複した bullet 表現を圧縮 |
+| Domain Flow ASCII 図 (l.36-49) | 14 行 | 8 行 | -6 | 圧縮可能 (重要な情報を保持) |
+| **合計** | | | **-50 行** | |
+
+#### 削減の安全性確認
+
+- すべての削除対象は、参照先の他ファイル (auto-load 済 rule または各 agent 定義) で
+  完全にカバーされる
+- aphelion-overview.md は「**workflow の全体像**」の役割に集中させ、agent 個別情報や
+  rule 詳細は dedicated ファイルへ譲る
+- developer 直行可 (architect スキップ): mechanical 削除のみ。新規追加なし
+
+#### PR-1 Acceptance criteria
+
+- [ ] `src/.claude/rules/aphelion-overview.md` 行数 ≤ 85 (現 131 から ~-46 以上の削減)
+- [ ] `### Project-rules consultation (all agents)` 節は完全保持 (#131 で追加)
+- [ ] Workflow Model + Design Principles + Branching by Product Type 表は保持
+- [ ] Hook layer / Document locations rule への参照は 2 行 pointer 形式で残す (完全削除はしない)
+- [ ] Cross-cutting agents / Doc Flow agents 表 完全削除 (agent 数 bump 時の二重メンテも解消)
+- [ ] Update history は 1 行に圧縮 (`See git log for change history`)
+- [ ] CHANGELOG.md Unreleased エントリ追加
+- [ ] TASK.md reset (#128 rule per phase completion)
+- [ ] PR body `Linked Issue: #132 (PR-1 of 2)` — **`Closes #132` は付けない** (PR-2 で close)
+
+#### PR-1 リスク
+
+| Risk | Impact | Mitigation |
 |---|---|---|
-| §B aphelion-overview.md 軽量化 (**削減**) | §② Project-Specific Behavior → aphelion-overview.md (~390 行 **追加**) | 同一ファイルへの相反する変更 |
+| 削除した内容を必要とする agent が出現 | 低 | 削除対象は全て他ファイルで auto-load 済。実害なし |
+| Wiki ページ (Home.md 等) が aphelion-overview.md の特定行を参照している | 低 | 行参照ではなく内容参照 (検索可能) のため影響軽微。`grep -r "aphelion-overview" docs/wiki/` で確認 |
+| Doc Flow agents 表削除で Doc Flow の存在が見えにくくなる | 低 | Domain and Flow Overview 図に "Doc Flow" は明記済 (l.46) |
 
-→ どちらの issue を先に着手する場合も、もう一方の architect 設計を読んでから着手する。
-PR を切る順序は architect 段階で確定する。
+---
 
-## architect が answer すべき open question
+### PR-2 = §C Model split (次フェーズ)
 
-1. **§E (Prompt Cache)**: Claude Code の prompt cache 制御 API が利用可能か?
-   利用可能なら sub-PR 1 として最優先 (実装コスト低)。
-2. **§C (Model split)**: `analyst-intake` (Sonnet) / `analyst-core` (Opus) 分割の妥当性。
-   ユーザ体感は変えない前提だが、agent 定義ファイル数増・delivery-flow 配線変更を伴うため要設計判断。
+`analyst` を `analyst-intake` (Sonnet) + `analyst-core` (Opus) に分割。
+architect 設計必須。PR-1 マージ後に別 issue として詳細設計を進めるか、
+または同 issue 内 PR-2 として進める (PR body で `Closes #132` を付与)。
+
+**PR-2 で answer すべき open question**:
+
+1. agent 分割の境界線 (どこまで Sonnet で処理するか)
+2. `delivery-flow.md` / `maintenance-flow.md` の analyst 呼び出し配線
+3. ユーザ体感を変えない前提の wrapping 設計
+
+### §E Prompt Cache (調査タスク, 並列可)
+
+Claude Code の prompt cache 制御 API が利用可能かを調査。利用可能なら別 PR で実装。
+本書では未確定事項として残置。
+
+### §A / §D (長期, defer)
+
+- §A: AGENT_RESULT に `RELEVANT_UCS` を追加して後続 agent が SPEC.md の必要 UC のみ読む
+  → 全 agent への波及が大きいため、運用負荷確認後に再検討
+- §D: `SPEC_SUMMARY.md` の 2 段階参照方式 → spec-designer 含む全後続 agent への波及が
+  大きいため、現状のプロジェクト規模では cost が benefit を上回る可能性
 
 ---
 
