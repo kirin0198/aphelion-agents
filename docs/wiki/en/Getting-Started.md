@@ -1,7 +1,7 @@
 # Getting Started
 
 > **Language**: [English](../en/Getting-Started.md) | [日本語](../ja/Getting-Started.md)
-> **Last updated**: 2026-05-17 (updated 2026-05-17: promote /aphelion-init to Step 1 required, #130)
+> **Last updated**: 2026-05-17 (updated 2026-05-17: promote /aphelion-init to Step 2 required, #130)
 > **Audience**: New users
 
 This page covers everything you need to start using Aphelion: Claude Code setup, first-run walkthrough, usage scenarios, command reference, and troubleshooting.
@@ -76,6 +76,7 @@ Copy the `.claude/` directory to your project and start Claude Code:
 cp -r .claude /path/to/your-project/
 cd /path/to/your-project && claude
 
+/aphelion-init
 /discovery-flow I want to build a TODO app
 ```
 

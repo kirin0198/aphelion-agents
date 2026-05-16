@@ -66,6 +66,7 @@ npx github:kirin0198/aphelion-agents update --user
 cp -r .claude /path/to/your-project/
 cd /path/to/your-project && claude
 
+/aphelion-init
 /discovery-flow TODOアプリを作りたい
 ```
 

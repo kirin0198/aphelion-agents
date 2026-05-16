@@ -29,7 +29,7 @@ STATUS: complete
 > GitHub Issue: [#130](https://github.com/kirin0198/aphelion-agents/issues/130)
 > Authored by: analyst (2026-05-15)
 > Promoted from: docs/design-notes/proposals/setup-improvement-memo.md
-> Next: developer (PR-1: /aphelion-init 必須化。全サブ項目 developer 直行、architect 不要)
+> Next: developer (current PR per `CURRENT_PR` in the analyst-handoff block above. All sub-items go directly to developer; architect not needed.)
 
 # 初期セットアップ改善 (6 サブ課題のバンドル)
 
