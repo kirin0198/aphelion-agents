@@ -132,24 +132,54 @@ Phase 11: Documentation           → doc-writer          → ⏸ User approval 
 - If `HAS_UI: true` and plan is Minimal / Light: skip Phase 2b. `ux-designer` writes the lightweight-default block into `UI_SPEC.md` Section 1; downstream agents read that block instead of `VISUAL_SPEC.md`.
 - If `HAS_UI: false`: skip Phases 2a, 2b, and 7; proceed directly to next applicable phase.
 
-### Side Entry: analyst (Joining via Issue)
+### Side Entry: analyst chain (Joining via Issue)
 
-`analyst` is not an agent selected through triage, but a side entry triggered by **bug reports, feature requests, or refactoring requests for existing projects**.
-The user launches it directly with `/analyst`, and after completion, the Delivery Flow joins from Phase 3.
+The analyst chain is not selected through triage, but a side entry triggered by **bug reports,
+feature requests, or refactoring requests for existing projects**.
+The user may launch it directly with `/analyst` (top-level standalone), or this flow can
+initiate the analyst chain internally when an issue is detected mid-flow.
+
+**IMPORTANT:** Do NOT spawn `analyst.md` (the top-level orchestrator) from this flow.
+`analyst.md` uses the Agent tool internally; spawning it as a sub-agent would fail because
+the Agent tool is unavailable in sub-agent contexts. Instead, spawn `analyst-intake` and
+`analyst-core` directly in sequence.
+
+**If the user has already run `/analyst` standalone:**
 
 ```
-User launches /analyst
+User launched /analyst (standalone)
          ↓
-analyst: issue analysis → GitHub Issue + ARCHITECT_BRIEF generation → ⏸ User approval
+analyst orchestrator ran analyst-intake → analyst-core internally
          ↓
-Delivery Flow starts from Phase 3:
+Delivery Flow receives AGENT_RESULT from analyst, starts from Phase 3:
 Phase 3: Architecture design → architect      → ⏸ User approval
 (continues as normal flow)
 ```
 
-If you receive an `AGENT_RESULT` block from `analyst`, start from Phase 3.
-In that case, always include `ARCHITECT_BRIEF` and the GitHub Issue URL in the input to `architect`.
-Perform triage as normal, but select the plan considering information pre-analyzed by analyst.
+If you receive an `AGENT_RESULT` block from `analyst` (standalone path), start from Phase 3.
+Always include `ARCHITECT_BRIEF` and the GitHub Issue URL in the input to `architect`.
+
+**If this flow initiates the analyst chain internally:**
+
+Spawn `analyst-intake` and `analyst-core` in sequence:
+
+```
+1. Spawn analyst-intake:
+   Agent(subagent_type="analyst-intake", prompt=<user's issue description + context>)
+   Receive AGENT_RESULT — extract HANDOFF_PAYLOAD (YAML block)
+   If STATUS: error → report to user, do not continue
+
+2. Extract HANDOFF_PAYLOAD verbatim from analyst-intake's AGENT_RESULT
+
+3. Spawn analyst-core:
+   Agent(subagent_type="analyst-core", prompt=<HANDOFF_PAYLOAD content verbatim>)
+   Receive AGENT_RESULT with HANDOFF_TO: architect
+
+4. On STATUS: success → proceed to Phase 3 (architect) using core's AGENT_RESULT
+   Always include ARCHITECT_BRIEF and GITHUB_ISSUE URL in architect's prompt
+```
+
+Perform triage as normal, but select the plan considering information pre-analyzed by the analyst chain.
 
 ---
 

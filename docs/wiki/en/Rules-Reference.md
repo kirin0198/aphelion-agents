@@ -84,7 +84,7 @@ For full details, follow the **Canonical** link to the source file.
   - Works with `agent-communication-protocol.md`: Write agents MUST output `ARTIFACT_PATHS` (a first-class field) listing resolved paths so orchestrators can carry them forward without per-agent re-resolution.
   - Works with `file-operation-principles.md`: the principle "resolve paths per document-locations.md" is declared there.
   - Works with `denial-categories.md`: the single-Glob rule prevents the two-step Read pattern from generating spurious `file_not_found` denial events.
-- **Summary**: Centralizes document path resolution in one rule instead of hard-coding paths in each agent. All 40 agents declare "Follows `.claude/rules/document-locations.md`" in their prompt prelude; the rule is the single source of truth. `TASK.md` is explicitly out of scope and remains root-fixed.
+- **Summary**: Centralizes document path resolution in one rule instead of hard-coding paths in each agent. All 42 agents declare "Follows `.claude/rules/document-locations.md`" in their prompt prelude; the rule is the single source of truth. `TASK.md` is explicitly out of scope and remains root-fixed.
 
 ---
 
@@ -116,7 +116,7 @@ For full details, follow the **Canonical** link to the source file.
 - **Interactions**:
   - Bash-owning agents run `## Startup Probe` once per session to resolve `REPO_STATE` (`github` | `github_unauth` | `gitlab_scaffold` | `gitea_scaffold` | `local-only` | `none`); subsequent git/PR ops branch on that value via `## Behavior by Remote Type`.
   - `developer` owns branch creation, push, and PR submission per `## Branch & PR Strategy` and emits `BRANCH` / `PR_URL` in `AGENT_RESULT`.
-  - `analyst` does **not** create branches or PRs; it only authors design notes and GitHub issues.
+  - `analyst` (top-level orchestrator) does **not** create branches or PRs; `analyst-intake` creates the work branch and initial planning commit; `analyst-core` commits SPEC/UI_SPEC edits.
 - **Summary**: Defines (1) commit granularity, staging policy (`git add -A` is prohibited; use explicit file paths; never commit `.env`, `credentials.*`, `*.secret`), and commit message format (8 prefix types: feat, fix, refactor, test, docs, chore, ci, ops); (2) Co-Authored-By trailer policy; (3) `## Repository` — `Remote type` declaration in `project-rules.md` (`github` / `gitlab` / `gitea` / `local-only` / `none`); (4) `## Startup Probe` — once-per-session probe resolving `REPO_STATE`; (5) `## Branch & PR Strategy` — branch naming (`fix/` / `feat/` / `refactor/`), branch lifecycle (create → commit → push → PR with `Closes #N`), and `AGENT_RESULT` additions (`BRANCH`, `PR_URL`); (6) `## Behavior by Remote Type` — per-`REPO_STATE` matrix for branch / commit / push / PR ops.
 
 ---
@@ -189,7 +189,7 @@ For full details, follow the **Canonical** link to the source file.
 ## denial-categories
 
 - **Canonical**: [.claude/rules/denial-categories.md](../../.claude/rules/denial-categories.md)
-- **Scope**: All agents that own the `Bash` tool (same set as `sandbox-policy.md`), plus `analyst` for issue triage
+- **Scope**: All agents that own the `Bash` tool (same set as `sandbox-policy.md`), plus `analyst-intake` / `analyst-core` for issue triage
 - **Auto-load behavior**: Auto-loaded by Claude Code on every session start
 - **Interactions**: Companion to `sandbox-policy.md`. Where `sandbox-policy.md` covers *prevention* (categorise commands before execution and delegate to `sandbox-runner`), this rule covers *post-failure diagnosis* (classify what kind of denial occurred and pick the right recovery). 13 Bash-owning agents reference both rules.
 - **Categories (§1)**: Four denial categories with detection patterns and per-category actions:

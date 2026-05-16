@@ -140,17 +140,41 @@ These agents enforce quality gates across other agents' outputs. They are auto-i
 
 ## Standalone Agents
 
-These two agents operate outside the triage system, invoked directly by the user.
+These agents operate outside the triage system. `analyst` is invoked directly by the user; `codebase-analyzer` is also standalone.
 
-### analyst
+The analyst chain consists of three files: the top-level orchestrator (`analyst`) and two sub-agents (`analyst-intake`, `analyst-core`) that are chained internally. Users invoke `/analyst` only.
+
+### analyst (top-level orchestrator)
 
 - **Canonical**: [.claude/agents/analyst.md](../../.claude/agents/analyst.md)
-- **Domain**: Standalone
-- **Responsibility**: Receives bug reports, feature requests, or refactoring issues for existing projects. Classifies the issue, determines approach, updates SPEC.md / UI_SPEC.md incrementally (when needed), authors the matching `docs/design-notes/<slug>.md` planning document, creates a GitHub issue, and hands off to `developer` (or `architect` when design changes are required). Branch creation, push, and PR submission are owned by the next implementation-tier agent (`developer`), not by `analyst`.
-- **Inputs**: User's issue description, existing SPEC.md, ARCHITECTURE.md, UI_SPEC.md
-- **Outputs**: `docs/design-notes/<slug>.md`, updated SPEC.md / UI_SPEC.md (incremental), GitHub issue (via gh CLI)
+- **Domain**: Standalone (top-level orchestrator, invoked via `/analyst` slash command)
+- **Model**: Sonnet
+- **Responsibility**: Top-level orchestrator for the analyst chain. Chains `analyst-intake` → `analyst-core` via the Agent tool. Detects existing planning docs for resume scenarios (`<!-- analyst-handoff -->` block). Does not write files or run git; orchestration only. NOT spawned by flow orchestrators (which chain intake → core directly).
+- **Inputs**: User's issue description (via `/analyst` command)
+- **Outputs**: Passthrough of `analyst-core` AGENT_RESULT (with agent-name rewritten to `analyst` for backward compatibility)
+- **NEXT conditions**: `architect` (default) | `developer`
+
+### analyst-intake
+
+- **Canonical**: [.claude/agents/analyst-intake.md](../../.claude/agents/analyst-intake.md)
+- **Domain**: Standalone (sub-agent; invoked by `analyst` orchestrator or flow orchestrators)
+- **Model**: Sonnet
+- **Responsibility**: Structured intake phase (Steps A–D). Collects minimum information via `AskUserQuestion`, writes the planning doc §1-4 stub with embedded `<!-- analyst-handoff -->` YAML (for resume detection), creates the GitHub issue, and commits the work branch initial state. Emits `HANDOFF_PAYLOAD` for the caller to forward to `analyst-core`.
+- **Inputs**: User's issue description, existing SPEC.md / ARCHITECTURE.md / UI_SPEC.md
+- **Outputs**: `docs/design-notes/<slug>.md` (§1-4 stub with handoff YAML), GitHub issue (initial body), work branch commit
+- **AGENT_RESULT fields**: `HANDOFF_PAYLOAD` (13-field YAML), `BRANCH`, `GITHUB_ISSUE`, `ARTIFACT_PATHS`
+- **NEXT conditions**: `analyst-core` (via caller)
+
+### analyst-core
+
+- **Canonical**: [.claude/agents/analyst-core.md](../../.claude/agents/analyst-core.md)
+- **Domain**: Standalone (sub-agent; invoked by `analyst` orchestrator or flow orchestrators)
+- **Model**: Opus
+- **Responsibility**: Deep analysis phase (Steps 1–5). Validates the handoff payload, classifies the issue, performs full analysis, requests user approval, updates SPEC.md / UI_SPEC.md incrementally (when needed), refines the GitHub issue body, writes planning doc §5-8, and commits the final state.
+- **Inputs**: HANDOFF_PAYLOAD YAML (13 fields from analyst-intake, via spawn prompt)
+- **Outputs**: `docs/design-notes/<slug>.md` (§5-8 added), updated SPEC.md / UI_SPEC.md (incremental), GitHub issue body (refined via `gh issue edit`), final commit
 - **AGENT_RESULT fields**: `ISSUE_TYPE`, `ISSUE_SUMMARY`, `DOCS_UPDATED`, `GITHUB_ISSUE`, `HANDOFF_TO`, `ARCHITECT_BRIEF`
-- **NEXT conditions**: `developer` (default) | `architect` (when design changes are required)
+- **NEXT conditions**: `architect` (default) | `developer`
 
 ### codebase-analyzer
 

@@ -32,6 +32,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **analyst split into analyst-intake (Sonnet) + analyst-core (Opus)** (#139):
+  `analyst` agent is split into three files. `analyst.md` is rewritten as a
+  top-level Sonnet orchestrator (~115 lines) that chains the two new sub-agents.
+  Pattern B (dual-path) design: standalone (`/analyst`) invocations use the
+  `analyst` orchestrator which spawns `analyst-intake` then `analyst-core` via
+  the Agent tool. Flow orchestrators (`delivery-flow`, `maintenance-flow`) spawn
+  `analyst-intake` and `analyst-core` directly in sequence (spawning `analyst.md`
+  as a sub-agent would fail because the Agent tool is unavailable in sub-agent
+  contexts). `analyst-intake` (Sonnet) handles structured intake questions,
+  planning doc §1-4 stub, GitHub issue initial creation, and work branch commit.
+  `analyst-core` (Opus) handles Steps 1-5: issue classification, deep analysis,
+  user approval gate, SPEC.md/UI_SPEC.md incremental updates, and GitHub issue
+  body refinement. Resume mechanism: `analyst-intake` embeds a
+  `<!-- analyst-handoff -->` YAML block in the planning doc; on re-invocation
+  `analyst` orchestrator detects this block and skips intake, resuming from core.
+  Per-invocation input cost ~24% reduction (intake phase moves from Opus to
+  Sonnet, 5:1 price ratio). `/analyst` skill name unchanged. `delivery-flow.md`
+  and `maintenance-flow.md` updated to spawn the intake→core chain directly.
+  Agent count 40 → 42. (#139)
+
 - **`aphelion-overview.md` slim** (#132 §B, PR-1 of 2): Removed duplicated
   content that is already covered by dedicated auto-loaded rules or per-agent
   definitions. Update history block compressed to 1-line git-log pointer (-7);

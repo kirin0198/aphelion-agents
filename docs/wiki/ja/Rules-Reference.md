@@ -85,7 +85,7 @@
   - `agent-communication-protocol.md` と連携: Write を行う agent は `ARTIFACT_PATHS` を必須出力（一級フィールド）し、Flow Orchestrator が後続 agent prompt に carry することで mid-flow の path 不整合を防ぎます。
   - `file-operation-principles.md` と連携: 「対象成果物のパスは `document-locations.md` を参照」と明記されています。
   - `denial-categories.md` と連携: Glob 1 回パターンにより、2 段 Read による `file_not_found` 誤検知を防ぎます。
-- **概要**: ドキュメントのパス解決ロジックを 1 つのルールに集約し、各 agent がパスをハードコードしないようにします。40 の全 agent は冒頭に「Follows `.claude/rules/document-locations.md`」と参照宣言を持ち、このルールが唯一の情報源となります。`TASK.md` は明示的に対象外として root 固定が維持されます。
+- **概要**: ドキュメントのパス解決ロジックを 1 つのルールに集約し、各 agent がパスをハードコードしないようにします。42 の全 agent は冒頭に「Follows `.claude/rules/document-locations.md`」と参照宣言を持ち、このルールが唯一の情報源となります。`TASK.md` は明示的に対象外として root 固定が維持されます。
 
 ---
 
@@ -117,7 +117,7 @@
 - **インタラクション**:
   - Bash 保有エージェントはセッションごとに `## Startup Probe` を一度実行し、`REPO_STATE`（`github` | `github_unauth` | `gitlab_scaffold` | `gitea_scaffold` | `local-only` | `none`）を解決します。その後の git/PR 操作は `## Behavior by Remote Type` でこの値に基づいて分岐します。
   - `developer` は `## Branch & PR Strategy` に従ってブランチ作成・プッシュ・PR 作成を担い、`AGENT_RESULT` に `BRANCH` / `PR_URL` を出力します。
-  - `analyst` はブランチや PR を作成しません；設計ノートと GitHub イシューの作成のみを担います。
+  - `analyst`（トップレベルオーケストレーター）はブランチや PR を作成しません；`analyst-intake` が作業ブランチと初期プランニングコミットを作成し、`analyst-core` が SPEC/UI_SPEC 編集をコミットします。
 - **概要**: (1) コミットの粒度、ステージングポリシー（`git add -A` は禁止；明示的なファイルパスを使用；`.env`、`credentials.*`、`*.secret` はコミットしない）、コミットメッセージフォーマット（8 つのプレフィックスタイプ: feat、fix、refactor、test、docs、chore、ci、ops）；(2) Co-Authored-By トレーラーポリシー；(3) `## Repository` — `project-rules.md` 内の `Remote type` 宣言（`github` / `gitlab` / `gitea` / `local-only` / `none`）；(4) `## Startup Probe` — `REPO_STATE` を解決するセッションごとのプローブ；(5) `## Branch & PR Strategy` — ブランチ命名（`fix/` / `feat/` / `refactor/`）、ブランチライフサイクル（作成 → コミット → プッシュ → `Closes #N` 付き PR）、`AGENT_RESULT` への追加項目（`BRANCH`、`PR_URL`）；(6) `## Behavior by Remote Type` — ブランチ / コミット / プッシュ / PR 操作のための `REPO_STATE` 別マトリックスを定義します。
 
 ---
@@ -190,7 +190,7 @@
 ## denial-categories
 
 - **正規**: [.claude/rules/denial-categories.md](../../.claude/rules/denial-categories.md)
-- **スコープ**: `Bash` ツールを持つ全エージェント (`sandbox-policy.md` と同じ集合)、加えて issue triage 用の `analyst`
+- **スコープ**: `Bash` ツールを持つ全エージェント (`sandbox-policy.md` と同じ集合)、加えて issue triage 用の `analyst-intake` / `analyst-core`
 - **自動ロードの動作**: Claude Code が全セッション起動時に自動ロード
 - **インタラクション**: `sandbox-policy.md` のコンパニオンルールです。`sandbox-policy.md` は実行**前**の予防 (コマンドのカテゴリ分類と `sandbox-runner` への委譲) を扱うのに対し、本ルールは実行**後**の診断 (どの種類の拒否が起きたかを分類して適切なリカバリーを選ぶ) を扱います。13 の Bash 所有エージェントが両ルールを参照します。
 - **カテゴリ (§1)**: 4 種類の拒否カテゴリと、それぞれの検出パターン・推奨アクション:

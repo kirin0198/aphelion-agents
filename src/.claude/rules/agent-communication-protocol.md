@@ -27,7 +27,7 @@ per-agent re-resolution from drifting between `docs/` and root mid-flow.
 
 | Agent role | ARTIFACT_PATHS output |
 |------------|----------------------|
-| Write agents (spec-designer, architect, ux-designer, visual-designer, codebase-analyzer, analyst, security-auditor, test-designer, flow orchestrators that write RESULT.md, etc.) | **MUST** — list all artifacts written in this session. Required when STATUS=success. |
+| Write agents (spec-designer, architect, ux-designer, visual-designer, codebase-analyzer, analyst, analyst-intake, analyst-core, security-auditor, test-designer, flow orchestrators that write RESULT.md, etc.) | **MUST** — list all artifacts written in this session. Required when STATUS=success. |
 | Read-only agents (developer, reviewer, tester, doc-reviewer, handover-author, hld/lld/api-reference/ops-manual/user-manual-author, etc.) | OPTIONAL — list resolved read paths as reference information. |
 
 **Before/after example (spec-designer):**
@@ -74,7 +74,8 @@ by the orchestrator. Agent-specific fields are documented in each agent file.
 | `BLOCKED_REASON` / `BLOCKED_TARGET` | freeform / agent-name | Required when STATUS=blocked. See §"blocked STATUS Usage". |
 | `BRANCH` | branch name | MUST when a work branch was created/reused. Planning-tier and Implementation-tier agents. |
 | `PR_URL` | URL \| skipped \| reused | Implementation-tier only. See `git-rules.md` §"Branch & PR Strategy". |
-| `HANDOFF_TO` | agent-name \| flow-name | Used by analyst / maintenance-flow at flow boundaries. |
+| `HANDOFF_TO` | agent-name \| flow-name | Used by analyst-intake / analyst-core / maintenance-flow at flow boundaries. |
+| `HANDOFF_PAYLOAD` | YAML literal block (13 fields) | Emitted by analyst-intake in AGENT_RESULT; consumed by the caller (analyst orchestrator or flow orchestrator) to forward to analyst-core. Fields: planning_doc_path, slug, branch_name, issue_url, issue_number, issue_title, issue_type, intake_summary, proposals_source, repo_state, artifact_paths, auto_approve, output_language. See docs/design-notes/analyst-model-split-design.md §3. |
 | `GITHUB_ISSUE` | URL \| skipped (REPO_STATE=<value>) | See `git-rules.md` §"Behavior by Remote Type". |
 | `DECISION` | allowed \| asked_and_allowed \| denied \| skipped | sandbox-runner. See `sandbox-policy.md`. |
 | `DOC_REVIEW_RESULT` | passed \| has-inconsistencies | doc-reviewer. |
