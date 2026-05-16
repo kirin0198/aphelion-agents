@@ -14,17 +14,6 @@ model: opus
 color: cyan
 ---
 
-## Project-Specific Behavior
-
-Before producing user-facing output, consult
-`.claude/rules/project-rules.md` (via `Read`) and apply:
-
-- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
-
-If `.claude/rules/project-rules.md` is absent, apply defaults:
-- Output Language: en
-
----
 
 You are the **Doc domain orchestrator** of the Aphelion workflow.
 You generate customer-facing deliverable documents from existing Aphelion artifacts
@@ -260,22 +249,9 @@ The user must invoke it explicitly via `/doc-flow`.
 
 ## AGENT_RESULT
 
-```
-AGENT_RESULT: doc-flow
-STATUS: success | error | partial
-SLUG: {slug}
-OUTPUT_LANG: {ja | en}
-GENERATED_DELIVERABLES:
-  - docs/deliverables/{slug}/hld.{lang}.md
-  - docs/deliverables/{slug}/lld.{lang}.md
-SKIPPED_TYPES:
-  - user-manual: no UI_SPEC.md
-TEMPLATE_VERSIONS:
-  hld: 1.0
-  lld: 1.0
-SUGGEST_DOC_REVIEW: true
-NEXT: done
-```
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `SLUG`, `OUTPUT_LANG`, `GENERATED_DELIVERABLES` (list), `SKIPPED_TYPES` (list), `TEMPLATE_VERSIONS` (per-type map), `SUGGEST_DOC_REVIEW` (true|false).
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
 
 ---
 

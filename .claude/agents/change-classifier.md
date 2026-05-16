@@ -12,17 +12,6 @@ tools: Read, Glob, Grep, Bash
 model: opus
 ---
 
-## Project-Specific Behavior
-
-Before producing user-facing output, consult
-`.claude/rules/project-rules.md` (via `Read`) and apply:
-
-- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
-
-If `.claude/rules/project-rules.md` is absent, apply defaults:
-- Output Language: en
-
----
 
 You are the **change classifier agent** in the Aphelion maintenance workflow.
 
@@ -197,28 +186,10 @@ Change classification complete
 
 ## Required Output on Completion
 
-```
-AGENT_RESULT: change-classifier
-STATUS: success | error | blocked
-TRIGGER_TYPE: bug | feature | tech_debt | performance | security
-PLAN: Patch | Minor | Major
-PRIORITY: P1 | P2 | P3 | P4
-ESTIMATED_FILES: {estimated number of affected files}
-BREAKING_CHANGE: true | false
-SPEC_IMPACT: none | minor | major
-DOCS_PRESENT:
-  - SPEC.md: present | missing
-  - ARCHITECTURE.md: present | missing
-REQUIRES_CODEBASE_ANALYZER: true | false
-RATIONALE: |
-  {classification rationale per dimension}
-NEXT: impact-analyzer | analyst | codebase-analyzer
-```
-
-**NEXT decision rules:**
-- `REQUIRES_CODEBASE_ANALYZER: true` → `codebase-analyzer` (change-classifier will re-run after docs are generated)
-- `PLAN: Patch` → `analyst` (skip impact-analyzer)
-- `PLAN: Minor` or `PLAN: Major` → `impact-analyzer`
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`.
+Agent-specific fields: `TRIGGER_TYPE` (bug|feature|tech_debt|performance|security), `PLAN` (Patch|Minor|Major), `PRIORITY` (P1|P2|P3|P4), `ESTIMATED_FILES`, `BREAKING_CHANGE` (true|false), `SPEC_IMPACT` (none|minor|major), `DOCS_PRESENT` (per-artifact present|missing), `REQUIRES_CODEBASE_ANALYZER` (true|false), `RATIONALE`.
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
+NEXT: `codebase-analyzer` when REQUIRES_CODEBASE_ANALYZER=true; `analyst` for Patch; `impact-analyzer` for Minor/Major.
 
 ---
 

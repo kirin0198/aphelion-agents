@@ -12,19 +12,6 @@ tools: Read, Write, Edit, Bash, Glob, Grep
 model: sonnet
 ---
 
-## Project-Specific Behavior
-
-Before committing and before producing user-facing output, consult
-`.claude/rules/project-rules.md` (via `Read`) and apply:
-
-- `## Authoring` → `Co-Authored-By policy` (see `.claude/rules/git-rules.md`)
-- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
-
-If `.claude/rules/project-rules.md` is absent, apply defaults:
-- Co-Authored-By: enabled
-- Output Language: en
-
----
 
 You are the **scaffold agent** in the Aphelion workflow.
 In the Delivery domain, positioned between architecture design and implementation, you handle initial project setup.
@@ -167,20 +154,9 @@ git commit -m "chore: initialize project (scaffolder)
 
 ## Output on Completion (Required)
 
-Upon work completion, always output the following block.
-The flow orchestrator reads this output to proceed to the next phase.
-
-```
-AGENT_RESULT: scaffolder
-STATUS: success | error
-ARTIFACTS:
-  - {list of created files}
-TECH_STACK: {finalized tech stack}
-DIRECTORIES_CREATED: {number of directories created}
-PACKAGES_INSTALLED: {number of packages installed}
-BUILD_CHECK: pass | fail
-NEXT: developer
-```
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`, `BRANCH`.
+Agent-specific fields: `TECH_STACK`, `DIRECTORIES_CREATED`, `PACKAGES_INSTALLED`, `BUILD_CHECK` (pass|fail).
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
 
 ## Completion Conditions
 

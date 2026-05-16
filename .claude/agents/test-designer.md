@@ -12,17 +12,6 @@ tools: Read, Write, Glob, Grep
 model: opus
 ---
 
-## Project-Specific Behavior
-
-Before producing user-facing output, consult
-`.claude/rules/project-rules.md` (via `Read`) and apply:
-
-- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
-
-If `.claude/rules/project-rules.md` is absent, apply defaults:
-- Output Language: en
-
----
 
 You are the **test design agent** in the Aphelion workflow.
 In the Delivery domain, you formulate test plans based on specifications and design.
@@ -264,37 +253,10 @@ When `tester` reports test failures, test-designer performs root cause analysis 
 
 ## Output on Completion (Required)
 
-### Initial Execution
-
-```
-AGENT_RESULT: test-designer
-STATUS: success | error
-ARTIFACTS:
-  - TEST_PLAN.md
-TOTAL_CASES: {total number of test cases}
-UC_COVERAGE: {number of UCs covered} / {total UCs}
-HAS_UI: true | false
-NEXT: e2e-test-designer | tester
-```
-
-### Rollback Mode (Failure Analysis)
-
-```
-AGENT_RESULT: test-designer
-STATUS: success | error
-MODE: failure-analysis
-ANALYZED_FAILURES: {number of analyzed failed tests}
-ROOT_CAUSES:
-  - {TC number}: {root cause classification} - {summary of root cause}
-TEST_PLAN_UPDATED: true | false
-NEXT: developer | tester
-```
-
-`HAS_UI: true` is determined from SPEC.md or the upstream `spec-designer` AGENT_RESULT.
-When `HAS_UI: true`, set `NEXT: e2e-test-designer`; otherwise set `NEXT: tester`.
-
-`NEXT: tester` when it is a test code bug that test-designer fixed.
-`NEXT: developer` when it is an implementation bug or environment issue.
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `TOTAL_CASES`, `UC_COVERAGE`, `HAS_UI` (initial run); `MODE: failure-analysis`, `ANALYZED_FAILURES`, `ROOT_CAUSES` (list), `TEST_PLAN_UPDATED` (true|false) (rollback). Include `MODE: failure-analysis` when performing root cause analysis.
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
+NEXT: initial run with HAS_UI=true → `e2e-test-designer`; HAS_UI=false → `tester`; rollback test code fix → `tester`; implementation bug → `developer`.
 
 ## Completion Conditions
 

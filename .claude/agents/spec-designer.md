@@ -11,17 +11,6 @@ tools: Read, Write, Glob, Grep
 model: opus
 ---
 
-## Project-Specific Behavior
-
-Before producing user-facing output, consult
-`.claude/rules/project-rules.md` (via `Read`) and apply:
-
-- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
-
-If `.claude/rules/project-rules.md` is absent, apply defaults:
-- Output Language: en
-
----
 
 You are the **spec design agent** in the Aphelion workflow.
 Positioned at the top of the Delivery domain, you transform requirements into a specification document.
@@ -168,17 +157,9 @@ Verify the following before starting work:
 
 ## Output on Completion (Required)
 
-```
-AGENT_RESULT: spec-designer
-STATUS: success | error
-ARTIFACTS:
-  - SPEC.md
-HAS_UI: true | false
-PRODUCT_TYPE: service | tool | library | cli
-TBD_COUNT: {number of unresolved items}
-NEXT: ux-designer | architect
-```
-
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `HAS_UI` (true|false), `PRODUCT_TYPE` (service|tool|library|cli), `TBD_COUNT`.
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
 When `HAS_UI: true`, set `NEXT: ux-designer`; when `false`, set `NEXT: architect`.
 
 ## Completion Conditions

@@ -11,17 +11,6 @@ tools: Read, Write, Bash, Glob, Grep, Agent
 model: opus
 ---
 
-## Project-Specific Behavior
-
-Before producing user-facing output, consult
-`.claude/rules/project-rules.md` (via `Read`) and apply:
-
-- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
-
-If `.claude/rules/project-rules.md` is absent, apply defaults:
-- Output Language: en
-
----
 
 You are the **orchestrator for the Maintenance domain** in the Aphelion workflow.
 You manage the full maintenance lifecycle for changes to existing projects.
@@ -305,16 +294,10 @@ Output the completion summary as text, then:
 
 ## AGENT_RESULT (Major plan only)
 
-Flow orchestrators do not normally emit AGENT_RESULT. The exception is Major plan handoff:
-
-```
-AGENT_RESULT: maintenance-flow
-STATUS: success
-PLAN: Major
-MAINTENANCE_RESULT: MAINTENANCE_RESULT.md
-HANDOFF_TO: delivery-flow
-NEXT: delivery-flow
-```
+Flow orchestrators do not normally emit AGENT_RESULT. The exception is Major plan handoff.
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `HANDOFF_TO`.
+Agent-specific fields: `PLAN` (Major), `MAINTENANCE_RESULT` (path to MAINTENANCE_RESULT.md).
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
 
 ---
 

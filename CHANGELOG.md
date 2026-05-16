@@ -32,6 +32,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Agent definition deduplication** (#131 §①+§②, ~1000+ lines net reduction):
+  §② moves the repeated `## Project-Specific Behavior` boilerplate out of all 40
+  agent files and into `src/.claude/rules/aphelion-overview.md` as a new
+  `### Project-rules consultation (all agents)` subsection (auto-loaded rule).
+  §① adds a `## Field Reference` table (13 canonical AGENT_RESULT fields) to
+  `src/.claude/rules/agent-communication-protocol.md`; verbose fenced
+  `AGENT_RESULT` example blocks in 37 agent files are replaced with a 5-line
+  short form referencing the canonical table. `MODE` was demoted from the Field
+  Reference (values diverge per agent: `revision` / `failure-analysis` /
+  `e2e-failure-analysis`) and documented inline in each owning agent instead.
+  Multi-block agents (researcher, interviewer, test-designer, e2e-test-designer,
+  poc-engineer) are collapsed to a single block with inline `MODE` notation.
+  discovery-flow,
+  delivery-flow, and operations-flow are excluded from §① (they are flow
+  orchestrators and do not emit AGENT_RESULT in the standard way). (#131)
+
 - **`archive-orphan-plans.yml`** (weekly safety-net workflow): Cron job (Mon 03:00 UTC)
   that scans active planning docs in `docs/design-notes/*.md`, queries each linked
   GitHub issue's state, and opens a single `chore:` PR to move any CLOSED-issue docs

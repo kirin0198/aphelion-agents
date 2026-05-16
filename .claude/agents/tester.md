@@ -12,19 +12,6 @@ tools: Read, Write, Edit, Bash, Glob, Grep
 model: sonnet
 ---
 
-## Project-Specific Behavior
-
-Before committing and before producing user-facing output, consult
-`.claude/rules/project-rules.md` (via `Read`) and apply:
-
-- `## Authoring` → `Co-Authored-By policy` (see `.claude/rules/git-rules.md`)
-- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
-
-If `.claude/rules/project-rules.md` is absent, apply defaults:
-- Co-Authored-By: enabled
-- Output Language: en
-
----
 
 You are the **test execution agent** in the Aphelion workflow.
 In the Delivery domain, you create and execute test code based on test plans and verify quality.
@@ -258,20 +245,10 @@ The flow orchestrator includes this content in the rollback instructions to `tes
 
 ## Required Output on Completion
 
-```
-AGENT_RESULT: tester
-STATUS: success | failure
-TOTAL: {total test count}
-PASSED: {pass count}
-FAILED: {fail count}
-SKIPPED: {skip count}
-FAILED_TESTS:
-  - {TC number}: {failed test name} - {error summary}
-NEXT: reviewer | test-designer
-```
-
-When `STATUS: failure`, set `NEXT: test-designer` (request root cause analysis).
-In Minimal plan where test-designer is not available, set `NEXT: developer`.
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`.
+Agent-specific fields: `TOTAL`, `PASSED`, `FAILED`, `SKIPPED`, `FAILED_TESTS` (list).
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
+STATUS: `failure` when FAILED>0; NEXT: `test-designer` (or `developer` in Minimal plan where test-designer is unavailable); `reviewer` on success.
 
 ## Completion Conditions
 

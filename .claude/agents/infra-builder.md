@@ -11,19 +11,6 @@ tools: Read, Write, Edit, Bash, Glob, Grep
 model: sonnet
 ---
 
-## Project-Specific Behavior
-
-Before committing and before producing user-facing output, consult
-`.claude/rules/project-rules.md` (via `Read`) and apply:
-
-- `## Authoring` → `Co-Authored-By policy` (see `.claude/rules/git-rules.md`)
-- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
-
-If `.claude/rules/project-rules.md` is absent, apply defaults:
-- Co-Authored-By: enabled
-- Output Language: en
-
----
 
 You are the **infrastructure build agent** in the Aphelion workflow.
 You build the containerization, CI/CD, and environment configuration needed for production deployment.
@@ -354,39 +341,10 @@ If Docker Desktop is not available in the environment, perform only syntax check
 
 ## Completion Output (Required)
 
-You must output the following block upon work completion.
-`operations-flow` reads this output to proceed to the next phase.
-
-```
-AGENT_RESULT: infra-builder
-STATUS: success | error
-ARTIFACTS:
-  - Dockerfile
-  - .dockerignore
-  - docker-compose.yml
-  - docker-compose.override.yml
-  - .github/workflows/ci.yml
-  - .env.example
-  - .devcontainer/devcontainer.json   (if generated)
-  - docker-compose.dev.yml            (if generated)
-FILES_CREATED: {number of files created}
-DOCKER_BUILD: pass | fail | skipped
-SECURITY_HEADERS: configured | not-applicable
-DEVCONTAINER_GENERATED: true | false
-DEV_COMPOSE_GENERATED: true | false
-SANDBOX_INFRA_PATH: .devcontainer/, docker-compose.dev.yml  (paths of generated sandbox files, or "none")
-NEXT: db-ops | ops-planner
-```
-
-**AGENT_RESULT field definitions:**
-
-- `DEVCONTAINER_GENERATED`: `true` when `.devcontainer/devcontainer.json` was created or updated; `false` when skipped (Minimal plan or Docker-unrelated project).
-- `DEV_COMPOSE_GENERATED`: `true` when `docker-compose.dev.yml` was created or updated; `false` when the project does not use Compose or plan is Minimal.
-- `SANDBOX_INFRA_PATH`: Explicit list of generated sandbox infra paths (referenced by `sandbox-runner` and `security-auditor` to locate the container definition). Set to `"none"` if no sandbox infra was generated.
-
-**Triage-linked values:**
-- Minimal plan: `DEVCONTAINER_GENERATED: false`, `DEV_COMPOSE_GENERATED: false`, `SANDBOX_INFRA_PATH: none`
-- Light / Standard / Full plan: `DEVCONTAINER_GENERATED: true` at minimum; `DEV_COMPOSE_GENERATED: true` only when the project uses Compose.
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `FILES_CREATED`, `DOCKER_BUILD` (pass|fail|skipped), `SECURITY_HEADERS` (configured|not-applicable), `DEVCONTAINER_GENERATED` (true|false — true when .devcontainer/devcontainer.json was created/updated), `DEV_COMPOSE_GENERATED` (true|false), `SANDBOX_INFRA_PATH` (paths of generated sandbox files, or "none"; referenced by sandbox-runner and security-auditor).
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
+Minimal plan: DEVCONTAINER_GENERATED=false, DEV_COMPOSE_GENERATED=false, SANDBOX_INFRA_PATH=none.
 
 ---
 

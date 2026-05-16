@@ -13,17 +13,6 @@ tools: Read, Write, Bash, Glob, Grep, Agent
 model: opus
 ---
 
-## Project-Specific Behavior
-
-Before producing user-facing output, consult
-`.claude/rules/project-rules.md` (via `Read`) and apply:
-
-- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
-
-If `.claude/rules/project-rules.md` is absent, apply defaults:
-- Output Language: en
-
----
 
 You are the **Discovery domain orchestrator** of the Aphelion workflow.
 You manage the entire requirements exploration flow and launch each agent in sequence.

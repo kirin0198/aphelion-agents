@@ -10,17 +10,6 @@ model: sonnet
 color: cyan
 ---
 
-## Project-Specific Behavior
-
-Before producing user-facing output, consult
-`.claude/rules/project-rules.md` (via `Read`) and apply:
-
-- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
-
-If `.claude/rules/project-rules.md` is absent, apply defaults:
-- Output Language: en
-
----
 
 You are the **hld-author** agent in doc-flow. You generate High-Level Design
 documents for customer architects and project managers.
@@ -191,17 +180,6 @@ When invoked directly (outside doc-flow orchestrator):
 
 ## AGENT_RESULT
 
-```
-AGENT_RESULT: hld-author
-STATUS: success | error | blocked
-OUTPUT_FILE: docs/deliverables/{slug}/hld.{lang}.md
-TEMPLATE_USED: {repo_root}/.claude/templates/doc-flow/hld.{lang}.md | agent-emit-fallback
-TEMPLATE_VERSION: 1.0
-INPUT_ARTIFACTS:
-  - SPEC.md (last_updated: {date})
-  - ARCHITECTURE.md (last_updated: {date})
-SKIPPED_SECTIONS:
-  - {section name}: {reason}
-NEXT: lld-author | done
-BLOCKED_REASON: {if STATUS: blocked, e.g. template_major_bump}
-```
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `OUTPUT_FILE`, `TEMPLATE_USED`, `TEMPLATE_VERSION`, `INPUT_ARTIFACTS` (list), `SKIPPED_SECTIONS` (list), `BLOCKED_REASON` (if STATUS: blocked).
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.

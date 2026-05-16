@@ -1,6 +1,6 @@
 # Aphelion Workflow Overview
 
-> **Last updated**: 2026-05-11
+> **Last updated**: 2026-05-16
 > **Auto-loaded**: Yes — placed in `.claude/rules/`, loaded by Claude Code on every session start
 > 更新履歴:
 >   - 2026-04-24: Maintenance Flow (第4フロー) を追加
@@ -9,6 +9,7 @@
 >   - 2026-05-01: Delivery 12 → 13 agents (visual-designer 追加) (#109)
 >   - 2026-05-01: Hook layer section 追加 (MVP 3 hooks, rules count 12→13) (#107)
 >   - 2026-05-11: document-locations rule 追加 (docs/ デフォルト配置先, rules count 13→14) (#117)
+>   - 2026-05-16: Project-rules consultation section 追加 (per-agent block 削除に伴う共通化, #131 §②)
 
 This file provides a high-level overview of the Aphelion workflow.
 Behavioral rules are defined in `.claude/rules/` (auto-loaded).
@@ -110,6 +111,14 @@ through this rule rather than hard-coding paths.
 
 See `document-locations.md` (rule, auto-loaded, #14) for the resolution algorithm, covered
 artifact list, MUST NOT constraints, and hybrid-state handling.
+
+### Project-rules consultation (all agents)
+
+All agents `Read` `.claude/rules/project-rules.md` before user-facing
+output and (Bash-owning agents) before `git commit`. Resolve `## Authoring`
+→ Co-Authored-By policy (`git-rules.md`) and `## Localization` →
+Output Language (`language-rules.md`). Defaults when project-rules.md is
+absent: Co-Authored-By: enabled, Output Language: en.
 
 ---
 

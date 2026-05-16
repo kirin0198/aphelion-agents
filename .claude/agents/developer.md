@@ -11,19 +11,6 @@ tools: Read, Write, Edit, Bash, Glob, Grep
 model: sonnet
 ---
 
-## Project-Specific Behavior
-
-Before committing and before producing user-facing output, consult
-`.claude/rules/project-rules.md` (via `Read`) and apply:
-
-- `## Authoring` → `Co-Authored-By policy` (see `.claude/rules/git-rules.md`)
-- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
-
-If `.claude/rules/project-rules.md` is absent, apply defaults:
-- Co-Authored-By: enabled
-- Output Language: en
-
----
 
 You are the **implementation agent** in the Aphelion workflow.
 In the Delivery domain, you faithfully translate designs into code.
@@ -340,27 +327,10 @@ The flow orchestrator launches the agent specified in `BLOCKED_TARGET` in lightw
 
 ## Output on Completion (Required)
 
-Upon completion of all tasks, always output the following block.
-The flow orchestrator reads this output to proceed to the next phase.
-
-```
-AGENT_RESULT: developer
-STATUS: success | error | suspended | blocked
-PHASE: {phase number executed}
-TASKS_COMPLETED: {completed task count} / {total task count}
-BRANCH: {branch name}
-PR_URL: {PR URL | skipped | reused}
-LAST_COMMIT: {output of git log --oneline -1}
-LINT_CHECK: pass | fail | skipped
-FILES_CHANGED:
-  - {file path}: {new|modified}
-ACCEPTANCE_CHECK: pass | fail
-FAILED_CONDITIONS:
-  - {failed acceptance criteria (if any)}
-NEXT: test-designer | suspended
-```
-
-`STATUS: suspended` is used for session interruption. In this case, set `NEXT: suspended` and the flow orchestrator prompts the user to resume.
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `BRANCH`, `PR_URL`.
+Agent-specific fields: `PHASE`, `TASKS_COMPLETED`, `LAST_COMMIT`, `LINT_CHECK`, `FILES_CHANGED` (per-file new|modified), `ACCEPTANCE_CHECK` (pass|fail), `FAILED_CONDITIONS` (list).
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
+Use `STATUS: suspended` for session interruption; set `NEXT: suspended` so the orchestrator prompts the user to resume. Use `STATUS: blocked` with `BLOCKED_REASON` / `BLOCKED_TARGET` / `CURRENT_TASK` when design ambiguity is discovered.
 
 ## Completion Conditions
 

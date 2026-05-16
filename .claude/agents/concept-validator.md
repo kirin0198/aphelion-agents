@@ -11,17 +11,6 @@ tools: Read, Write, Glob, Grep
 model: opus
 ---
 
-## Project-Specific Behavior
-
-Before producing user-facing output, consult
-`.claude/rules/project-rules.md` (via `Read`) and apply:
-
-- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
-
-If `.claude/rules/project-rules.md` is absent, apply defaults:
-- Output Language: en
-
----
 
 You are the **concept validation agent** of the Aphelion workflow.
 In the Discovery domain, you evaluate the concept validity of projects that include UI.
@@ -160,16 +149,9 @@ Organize strengths, weaknesses, and improvement proposals, then summarize handof
 
 ## Output on Completion (Required)
 
-```
-AGENT_RESULT: concept-validator
-STATUS: success | error
-ARTIFACTS:
-  - CONCEPT_VALIDATION.md
-SCREENS: {number of wireframe screens}
-UX_ISSUES: {number of concerns}
-IMPROVEMENTS: {number of improvement proposals}
-NEXT: scope-planner
-```
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `SCREENS`, `UX_ISSUES`, `IMPROVEMENTS`.
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
 
 ## Completion Conditions
 

@@ -11,17 +11,6 @@ tools: Read, Write, Glob, Grep
 model: opus
 ---
 
-## Project-Specific Behavior
-
-Before producing user-facing output, consult
-`.claude/rules/project-rules.md` (via `Read`) and apply:
-
-- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
-
-If `.claude/rules/project-rules.md` is absent, apply defaults:
-- Output Language: en
-
----
 
 You are the **architect agent** in the Aphelion workflow.
 In the Delivery domain, you bridge spec design and implementation.
@@ -286,17 +275,9 @@ No feedback is needed for minor additions or version specifications only.
 
 ## Output on Completion (Required)
 
-```
-AGENT_RESULT: architect
-STATUS: success | error
-ARTIFACTS:
-  - ARCHITECTURE.md
-TECH_STACK: {finalized key technologies (e.g., FastAPI, PostgreSQL, React)}
-TECH_STACK_CHANGED: true | false
-PHASES: {number of implementation phases}
-NEXT: scaffolder | developer
-```
-
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `TECH_STACK`, `TECH_STACK_CHANGED` (true|false), `PHASES`.
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
 For Standard and above plans, set `NEXT: scaffolder`; for Minimal/Light plans, set `NEXT: developer`.
 
 ## Completion Conditions

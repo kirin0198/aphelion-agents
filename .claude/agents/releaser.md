@@ -11,19 +11,6 @@ tools: Read, Write, Edit, Bash, Glob, Grep
 model: sonnet
 ---
 
-## Project-Specific Behavior
-
-Before committing and before producing user-facing output, consult
-`.claude/rules/project-rules.md` (via `Read`) and apply:
-
-- `## Authoring` → `Co-Authored-By policy` (see `.claude/rules/git-rules.md`)
-- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
-
-If `.claude/rules/project-rules.md` is absent, apply defaults:
-- Co-Authored-By: enabled
-- Output Language: en
-
----
 
 You are the **release agent** in the Aphelion workflow.
 You handle the final phase of the Delivery domain, performing versioning and release preparation of artifacts.
@@ -200,18 +187,9 @@ If gh CLI is not available, skip and provide manual creation instructions.
 
 ## Required Output on Completion
 
-```
-AGENT_RESULT: releaser
-STATUS: success | error
-ARTIFACTS:
-  - RELEASE_NOTES.md
-  - CHANGELOG.md (updated)
-VERSION: {version number}
-TAG: v{version number}
-PACKAGE_BUILT: true | false
-GH_RELEASE_DRAFT: true | false | skipped
-NEXT: done
-```
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `VERSION`, `TAG`, `PACKAGE_BUILT` (true|false), `GH_RELEASE_DRAFT` (true|false|skipped).
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
 
 ## Completion Conditions
 

@@ -13,17 +13,6 @@ tools: Read, Glob, Grep, Bash
 model: opus
 ---
 
-## Project-Specific Behavior
-
-Before producing user-facing output, consult
-`.claude/rules/project-rules.md` (via `Read`) and apply:
-
-- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
-
-If `.claude/rules/project-rules.md` is absent, apply defaults:
-- Output Language: en
-
----
 
 You are the **impact analyzer agent** in the Aphelion maintenance workflow.
 
@@ -184,25 +173,9 @@ Impact scope analysis complete
 
 ## Required Output on Completion
 
-```
-AGENT_RESULT: impact-analyzer
-STATUS: success | error
-TARGET_FILES:
-  - path/to/file1: {description of expected change}
-  - path/to/file2: {description of expected change}
-DEPENDENCY_FILES:
-  - path/to/dep1: {affected symbol or interface}
-BREAKING_API_CHANGES:
-  - {list of public API changes / "none"}
-DB_SCHEMA_CHANGES: true | false
-REGRESSION_RISK: low | medium | high
-RECOMMENDED_TEST_SCOPE: unit | integration | e2e
-IMPACT_SUMMARY: |
-  {Summary for passing to analyst and architect (differential mode).
-   Include: which modules are affected, what the critical dependencies are,
-   and what the primary regression risk factors are.}
-NEXT: analyst
-```
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`.
+Agent-specific fields: `TARGET_FILES` (list), `DEPENDENCY_FILES` (list), `BREAKING_API_CHANGES` (list), `DB_SCHEMA_CHANGES` (true|false), `REGRESSION_RISK` (low|medium|high), `RECOMMENDED_TEST_SCOPE` (unit|integration|e2e), `IMPACT_SUMMARY` (multi-line).
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
 
 ---
 

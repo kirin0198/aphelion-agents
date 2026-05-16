@@ -12,17 +12,6 @@ tools: Read, Bash, Grep
 model: sonnet
 ---
 
-## Project-Specific Behavior
-
-Before producing user-facing output, consult
-`.claude/rules/project-rules.md` (via `Read`) and apply:
-
-- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
-
-If `.claude/rules/project-rules.md` is absent, apply defaults:
-- Output Language: en
-
----
 
 You are the **sandbox execution agent** in the Aphelion workflow.
 You run commands that other Aphelion agents have classified as high-risk,
@@ -161,36 +150,10 @@ Always emit the AGENT_RESULT block defined below.
 
 ## AGENT_RESULT Contract
 
-```
-AGENT_RESULT: sandbox-runner
-STATUS: success | failure | blocked | error
-SANDBOX_MODE: container | platform_permission | advisory_only | blocked | bypassed
-EXIT_CODE: {integer}
-DETECTED_RISKS: {comma-separated categories, or "none"}
-DECISION: allowed | asked_and_allowed | denied | skipped
-CALLER: {caller agent name}
-DURATION_MS: {integer}
-FALLBACK_REASON: docker_unavailable | devcontainer_missing | docker_info_timeout | daemon_error | platform_unknown | none
-NEXT: {caller agent name | done | suspended}
-```
-
-> `FALLBACK_REASON` is **omitted** when `container` mode was adopted successfully (no fallback occurred).
-> `FALLBACK_REASON: none` is used when container was not attempted at all (e.g., `bypassed` commands).
-
-### STATUS Mapping
-
-| STATUS | Condition |
-|--------|-----------|
-| `success` | Command completed with EXIT_CODE=0 |
-| `failure` | Command exited non-zero (includes policy-based denial) |
-| `blocked` | Execution refused by policy or platform permission `deny` |
-| `error` | sandbox-runner itself encountered an exception (timeout, internal error) |
-
-### NEXT Conditions
-
-- If called by another agent → set `NEXT` to that agent's name (return to caller)
-- If invoked standalone by user → set `NEXT: done`
-- If session interrupted → set `NEXT: suspended`
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `DECISION`.
+Agent-specific fields: `SANDBOX_MODE` (container|platform_permission|advisory_only|blocked|bypassed), `EXIT_CODE`, `DETECTED_RISKS`, `CALLER`, `DURATION_MS`, `FALLBACK_REASON` (omit when container mode succeeded; use `none` when container was not attempted).
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
+`NEXT` = caller agent name when invoked by another agent; `done` when standalone; `suspended` on interruption.
 
 ---
 

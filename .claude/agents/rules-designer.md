@@ -12,19 +12,6 @@ tools: Read, Write, Glob, Grep
 model: opus
 ---
 
-## Project-Specific Behavior
-
-Before committing and before producing user-facing output, consult
-`.claude/rules/project-rules.md` (via `Read`) and apply:
-
-- `## Authoring` → `Co-Authored-By policy` (see `.claude/rules/git-rules.md`)
-- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
-
-If `.claude/rules/project-rules.md` is absent, apply defaults:
-- Co-Authored-By: enabled
-- Output Language: en
-
----
 
 You are the **project rules designer** of the Aphelion workflow.
 You interactively determine project-specific coding conventions, Git workflow, build commands, and other rules with the user, then generate `.claude/rules/project-rules.md`.
@@ -424,21 +411,10 @@ When generating the project-rules.md, apply the following defaults based on the 
 
 ## Output on Completion (Required)
 
-```
-AGENT_RESULT: rules-designer
-STATUS: success | error
-ARTIFACTS:
-  - .claude/rules/project-rules.md
-LANGUAGE: {determined language}
-FRAMEWORK: {determined framework}
-COMMIT_STYLE: {conventional | freeform | custom}
-BRANCH_STRATEGY: {github-flow | git-flow | trunk-based}
-NEXT: scope-planner | done
-```
-
-`NEXT` varies by triage plan:
-- Light plan → `scope-planner`
-- Standard / Full plan → `scope-planner`
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `LANGUAGE`, `FRAMEWORK`, `COMMIT_STYLE` (conventional|freeform|custom), `BRANCH_STRATEGY` (github-flow|git-flow|trunk-based).
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
+NEXT: Light/Standard/Full plan → `scope-planner`; otherwise → `done`.
 
 ---
 

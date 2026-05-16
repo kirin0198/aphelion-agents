@@ -14,17 +14,6 @@ tools: Read, Write, Glob, Grep
 model: opus
 ---
 
-## Project-Specific Behavior
-
-Before producing user-facing output, consult
-`.claude/rules/project-rules.md` (via `Read`) and apply:
-
-- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
-
-If `.claude/rules/project-rules.md` is absent, apply defaults:
-- Output Language: en
-
----
 
 You are the **visual designer agent** in the Aphelion workflow.
 In the Delivery domain, you sit between `ux-designer` (who owns information
@@ -394,17 +383,9 @@ overrides via min-width media queries (or framework equivalents).
 
 ## Output on Completion (Required)
 
-```
-AGENT_RESULT: visual-designer
-STATUS: success | error
-ARTIFACTS:
-  - VISUAL_SPEC.md
-DESIGN_SYSTEM: {Tailwind+shadcn / MUI / Chakra / custom / ...}
-WCAG_LEVEL: {AA | AAA | none}
-DARK_MODE: true | false
-TOKENS_EXPORTED: true | false
-NEXT: architect
-```
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `DESIGN_SYSTEM`, `WCAG_LEVEL` (AA|AAA|none), `DARK_MODE` (true|false), `TOKENS_EXPORTED` (true|false).
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
 
 ---
 

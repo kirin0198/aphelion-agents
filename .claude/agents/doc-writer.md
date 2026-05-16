@@ -11,19 +11,6 @@ tools: Read, Write, Edit, Bash, Glob, Grep
 model: sonnet
 ---
 
-## Project-Specific Behavior
-
-Before committing and before producing user-facing output, consult
-`.claude/rules/project-rules.md` (via `Read`) and apply:
-
-- `## Authoring` → `Co-Authored-By policy` (see `.claude/rules/git-rules.md`)
-- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
-
-If `.claude/rules/project-rules.md` is absent, apply defaults:
-- Co-Authored-By: enabled
-- Output Language: en
-
----
 
 You are the **doc writer agent** in the Aphelion workflow.
 In the Delivery domain, you handle documentation preparation after implementation, testing, and review are complete.
@@ -174,19 +161,9 @@ git commit -m "docs: create project documentation
 
 ## Required Output on Completion
 
-Upon completion, you must output the following block.
-The flow orchestrator reads this output to proceed to the next phase.
-
-```
-AGENT_RESULT: doc-writer
-STATUS: success | error
-ARTIFACTS:
-  - README.md
-  - CHANGELOG.md
-  - {other created documents}
-DOCS_COUNT: {number of documents created}
-NEXT: releaser | done
-```
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `DOCS_COUNT`.
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
 
 ## Completion Conditions
 

@@ -60,6 +60,33 @@ NEXT: developer
 
 See `document-locations.md` for the full resolution algorithm and hybrid-state handling.
 
+## Field Reference
+
+Canonical definitions for AGENT_RESULT fields emitted by 2+ agents or parsed
+by the orchestrator. Agent-specific fields are documented in each agent file.
+
+| Field | Type / Values | Notes |
+|---|---|---|
+| `STATUS` | success \| error \| failure \| suspended \| blocked \| approved \| conditional \| rejected | See §"STATUS Definitions". |
+| `NEXT` | {agent-name} \| done \| suspended | Routing hint for the orchestrator. |
+| `ARTIFACT_PATHS` | `- <NAME>: <resolved path>` list | MUST when STATUS=success and agent wrote ≥1 artifact. See `document-locations.md`. |
+| `ARTIFACTS` | filename list | **Deprecated** — kept for backward compat. New agents should use `ARTIFACT_PATHS`. |
+| `BLOCKED_REASON` / `BLOCKED_TARGET` | freeform / agent-name | Required when STATUS=blocked. See §"blocked STATUS Usage". |
+| `BRANCH` | branch name | MUST when a work branch was created/reused. Planning-tier and Implementation-tier agents. |
+| `PR_URL` | URL \| skipped \| reused | Implementation-tier only. See `git-rules.md` §"Branch & PR Strategy". |
+| `HANDOFF_TO` | agent-name \| flow-name | Used by analyst / maintenance-flow at flow boundaries. |
+| `GITHUB_ISSUE` | URL \| skipped (REPO_STATE=<value>) | See `git-rules.md` §"Behavior by Remote Type". |
+| `DECISION` | allowed \| asked_and_allowed \| denied \| skipped | sandbox-runner. See `sandbox-policy.md`. |
+| `DOC_REVIEW_RESULT` | passed \| has-inconsistencies | doc-reviewer. |
+| `WARNING_LEGACY_DUPLICATE` | artifact name | Emitted when both `docs/<NAME>.md` and `<NAME>.md` exist. See `document-locations.md`. |
+| `DENIAL_CATEGORY` / `DENIAL_COMMAND` / `DENIAL_RECOVERY` | see denial-categories.md §4 | Conditional — emit only when a Bash command was denied. |
+
+### How to add a new canonical field
+
+Promote a field to this table when (a) ≥2 agents emit it with identical semantics,
+**or** (b) an orchestrator parses it for routing/rollback decisions. Otherwise
+keep it agent-local in the owning agent's prompt.
+
 ## STATUS Definitions
 
 | STATUS | Meaning | Orchestrator Action |

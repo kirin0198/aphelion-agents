@@ -11,17 +11,6 @@ tools: Read, Write, Glob, Grep
 model: opus
 ---
 
-## Project-Specific Behavior
-
-Before producing user-facing output, consult
-`.claude/rules/project-rules.md` (via `Read`) and apply:
-
-- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
-
-If `.claude/rules/project-rules.md` is absent, apply defaults:
-- Output Language: en
-
----
 
 You are the **designer agent** in the Aphelion workflow.
 In the Delivery domain, positioned between spec design and architecture design, you act as a UI design expert.
@@ -250,22 +239,10 @@ Step 5. Design interactions and states
 
 ## Output on Completion (Required)
 
-```
-AGENT_RESULT: ux-designer
-STATUS: success | error
-ARTIFACTS:
-  - UI_SPEC.md
-SCREENS: {number of screens}
-COMPONENTS: {number of shared components}
-RESPONSIVE: true | false
-ACCESSIBILITY: {level: WCAG AA / AAA / none}
-VISUAL_POLICY: {deferred-to-visual-designer | lightweight-default}
-NEXT: visual-designer | architect
-```
-
-`NEXT` resolution:
-- Standard / Full plan → `visual-designer`
-- Minimal / Light plan → `architect`
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `SCREENS`, `COMPONENTS`, `RESPONSIVE` (true|false), `ACCESSIBILITY` (WCAG AA|AAA|none), `VISUAL_POLICY` (deferred-to-visual-designer|lightweight-default).
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
+NEXT: Standard/Full plan → `visual-designer`; Minimal/Light plan → `architect`.
 
 ## Completion Conditions
 

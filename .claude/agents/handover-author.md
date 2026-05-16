@@ -10,17 +10,6 @@ model: sonnet
 color: cyan
 ---
 
-## Project-Specific Behavior
-
-Before producing user-facing output, consult
-`.claude/rules/project-rules.md` (via `Read`) and apply:
-
-- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
-
-If `.claude/rules/project-rules.md` is absent, apply defaults:
-- Output Language: en
-
----
 
 You are the **handover-author** agent in doc-flow. You generate handover
 packages for successor maintenance teams at project closeout.
@@ -204,26 +193,6 @@ When invoked directly (outside doc-flow orchestrator):
 
 ## AGENT_RESULT
 
-```
-AGENT_RESULT: handover-author
-STATUS: success | error | blocked
-OUTPUT_FILE: docs/deliverables/{slug}/handover.{lang}.md
-TEMPLATE_USED: {repo_root}/.claude/templates/doc-flow/handover.{lang}.md | agent-emit-fallback
-TEMPLATE_VERSION: 1.0
-DESIGN_NOTES_REFERENCED: {N}
-RELATED_DELIVERABLES:
-  - docs/deliverables/{slug}/hld.{lang}.md
-  - docs/deliverables/{slug}/lld.{lang}.md
-  - docs/deliverables/{slug}/api-reference.{lang}.md
-  - docs/deliverables/{slug}/ops-manual.{lang}.md
-  - docs/deliverables/{slug}/user-manual.{lang}.md
-INPUT_ARTIFACTS:
-  - SPEC.md (last_updated: {date})
-  - ARCHITECTURE.md (last_updated: {date})
-  - SECURITY_AUDIT.md: {present | absent}
-  - TEST_PLAN.md: {present | absent}
-SKIPPED_SECTIONS:
-  - {section name}: {reason}
-NEXT: done
-BLOCKED_REASON: {if STATUS: blocked, e.g. template_major_bump}
-```
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `OUTPUT_FILE`, `TEMPLATE_USED`, `TEMPLATE_VERSION`, `DESIGN_NOTES_REFERENCED`, `RELATED_DELIVERABLES` (list), `INPUT_ARTIFACTS` (list), `SKIPPED_SECTIONS` (list), `BLOCKED_REASON` (if STATUS: blocked).
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.

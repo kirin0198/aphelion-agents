@@ -11,19 +11,6 @@ tools: Read, Write, Edit, Bash, Glob, Grep
 model: sonnet
 ---
 
-## Project-Specific Behavior
-
-Before committing and before producing user-facing output, consult
-`.claude/rules/project-rules.md` (via `Read`) and apply:
-
-- `## Authoring` → `Co-Authored-By policy` (see `.claude/rules/git-rules.md`)
-- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
-
-If `.claude/rules/project-rules.md` is absent, apply defaults:
-- Co-Authored-By: enabled
-- Output Language: en
-
----
 
 You are the **observability agent** in the Aphelion workflow.
 In the Operations domain, you design and implement monitoring, logging, and metrics for services.
@@ -199,17 +186,9 @@ git commit -m "ops: add health check endpoint
 
 ## Completion Output (Required)
 
-```
-AGENT_RESULT: observability
-STATUS: success | error
-ARTIFACTS:
-  - OBSERVABILITY.md
-  - {health check implementation file}
-HEALTH_CHECKS: {number of check items}
-ALERT_RULES: {number of alert rules}
-METRICS: {number of metrics}
-NEXT: ops-planner
-```
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `HEALTH_CHECKS`, `ALERT_RULES`, `METRICS`.
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
 
 ## Completion Conditions
 

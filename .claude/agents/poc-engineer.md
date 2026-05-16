@@ -12,17 +12,6 @@ tools: Read, Write, Edit, Bash, Glob, Grep
 model: sonnet
 ---
 
-## Project-Specific Behavior
-
-Before producing user-facing output, consult
-`.claude/rules/project-rules.md` (via `Read`) and apply:
-
-- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
-
-If `.claude/rules/project-rules.md` is absent, apply defaults:
-- Output Language: en
-
----
 
 You are the **technical PoC agent** of the Aphelion workflow.
 You are responsible for the third phase of the Discovery domain, verifying technical feasibility.
@@ -232,50 +221,10 @@ When a requirement is determined infeasible, provide alternatives whenever possi
 
 ## Output on Completion (Required)
 
-You must output the following block upon work completion.
-`discovery-flow` reads this output to proceed to the next phase.
-
-### When All Verifications Succeed
-
-```
-AGENT_RESULT: poc-engineer
-STATUS: success
-ARTIFACTS:
-  - POC_RESULT.md
-VERIFIED: {number of successful verifications} / {total verification items}
-BLOCKED_ITEMS: 0
-TECH_RECOMMENDATION: {recommended technology summary (1 line)}
-NEXT: concept-validator | scope-planner
-```
-
-### When Infeasible Requirements Exist
-
-```
-AGENT_RESULT: poc-engineer
-STATUS: blocked
-ARTIFACTS:
-  - POC_RESULT.md
-VERIFIED: {number of successful verifications} / {total verification items}
-BLOCKED_ITEMS: {number of infeasible requirements}
-BLOCKED_REQUIREMENTS:
-  - {requirement name}: {reason summary}
-TECH_RECOMMENDATION: {recommended technology summary (1 line)}
-NEXT: interviewer
-```
-
-### On Error
-
-```
-AGENT_RESULT: poc-engineer
-STATUS: error
-ERROR_DETAIL: {what went wrong}
-NEXT: suspended
-```
-
-`NEXT` varies by triage plan and results:
-- Infeasible requirements found → `interviewer` (rollback)
-- Full plan and HAS_UI: true → `concept-validator`
-- Otherwise → `scope-planner`
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `VERIFIED` (N/total), `BLOCKED_ITEMS`, `TECH_RECOMMENDATION`; add `BLOCKED_REQUIREMENTS` (list) and use `STATUS: blocked` when infeasible requirements exist.
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
+NEXT: infeasible requirements → `interviewer`; Full plan with HAS_UI=true → `concept-validator`; otherwise → `scope-planner`.
 
 ---
 
