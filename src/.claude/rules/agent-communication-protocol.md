@@ -75,9 +75,8 @@ by the orchestrator. Agent-specific fields are documented in each agent file.
 | `BRANCH` | branch name | MUST when a work branch was created/reused. Planning-tier and Implementation-tier agents. |
 | `PR_URL` | URL \| skipped \| reused | Implementation-tier only. See `git-rules.md` §"Branch & PR Strategy". |
 | `HANDOFF_TO` | agent-name \| flow-name | Used by analyst / maintenance-flow at flow boundaries. |
-| `MODE` | normal \| rollback | Used by agents with rollback support (researcher / interviewer / test-designer / e2e-test-designer). |
 | `GITHUB_ISSUE` | URL \| skipped (REPO_STATE=<value>) | See `git-rules.md` §"Behavior by Remote Type". |
-| `DECISION` | execute \| blocked \| fallback | sandbox-runner. See `sandbox-policy.md`. |
+| `DECISION` | allowed \| asked_and_allowed \| denied \| skipped | sandbox-runner. See `sandbox-policy.md`. |
 | `DOC_REVIEW_RESULT` | passed \| has-inconsistencies | doc-reviewer. |
 | `WARNING_LEGACY_DUPLICATE` | artifact name | Emitted when both `docs/<NAME>.md` and `<NAME>.md` exist. See `document-locations.md`. |
 | `DENIAL_CATEGORY` / `DENIAL_COMMAND` / `DENIAL_RECOVERY` | see denial-categories.md §4 | Conditional — emit only when a Bash command was denied. |

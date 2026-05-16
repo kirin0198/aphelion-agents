@@ -168,7 +168,8 @@ Promote a field to this table when (a) ≥2 agents emit it with identical semant
 keep it agent-local in the owning agent's prompt.
 ```
 
-実測 28 行 (heading + intro 2 lines + 14 row table + How-to-add 4 lines + blank lines)。
+実測 27 行 (heading + intro 2 lines + 13 row table + How-to-add 4 lines + blank lines)。
+Note (PR #137 fix-up): `MODE` was demoted from the table (values diverge per agent); field count is 13, not 14.
 制約 30 行以下を満たす。
 
 ## 4. テンプレ適用例 (3 representative agents の before / after)
