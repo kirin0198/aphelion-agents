@@ -87,7 +87,7 @@ Resolution order:
 
 ## Startup Probe
 
-Bash-owning agents (`developer`, `analyst`, `tester`, `releaser`, etc.) run this
+Bash-owning agents (`developer`, `analyst-intake`, `analyst-core`, `tester`, `releaser`, etc.) run this
 probe **once at session start**. Results are held in working memory and reused by
 all subsequent git/PR operations within the same session.
 
@@ -153,12 +153,15 @@ fi
 branch creation (where applicable), commit, and push. Only Implementation-tier
 agents open pull requests.
 
-- **Planning-tier**: `analyst`, `architect`. `analyst` creates the work branch
-  from `main` and commits the planning doc + SPEC/UI_SPEC edits; `architect`
-  reuses the branch and commits the design note. **Planning-tier agents do NOT
-  open PRs** — that is the implementation tier's job.
+- **Planning-tier**: `analyst-intake`, `analyst-core`, `architect`.
+  `analyst-intake` creates the work branch from `main` and commits the initial
+  planning doc (§1-4 draft); `analyst-core` commits planning doc §5-8 additions
+  + SPEC.md / UI_SPEC.md edits on the same branch; `architect` reuses the branch
+  and commits the design note. The top-level `analyst` orchestrator performs
+  **no git operations**. **Planning-tier agents do NOT open PRs** — that is the
+  implementation tier's job.
 - **Implementation-tier**: `developer`, `scaffolder`, etc. Reuse the branch
-  created by `analyst` (or create one if invoked standalone), commit
+  created by `analyst-intake` (or create one if invoked standalone), commit
   implementation code, open the PR.
 
 > For agent-specific branch name derivation (e.g., slug from TASK.md or
