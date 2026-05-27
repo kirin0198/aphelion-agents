@@ -222,6 +222,7 @@ Deliveryが完了した後（serviceプロジェクトの場合）：
 |---------|------|------|
 | `/aphelion-init` | 初回プロジェクトルール設定（`rules-designer` を起動） | `npx aphelion-agents init` 直後 |
 | `/aphelion-help` | Aphelion のスラッシュコマンド一覧を表示 | 任意のプロジェクトで随時 |
+| `/aphelion-check` | ヘルスチェック: agents / rules / hooks / gh auth / git / Docker を検証 | 任意のプロジェクトで随時 |
 | `/discovery-flow {説明}` | 要件探索を開始 | 新規プロジェクト |
 | `/delivery-flow` | 設計・実装を開始 | Discovery後、または既存SPEC.mdがある場合 |
 | `/operations-flow` | デプロイ・運用を開始 | Delivery後、serviceタイプのみ |

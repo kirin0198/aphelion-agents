@@ -19,6 +19,7 @@ responsibility and are not listed here — run `/help` for those.
 | Command | Purpose |
 |---------|---------|
 | `/aphelion-init` | First-run project rules setup (launches `rules-designer`) |
+| `/aphelion-check` | Health check: verify agents, rules, hooks, gh auth, git, Docker |
 
 ## Standalone agents
 

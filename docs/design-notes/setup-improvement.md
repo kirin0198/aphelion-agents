@@ -10,7 +10,7 @@ PLANNING_DOC: docs/design-notes/setup-improvement.md
 MAINTENANCE_TIER: Minor
 PLAN: Standard
 HANDOFF_TO: developer
-CURRENT_PR: PR-1
+CURRENT_PR: PR-2
 PHASING: |
   PR-1: ① /aphelion-init必須化 (feat/aphelion-init-mandatory)
   PR-2: ⑥ /aphelion-check新設 (feat/aphelion-check) — developer-direct, no architect

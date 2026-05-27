@@ -235,6 +235,7 @@ You can invoke any agent directly without a flow:
 |---------|---------|-------------|
 | `/aphelion-init` | First-run project rules setup (launches `rules-designer`) | Right after `npx aphelion-agents init` |
 | `/aphelion-help` | List all Aphelion slash commands | Anytime, in any project |
+| `/aphelion-check` | Health check: verify agents, rules, hooks, gh auth, git, Docker | Anytime, in any project |
 | `/discovery-flow {description}` | Start requirements exploration | New projects |
 | `/delivery-flow` | Start design & implementation | After Discovery, or with existing SPEC.md |
 | `/operations-flow` | Start deployment & operations | After Delivery, service type only |
