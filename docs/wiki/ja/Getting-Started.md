@@ -1,8 +1,8 @@
 # Getting Started
 
 > **Language**: [English](../en/Getting-Started.md) | [日本語](../ja/Getting-Started.md)
-> **Last updated**: 2026-05-17 (updated 2026-05-17: /aphelion-init をステップ2必須に格上げ, #130)
-> **EN canonical**: 2026-05-17 (updated 2026-05-17) of wiki/en/Getting-Started.md
+> **Last updated**: 2026-05-28 (updated 2026-05-28: 既存プロジェクト向けクイックスタート + --user ガイド追加, #130 PR-3)
+> **EN canonical**: 2026-05-28 (updated 2026-05-28) of wiki/en/Getting-Started.md
 > **Audience**: 新規ユーザー
 
 このページはAphelionを使い始めるために必要なすべてをカバーします：Claude Code のセットアップ、初回実行のウォークスルー、利用シナリオ、コマンドリファレンス、トラブルシューティング。
@@ -11,6 +11,7 @@
 
 - [前提条件](#前提条件)
 - [クイックスタート](#クイックスタート)
+- [既存プロジェクト向けクイックスタート](#既存プロジェクト向けクイックスタート)
 - [初回実行ウォークスルー](#初回実行ウォークスルー)
 - [利用シナリオ](#利用シナリオ)
 - [コマンドリファレンス](#コマンドリファレンス)
@@ -56,6 +57,18 @@ npx github:kirin0198/aphelion-agents update --user
 > **キャッシュに関する注意:** `npx` は `name@version` でパッケージをキャッシュします。同じバージョン文字列の古いキャッシュがローカルに残っている場合、`update` はその古いスナップショットを無言でコピーします。強制的に最新を取得するには: ref を `main` に固定する (`npx github:kirin0198/aphelion-agents#main update`) か、キャッシュをクリアして (`npm cache clean --force`) 再実行してください。
 > 実行時に表示される `source: aphelion-agents@<version>` を [main の package.json](https://github.com/kirin0198/aphelion-agents/blob/main/package.json) の `version` と突き合わせると確実に最新が反映されたか確認できます。
 
+#### `init` vs `init --user`: どちらを使うべきか？
+
+| ケース | 推奨 |
+|------|------|
+| 特定プロジェクトで使う | `init`（プロジェクトローカル） |
+| 複数プロジェクトで共通利用 | `init --user`（グローバル） |
+| project-rules.md を使う | 必ずプロジェクトローカル |
+
+> **注意:** `project-rules.md` はプロジェクトの `.claude/rules/` ディレクトリに配置する必要があります（プロジェクトローカル）。
+> `init --user` でグローバルにインストールした場合でも、`project-rules.md` は各プロジェクトで `/aphelion-init` を実行して生成してください。
+> `~/.claude/rules/` にグローバルで `project-rules.md` を置くと、無関係なプロジェクトにも影響が及ぶ可能性があります。
+
 ### git clone でインストール（代替手順）
 
 リポジトリをクローンしてから手動でファイルをコピーする方法：
@@ -68,6 +81,55 @@ cd /path/to/your-project && claude
 
 /aphelion-init
 /discovery-flow TODOアプリを作りたい
+```
+
+---
+
+## 既存プロジェクト向けクイックスタート
+
+既存のコードベースに Aphelion を導入する手順です：
+
+**ステップ1: Aphelion をインストール**
+
+```bash
+npx github:kirin0198/aphelion-agents init
+# または: cp -r /path/to/aphelion-agents/.claude /path/to/your-project/
+```
+
+**ステップ2: プロジェクト固有ルールのセットアップ**
+
+```
+/aphelion-init
+```
+
+`rules-designer` がプロジェクトの `.claude/rules/project-rules.md` を生成します。フローを実行する前に必ず行ってください。
+
+**ステップ3: ドキュメントの生成（SPEC.md / ARCHITECTURE.md がない場合のみ）**
+
+```
+/codebase-analyzer このプロジェクトを分析してSPEC.mdとARCHITECTURE.mdを生成してください
+```
+
+プロジェクトに既に `SPEC.md` と `ARCHITECTURE.md` がある場合はこのステップをスキップしてください。
+
+**ステップ4: 作業を開始**
+
+```
+/analyst {issueや機能の説明}
+# または
+/maintenance-flow {トリガーの説明}
+```
+
+単一 issue のワークフローには `/analyst`、Patch / Minor / Major の自動トリアージが必要な場合は `/maintenance-flow` を使用してください。
+
+**判断フローチャート:**
+
+```
+プロジェクトに SPEC.md と ARCHITECTURE.md がありますか？
+|
++-- YES --> /analyst  または  /maintenance-flow
+|
++-- NO  --> /codebase-analyzer  -->  /analyst  または  /maintenance-flow
 ```
 
 ---
@@ -191,18 +253,7 @@ Deliveryが完了した後（serviceプロジェクトの場合）：
 
 ### シナリオ4：既存プロジェクトへの変更（ドキュメントなし）
 
-まず仕様書を逆生成：
-
-```
-/codebase-analyzer このプロジェクトを分析してSPEC.mdとARCHITECTURE.mdを生成してください
-```
-
-レビューと承認後：
-
-```
-/analyst OAuth2ソーシャルログインを追加したい
-/delivery-flow
-```
+詳細な4ステップのガイド（`/codebase-analyzer` を実行するタイミング、`/analyst` または `/maintenance-flow` への進め方を含む）は [既存プロジェクト向けクイックスタート](#既存プロジェクト向けクイックスタート) を参照してください。
 
 ### シナリオ5：スタンドアロンエージェント
 
