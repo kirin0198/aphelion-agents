@@ -1,7 +1,7 @@
 # Getting Started
 
 > **Language**: [English](../en/Getting-Started.md) | [日本語](../ja/Getting-Started.md)
-> **Last updated**: 2026-05-17 (updated 2026-05-17: promote /aphelion-init to Step 2 required, #130)
+> **Last updated**: 2026-05-28 (updated 2026-05-28: add existing-project Quick Start + --user guide, #130 PR-3)
 > **Audience**: New users
 
 This page covers everything you need to start using Aphelion: Claude Code setup, first-run walkthrough, usage scenarios, command reference, and troubleshooting.
@@ -10,6 +10,7 @@ This page covers everything you need to start using Aphelion: Claude Code setup,
 
 - [Prerequisites](#prerequisites)
 - [Quick Start](#quick-start)
+- [Existing Project Quick Start](#existing-project-quick-start)
 - [First Run Walkthrough](#first-run-walkthrough)
 - [Usage Scenarios](#usage-scenarios)
 - [Command Reference](#command-reference)
@@ -60,6 +61,19 @@ npx github:kirin0198/aphelion-agents update --user
 > `version` in [package.json on `main`](https://github.com/kirin0198/aphelion-agents/blob/main/package.json)
 > to confirm freshness.
 
+#### `init` vs `init --user`: which should I use?
+
+| Case | Recommended |
+|------|-------------|
+| Use in a specific project | `init` (project-local) |
+| Share across multiple projects | `init --user` (global) |
+| Using project-rules.md | Always project-local |
+
+> **Warning:** `project-rules.md` must be placed in the project's `.claude/rules/` directory (project-local).
+> Installing Aphelion with `init --user` places agents and rules in `~/.claude/` globally, but
+> `project-rules.md` must still be generated per project via `/aphelion-init`. A globally placed
+> `project-rules.md` in `~/.claude/rules/` can cause unintended behavior across unrelated projects.
+
 ### Install via git clone (alternative)
 
 Clone the repository first:
@@ -78,6 +92,57 @@ cd /path/to/your-project && claude
 
 /aphelion-init
 /discovery-flow I want to build a TODO app
+```
+
+---
+
+## Existing Project Quick Start
+
+Already have a codebase? Follow these steps to bring Aphelion in:
+
+**Step 1: Install Aphelion**
+
+```bash
+npx github:kirin0198/aphelion-agents init
+# or: cp -r /path/to/aphelion-agents/.claude /path/to/your-project/
+```
+
+**Step 2: Set up project-specific rules**
+
+```
+/aphelion-init
+```
+
+`rules-designer` generates `.claude/rules/project-rules.md` for your project. This is required
+before running any flow.
+
+**Step 3: Generate docs (only if SPEC.md / ARCHITECTURE.md are absent)**
+
+```
+/codebase-analyzer Analyze this project and generate SPEC.md and ARCHITECTURE.md
+```
+
+Skip this step if your project already has `SPEC.md` and `ARCHITECTURE.md`.
+
+**Step 4: Start working**
+
+```
+/analyst {issue or feature description}
+# or
+/maintenance-flow {trigger description}
+```
+
+Use `/analyst` for a single-issue workflow. Use `/maintenance-flow` when you want automatic
+Patch / Minor / Major triage.
+
+**Decision flowchart:**
+
+```
+Does your project have SPEC.md and ARCHITECTURE.md?
+|
++-- YES --> /analyst  or  /maintenance-flow
+|
++-- NO  --> /codebase-analyzer  -->  /analyst  or  /maintenance-flow
 ```
 
 ---
@@ -204,18 +269,8 @@ Prefer `/maintenance-flow` over `/analyst` when:
 
 ### Scenario 4: Existing Project without Docs
 
-Reverse-engineer the specification first:
-
-```
-/codebase-analyzer Analyze this project and generate SPEC.md and ARCHITECTURE.md
-```
-
-After review and approval:
-
-```
-/analyst I want to add OAuth2 social login
-/delivery-flow
-```
+See [Existing Project Quick Start](#existing-project-quick-start) for the full 4-step guide,
+including when to run `/codebase-analyzer` and how to proceed to `/analyst` or `/maintenance-flow`.
 
 ### Scenario 5: Standalone Agents
 
