@@ -11,7 +11,7 @@ PLANNING_DOC: docs/design-notes/setup-improvement.md
 MAINTENANCE_TIER: Minor
 PLAN: Standard
 HANDOFF_TO: developer
-CURRENT_PR: PR-3
+CURRENT_PR: PR-4
 PHASING: |
   PR-1: ① /aphelion-init必須化 (feat/aphelion-init-mandatory) — merged (#142)
   PR-2: ⑥ /aphelion-check新設 (feat/aphelion-check) — merged (#143)
@@ -24,8 +24,9 @@ DOCS_UPDATED:
 ARCHITECT_BRIEF: not-needed
 STATUS: complete
 -->
-> Last updated: 2026-05-17
+> Last updated: 2026-05-28
 > Update history:
+>   - 2026-05-28: PR-3 merged (#145); CURRENT_PR → PR-4; add PR-4 design decisions appendix (課題②)
 >   - 2026-05-17: Add sub-item ⑦ (init未実行警告hook) as PR-6; PR-1/PR-2 merged; CURRENT_PR → PR-3
 >   - 2026-05-17: Inject analyst-handoff block; update agent count 39→42; all PRs developer-direct (no architect)
 >   - 2026-05-15: Initial promotion from proposals/setup-improvement-memo.md
@@ -197,3 +198,72 @@ Quick Startが新規プロジェクト前提の記述中心。既存プロジェ
 - `src/.claude/hooks/aphelion-project-rules-check.sh`（新設・⑦）
 - `src/.claude/settings.json`（SessionStart event 追加・⑦）
 - `src/.claude/rules/hooks-policy.md`（hook D 追記・⑦）
+
+---
+
+## PR-4 設計判断 (課題② 着手時メモ)
+
+> 追記日: 2026-05-28
+> 着手前の analyst-core レビューにより、元方針の前提が distribution 形態と
+> 不一致だったため、以下の設計判断を明文化する。
+
+### 配布形態の再確認
+
+- `package.json` は `"private": true`。npm registry には公開されていない。
+- ユーザーへの推奨経路は **`npx github:kirin0198/aphelion-agents <command>`** (Getting-Started L40, L46-53 参照)。
+- 「npx キャッシュ問題」が実際に発生するのは、npm が GitHub tarball を `_npx/` 配下にキャッシュし、
+  `#main` などの ref を指定しない場合に古い tarball を再利用する状況。Getting-Started L56-58 に
+  既に "Cache caveat" として手動回避手順 (`#main` ref pin / `npm cache clean --force`) が記載されている。
+
+### リモートバージョン取得先
+
+| 候補 | 採否 | 理由 |
+|---|---|---|
+| `https://registry.npmjs.org/aphelion-agents/latest` | **不採用** | パッケージは private; npm に公開されていない (404) |
+| `https://raw.githubusercontent.com/kirin0198/aphelion-agents/main/package.json` | **採用** | 実際の配布元 (GitHub main branch) と一致。`node:https` のみで取得可能 |
+
+### キャッシュクリア戦略
+
+3 案を検討した結果、以下を採用する。
+
+- **Approach B (採用)**: 差異検知 → 情報メッセージ + 手動コマンド案内 → 通常の update 処理を続行。
+  - 利点: 再帰 npx 呼び出しなし、スクリプトの単純さを保つ、ユーザーが何が起きるかを完全に把握できる。
+  - 出力例:
+    ```
+    ⚠ 新しいバージョンが利用可能です: aphelion-agents@0.3.7 → 0.4.0 (remote)
+      現在のキャッシュには古い tarball が残っている可能性があります。
+      最新版で再実行する場合:
+        npm cache clean --force && npx github:kirin0198/aphelion-agents#main update
+      （今回はキャッシュ済みバージョンで update を続行します）
+    ```
+- Approach A (再帰 npx 呼び出しによる自動再実行): 不採用。`spawn` で自プロセスを上書き再起動する
+  挙動は cross-platform で fragile。ユーザーが「何が起きたか」を追跡しにくい。
+- Approach C (毎回キャッシュクリア): 不採用。常に低速化し、オフライン update を破壊する。
+
+### --force-refresh フラグ
+
+将来拡張として `--force-refresh` を予約 (今回は実装しない)。
+今回の PR ではバージョン差異検知時の advisory メッセージのみ実装し、ユーザーが手動で
+キャッシュをクリアする経路を残す。フラグ導入は実利用フィードバックを待ってから判断する。
+
+### ネットワーク失敗時の挙動
+
+- リモート `package.json` 取得に失敗した場合 (DNS / オフライン / GitHub 障害):
+  - **silent skip**: バージョン比較を行わず通常の update 処理を続行する。
+  - stderr に 1 行 informational ログのみ (`バージョン確認をスキップしました (offline?)`)
+  - update 本体は決して block しない。
+
+### 実装上の注意点
+
+- `node:https` の `GET` で `User-Agent` ヘッダ必須 (GitHub raw は UA なしで 403 を返す場合あり)。
+- レスポンスは streaming で受け取り、`.on("data")` で chunk を蓄積、`.on("end")` で `JSON.parse`。
+- タイムアウト 3 秒程度を設定 (`req.setTimeout(3000)`)。長時間ハングを防ぐ。
+- ローカル version は既存の `getVersion()` を再利用 (新規ヘルパーは追加しない)。
+- 「source: aphelion-agents@X.Y.Z → updated to X.Y.Z」の表示は、差異がない場合は単一 version
+  表示 (現状の `source: aphelion-agents@${version}` を維持) で十分。差異がある場合のみ
+  `→ X.Y.Z available` を append する。
+
+### スコープアウト
+
+- npm registry への publish (パッケージ private 解除) — 別議論。今回の PR では扱わない。
+- `~/.npm/_npx/` を直接削除する処理 — npm の内部構造に依存しすぎる。`npm cache clean --force` 経由のみ。
