@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 // aphelion-agents CLI
-// zero-dependency: Node 標準ライブラリのみ使用 (node:fs/promises, node:path, node:os, node:url)
+// zero-dependency: Node 標準ライブラリのみ使用 (node:fs/promises, node:path, node:os, node:url, node:https)
 // 配布方式: npx github:kirin0198/aphelion-agents <command>
 
 import { cp, access, readFile, writeFile, chmod, readdir, constants } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { homedir } from "node:os";
+import { request } from "node:https";
 
 // Node バージョンチェック (>=20 が必須)
 const nodeMajor = parseInt(process.versions.node.split(".")[0], 10);
@@ -166,6 +167,49 @@ async function getVersion() {
   }
 }
 
+// GitHub main ブランチの package.json からリモートバージョンを取得する
+// キャッシュ陳腐化検知 (Approach B: advisory-only) のために cmdUpdate() が使用する。
+// ネットワーク不可・タイムアウト・非200・JSONパース失敗のいずれでも null を返す (silent skip)。
+const REMOTE_PKG_URL =
+  "https://raw.githubusercontent.com/kirin0198/aphelion-agents/main/package.json";
+
+async function fetchRemoteVersion() {
+  return new Promise((resolve) => {
+    const req = request(
+      REMOTE_PKG_URL,
+      {
+        headers: { "User-Agent": "aphelion-agents-cli" },
+      },
+      (res) => {
+        if (res.statusCode !== 200) {
+          res.resume(); // データを消費してソケットを解放
+          resolve(null);
+          return;
+        }
+        const chunks = [];
+        res.on("data", (chunk) => chunks.push(chunk));
+        res.on("end", () => {
+          try {
+            const pkg = JSON.parse(Buffer.concat(chunks).toString("utf-8"));
+            const ver = typeof pkg.version === "string" ? pkg.version : null;
+            resolve(ver ? { version: ver } : null);
+          } catch {
+            resolve(null);
+          }
+        });
+        res.on("error", () => resolve(null));
+      },
+    );
+    // タイムアウト: 3000ms で強制破棄
+    req.setTimeout(3000, () => {
+      req.destroy();
+      resolve(null);
+    });
+    req.on("error", () => resolve(null));
+    req.end();
+  });
+}
+
 // ヘルプテキストを表示
 function showHelp() {
   console.log(`
@@ -254,6 +298,10 @@ async function cmdInit(targetPath, force) {
 // update コマンド: ターゲットの .claude/ を最新に更新する
 // settings.local.json は既存がある場合のみ保護 (上書きしない)
 async function cmdUpdate(targetPath) {
+  // キャッシュ陳腐化検知 (Approach B): 更新処理開始前にリモートバージョンを非同期取得する。
+  // 失敗しても更新フローはブロックしない (null = skip)。
+  const remoteResult = await fetchRemoteVersion().catch(() => null);
+
   const targetExists = await exists(targetPath);
 
   if (!targetExists) {
@@ -304,6 +352,22 @@ async function cmdUpdate(targetPath) {
     });
     await chmodHooks(join(targetPath, "hooks"));
     const version = await getVersion();
+    // キャッシュ陳腐化チェック: リモートバージョンとローカルバージョンを比較する。
+    // remoteResult が null の場合はネットワーク不可など → silent skip (1行の情報メッセージのみ)。
+    if (remoteResult === null) {
+      console.error("バージョン確認をスキップしました (network unavailable)");
+    } else if (remoteResult.version !== version) {
+      // バージョン不一致 → キャッシュ陳腐化の可能性をアドバイスする (Approach B)
+      warn(
+        `新しいバージョンが利用可能です: aphelion-agents@${version} → ${remoteResult.version} (remote)`,
+      );
+      console.error("  現在のキャッシュには古い tarball が残っている可能性があります。");
+      console.error("  最新版で再実行する場合:");
+      console.error(
+        "    npm cache clean --force && npx github:kirin0198/aphelion-agents#main update",
+      );
+      console.error("  （今回はキャッシュ済みバージョンで update を続行します）");
+    }
     ok(`.claude/ を ${targetPath} に更新しました (source: aphelion-agents@${version})。`);
     if (hasSettingsLocal) {
       ok("settings.local.json は保護されました (既存を保持)。");
