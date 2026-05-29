@@ -62,6 +62,8 @@ Ask only what cannot be inferred from artifacts. Skip questions where the answer
 2. `POC_RESULT.md` — `PRODUCT_TYPE:` field
 3. `SPEC.md` (`## Product Type` section or `Product Type:` field)
 
+> Note: this skip list intentionally differs from the orchestrator-time resolution chain in Step 1 (`DISCOVERY_RESULT.md > SPEC.md > project-rules.md > default service`). rules-designer runs *during* Discovery Flow — before `DISCOVERY_RESULT.md` is finalized — so the upstream artifacts that may already carry PRODUCT_TYPE at this point are `INTERVIEW_RESULT.md` / `POC_RESULT.md` / `SPEC.md`, not the post-Discovery handoff file.
+
 If PRODUCT_TYPE is already known, display: `"Product Type: {value} (from {source} — skipping question)"` and ask only the Repository question.
 
 If PRODUCT_TYPE is not already known, ask both questions in a single `AskUserQuestion` call:
