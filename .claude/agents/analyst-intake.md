@@ -8,6 +8,9 @@ description: |
   caller to forward to analyst-core.
   Invoked as a sub-agent by: analyst (standalone), delivery-flow, maintenance-flow.
   NOT invoked directly via slash command.
+  Also supports injection-only mode: when the caller passes legacy_planning_doc +
+  existing_issue_url + existing_issue_number, intake questions and gh issue create
+  are skipped; only handoff block injection + branch creation + initial commit run.
 tools: Read, Write, Edit, Bash, Glob, Grep
 model: sonnet
 ---
@@ -28,12 +31,13 @@ the work branch — then emit a HANDOFF_PAYLOAD for analyst-core to continue dee
 
 Perform Steps A–D of the analyst workflow:
 1. Run Mandatory Checks (startup probe, read existing docs)
-2. Optionally promote a file from `docs/design-notes/proposals/`
-3. Collect intake via `AskUserQuestion` (Steps A–B)
-4. Write the planning doc §1-4 stub with embedded `<!-- analyst-handoff -->` YAML (Step C)
-5. Create the GitHub issue (Step D)
-6. Commit and push on the work branch
-7. Emit `AGENT_RESULT` with `HANDOFF_PAYLOAD` for the caller to forward to `analyst-core`
+2. **Check for injection-only mode** (see "Injection-only Mode" section below)
+3. Optionally promote a file from `docs/design-notes/proposals/`
+4. Collect intake via `AskUserQuestion` (Steps A–B)
+5. Write the planning doc §1-4 stub with embedded `<!-- analyst-handoff -->` YAML (Step C)
+6. Create the GitHub issue (Step D)
+7. Commit and push on the work branch
+8. Emit `AGENT_RESULT` with `HANDOFF_PAYLOAD` for the caller to forward to `analyst-core`
 
 ---
 
@@ -78,6 +82,77 @@ Perform Steps A–D of the analyst workflow:
    grep -m1 "Output Language:" .claude/rules/project-rules.md 2>/dev/null | awk '{print $NF}'
    ```
    Default: `en`
+
+---
+
+## Injection-only Mode
+
+**Trigger**: the caller's prompt provides all three of:
+- `legacy_planning_doc: <path>` — path to the existing planning doc
+- `existing_issue_url: <url>` — URL of the already-created GitHub issue
+- `existing_issue_number: <N>` — issue number
+
+When all three are present, set `INJECTION_ONLY_MODE=true` and proceed as follows.
+
+### What is skipped in injection-only mode
+
+- Step A-B (AskUserQuestion intake) — existing doc provides §1-4 content
+- Step D (`gh issue create`) — issue already exists
+- proposals/ promotion — existing doc is the input
+
+### What runs in injection-only mode
+
+1. **Read** the existing planning doc at `legacy_planning_doc`.
+   - Extract the slug from the filename (e.g., `my-feature` from `docs/design-notes/my-feature.md`).
+   - Extract §1–4 content to populate `intake_summary`.
+   - Derive `issue_type` from §1 (bug / feature / refactor).
+   - Note the existing header `> Last updated:` and `> Authored by:` fields.
+
+2. **Inject** the `<!-- analyst-handoff -->` block immediately after the header block
+   (after the `> Next: analyst-core` line or the last `>` header line).
+   Construct all 13 fields from the existing doc content and the passed `existing_issue_*` params:
+
+   ```markdown
+   <!-- analyst-handoff
+   planning_doc_path: <legacy_planning_doc path>
+   slug: <derived from filename>
+   branch_name: <fix|refactor|feat>/<slug>
+   issue_url: <existing_issue_url>
+   issue_number: <existing_issue_number>
+   issue_title: <derive from §1 heading or first sentence>
+   issue_type: bug | feature | refactor
+   intake_summary: |
+     <summary derived from §1-4 of the existing doc>
+   proposals_source: null
+   repo_state: <REPO_STATE>
+   artifact_paths:
+     - SPEC: <resolved path or missing>
+     - UI_SPEC: <resolved path or missing>
+     - ARCHITECTURE: <resolved path or missing>
+   auto_approve: true | false
+   output_language: en | ja
+   -->
+   ```
+
+   Also update the `> GitHub Issue:` header line if it uses a placeholder:
+   `> GitHub Issue: [#<N>](<existing_issue_url>)`
+
+3. **Create work branch from main** (B3 fix — see "Commit on Work Branch" section).
+
+4. **Stage and commit** the planning doc with the injected handoff block:
+   ```bash
+   git add <legacy_planning_doc>
+   git commit -m "docs: inject handoff block into legacy planning doc (#<N>)
+
+   Co-Authored-By: Claude <noreply@anthropic.com>"
+   ```
+
+5. **Push** to remote (same rules as normal fresh mode).
+
+6. **Emit `AGENT_RESULT`** with `HANDOFF_PAYLOAD` (all 13 fields, same schema as fresh mode).
+
+**Regression boundary**: when `INJECTION_ONLY_MODE` is NOT set (normal fresh mode),
+all behavior below is completely unchanged.
 
 ---
 
@@ -233,20 +308,31 @@ EOF
 
 ## Commit on Work Branch (initial)
 
-After Step D completes and the planning doc is finalized (handoff YAML filled in):
+After Step D completes (or after injection-only handoff block injection) and the
+planning doc is finalized (handoff YAML filled in):
 
 ```bash
 # 1. Check current branch
 current_branch=$(git rev-parse --abbrev-ref HEAD)
 
-# 2. Create work branch from main only if currently on main
-if [ "$current_branch" = "main" ]; then
+# 2. Create work branch from main when:
+#    - In injection-only mode (regardless of current branch), OR
+#    - Currently on main (normal fresh mode)
+#    This fixes B3: legacy resume may start from a non-main branch.
+if [ "$INJECTION_ONLY_MODE" = "true" ] || [ "$current_branch" = "main" ]; then
   case "$ISSUE_TYPE" in
     bug)      branch_prefix=fix ;;
     refactor) branch_prefix=refactor ;;
     *)        branch_prefix=feat ;;
   esac
   branch_name="${branch_prefix}/${slug}"
+
+  # In injection-only mode: always checkout main first to ensure correct base
+  if [ "$INJECTION_ONLY_MODE" = "true" ]; then
+    git checkout main
+    git pull origin main
+  fi
+
   git checkout -b "$branch_name"
 fi
 
@@ -269,6 +355,7 @@ git push -u origin "$branch_name"
 **If the branch already exists** on the remote (slug collision), follow the
 branch-reuse rule in `.claude/rules/git-rules.md` §"Branch Lifecycle": ask
 the user whether to reuse the existing branch or choose a different slug.
+This guard applies in both fresh mode AND injection-only mode.
 
 **If `REPO_STATE=local-only`:** Skip `git push`. Record in AGENT_RESULT.
 **If `REPO_STATE=none`:** Skip all git ops.
@@ -322,10 +409,12 @@ not spawn analyst-core.
 
 - [ ] Startup Probe run; REPO_STATE determined
 - [ ] Existing SPEC.md / ARCHITECTURE.md / UI_SPEC.md read (or noted as missing)
-- [ ] Promotion from proposals/ performed if applicable
-- [ ] Step A–B: intake questions asked and answered
-- [ ] Step C: planning doc written with §1-4 stub AND `<!-- analyst-handoff -->` YAML block
-- [ ] Step D: GitHub issue created (or skip reason recorded)
+- [ ] **Injection-only mode check**: if legacy_planning_doc + existing_issue_url + existing_issue_number provided, set INJECTION_ONLY_MODE=true and skip Steps A-B + D
+- [ ] (Normal fresh mode only) Promotion from proposals/ performed if applicable
+- [ ] (Normal fresh mode only) Step A–B: intake questions asked and answered
+- [ ] Step C: planning doc written (fresh) OR handoff block injected (injection-only)
+- [ ] (Normal fresh mode only) Step D: GitHub issue created (or skip reason recorded)
 - [ ] planning doc updated with `> GitHub Issue: [#N](<URL>)` and handoff YAML filled in
-- [ ] Work branch created and initial commit pushed (or skip noted)
+- [ ] Work branch created from main (injection-only: always from main; fresh: from main when current branch is main)
+- [ ] Initial commit pushed (or skip noted)
 - [ ] AGENT_RESULT emitted with HANDOFF_PAYLOAD (all 13 fields)

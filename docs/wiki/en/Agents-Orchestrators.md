@@ -1,8 +1,9 @@
 # Agents Reference: Orchestrators & Cross-Cutting
 
 > **Language**: [English](../en/Agents-Orchestrators.md) | [日本語](../ja/Agents-Orchestrators.md)
-> **Last updated**: 2026-04-30
+> **Last updated**: 2026-05-30
 > **Update history**:
+>   - 2026-05-30: document analyst chain spawn contract + legacy-resume injection-only mode (#141)
 >   - 2026-04-30: Add doc-flow as the 5th flow orchestrator (#54)
 >   - 2026-04-30: Add doc-reviewer (Quality Agents) per #91
 >   - 2026-04-26: Sync with #62, #66, #72, #74 (issue #77)
@@ -147,23 +148,45 @@ The analyst chain consists of three files: the top-level orchestrator (`analyst`
 ### analyst (top-level orchestrator)
 
 - **Canonical**: [.claude/agents/analyst.md](../../.claude/agents/analyst.md)
-- **Domain**: Standalone (top-level orchestrator, invoked via `/analyst` slash command)
+- **Domain**: Standalone (top-level orchestrator, invoked via `/analyst` slash command **only**)
 - **Model**: Sonnet
-- **Responsibility**: Top-level orchestrator for the analyst chain. Chains `analyst-intake` → `analyst-core` via the Agent tool. Detects existing planning docs for resume scenarios (`<!-- analyst-handoff -->` block). Does not write files or run git; orchestration only. NOT spawned by flow orchestrators (which chain intake → core directly).
+- **Responsibility**: Top-level orchestrator for the analyst chain. Chains `analyst-intake` → `analyst-core` via the Agent tool. Detects existing planning docs for three resume cases (post-Pattern-B resume / legacy resume / fresh). Does not write files or run git; orchestration only.
 - **Inputs**: User's issue description (via `/analyst` command)
 - **Outputs**: Passthrough of `analyst-core` AGENT_RESULT (with agent-name rewritten to `analyst` for backward compatibility)
 - **NEXT conditions**: `architect` (default) | `developer`
+
+**Sub-agent spawn contract (IMPORTANT):**
+`analyst.md` relies on the `Agent` tool, which is **gated to top-level sessions only**.
+Flow orchestrators and main sessions MUST NOT spawn `analyst` via `Agent(subagent_type="analyst")`.
+The correct pattern for programmatic invocation is:
+1. Spawn `analyst-intake` directly (pass `legacy_planning_doc` + `existing_issue_url` + `existing_issue_number` if resuming a legacy doc).
+2. Receive `HANDOFF_PAYLOAD` from `analyst-intake`'s `AGENT_RESULT`.
+3. Spawn `analyst-core` with that `HANDOFF_PAYLOAD` as the prompt.
+
+This pattern applies to all three cases: fresh, post-Pattern-B resume, and legacy resume.
+
+**Resume detection (three cases):**
+- **Post-Pattern-B resume**: planning doc exists AND `<!-- analyst-handoff -->` block present → spawn `analyst-core` directly with the parsed YAML.
+- **Legacy resume**: planning doc exists AND no handoff block AND `> GitHub Issue:` line present → spawn `analyst-intake` in injection-only mode (see below).
+- **Fresh**: no matching planning doc → spawn `analyst-intake` normally.
 
 ### analyst-intake
 
 - **Canonical**: [.claude/agents/analyst-intake.md](../../.claude/agents/analyst-intake.md)
 - **Domain**: Standalone (sub-agent; invoked by `analyst` orchestrator or flow orchestrators)
 - **Model**: Sonnet
-- **Responsibility**: Structured intake phase (Steps A–D). Collects minimum information via `AskUserQuestion`, writes the planning doc §1-4 stub with embedded `<!-- analyst-handoff -->` YAML (for resume detection), creates the GitHub issue, and commits the work branch initial state. Emits `HANDOFF_PAYLOAD` for the caller to forward to `analyst-core`.
-- **Inputs**: User's issue description, existing SPEC.md / ARCHITECTURE.md / UI_SPEC.md
-- **Outputs**: `docs/design-notes/<slug>.md` (§1-4 stub with handoff YAML), GitHub issue (initial body), work branch commit
+- **Responsibility**: Structured intake phase (Steps A–D). Collects minimum information via `AskUserQuestion`, writes the planning doc §1-4 stub with embedded `<!-- analyst-handoff -->` YAML (for resume detection), creates the GitHub issue, and commits the work branch initial state. Emits `HANDOFF_PAYLOAD` for the caller to forward to `analyst-core`. Also supports **injection-only mode** for legacy doc resume (see below).
+- **Inputs**: User's issue description, existing SPEC.md / ARCHITECTURE.md / UI_SPEC.md. In injection-only mode: `legacy_planning_doc`, `existing_issue_url`, `existing_issue_number`.
+- **Outputs**: `docs/design-notes/<slug>.md` (§1-4 stub with handoff YAML, or injected block for legacy doc), GitHub issue (initial body; skipped in injection-only mode), work branch commit
 - **AGENT_RESULT fields**: `HANDOFF_PAYLOAD` (13-field YAML), `BRANCH`, `GITHUB_ISSUE`, `ARTIFACT_PATHS`
 - **NEXT conditions**: `analyst-core` (via caller)
+
+**Injection-only mode:**
+Triggered when the caller's prompt contains `legacy_planning_doc` + `existing_issue_url` + `existing_issue_number`.
+In this mode:
+- Skips: intake `AskUserQuestion` (Steps A-B), `gh issue create` (Step D), proposals/ promotion.
+- Runs: reads the existing planning doc, injects the `<!-- analyst-handoff -->` block (13 fields constructed from existing content + passed issue params), creates a work branch from `main` (regardless of current branch — B3 fix), commits the injected block, pushes, emits `HANDOFF_PAYLOAD`.
+- The HANDOFF_PAYLOAD 13-field schema is identical to fresh mode; no schema change.
 
 ### analyst-core
 
