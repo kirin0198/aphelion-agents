@@ -14,7 +14,7 @@ Status: In progress
 - [x] TASK-003: EDIT hooks-policy.md (hook D section + tables + distribution note) | Target file: src/.claude/rules/hooks-policy.md
 - [x] TASK-004: EDIT Hooks-Reference.md en+ja (bilingual sync) | Target files: docs/wiki/en/Hooks-Reference.md, docs/wiki/ja/Hooks-Reference.md
 - [x] TASK-005: EDIT bin/aphelion-agents.mjs (cmdUpdate SessionStart merge — decision E) | Target file: bin/aphelion-agents.mjs (no code change needed — mergeSettingsJson() already handles all events including SessionStart via APHELION_HOOK_MARKER detection; verified node --check passes)
-- [ ] TASK-006: Manual verification (all hook paths + node --check + settings JSON valid)
+- [x] TASK-006: Manual verification (all hook paths + node --check + settings JSON valid)
 - [ ] TASK-007: (final) Reset TASK.md to empty placeholder
 
 ## Recent Commits
