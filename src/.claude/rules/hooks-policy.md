@@ -1,8 +1,9 @@
 # Hooks Policy
 
-> **Last updated**: 2026-05-01
+> **Last updated**: 2026-05-30
 > **Auto-loaded**: Yes — placed in `.claude/rules/`, loaded by Claude Code on every session start
 > Update history:
+>   - 2026-05-30: add hook D (aphelion-project-rules-check, SessionStart advisory) (#130 PR-6)
 >   - 2026-05-01: initial release — MVP 3 hooks (A / B / E) (#107)
 
 This rule documents Aphelion's Claude Code hooks: their role, distribution, bypass rules,
@@ -32,16 +33,17 @@ Hooks are distributed via `src/.claude/hooks/` (canonical) and deployed to
 
 ---
 
-## 2. Available Hooks (MVP)
+## 2. Available Hooks
 
-Three hooks form the initial release. All scripts reside at
+Four hooks are currently distributed. All scripts reside at
 `src/.claude/hooks/` (canonical) → deployed to `.claude/hooks/`.
 
 | ID | Script | Event | Matcher | if condition | Block? | Bypass |
 |----|--------|-------|---------|-------------|--------|--------|
 | A | `aphelion-secrets-precommit.sh` | `PreToolUse` | `Bash` | `Bash(git commit*)` | Yes (exit 2) | `[skip-secrets-check]` in commit message |
 | B | `aphelion-sensitive-file-guard.sh` | `PreToolUse` | `Write\|Edit` | See §2.2 | Yes (exit 2) | None (edit `settings.json` to disable) |
-| E | `aphelion-deps-postinstall.sh` | `PostToolUse` | `Bash` | See §2.3 | No (exit 0 + stderr) | N/A (advisory only) |
+| D | `aphelion-project-rules-check.sh` | `SessionStart` | (none) | `source==startup` | No (advisory, exit 0 + stderr) | `APHELION_SKIP_RULES_CHECK=1` env var |
+| E | `aphelion-deps-postinstall.sh` | `PostToolUse` | `Bash` | See §2.4 | No (exit 0 + stderr) | N/A (advisory only) |
 
 A shared pattern library lives at `.claude/hooks/lib/secret-patterns.sh`.
 It defines `APHELION_SECRET_PATTERNS` (8 ERE regexes, IDs P1–P8) used by hook A.
@@ -103,7 +105,41 @@ Write(.env*)|Write(**/*.pem)|Write(**/*.key)|Write(**/credentials.*)|Write(**/*.
     to one of: *.example, *.template, *.sample, *.dist.
 ```
 
-### 2.3 Hook E — aphelion-deps-postinstall
+### 2.3 Hook D — aphelion-project-rules-check
+
+**Purpose**: Warn the user at session startup when `.claude/rules/project-rules.md` is absent,
+so they know Aphelion agents will fall back to defaults that may not match the project.
+
+**Operation**:
+1. Reads all of stdin into a variable (Claude Code SessionStart JSON payload).
+2. Checks `APHELION_SKIP_RULES_CHECK` environment variable. If set to any non-empty value, exits 0 immediately (silent bypass).
+3. Extracts the `source` field from the JSON via `grep`/`sed` (bash-only, no python3).
+4. If `source != "startup"`, exits 0 immediately (no warning on `/clear`, `/compact`, or resume).
+5. Extracts the `cwd` field from the JSON. Falls back to `$PWD` if parsing fails (defensive).
+6. Checks whether `${cwd}/.claude/rules/project-rules.md` exists.
+7. If absent: emits the advisory warning to stderr. Always exits 0 regardless of result.
+
+**Known limitation**: Only checks `${cwd}/.claude/rules/project-rules.md`. The global
+`~/.claude/rules/project-rules.md` (created by `init --user`) is **not** checked. Users
+relying on a global `project-rules.md` will see the warning even though their project is
+configured. Use `APHELION_SKIP_RULES_CHECK=1` to silence it in that case.
+
+**Exit semantics**: Always `0`. This hook is advisory-only and never blocks session start.
+- `0` — Always. No warning (file present, non-startup source, or bypass env var set), or warning emitted — both exit 0.
+- `1` — Script internal error (caught by `trap ERR`); falls through to `exit 0` (fail-open).
+- `2` — **Not used.** (SessionStart non-zero exits are non-blocking in Claude Code, but advisory hooks use exit 0 by convention.)
+
+**stderr format** (when project-rules.md is absent on startup):
+```
+[aphelion-hook:project-rules-check] No project-rules.md found at .claude/rules/project-rules.md.
+  Aphelion agents will fall back to defaults (Output Language: en, Co-Authored-By: enabled,
+  Remote type: github) which may not match this project.
+  Recommended: run /aphelion-init to generate project-rules.md for this repository.
+  (This is an advisory only; it never blocks session start.)
+  To silence this check, set APHELION_SKIP_RULES_CHECK=1 in your environment.
+```
+
+### 2.4 Hook E — aphelion-deps-postinstall
 
 **Purpose**: Emit a non-blocking advisory message after dependency installation commands,
 prompting the developer to run a vulnerability scan.
@@ -134,6 +170,7 @@ and emits a stderr message recommending the matching vulnerability scan command.
 |------|--------------|-------|
 | A (secrets-precommit) | Append `[skip-secrets-check]` to the commit message | Conventional Commits style; applies regardless of `-m` or `-F` |
 | B (sensitive-file-guard) | No bypass marker — edit `.claude/settings.json` to remove the hook entry | Intentional: a bypass marker would undermine multi-layer defense |
+| D (project-rules-check) | Set `APHELION_SKIP_RULES_CHECK=1` in the environment | Silences the advisory for users with global `--user` installs or evaluation use |
 | E (deps-postinstall) | No bypass needed — advisory only; always exits 0 | — |
 
 When hook A blocks due to a false positive (e.g., a placeholder value that looks like a real
@@ -148,10 +185,11 @@ secret), use `/secrets-scan` to confirm it is safe, then append `[skip-secrets-c
 ```
 src/.claude/hooks/
 ├── lib/
-│   └── secret-patterns.sh      # Shared pattern library (P1–P8)
-├── aphelion-secrets-precommit.sh
-├── aphelion-sensitive-file-guard.sh
-└── aphelion-deps-postinstall.sh
+│   └── secret-patterns.sh               # Shared pattern library (P1–P8)
+├── aphelion-secrets-precommit.sh        # Hook A
+├── aphelion-sensitive-file-guard.sh     # Hook B
+├── aphelion-project-rules-check.sh      # Hook D
+└── aphelion-deps-postinstall.sh         # Hook E
 
 src/.claude/settings.json       # Hook registration template
 ```
@@ -162,14 +200,29 @@ by the same overlay-copy mechanism as `src/.claude/rules/`.
 ### 4.2 init / update semantics
 
 `npx aphelion-agents init` (first-time setup):
-- Copies `src/.claude/settings.json` to `.claude/settings.json` (new file only; never overwrites).
-- Copies all files in `src/.claude/hooks/` to `.claude/hooks/` (recursive overlay).
+- Copies `src/.claude/settings.json` to `.claude/settings.json` (merges Aphelion hooks into existing file, or creates fresh file). Fresh installs receive the `SessionStart` block from the canonical template.
+- Copies all files in `src/.claude/hooks/` to `.claude/hooks/` (recursive overlay), including `aphelion-project-rules-check.sh`.
 - Sets execute bit (`chmod 0755`) on all `*.sh` files via `chmodHooks()`.
 
 `npx aphelion-agents update`:
-- **`settings.json`** — Protected: if `.claude/settings.json` already exists, it is preserved and a warning is printed. User customisations (added hooks, disabled entries) are not overwritten.
-- **`hooks/`** — Overlay: always re-copied from canonical. Ensures bug fixes and new patterns reach all deployed hook scripts automatically.
+- **`settings.json`** — Merge: `mergeSettingsJson()` re-applies all Aphelion-managed hook entries (identified by the `aphelion-` marker in the `command` path) while preserving all user-added or user-disabled entries. This means the `SessionStart` block for hook D **is automatically added** to existing installations on update. No manual editing required.
+- **`hooks/`** — Overlay: always re-copied from canonical. `aphelion-project-rules-check.sh` reaches existing installations automatically on the next `update`.
 - Re-runs `chmodHooks()` to restore execute bits if lost (e.g., after a Windows git clone).
+
+**For users who update manually:** If you prefer not to run `npx aphelion-agents update`, add the following to your `.claude/settings.json` under `hooks.SessionStart`:
+
+```json
+"SessionStart": [
+  {
+    "hooks": [
+      {
+        "type": "command",
+        "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/aphelion-project-rules-check.sh"
+      }
+    ]
+  }
+]
+```
 
 ### 4.3 User customisation
 
@@ -178,8 +231,8 @@ To add a custom hook without losing it on `update`:
 - Register it in `.claude/settings.json` under the relevant event section.
 
 To disable an Aphelion hook:
-- Edit `.claude/settings.json` and delete or comment out the relevant `PreToolUse` or `PostToolUse` entry.
-- The entry will not be restored by `update` (settings.json is protected after init).
+- Edit `.claude/settings.json` and delete or comment out the relevant entry.
+- The entry will not be restored by `update` (user-disabled entries are preserved by the merge logic).
 
 ---
 
@@ -192,6 +245,7 @@ To disable an Aphelion hook:
 | `git` binary not found | Hook A outputs an early-exit warning and exits 0. Commit proceeds. | Ensure `git` is on PATH inside the project environment. |
 | Execute bit missing on hook script | Claude Code cannot exec the script; hook fails with `permission denied`. Run `aphelion-agents update` to restore bits. | Re-run `npx aphelion-agents update`. |
 | Regex false positive (hook A) | Commit is blocked with pattern ID. | Use `/secrets-scan` to confirm it is a placeholder, then append `[skip-secrets-check]`. |
+| Hook D fires on `--user` global install | Advisory emitted even though project-rules.md exists globally. Hook D only checks project-local path. | Set `APHELION_SKIP_RULES_CHECK=1` in environment to silence. |
 
 ---
 

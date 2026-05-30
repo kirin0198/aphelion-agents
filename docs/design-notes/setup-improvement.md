@@ -11,14 +11,14 @@ PLANNING_DOC: docs/design-notes/setup-improvement.md
 MAINTENANCE_TIER: Minor
 PLAN: Standard
 HANDOFF_TO: developer
-CURRENT_PR: PR-5
+CURRENT_PR: PR-6
 PHASING: |
   PR-1: ① /aphelion-init必須化 (feat/aphelion-init-mandatory) — merged (#142)
   PR-2: ⑥ /aphelion-check新設 (feat/aphelion-check) — merged (#143)
   PR-3: ④⑤ 既存PJ導線+--user説明 (feat/setup-docs-existing-project) — merged (#145)
   PR-4: ② npxキャッシュ自動化 (feat/npx-cache-auto) — merged (#147)
-  PR-5: ③ PRODUCT_TYPE事前確認 (feat/rules-designer-product-type) — current
-  PR-6: ⑦ init未実行警告hook (feat/init-warning-hook) — SessionStart hook, advisory-only
+  PR-5: ③ PRODUCT_TYPE事前確認 (feat/rules-designer-product-type) — merged (#148)
+  PR-6: ⑦ init未実行警告hook (feat/init-warning-hook) — current (FINAL; #130 closeable after merge)
 DOCS_UPDATED:
   - docs/design-notes/setup-improvement.md
 ARCHITECT_BRIEF: not-needed
@@ -26,6 +26,7 @@ STATUS: in-progress
 -->
 > Last updated: 2026-05-30
 > Update history:
+>   - 2026-05-30: PR-5 merged (#148); CURRENT_PR → PR-6 (FINAL); add PR-6 design decisions appendix (課題⑦, SessionStart spec + decisions A-G)
 >   - 2026-05-30: PR-4 merged (#147); CURRENT_PR → PR-5; add PR-5 design decisions appendix (課題③)
 >   - 2026-05-28: PR-3 merged (#145); CURRENT_PR → PR-4; add PR-4 design decisions appendix (課題②)
 >   - 2026-05-17: Add sub-item ⑦ (init未実行警告hook) as PR-6; PR-1/PR-2 merged; CURRENT_PR → PR-3
@@ -448,3 +449,84 @@ Product Type: {service | tool | library | cli}
 - `discovery-flow.md` Round 2 の PRODUCT_TYPE 質問削除 → Discovery 経由の最初の
   確定経路として維持。重複質問にはならない (rules-designer は INTERVIEW_RESULT.md
   経由で受け取り、再質問しない)。
+
+---
+
+## PR-6 設計判断 (課題⑦ 着手時メモ)
+
+> 追記日: 2026-05-30
+> 着手前の analyst-core レビュー。#130 バンドルの最終 PR (PR-1〜PR-5 = #142/#143/#145/#147/#148 マージ済み)。
+> 本 PR マージ後に #130 をクローズ可能。
+
+### SessionStart event 仕様の確定 (claude-code-guide で検証済み — 再調査不要)
+
+実装着手時に確認すべきとしていた「SessionStart の Claude Code サポート状況」(課題⑦ 留意点)
+を確定させた。
+
+1. **イベント名**: `SessionStart` (大文字 S、ハイフンなし)。`settings.json` の top-level
+   `hooks.SessionStart` 配列に登録する。**matcher フィールドは無い** (PreToolUse/PostToolUse
+   を使う hook A/B/E とは異なる)。
+2. **stdin JSON**: `cwd` (絶対パス)、`source` (`startup`|`resume`|`clear`|`compact`)、
+   `session_id`、`hook_event_name`、`model` を含む。
+3. **出力**: stderr はユーザーに直接表示される。**非ゼロ exit は非ブロッキング**
+   (セッション開始をブロックできない)。stdout を JSON 形式で
+   `hookSpecificOutput.additionalContext` として返すと Claude のコンテキストに注入される
+   (本 hook では未使用 — stderr 通知のみ)。
+4. **発火タイミング**: 4 ソース (startup/resume/clear/compact) すべてで発火。`source`
+   フィールドでフィルタ可能。
+5. **留意点**: 60s タイムアウト / CLAUDE.md・memory ロードの **前** に実行 / hook は
+   subprocess で動くため `PWD` でなく JSON の `cwd` を使う。
+
+### 設計判断 (A-G)
+
+advisory-only (常に `exit 0`) は **hard requirement**。以下は推奨採用 (analyst-core 判断)。
+トレードオフのある A/C/D/E は親エージェント経由でユーザー確認に出す。
+
+| ID | 判断項目 | 採用方針 | 根拠 |
+|----|---------|---------|------|
+| A | source フィルタ | `startup` のみで警告 | `/clear`・`/compact` のたびに警告するのは冗長。`resume` は既に作業中で導入済み前提。`source != "startup"` なら静かに `exit 0` |
+| B | JSON パース | bash-only (`grep`/`sed`)、python3 非依存 | 既存 A/B/E は全て bash + grep/sed で実装 (hook E L30-33 の `command` 抽出パターンを踏襲)。依存を増やさない |
+| C | global チェック | `${cwd}/.claude/rules/project-rules.md` のみ確認 | `--user` global インストール時の `~/.claude/rules/project-rules.md` は確認しない。known limitation として hooks-policy.md に明記。HOME 展開を避け bash-only を維持 |
+| D | bypass 機構 | 環境変数 `APHELION_SKIP_RULES_CHECK=1` を PR-6 に含める | 評価利用 (お試し) 者向けに冗長さを抑制。実装コスト小。設定時は冒頭で `exit 0` |
+| E | settings.json merge | hooks-policy.md §4 に limitation 明記 (update コマンド改修は defer) | `npx aphelion-agents update` は既存 settings.json を保護 (§4.2) → 既存ユーザーは SessionStart ブロックを自動取得できない。fresh init のみ取得。手動追記手順を §4 に記載。bin/ 改修はスコープ拡大のため別途 |
+| F | hook ID | `D` | A/B/E のみ使用中、C/D は予約スキップ済み。リポジトリ全文 grep で D 未使用を確認。planning doc 課題⑦ の指定とも一致 |
+| G | 警告文 (英語) | 下記ドラフト確定 | hook stderr は英語 (hook 規約)。`[aphelion-hook:project-rules-check]` prefix を A/B/E と統一 |
+
+**G: 警告文ドラフト (developer はこの文面を実装に使う)**
+
+```
+[aphelion-hook:project-rules-check] No project-rules.md found at .claude/rules/project-rules.md.
+  Aphelion agents will fall back to defaults (Output Language: en, Co-Authored-By: enabled,
+  Remote type: github) which may not match this project.
+  Recommended: run /aphelion-init to generate project-rules.md for this repository.
+  (This is an advisory only; it never blocks session start.)
+  To silence this check, set APHELION_SKIP_RULES_CHECK=1 in your environment.
+```
+
+### exit semantics (hook D)
+
+hook E と同形 (advisory-only)。
+
+- `0` — 常に。`project-rules.md` 不在で警告を出した場合も、存在して何もしない場合も、
+  `source != startup` でスキップした場合も、`APHELION_SKIP_RULES_CHECK=1` でスキップした
+  場合もすべて `exit 0`。
+- `1` — スクリプト内部エラー (`trap ERR` で捕捉 → `exit 0` に fall-through、fail-open)。
+- `2` — **使用しない** (SessionStart は非ゼロでもブロックしないが、規約上 advisory hook は
+  ブロック意図を持たない)。
+
+### 成果物 (developer 着手リスト)
+
+| 操作 | ファイル | 内容 |
+|------|---------|------|
+| CREATE | `src/.claude/hooks/aphelion-project-rules-check.sh` | hook E をテンプレートに、bash-only。`set -euo pipefail` + `trap ERR`→exit0、stdin から `source`/`cwd` を grep/sed 抽出、`APHELION_SKIP_RULES_CHECK` 確認、`source==startup` 以外スキップ、`${cwd}/.claude/rules/project-rules.md` 不在時に G の警告を stderr 出力、常に exit 0 |
+| EDIT | `src/.claude/settings.json` | top-level `hooks.SessionStart` 配列を新設。matcher 無し。`type: command` / `command: ${CLAUDE_PROJECT_DIR}/.claude/hooks/aphelion-project-rules-check.sh` |
+| EDIT | `src/.claude/rules/hooks-policy.md` | §2 表に hook D 行追加 (Event=SessionStart, Matcher=—, Block?=No (exit 0 + stderr), Bypass=`APHELION_SKIP_RULES_CHECK=1`) / §2.4 hook D 詳細サブセクション (Purpose/Operation/Exit semantics/stderr format、A/B/E と同形式) / §3 bypass 表に D 行 / §4 distribution note に settings.json merge limitation 追記 (既存ユーザー手動追記手順) / 冒頭 update history 行追加 |
+| EDIT | `docs/wiki/en/Hooks-Reference.md` | TOC に Hook D 追加、Hook E の後に `## Hook D — aphelion-project-rules-check` セクション (Script/Event=SessionStart/Matcher=none/Activates on=session start (startup source)/Blocks=No、What it does/Bypass)。bilingual sync 必須 |
+| EDIT | `docs/wiki/ja/Hooks-Reference.md` | en と同一構造で日本語訳追加 (見出し skeleton は英語固定、本文のみ和訳)。language-rules.md §3.2 により同一 PR で必須同期 |
+
+### スコープアウト (PR-6)
+
+- `bin/` の update コマンド改修 (新 hook 検知案内) → 設計判断 E により defer。既存ユーザーへの
+  周知は hooks-policy.md §4 の手動追記手順で代替。
+- global `~/.claude` チェック → 設計判断 C により known limitation。
+- agent 数は 42 のまま変更しない (hook は agent ではない)。
