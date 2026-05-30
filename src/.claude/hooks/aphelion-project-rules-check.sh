@@ -15,7 +15,7 @@
 #
 # Known limitation: only checks ${cwd}/.claude/rules/project-rules.md.
 # Global ~/.claude/rules/project-rules.md (--user installs) is NOT checked.
-# See hooks-policy.md §2.4 for rationale.
+# See hooks-policy.md §2.3 for rationale.
 #
 # Returns:
 #   exit 0 — always (advisory-only)
@@ -46,7 +46,7 @@ INPUT="$(cat)"
 SOURCE=$(printf '%s' "$INPUT" \
   | grep -o '"source"[[:space:]]*:[[:space:]]*"[^"]*"' \
   | head -1 \
-  | sed 's/.*"source"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')
+  | sed 's/.*"source"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/' || true)
 
 # Source filter: only warn on startup. Skip resume / clear / compact silently.
 if [ "$SOURCE" != "startup" ]; then
@@ -58,7 +58,7 @@ fi
 CWD=$(printf '%s' "$INPUT" \
   | grep -o '"cwd"[[:space:]]*:[[:space:]]*"[^"]*"' \
   | head -1 \
-  | sed 's/.*"cwd"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')
+  | sed 's/.*"cwd"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/' || true)
 
 # Defensive fallback: if cwd could not be parsed from JSON, fall back to $PWD.
 # Note: SessionStart hook runs as a subprocess; PWD is less reliable than JSON cwd,
