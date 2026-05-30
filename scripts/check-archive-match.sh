@@ -2,7 +2,7 @@
 # check-archive-match.sh
 #
 # Regression test for the archive workflow anchored grep fix (#150).
-# Verifies that the whole-file anchored grep expression used by
+# Verifies that the whole-file line-start-anchored grep expression used by
 # archive-closed-plans.yml and archive-orphan-plans.yml correctly:
 #
 #   1. Matches setup-improvement.md (archived, #130): the real doc that
@@ -12,6 +12,11 @@
 #   3. Does NOT produce a false positive for a document that only contains
 #      a bare #N mention in prose (no anchor prefix).
 #   4. Does NOT match #130 when testing for issue #13 (word-boundary check).
+#   5. URL-only doc (no ISSUE_NUMBER: or header) extracts the issue number
+#      from the ISSUE_URL: field correctly (locks MAJOR-1 fix).
+#   6. This PR's own planning doc (archive-workflow-headn20-fix.md) does NOT
+#      match for n=130 (prose/table quote) but DOES match for n=150 (real
+#      header at line start) — locks the MINOR-1 line-start-anchor fix.
 #
 # Usage: bash scripts/check-archive-match.sh
 # Exit 0 on all checks passed, exit 1 on any failure with a message on stderr.
@@ -24,14 +29,21 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 fail=0
 
 # The canonical grep expression used in both archive workflows.
-# Keep this in sync with:
-#   .github/workflows/archive-closed-plans.yml   (grep -qiE form)
-#   .github/workflows/archive-orphan-plans.yml   (grep -oiE form)
+# Line-start anchors prevent prose sentences (e.g. "Issue #130 was...")
+# and table cell quotes from over-matching. The `>` prefix is REQUIRED for
+# the legacy header form — all real markers appear as `> GitHub Issue: [#N]`.
+# Keep this in sync (char-for-char) with:
+#   .github/workflows/archive-closed-plans.yml  (grep -qiE; ${n} instead of [0-9]+)
+#   .github/workflows/archive-orphan-plans.yml  (grep -oiE; [0-9]+ for extraction)
+# Anchor descriptions:
+#   ^>[[:space:]]*(GitHub Issue:|Issue)[[:space:]]*\[?#N   — legacy header (required >)
+#   ^[[:space:]]*ISSUE_NUMBER:[[:space:]]*N                — handoff YAML field
+#   ^[[:space:]]*ISSUE_URL:.*/issues/N                     — handoff URL field (greedy .*)
 match_issue() {
   local n="$1"
   local file="$2"
   grep -qiE \
-    "(GitHub Issue:|Issue) \[?#${n}\b|ISSUE_NUMBER:[[:space:]]*${n}\b|ISSUE_URL:.*/issues/${n}\b" \
+    "^>[[:space:]]*(GitHub Issue:|Issue)[[:space:]]*\[?#${n}\b|^[[:space:]]*ISSUE_NUMBER:[[:space:]]*${n}\b|^[[:space:]]*ISSUE_URL:.*/issues/${n}\b" \
     "$file"
 }
 
@@ -106,6 +118,68 @@ if match_issue 13 "${TMPFILE}"; then
   fail=1
 else
   echo "PASS: word-boundary OK — issue #13 does not match ISSUE_NUMBER: 130"
+fi
+
+# ---- Check 5: URL-only extraction (MAJOR-1 lock) --------------------------
+# A doc with ONLY an issue_url: field at line start (no ISSUE_NUMBER: and no
+# GitHub Issue: header) must still extract the correct issue number.
+# This assertion would have caught the [^[:space:]]* dead-anchor bug.
+cat > "${TMPFILE}" <<'NODOC'
+<!-- analyst-handoff
+issue_url: https://github.com/x/y/issues/7777
+issue_title: "URL-only fixture for MAJOR-1 lock"
+-->
+
+# URL-only fixture
+
+No ISSUE_NUMBER field and no GitHub Issue header above.
+Only the issue_url: line should trigger a match for #7777.
+NODOC
+
+if match_issue 7777 "${TMPFILE}"; then
+  echo "PASS: URL-only doc matches issue #7777 (MAJOR-1 lock)"
+else
+  echo "FAIL: URL-only doc did NOT match issue #7777 — MAJOR-1 fix may be broken" >&2
+  fail=1
+fi
+
+# Also verify the orphan-style extraction (grep -oiE | grep -oE '[0-9]+$' | head -n1)
+extracted=$(grep -oiE \
+  '^>[[:space:]]*(GitHub Issue:|Issue)[[:space:]]*\[?#[0-9]+|^[[:space:]]*ISSUE_NUMBER:[[:space:]]*[0-9]+|^[[:space:]]*ISSUE_URL:.*/issues/[0-9]+' \
+  "${TMPFILE}" \
+  | grep -oE '[0-9]+$' \
+  | head -n1 || true)
+if [ "${extracted}" = "7777" ]; then
+  echo "PASS: URL-only orphan-style extraction yields 7777"
+else
+  echo "FAIL: URL-only orphan-style extraction yielded '${extracted}' (expected 7777)" >&2
+  fail=1
+fi
+
+# ---- Check 6: Prose-overmatch guard (MINOR-1 lock) -------------------------
+# This PR's own planning doc quotes #130 inside table cells and prose. With
+# the old un-anchored expression those lines would over-match. The new line-
+# start anchors prevent this. The doc also owns issue #150 via a real header
+# and handoff fields at line start — that must still match.
+PLANNING_DOC="${REPO_ROOT}/docs/design-notes/archive-workflow-headn20-fix.md"
+if [ ! -f "${PLANNING_DOC}" ]; then
+  echo "SKIP (file not found): ${PLANNING_DOC}" >&2
+else
+  # n=130: prose/table quotes only — must NOT match
+  if match_issue 130 "${PLANNING_DOC}"; then
+    echo "FAIL: archive-workflow-headn20-fix.md over-matched #130 (MINOR-1 not fixed)" >&2
+    fail=1
+  else
+    echo "PASS: archive-workflow-headn20-fix.md does NOT match #130 (prose quotes only)"
+  fi
+
+  # n=150: real header at line 2 — MUST match
+  if match_issue 150 "${PLANNING_DOC}"; then
+    echo "PASS: archive-workflow-headn20-fix.md matches #150 (real header)"
+  else
+    echo "FAIL: archive-workflow-headn20-fix.md should match #150 but did NOT" >&2
+    fail=1
+  fi
 fi
 
 # ---- Summary ---------------------------------------------------------------

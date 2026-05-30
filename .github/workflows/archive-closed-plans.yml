@@ -75,7 +75,16 @@ jobs:
           for n in "${referenced_issues[@]}"; do
             for f in docs/design-notes/*.md; do
               [ -f "$f" ] || continue
-              if grep -qiE "(GitHub Issue:|Issue) \[?#${n}\b|ISSUE_NUMBER:[[:space:]]*${n}\b|ISSUE_URL:.*/issues/${n}\b" "$f"; then
+              # Canonical anchored expression — line-start anchors prevent prose
+              # sentences (e.g. "Issue #130 was..." or table cell quotes) from
+              # over-matching. The `>` prefix is required for the legacy header
+              # form since all real markers appear as `> GitHub Issue: [#N]`.
+              # Char-for-char identical to orphan.yml (modulo ${n}/[0-9]+) and
+              # check-archive-match.sh.
+              #   1. ^>[[:space:]]*(GitHub Issue:|Issue)   — legacy header (required >)
+              #   2. ^[[:space:]]*ISSUE_NUMBER:            — handoff YAML field
+              #   3. ^[[:space:]]*ISSUE_URL:.*/issues/N    — handoff URL field (greedy .*)
+              if grep -qiE "^>[[:space:]]*(GitHub Issue:|Issue)[[:space:]]*\[?#${n}\b|^[[:space:]]*ISSUE_NUMBER:[[:space:]]*${n}\b|^[[:space:]]*ISSUE_URL:.*/issues/${n}\b" "$f"; then
                 target="docs/design-notes/archived/$(basename "$f")"
                 git mv "$f" "$target"
                 echo "  archived: $f -> $target (issue #$n)"
