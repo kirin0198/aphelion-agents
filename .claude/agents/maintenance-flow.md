@@ -231,7 +231,7 @@ After Phase 4 (security-auditor) completes for the Major plan, generate `MAINTEN
 - Additional notes: {considerations for delivery-flow execution}
 
 ## PRODUCT_TYPE
-{inherit from existing SPEC.md PRODUCT_TYPE}
+{Resolve via: SPEC.md > project-rules.md (`Product Type:` line under `## Project Overview`) > default `service`}
 ```
 
 ---

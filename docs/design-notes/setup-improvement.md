@@ -11,21 +11,22 @@ PLANNING_DOC: docs/design-notes/setup-improvement.md
 MAINTENANCE_TIER: Minor
 PLAN: Standard
 HANDOFF_TO: developer
-CURRENT_PR: PR-4
+CURRENT_PR: PR-5
 PHASING: |
   PR-1: ① /aphelion-init必須化 (feat/aphelion-init-mandatory) — merged (#142)
   PR-2: ⑥ /aphelion-check新設 (feat/aphelion-check) — merged (#143)
-  PR-3: ④⑤ 既存PJ導線+--user説明 (feat/setup-docs-existing-project) — bilingual sync required
-  PR-4: ② npxキャッシュ自動化 (feat/npx-cache-auto) — zero-dependency, use node:https
-  PR-5: ③ PRODUCT_TYPE事前確認 (feat/rules-designer-product-type)
+  PR-3: ④⑤ 既存PJ導線+--user説明 (feat/setup-docs-existing-project) — merged (#145)
+  PR-4: ② npxキャッシュ自動化 (feat/npx-cache-auto) — merged (#147)
+  PR-5: ③ PRODUCT_TYPE事前確認 (feat/rules-designer-product-type) — current
   PR-6: ⑦ init未実行警告hook (feat/init-warning-hook) — SessionStart hook, advisory-only
 DOCS_UPDATED:
   - docs/design-notes/setup-improvement.md
 ARCHITECT_BRIEF: not-needed
-STATUS: complete
+STATUS: in-progress
 -->
-> Last updated: 2026-05-28
+> Last updated: 2026-05-30
 > Update history:
+>   - 2026-05-30: PR-4 merged (#147); CURRENT_PR → PR-5; add PR-5 design decisions appendix (課題③)
 >   - 2026-05-28: PR-3 merged (#145); CURRENT_PR → PR-4; add PR-4 design decisions appendix (課題②)
 >   - 2026-05-17: Add sub-item ⑦ (init未実行警告hook) as PR-6; PR-1/PR-2 merged; CURRENT_PR → PR-3
 >   - 2026-05-17: Inject analyst-handoff block; update agent count 39→42; all PRs developer-direct (no architect)
@@ -267,3 +268,183 @@ Quick Startが新規プロジェクト前提の記述中心。既存プロジェ
 
 - npm registry への publish (パッケージ private 解除) — 別議論。今回の PR では扱わない。
 - `~/.npm/_npx/` を直接削除する処理 — npm の内部構造に依存しすぎる。`npm cache clean --force` 経由のみ。
+
+---
+
+## PR-5 設計判断 (課題③ 着手時メモ)
+
+> 追記日: 2026-05-30
+> 着手前の analyst-core レビューにより、現状の PRODUCT_TYPE フローを再確認し、
+> 「rules-designer で質問追加」というメモの正確な作業範囲を以下に明文化する。
+
+### 現状フローの再確認
+
+PRODUCT_TYPE は現状以下の経路で決まる:
+
+1. **Discovery Flow 経由**: `interviewer` が triage Round 2 で質問 → `INTERVIEW_RESULT.md`
+   と `DISCOVERY_RESULT.md` に記録 → `spec-designer` が `SPEC.md` に転記。
+   `rules-designer` は INTERVIEW_RESULT.md から PRODUCT_TYPE を抽出する (現行 L33)。
+2. **既存リポジトリ経由**: `codebase-analyzer` が指標 (バイナリ/ライブラリ構造) から
+   推測 → `SPEC.md` に記録 (codebase-analyzer.md L299-310)。
+3. **フローオーケストレーターの読み取り**: 各 flow は `DISCOVERY_RESULT.md` /
+   `DELIVERY_RESULT.md` / `SPEC.md` から PRODUCT_TYPE を読む。`project-rules.md`
+   からは現状 **読んでいない** (`grep -rn "PRODUCT_TYPE" .claude/` で確認済み;
+   project-rules.md 参照は 0 件)。
+
+### 課題の本質再定義
+
+メモの「インストール直後にユーザーが PRODUCT_TYPE を意識しないまま `/discovery-flow`
+を起動できる」は、より厳密には次のケースを指す:
+
+- **standalone `/aphelion-init` 実行時**: INTERVIEW_RESULT.md が存在せず、
+  rules-designer が PRODUCT_TYPE を抽出する経路がない。Discovery を経由しない
+  ユーザー (既存 PJ への aphelion 後付け導入など) では PRODUCT_TYPE が永続的に
+  記録されない。
+- 結果: maintenance-flow / operations-flow が SPEC.md 経由で PRODUCT_TYPE を読もうと
+  しても、SPEC.md がまだ無いケースでフォールバック先が無く、暗黙的に `service`
+  扱いになるか、エラー停止する。
+
+→ 解決策: **`project-rules.md` に PRODUCT_TYPE を canonical かつ long-lived な
+場所として記録する**。Discovery 経由で確定済みの値があれば rules-designer は
+追加質問せずに引き継ぎ、無ければ rules-designer が単独で質問する。
+
+### 設計判断 A: project-rules.md 内の配置
+
+**採用**: 既存の `## Project Overview` セクションに `Product Type:` 行を追加する。
+
+```markdown
+## Project Overview
+
+{1–3 line summary from INTERVIEW_RESULT.md}
+
+Product Type: {service | tool | library | cli}
+```
+
+- 採用理由: Project Overview はプロジェクトの根幹属性を記す自然な意味的配置。
+  新規セクションを増やすより既存構造への組み込みが望ましい。
+- 不採用案: 専用 `## Product` セクションを新設する → セクション増殖を避けるため却下。
+- 不採用案: `## Tech Stack` 内に含める → PRODUCT_TYPE は tech stack より上位概念なので不適切。
+
+### 設計判断 B: 既存 project-rules.md に PRODUCT_TYPE が無い場合のフォールバック
+
+**採用**: 読み手 (各 flow orchestrator) は以下の優先順位で PRODUCT_TYPE を解決する。
+
+```
+1. DISCOVERY_RESULT.md (Discovery Flow セッション中のみ)
+2. SPEC.md
+3. project-rules.md (新規追加)
+4. default: service (フルパイプライン許容で最も安全)
+```
+
+- 採用理由: 既存読み取り経路 (1, 2) を維持しつつ、3 を低位フォールバックとして
+  追加。既存 PJ で project-rules.md にも未記載のレガシー状態でも、`service`
+  デフォルトでフルパイプラインが動くため破壊的変更にならない。
+- 不採用案: 「project-rules.md に PRODUCT_TYPE が無ければエラー停止」→ 既存ユーザーの
+  プロジェクトを破壊するため不採用。
+
+### 設計判断 C: 自動検出 vs 質問のみ
+
+**採用**: 質問のみ (pure ask-only)。
+
+- 採用理由: rules-designer は対話エージェントであり、自動検出ロジックを追加すると
+  責務が膨らむ。`codebase-analyzer` が既に自動推測機能を持っており、機能重複を避ける。
+- 例外: INTERVIEW_RESULT.md が存在し PRODUCT_TYPE が抽出可能な場合は、それを
+  デフォルト選択肢として確認 (現行の "Skip question if already determined" パターンに
+  従う)。
+- 推奨デフォルト (INTERVIEW_RESULT.md 無し時): `service`。最も一般的でフル
+  パイプラインが動くため。
+
+### 設計判断 D: フローオーケストレーター側の plumbing 範囲
+
+**採用**: ドキュメント追記のみ。個別 orchestrator ファイルへの読み取りロジック
+追加は最小限。
+
+具体的には次のスコープ:
+
+| ファイル | 変更内容 |
+|---|---|
+| `.claude/agents/rules-designer.md` | Round 0 を "Project Overview" に拡張し PRODUCT_TYPE 質問を追加 / Output template に Product Type 行を追加 / Skip 条件 (INTERVIEW_RESULT.md で既に決定済みの場合) を明記 |
+| `.claude/rules/aphelion-overview.md` | "Branching by Product Type" 表の直下に "PRODUCT_TYPE Resolution Order" 小節を追加し、4 段フォールバックを明文化 |
+| `.claude/agents/maintenance-flow.md` | "## PRODUCT_TYPE" セクション (L233) のソース順を「SPEC.md → project-rules.md → default service」に更新 |
+| `.claude/agents/operations-flow.md` | startup validation (L39) の PRODUCT_TYPE 確認に「DELIVERY_RESULT.md に無い場合は project-rules.md を fallback として読む」を追記 |
+
+- **変更しないファイル**:
+  - `interviewer.md` — Discovery セッションで PRODUCT_TYPE を取得する責務は維持
+    (Discovery Flow は最も早い PRODUCT_TYPE 確定経路として残す)
+  - `discovery-flow.md` — triage Round 2 の質問は維持 (ただし rules-designer が
+    project-rules.md に書き込む経路ができる)
+  - `delivery-flow.md` — 現行は DISCOVERY_RESULT.md / SPEC.md 経由で読んでおり、
+    Discovery 経由のケースでは PRODUCT_TYPE が必ず手に入るため fallback 不要
+  - `codebase-analyzer.md` — 自動推測機能はそのまま維持。書き込み先に
+    project-rules.md を追加するかは PR スコープ外 (codebase-analyzer は
+    SPEC.md / ARCHITECTURE.md 専門エージェントとする原則を維持)
+  - 残りの orchestrator (`doc-flow.md` 等) — PRODUCT_TYPE 直接参照なし
+
+- 採用理由: 課題③ の本質は「rules-designer が PRODUCT_TYPE を ask & record する」
+  ことであり、全 orchestrator を書き換える話ではない。最小修正で意味のある
+  改善を達成する。
+- 不採用案: 全 5 orchestrator に project-rules.md からの読み取りコードを追加する
+  → 過剰スコープ。実害がある経路 (Discovery を経由しない maintenance-flow と
+  operations-flow standalone 実行) のみ修正する。
+
+### rules-designer 修正詳細
+
+**Round 0 を "Project Overview" に拡張** (現行は "Repository" 単独質問):
+
+```json
+{
+  "questions": [
+    {
+      "question": "What type of artifact will this project produce?",
+      "header": "Product Type",
+      "options": [
+        {"label": "service (recommended)", "description": "Network service: Web API, web app, microservice. Operations Flow will run."},
+        {"label": "tool", "description": "Locally running utility (GUI / TUI). Operations Flow skipped."},
+        {"label": "library", "description": "Library / SDK consumed by other code. Operations Flow skipped."},
+        {"label": "cli", "description": "Command-line tool. Operations Flow skipped."}
+      ],
+      "multiSelect": false
+    },
+    {
+      "question": "Where will the project's remote repository be hosted?",
+      "header": "Remote repository",
+      "options": [
+        {"label": "GitHub (recommended)", "description": "GitHub.com or GHES — uses gh CLI for PR/issue ops"},
+        {"label": "GitLab", "description": "..."},
+        {"label": "Gitea / Forgejo", "description": "..."},
+        {"label": "local-only", "description": "..."},
+        {"label": "none", "description": "..."}
+      ],
+      "multiSelect": false
+    }
+  ]
+}
+```
+
+- 2 質問を 1 つの `AskUserQuestion` バッチで提示する (Aphelion の max 4 questions
+  ルールに収まる)。
+- PRODUCT_TYPE 質問はスキップ条件: INTERVIEW_RESULT.md / POC_RESULT.md /
+  既存 SPEC.md のいずれかに PRODUCT_TYPE が記載されている場合、その値を提示して
+  確認するのみ (新規質問なし)。
+- Output Template の `## Project Overview` セクションに `Product Type:` 行を
+  追加 (template L266 周辺)。
+
+### バックワード互換性
+
+- 既存プロジェクトの `project-rules.md` には Product Type 行が無い。これは
+  設計判断 B のフォールバック (default: service) で吸収される。
+- ユーザーが `npx aphelion-agents update` を実行しても project-rules.md は
+  保護対象 (`hooks-policy.md` § 4.2 と同様の方針) のため、自動マイグレーション
+  は行わない。次回 `/aphelion-init` 実行時に明示的に再構築される。
+
+### スコープアウト
+
+- `codebase-analyzer` が PRODUCT_TYPE を project-rules.md にも書き込むようにする
+  → 別 PR で検討。現行は SPEC.md 専門。
+- 既存 project-rules.md への自動マイグレーションコマンド → 別 PR (`/aphelion-check`
+  で警告を出すのが妥当か検討)。
+- 全 flow orchestrator への project-rules.md PRODUCT_TYPE 読み取りロジック追加
+  → 設計判断 D により対象を 2 ファイルに絞る。
+- `discovery-flow.md` Round 2 の PRODUCT_TYPE 質問削除 → Discovery 経由の最初の
+  確定経路として維持。重複質問にはならない (rules-designer は INTERVIEW_RESULT.md
+  経由で受け取り、再質問しない)。

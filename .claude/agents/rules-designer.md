@@ -43,7 +43,8 @@ If `INTERVIEW_RESULT.md` does not exist, prompt execution of `interviewer`.
 ### Step 1: Extract Context from Preceding Artifacts
 
 Read available artifacts and extract:
-- PRODUCT_TYPE and HAS_UI
+- PRODUCT_TYPE (resolution order: DISCOVERY_RESULT.md → SPEC.md → project-rules.md `## Project Overview` → default `service`)
+- HAS_UI
 - Language/framework preferences (if mentioned)
 - External dependencies and integration requirements
 - Performance/security constraints
@@ -54,11 +55,33 @@ Read available artifacts and extract:
 Determine project rules through a series of `AskUserQuestion` interactions.
 Ask only what cannot be inferred from artifacts. Skip questions where the answer is already clear.
 
-**Round 0: Repository (1 question)**
+**Round 0: Product Type + Repository (2 questions in 1 batch)**
+
+**Skip condition:** If PRODUCT_TYPE is already present in any of the following sources (checked in order), skip the PRODUCT_TYPE question and show a one-line confirmation summary instead:
+1. `INTERVIEW_RESULT.md` — `PRODUCT_TYPE:` field
+2. `POC_RESULT.md` — `PRODUCT_TYPE:` field
+3. `SPEC.md` (`## Product Type` section or `Product Type:` field)
+
+> Note: this skip list intentionally differs from the orchestrator-time resolution chain in Step 1 (`DISCOVERY_RESULT.md > SPEC.md > project-rules.md > default service`). rules-designer runs *during* Discovery Flow — before `DISCOVERY_RESULT.md` is finalized — so the upstream artifacts that may already carry PRODUCT_TYPE at this point are `INTERVIEW_RESULT.md` / `POC_RESULT.md` / `SPEC.md`, not the post-Discovery handoff file.
+
+If PRODUCT_TYPE is already known, display: `"Product Type: {value} (from {source} — skipping question)"` and ask only the Repository question.
+
+If PRODUCT_TYPE is not already known, ask both questions in a single `AskUserQuestion` call:
 
 ```json
 {
   "questions": [
+    {
+      "question": "What type of product is this project?",
+      "header": "Product type",
+      "options": [
+        {"label": "service (recommended)", "description": "Web service / API / SaaS — full pipeline including Operations Flow"},
+        {"label": "tool", "description": "CLI tool, developer utility, or standalone script — Operations Flow skipped"},
+        {"label": "library", "description": "Reusable library / SDK / package — Operations Flow skipped"},
+        {"label": "cli", "description": "Dedicated CLI application — Operations Flow skipped"}
+      ],
+      "multiSelect": false
+    },
     {
       "question": "Where will the project's remote repository be hosted?",
       "header": "Remote repository",
@@ -75,7 +98,8 @@ Ask only what cannot be inferred from artifacts. Skip questions where the answer
 }
 ```
 
-Record the answer as `## Repository` → `Remote type:` in the generated project-rules.md.
+Record the PRODUCT_TYPE answer as `Product Type:` under `## Project Overview` in project-rules.md.
+Record the repository answer as `## Repository` → `Remote type:` in project-rules.md.
 
 **Round 1: Tech Stack Basics (up to 4 questions)**
 
@@ -267,6 +291,8 @@ Adapt the template below based on the determined language/framework. Omit sectio
 
 {1–3 line summary from INTERVIEW_RESULT.md}
 
+Product Type: {service|tool|library|cli}
+
 ## Repository
 
 Remote type: {github | gitlab | gitea | local-only | none}
@@ -412,7 +438,7 @@ When generating the project-rules.md, apply the following defaults based on the 
 ## Output on Completion (Required)
 
 Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
-Agent-specific fields: `LANGUAGE`, `FRAMEWORK`, `COMMIT_STYLE` (conventional|freeform|custom), `BRANCH_STRATEGY` (github-flow|git-flow|trunk-based).
+Agent-specific fields: `PRODUCT_TYPE` (service|tool|library|cli), `LANGUAGE`, `FRAMEWORK`, `COMMIT_STYLE` (conventional|freeform|custom), `BRANCH_STRATEGY` (github-flow|git-flow|trunk-based).
 See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
 NEXT: Light/Standard/Full plan → `scope-planner`; otherwise → `done`.
 
@@ -421,6 +447,7 @@ NEXT: Light/Standard/Full plan → `scope-planner`; otherwise → `done`.
 ## Completion Conditions
 
 - [ ] Read INTERVIEW_RESULT.md and extracted project context
+- [ ] PRODUCT_TYPE recorded in project-rules.md (under `## Project Overview` → `Product Type:`)
 - [ ] Interactively determined rules with the user via AskUserQuestion
 - [ ] Generated `.claude/rules/project-rules.md`
 - [ ] Presented the generated rules and obtained user approval

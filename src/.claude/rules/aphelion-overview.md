@@ -1,6 +1,6 @@
 # Aphelion Workflow Overview
 
-> **Last updated**: 2026-05-16
+> **Last updated**: 2026-05-30
 > **Auto-loaded**: Yes — placed in `.claude/rules/`, loaded by Claude Code on every session start
 > See git log for change history.
 
@@ -49,6 +49,18 @@ Major handoff targets Delivery Flow as a pre-processing stage.
 |-------------|-----------|----------|-------------|------------|-----|
 | `service` | Run | Run | Run (for maintenance) | Run | Run (on demand) |
 | `tool` / `library` / `cli` | Run | Run | Run (for maintenance) | **Skip** | Run (user-manual / ops-manual auto-skip) |
+
+### PRODUCT_TYPE Resolution Order
+
+Agents that need PRODUCT_TYPE resolve it using the following fallback chain (highest priority first):
+
+1. `DISCOVERY_RESULT.md` — `PRODUCT_TYPE: ...` field (set by discovery-flow)
+2. `SPEC.md` — `## Product Type` section or `Product Type:` field (set by spec-designer)
+3. `.claude/rules/project-rules.md` — `## Project Overview` → `Product Type:` line (set by rules-designer)
+4. Default: `service`
+
+This order ensures backward compatibility: existing projects without a `Product Type:` line in
+project-rules.md will default to `service`, preserving current behavior.
 
 ---
 

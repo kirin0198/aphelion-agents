@@ -37,6 +37,7 @@ Verify the following before starting work:
 1. Does `DELIVERY_RESULT.md` exist? If not, prompt the user to complete Delivery Flow first
 2. Validate required fields of `DELIVERY_RESULT.md`:
    - Is `PRODUCT_TYPE` set to `service`? If `tool` / `library` / `cli`, report that Operations is not needed and stop
+     If `DELIVERY_RESULT.md` lacks `PRODUCT_TYPE`, fall back to: `project-rules.md` → `## Project Overview` → `Product Type:` line. If still absent, default to `service`.
    - "Artifacts" section (must include SPEC.md and ARCHITECTURE.md status)
    - "Tech stack" section (must not be empty)
    - "Test results" section
