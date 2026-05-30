@@ -95,76 +95,80 @@ Issue #146 はPR #145（#130 PR-3）のレビュー中にINFO-001として浮上
 
 ## §5 Analysis Results (analyst-core)
 
-> Updated: 2026-05-31 (deep analysis + approved approach for #146)
+> Updated: 2026-05-31 (deep analysis for #146 — verified current file state)
 
 ### 分類
 
-- **Issue type**: docs / wiki 整合性（feature ではなく docs 寄りの軽微な構造修正）
-- **重大度**: 低（CI 破壊なし、`language-rules.md` §3.3 の潜在的違反の解消）
+- **Issue type**: docs / wiki 整合性（feature ではなく docs 寄りの軽微な構造確認）
+- **重大度**: 低（CI 破壊なし、`language-rules.md` §3.3 整合性の検証）
 
-### 見出し構造の精査結果
+### 重要: 承認時の前提と実ファイル状態の食い違い
 
-intake §1 の暫定調査（「両ファイルともすでに H2 で一致」）は **誤り** であった。
-アンカー付き見出し grep（`^#{1,4} `）で両ファイルを精査した結果：
+resume 時の承認決定は「EN = `### What to Expect`（H3）/ JA = `## 典型的なセッションの進み方`（H2）」
+という #146 報告当時の前提に基づき、「JA を H3 に降格して EN canonical（H3）に揃える」というもの
+だった。しかし analyst-core がアンカー付き grep（`^#{1,4} `）で**実ファイルを精査した結果、
+この前提は現状と一致しない**ことが判明した。
+
+### 実ファイル精査結果（2026-05-31 時点・検証済み）
 
 - **EN `docs/wiki/en/Getting-Started.md`**:
-  - L287 `## Command Reference`（H2）
-  - その配下に H3 が4つネスト: `### Triage Questions`（L314） / `### Phase Approvals`（L318） /
+  - L312 `## What to Expect: A Typical Session`（**H2**）
+  - その配下に H3 が4つ: `### Triage Questions`（L314） / `### Phase Approvals`（L318） /
     `### Artifact Files`（L325） / `### Session Resume`（L349）
-  - 「A Typical Session」相当の内容は **トップレベル見出しとして独立していない**
-    （Command Reference 配下の構造に統合されている。EN canonical 構造）
+  - `## ` 見出し総数 = **11**
 - **JA `docs/wiki/ja/Getting-Started.md`**:
-  - L270 `## コマンドリファレンス`（H2）
-  - L295 `## 典型的なセッションの進み方`（**H2 / トップレベル独立**）← これが非対称の根因
-  - その配下に H3 が4つ: `### トリアージ質問` / `### フェーズ承認` / `### 成果物ファイル` /
-    `### セッション再開`
+  - L295 `## 典型的なセッションの進み方`（**H2**）
+  - その配下に H3 が4つ: `### トリアージ質問`（L297） / `### フェーズ承認`（L301） /
+    `### 成果物ファイル`（L308） / `### セッション再開`（L331）
+  - `## ` 見出し総数 = **11**
 
-→ JA だけが「典型的なセッションの進み方」をトップレベル H2 として持つため、
-EN/JA の `## ` 見出し数と見出しレベル位置（lockstep）が一致していない。
-これは `language-rules.md` §3.3 違反の確定事象である。
+→ **EN・JA とも当該セクションは既に H2 であり、H2 見出し数（各11）も見出しレベル・位置も
+完全に lockstep している。** intake §1 の「両ファイルともすでに H2 で一致」という観察が正しく、
+非対称はおそらく PR #145 マージ（commit ae04f45 系）で既に解消済みである。
+`language-rules.md` §3.3 違反は **現時点では存在しない**。
 
-## §6 Approach (Approved 2026-05-31)
+### 承認済みアプローチを実行できない理由
 
-**承認済みアプローチ**: JA の `## 典型的なセッションの進み方`（H2）を `### 典型的なセッションの進み方`（H3）へ
-**降格**し、EN canonical の「Command Reference 配下にネストする H3 構造」へ揃える。
+承認された「JA を H3 に降格」を現状に適用すると、JA の H2 が 11→10 となり、
+**EN（11）との `## ` 見出し数パリティをむしろ破壊する**。これは #146 の目的（lockstep 維持）に
+真っ向から反するため、analyst-core はこのアプローチをそのまま実装へ引き渡さない。
 
-- 根拠: `language-rules.md` §3.1（**English canonical**）。EN を変更せず JA を EN へ追随させる。
-- 効果:
-  - `## ` 見出し数のパリティ達成（EN = 6 / JA = 6）
-  - 見出しレベル・位置の lockstep 達成（§3.3 充足）
-- 変更範囲: **`docs/wiki/ja/Getting-Started.md` の単一行のみ**（L295 の `## ` → `### `）。
-  EN ファイルは無変更。
-- 注意点（developer 向け）:
-  - 目次（`## 目次`）に「典型的なセッションの進み方」への明示リンク行があれば、
-    降格後の構造に合わせてインデント/レベル整合を確認する（現状フラットリストなら変更不要）。
-  - 降格に伴い L295 の前後ブロック（本文・コードフェンス）は移動・改変しない。見出し記号のみ変更。
+## §6 Approach (revised after verification)
+
+**修正後アプローチ**: wiki への見出し変更は行わない。#146 は過去コミットで既に解消済み
+（already-fixed）であることを実装担当が再検証し、問題がなければ #146 をクローズする。
+
+- 根拠: 実ファイルが既に EN/JA 完全 lockstep（各11 H2、同位置、同 H3 構造）。
+- `language-rules.md` §3.1（English canonical）/ §3.3（lockstep）はいずれも現状で充足。
+- 変更範囲: **wiki ファイルへの変更なし**。
 
 ### 検討したが不採用の代替案
 
-- **EN を H2 に昇格して JA に合わせる**: §3.1 の English canonical 原則に反するため不採用。
+- **承認どおり JA を H3 に降格**: 現状のパリティを破壊する（JA=10 / EN=11）ため不採用。
+  承認の前提（EN=H3）が実ファイル（EN=H2）と食い違っていたことが理由。
+- **EN・JA とも H3 に降格して Command Reference 配下にネスト**: 両ファイル変更が必要で、
+  現状問題のない構造を作り替えることになり、低優先 #146 のスコープを超える。必要なら別途検討。
 
 ## §7 Document Changes
 
-- **SPEC.md**: N/A — 本リポジトリ自身の wiki コンテンツに対する変更であり、
-  プロダクトの SPEC.md は存在せず適用されない（`artifact_paths` も SPEC: missing）。
+- **SPEC.md**: N/A — 本リポジトリ自身の wiki コンテンツであり、プロダクトの SPEC.md は
+  存在せず適用されない（`artifact_paths` も SPEC: missing）。
 - **UI_SPEC.md**: N/A（同上、UI_SPEC: missing）。
 - **ARCHITECTURE.md**: N/A（同上、ARCHITECTURE: missing）。
-- **対象 wiki ファイル**:
-  - `docs/wiki/ja/Getting-Started.md`: L295 の見出しを H2 → H3 へ降格（developer が実装）
-  - `docs/wiki/en/Getting-Started.md`: 無変更（canonical）
+- **対象 wiki ファイル**: 変更なし（EN・JA とも現状で lockstep 充足）。
 
-## §8 Handoff Brief (→ implementation)
+## §8 Handoff Brief (→ developer / verify-and-close)
 
-これは単一行の wiki 見出し降格という trivial な docs 変更である。設計判断は本ドキュメントで
-確定済みのため、architect による新規設計は不要。実装担当（developer）が以下を実行する：
+これは「現状確認の結果、修正不要」と判明した docs issue である。architect による新規設計は不要。
+実装担当（developer）が以下を実行する：
 
-1. `docs/wiki/ja/Getting-Started.md` L295 `## 典型的なセッションの進み方` → `### 典型的なセッションの進み方`
-2. bilingual 検証（`language-rules.md` §3.2/§3.3）:
-   - EN/JA の `## ` 見出し数が一致（EN = 6 / JA = 6）することを確認
-   - 見出しレベル・位置が lockstep であることを確認
-   - 可能であれば `scripts/check-readme-wiki-sync.sh`（または相当の wiki sync チェック）を実行
-3. EN ファイルは変更しない（English canonical）
-4. PR は両ファイルではなく JA 単一ファイルの変更となるが、これは EN を canonical として
-   JA を追随させる §3.1 準拠の修正であり、bilingual sync ルールに反しない
-   （EN 側は既に目標構造のため変更不要）
-5. PR body に `Closes #146` を含める
+1. EN/JA の `## ` 見出し数が一致（各 11）し、見出しレベル・位置が lockstep であることを再検証する
+   （`scripts/check-readme-wiki-sync.sh` または相当の wiki sync チェックがあれば実行）。
+2. 検証が通れば wiki への変更を行わず、#146 を「already fixed（PR #145 系で解消済み）」として
+   クローズすることを推奨する。
+3. 万一再検証で非対称が再発していた場合のみ、English canonical（§3.1）に従い JA を EN 構造へ
+   追随させる（その場合も EN=JA の `## ` 数一致を満たすこと）。
+
+> Note: resume 時の承認は #146 報告当時の前提（EN=H3）に基づいていたが、実ファイル検証で
+> 前提が覆ったため、analyst-core はパリティを破壊しない方向（修正不要・verify-and-close）で
+> 確定した。最終クローズ判断はユーザー / developer に委ねる。
