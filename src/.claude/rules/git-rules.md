@@ -1,7 +1,8 @@
 # Git Rules
 
-> Last updated: 2026-04-26
+> Last updated: 2026-05-30
 > Update history:
+>   - 2026-05-30: add Planning-tier legacy-resume responsibility matrix (#141)
 >   - 2026-04-26: Add Repository / Startup Probe / Branch & PR Strategy / Behavior by Remote Type sections (#73)
 
 ## Commit Granularity
@@ -163,6 +164,29 @@ agents open pull requests.
 - **Implementation-tier**: `developer`, `scaffolder`, etc. Reuse the branch
   created by `analyst-intake` (or create one if invoked standalone), commit
   implementation code, open the PR.
+
+### Planning-tier Responsibility Matrix (analyst chain)
+
+Three mutually-exclusive cases, each with a defined owner for each git operation.
+**The caller (analyst.md orchestrator, flow orchestrator, or main session) performs
+NO git operations in any case.** Branch creation always belongs to `analyst-intake`.
+
+| Case | Detection condition | Branch creation | Initial commit | Handoff block injection |
+|------|---------------------|-----------------|----------------|-------------------------|
+| **Fresh** | No planning doc exists | `analyst-intake` (from `main`) | `analyst-intake` | `analyst-intake` (writes block at doc creation) |
+| **Resume (post-Pattern B)** | Planning doc exists AND `<!-- analyst-handoff -->` block present | (branch already exists; reused by `analyst-core`) | `analyst-core` (§5-8 additions) | (already present; no injection needed) |
+| **Legacy Resume** | Planning doc exists AND NO `<!-- analyst-handoff -->` block AND `> GitHub Issue:` line present | `analyst-intake` (injection-only mode, always from `main` regardless of caller's current branch) | `analyst-intake` (injected block commit) | `analyst-intake` (injects block into existing doc) |
+
+**Notes:**
+- The `analyst.md` top-level orchestrator detects which case applies (via `Glob` +
+  `Grep`) and routes to the appropriate sub-agent or resume path.
+- For Legacy Resume, `analyst.md` spawns `analyst-intake` in injection-only mode
+  (passing `legacy_planning_doc`, `existing_issue_url`, `existing_issue_number`).
+  The existing planning doc's §1-4 content is reused; no intake questions are re-asked
+  and `gh issue create` is NOT re-run.
+- Flow orchestrators and main sessions MUST NOT perform git operations on behalf of
+  the analyst chain. They spawn `analyst-intake` directly (fresh or injection-only),
+  receive `HANDOFF_PAYLOAD`, then spawn `analyst-core`.
 
 > For agent-specific branch name derivation (e.g., slug from TASK.md or
 > ARCHITECT_BRIEF), see the individual agent definition file.
