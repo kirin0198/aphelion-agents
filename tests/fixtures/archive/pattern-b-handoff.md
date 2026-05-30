@@ -8,10 +8,11 @@ issue_title: "test: Pattern B regression fixture for archive workflow"
 issue_type: bug
 intake_summary: |
   Regression fixture that reproduces the head -n 20 window bug.
-  The analyst-handoff block here is ~24 lines, pushing the
-  > GitHub Issue: [#9999] marker past line 20 (to around line 35).
-  Both the ISSUE_NUMBER: field inside this block (line ~6) and the
-  legacy header line (~35) must be detected by the archive workflows.
+  The analyst-handoff block is intentionally long (~24 lines total),
+  so the legacy header line is pushed to approximately line 28 —
+  past the old head-n-20 scan window. Workflows must detect the issue
+  number via the ISSUE_NUMBER field above (line 6) even when the
+  legacy header cannot be reached by a head-n-20 window.
 proposals_source: null
 repo_state: github
 artifact_paths:
@@ -29,20 +30,21 @@ output_language: en
 
 # Pattern B Handoff Regression Fixture
 
-This file is a minimal stub that reproduces the `head -n 20` bug described in
-GitHub Issue #150. The `<!-- analyst-handoff -->` block above is intentionally
-~24 lines long so that the `> GitHub Issue: [#9999]` marker is pushed past
-line 20 (it appears at approximately line 35 in this file).
+This file is a minimal stub that reproduces the `head -n 20` bug (issue #150).
+The `<!-- analyst-handoff -->` block above is intentionally ~24 lines long so
+that the legacy header is pushed to line 27, past the old head-n-20 window.
 
 ## Purpose
 
 Prove that the fixed whole-file anchored grep in `archive-closed-plans.yml`
 and `archive-orphan-plans.yml` correctly detects issue **#9999** via:
 
-1. `ISSUE_NUMBER: 9999` inside the handoff block (line ~6 above)
-2. `> GitHub Issue: [#9999]` legacy header (line ~35 above)
+1. `ISSUE_NUMBER: 9999` inside the handoff block (line 6 above)
+2. `> GitHub Issue: [#9999]` legacy header (line 27 above)
 
-The old `head -n 20 | grep -qE ...` expression would have missed both.
+The old `head -n 20 | grep -qE ...` expression finds neither: the
+`ISSUE_NUMBER:` token lacks the `#` prefix expected by the legacy pattern,
+and the legacy header is at line 27.
 
 ## Verification
 
