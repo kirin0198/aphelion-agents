@@ -10,7 +10,7 @@ Status: In progress
 
 ### Phase 1
 - [x] TASK-001: archive-closed-plans.yml whole-file anchored scan | Target file: .github/workflows/archive-closed-plans.yml
-- [ ] TASK-002: archive-orphan-plans.yml equivalent fix | Target file: .github/workflows/archive-orphan-plans.yml
+- [x] TASK-002: archive-orphan-plans.yml equivalent fix | Target file: .github/workflows/archive-orphan-plans.yml
 - [ ] TASK-003: regression fixture + check script | Target file: tests/fixtures/archive/pattern-b-handoff.md, scripts/check-archive-match.sh
 - [ ] TASK-004: manual verification (grep tests) | Target file: (verification only, no new files)
 - [ ] TASK-005: reset TASK.md to placeholder | Target file: TASK.md

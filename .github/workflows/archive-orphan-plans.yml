@@ -67,10 +67,16 @@ jobs:
           for f in docs/design-notes/*.md; do
             [ -f "$f" ] || continue
             # Skip files that intentionally have no issue (rare but valid).
-            issue_ref=$(head -n 20 "$f" \
-              | grep -oiE 'GitHub Issue:\s*\[?#[0-9]+' \
-              | grep -oE '#[0-9]+' \
-              | tr -d '#' \
+            # Whole-file scan (no head -n window) with three anchored forms:
+            #   1. Legacy header:  (GitHub Issue:|Issue) [?#N
+            #   2. Handoff field:  ISSUE_NUMBER: N
+            #   3. Handoff URL:    ISSUE_URL: .../issues/N
+            # grep -i handles both ISSUE_NUMBER: (uppercase) and
+            # issue_number: (lowercase) variants.
+            issue_ref=$(grep -oiE \
+              'GitHub Issue:[[:space:]]*\[?#[0-9]+|ISSUE_NUMBER:[[:space:]]*[0-9]+|ISSUE_URL:[^[:space:]]*/issues/[0-9]+' \
+              "$f" \
+              | grep -oE '[0-9]+' \
               | head -n1 || true)
             if [ -z "${issue_ref}" ]; then
               continue
