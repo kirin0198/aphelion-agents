@@ -1,8 +1,9 @@
 # Hooks Reference
 
 > **Language**: [English](../en/Hooks-Reference.md) | [日本語](../ja/Hooks-Reference.md)
-> **Last updated**: 2026-05-01
+> **Last updated**: 2026-05-30
 > **Update history**:
+>   - 2026-05-30: add Hook D — aphelion-project-rules-check (SessionStart advisory) (#130 PR-6)
 >   - 2026-05-01: initial release — MVP 3 hooks (#107)
 > **Audience**: Aphelion users (developers operating hooks in user projects)
 
@@ -17,6 +18,7 @@ For the full policy (auto-load rule for agents), see
 
 - [Hook A — aphelion-secrets-precommit](#hook-a--aphelion-secrets-precommit)
 - [Hook B — aphelion-sensitive-file-guard](#hook-b--aphelion-sensitive-file-guard)
+- [Hook D — aphelion-project-rules-check](#hook-d--aphelion-project-rules-check)
 - [Hook E — aphelion-deps-postinstall](#hook-e--aphelion-deps-postinstall)
 - [How hooks are distributed](#how-hooks-are-distributed)
 - [Disabling a hook](#disabling-a-hook)
@@ -129,6 +131,64 @@ after the first init).
 
 ---
 
+## Hook D — aphelion-project-rules-check
+
+**Script**: `.claude/hooks/aphelion-project-rules-check.sh`
+**Event**: `SessionStart`
+**Matcher**: (none — SessionStart has no matcher)
+**Activates on**: session startup (`source == "startup"`)
+**Blocks**: No (always exits 0)
+
+### What it does
+
+At the start of each new Claude Code session, this hook checks whether
+`.claude/rules/project-rules.md` exists in the project directory. If the file is absent,
+it emits a one-time advisory to stderr reminding you to run `/aphelion-init`.
+
+Without `project-rules.md`, Aphelion agents fall back to built-in defaults that may not
+match your project:
+- **Output Language**: `en` (English)
+- **Co-Authored-By**: enabled
+- **Remote type**: `github`
+
+The hook only fires on `source == "startup"` — not on `/clear`, `/compact`, or session
+resume — so the notice appears at most once per fresh session.
+
+**Example output** (when `project-rules.md` is absent):
+```
+[aphelion-hook:project-rules-check] No project-rules.md found at .claude/rules/project-rules.md.
+  Aphelion agents will fall back to defaults (Output Language: en, Co-Authored-By: enabled,
+  Remote type: github) which may not match this project.
+  Recommended: run /aphelion-init to generate project-rules.md for this repository.
+  (This is an advisory only; it never blocks session start.)
+  To silence this check, set APHELION_SKIP_RULES_CHECK=1 in your environment.
+```
+
+### Known limitation
+
+Hook D only checks the **project-local** path `${cwd}/.claude/rules/project-rules.md`.
+If you installed Aphelion with `init --user` and your `project-rules.md` lives at
+`~/.claude/rules/project-rules.md`, the hook will still emit the advisory (false positive).
+Use the bypass below to silence it.
+
+### Bypass
+
+Set `APHELION_SKIP_RULES_CHECK=1` in your environment before starting Claude Code:
+
+```bash
+export APHELION_SKIP_RULES_CHECK=1
+claude
+```
+
+Or add it to your shell profile (`~/.bashrc`, `~/.zshrc`) to silence it permanently across
+all projects:
+
+```bash
+echo 'export APHELION_SKIP_RULES_CHECK=1' >> ~/.bashrc
+```
+
+---
+
 ## Hook E — aphelion-deps-postinstall
 
 **Script**: `.claude/hooks/aphelion-deps-postinstall.sh`
@@ -177,7 +237,8 @@ npx github:kirin0198/aphelion-agents init
 ```
 
 - Copies `src/.claude/settings.json` (hook registration template) to your project's
-  `.claude/settings.json` — only if the file does not already exist.
+  `.claude/settings.json` — merging Aphelion hooks into an existing file, or creating a
+  fresh file. The `SessionStart` block for hook D is included.
 - Copies all files in `src/.claude/hooks/` to `.claude/hooks/` (recursive overlay).
 - Sets execute permissions (`chmod 0755`) on all `*.sh` files so Claude Code can run them.
 
@@ -187,8 +248,9 @@ npx github:kirin0198/aphelion-agents init
 npx aphelion-agents update
 ```
 
-- **`settings.json`** — Protected: if `.claude/settings.json` already exists, it is
-  preserved and a warning is printed. Your custom hooks and disabled entries are kept.
+- **`settings.json`** — Merge: re-applies all Aphelion-managed hook entries (identified by
+  `aphelion-` in the command path) while preserving your custom or disabled entries. The
+  `SessionStart` block for hook D is automatically added to existing installations.
 - **`hooks/`** — Overlay: always re-copied from canonical. Ensures bug fixes and new
   secret patterns reach your project automatically.
 - Restores execute permissions if lost (e.g., after a Windows git clone).
@@ -219,7 +281,7 @@ comment out the relevant entry.
 ```
 
 The change will not be overwritten by `npx aphelion-agents update` because
-`settings.json` is protected after the first init.
+`settings.json` merges are idempotent for user-deleted entries.
 
 ---
 
@@ -273,6 +335,12 @@ If the value is confirmed safe, append `[skip-secrets-check]` to the commit mess
 If the same pattern keeps triggering false positives on your project, open an issue at
 [github.com/kirin0198/aphelion-agents](https://github.com/kirin0198/aphelion-agents)
 with the pattern ID (e.g., P8) and a safe example of the false-positive content.
+
+**Hook D fires even though I have a global project-rules.md**
+
+Hook D only checks the project-local `.claude/rules/project-rules.md`. If you use
+`init --user`, your `project-rules.md` is at `~/.claude/rules/` and the hook cannot
+find it. Set `APHELION_SKIP_RULES_CHECK=1` in your environment to silence the advisory.
 
 **WSL / Windows note**
 
