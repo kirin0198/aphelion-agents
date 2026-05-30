@@ -157,13 +157,17 @@ else
 fi
 
 # ---- Check 6: Prose-overmatch guard (MINOR-1 lock) -------------------------
-# This PR's own planning doc quotes #130 inside table cells and prose. With
+# archive-workflow-headn20-fix.md quotes #130 inside prose/table cells. With
 # the old un-anchored expression those lines would over-match. The new line-
 # start anchors prevent this. The doc also owns issue #150 via a real header
 # and handoff fields at line start — that must still match.
+# Look in both active and archived paths (the PR workflow may have moved it).
 PLANNING_DOC="${REPO_ROOT}/docs/design-notes/archive-workflow-headn20-fix.md"
 if [ ! -f "${PLANNING_DOC}" ]; then
-  echo "SKIP (file not found): ${PLANNING_DOC}" >&2
+  PLANNING_DOC="${REPO_ROOT}/docs/design-notes/archived/archive-workflow-headn20-fix.md"
+fi
+if [ ! -f "${PLANNING_DOC}" ]; then
+  echo "SKIP (file not found in active or archived): archive-workflow-headn20-fix.md" >&2
 else
   # n=130: prose/table quotes only — must NOT match
   if match_issue 130 "${PLANNING_DOC}"; then
