@@ -67,10 +67,21 @@ jobs:
           for f in docs/design-notes/*.md; do
             [ -f "$f" ] || continue
             # Skip files that intentionally have no issue (rare but valid).
-            issue_ref=$(head -n 20 "$f" \
-              | grep -oiE 'GitHub Issue:\s*\[?#[0-9]+' \
-              | grep -oE '#[0-9]+' \
-              | tr -d '#' \
+            # Whole-file scan (no head -n window) with three line-start-anchored forms:
+            #   1. ^>[[:space:]]*(GitHub Issue:|Issue)   — legacy header (required >)
+            #   2. ^[[:space:]]*ISSUE_NUMBER:            — handoff YAML field
+            #   3. ^[[:space:]]*ISSUE_URL:.*/issues/N    — handoff URL field (greedy .*)
+            # The `>` prefix is required for the legacy header form — all real markers
+            # appear as `> GitHub Issue: [#N]`. This prevents prose sentences starting
+            # with "Issue #N" or table cell quotes from over-matching.
+            # grep -i handles ISSUE_NUMBER: (uppercase) and issue_number: (lowercase).
+            # Number extraction: `grep -oE '[0-9]+$'` takes the trailing digits of the
+            # first matched token, safe even when the URL contains a port number (the
+            # greedy .* consumes any intermediate digits; only /issues/N remains at end).
+            issue_ref=$(grep -oiE \
+              '^>[[:space:]]*(GitHub Issue:|Issue)[[:space:]]*\[?#[0-9]+|^[[:space:]]*ISSUE_NUMBER:[[:space:]]*[0-9]+|^[[:space:]]*ISSUE_URL:.*/issues/[0-9]+' \
+              "$f" \
+              | grep -oE '[0-9]+$' \
               | head -n1 || true)
             if [ -z "${issue_ref}" ]; then
               continue
