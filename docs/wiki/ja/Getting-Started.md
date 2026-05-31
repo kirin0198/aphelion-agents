@@ -1,8 +1,8 @@
 # Getting Started
 
 > **Language**: [English](../en/Getting-Started.md) | [日本語](../ja/Getting-Started.md)
-> **Last updated**: 2026-05-28 (updated 2026-05-28: 既存プロジェクト向けクイックスタート + --user ガイド追加, #130 PR-3)
-> **EN canonical**: 2026-05-28 (updated 2026-05-28) of wiki/en/Getting-Started.md
+> **Last updated**: 2026-05-31 (updated 2026-05-31: /getting-started/ の HTTP 500 復旧のため CF Pages アセットを強制リハッシュ, #156; 2026-05-28: 既存プロジェクト向けクイックスタート + --user ガイド追加, #130 PR-3)
+> **EN canonical**: 2026-05-31 (updated 2026-05-31) of wiki/en/Getting-Started.md
 > **Audience**: 新規ユーザー
 
 このページはAphelionを使い始めるために必要なすべてをカバーします：Claude Code のセットアップ、初回実行のウォークスルー、利用シナリオ、コマンドリファレンス、トラブルシューティング。
