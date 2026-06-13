@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import remarkMermaid from './src/remark-mermaid.mjs';
+import rehypeExternalLinks from 'rehype-external-links';
 
 // ページ定義を一元管理する配列。
 // ページ追加・変更時はここだけ編集すれば sidebar に反映される (SH-009, NI-003)。
@@ -62,6 +63,16 @@ const sidebar = PAGES.map((entry) => {
 export default defineConfig({
 	markdown: {
 		remarkPlugins: [remarkMermaid],
+		rehypePlugins: [
+			[
+				rehypeExternalLinks,
+				{
+					target: '_blank',
+					rel: ['noopener', 'noreferrer'],
+					content: { type: 'text', value: ' ↗' },
+				},
+			],
+		],
 	},
 	// サイトルート `/` は言語切替をサポートするため各ロケールの splash に委譲する。
 	// `/en` と `/ja` は Starlight が各ロケールの index.mdx を splash として配信する。
