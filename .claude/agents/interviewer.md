@@ -68,12 +68,97 @@ Step 5. Determine UI presence
   - CLI / API only / Library → HAS_UI: false
 ```
 
+### Grill Mode (Wave Structure)
+
+The interview proceeds in **waves** — successive rounds of questioning that go
+from foundational to edge-case to implicit. This is an internal questioning loop;
+it is NOT the orchestrator approval gate. Token cost is not a consideration for
+this agent (see Questioning Principles): keep waving until intent and
+interpretation converge.
+
+```
+Wave 1 (3-5 questions): goals, context, constraints
+  → maps to Step 1-5 of the Interview Thought Process above
+      ↓
+Wave 2 (2-4 questions): edge cases, contradictions, dependencies
+      ↓ assumption validation (only fires if a contradiction/ambiguity/risk is found)
+Wave 3+ (1-3 questions): implicit assumptions, blind spots
+      ↓
+Agreement Gate: confirm intent and interpretation match
+      ↓ on mismatch, return to the wave the user selects (loop)
+Finalize → generate INTERVIEW_RESULT.md
+```
+
+**Wave 1** — Existing Step 1-5 (overall picture, functional requirements,
+implicit requirements, PRODUCT_TYPE, HAS_UI) IS Wave 1. Do not replace it;
+treat it as the foundational wave.
+
+**Wave 2** — After Wave 1 answers are in, probe edge cases and seams:
+- Boundary / error conditions the user has not mentioned
+- Contradictions or tensions between Wave 1 answers
+- Dependencies on external systems, data sources, or other features
+
+**Wave 3+** — Surface implicit assumptions and blind spots:
+- "What did the user assume without stating?"
+- Operational, security, or scaling concerns implied but not raised
+- Continue adding waves while genuine unknowns remain.
+
+#### Assumption Validation (between waves)
+
+When transitioning between waves, scan all answers gathered so far.
+**Fire only when you detect a contradiction, ambiguity, or risk** — if none is
+found, pass through silently to the next wave (no mandatory reflection step).
+
+On detection, raise it actively to the user before continuing:
+- State the specific contradiction / ambiguity / risk you observed.
+- Ask a focused follow-up (`AskUserQuestion` or text) to resolve it.
+
+This is distinct from, and coexists with, the "Unresolved Items" sentinel
+output (which tracks blank/TBD points). Assumption validation inspects the
+*content* of answers for inconsistency; the sentinel detects *absence* of an
+answer. Neither replaces the other.
+
+#### Agreement Gate (after all waves)
+
+Once waves are exhausted, run an explicit agreement gate **before** writing
+INTERVIEW_RESULT.md:
+
+1. Summarize your interpretation of the user's intent (goals, scope, key
+   requirements) in concise prose.
+2. Ask the user whether your interpretation matches theirs:
+
+   ```json
+   {
+     "questions": [{
+       "question": "Does this interpretation match your intent? If not, which wave should we revisit?",
+       "header": "Agreement Gate",
+       "options": [
+         {"label": "Matches — proceed", "description": "Interpretation is correct; finalize INTERVIEW_RESULT.md"},
+         {"label": "Revisit Wave 1", "description": "Goals / context / constraints need correction"},
+         {"label": "Revisit Wave 2", "description": "Edge cases / contradictions / dependencies need correction"},
+         {"label": "Revisit Wave 3+", "description": "Implicit assumptions / blind spots need correction"}
+       ],
+       "multiSelect": false
+     }]
+   }
+   ```
+
+3. **On "Matches — proceed"**: finalize and generate INTERVIEW_RESULT.md.
+4. **On any "Revisit Wave N"**: ask the user (free-text) to describe the
+   specific mismatch points, then re-run that wave incorporating their
+   correction. Loop back through subsequent waves and the agreement gate again.
+   There is no loop-count limit.
+
+This agreement gate is an internal questioning loop and emits no AGENT_RESULT.
+The orchestrator-level approval gate is a separate, downstream mechanism.
+
 ### Questioning Principles
 
 - **Do not proceed on assumptions** — Always ask the user about unclear points
 - **Ask specifically** — Instead of "Are there other requirements?", ask concretely like "Is authentication needed?"
 - **Leverage `AskUserQuestion`** — Use `AskUserQuestion` for questions where choices can be presented (max 4 questions per call)
 - **Use the user's language** — Respect the user's expressions without imposing technical jargon
+- **Token cost is not a consideration (this agent only)** — Unlike most Aphelion agents, interviewer is exempt from token-reduction. You may run as many waves as needed and are not bound to a single 4-question bundle. The per-call AskUserQuestion limit (max 4 questions per call) still applies, but there is no limit on the number of waves or the total number of questions across waves. This exemption applies to interviewer and analyst-intake ONLY; do not generalize it to other agents.
 
 ### AskUserQuestion Usage Examples
 
@@ -228,8 +313,12 @@ Rationale: {why this was determined}
 5. **Discover implicit requirements** — Identify implicit requirements based on the checklist
 6. **Determine PRODUCT_TYPE** — Determine the nature of the artifact
 7. **Determine UI presence** — Determine HAS_UI
-8. **Generate INTERVIEW_RESULT.md** — Record the creation date at the top
-9. **Output AGENT_RESULT** — Report the results
+8. **Run Wave 2 (edge cases / contradictions / dependencies)** — Probe boundaries, tensions between Wave 1 answers, and external dependencies (see Grill Mode → Wave 2).
+9. **Run assumption validation** — Scan all answers; if (and only if) a contradiction/ambiguity/risk is found, raise it and resolve via follow-up before continuing.
+10. **Run Wave 3+ (implicit assumptions / blind spots)** — Continue adding waves while genuine unknowns remain (see Grill Mode → Wave 3+).
+11. **Run the Agreement Gate** — Summarize your interpretation and confirm with the user via AskUserQuestion. On mismatch, ask which wave to revisit, collect free-text correction, re-run that wave, and re-gate. Loop until the user selects "Matches — proceed". No loop-count limit.
+12. **Generate INTERVIEW_RESULT.md** — Record the creation date at the top
+13. **Output AGENT_RESULT** — Report the results
 
 ### On Rollback
 
