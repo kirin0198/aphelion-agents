@@ -1,7 +1,7 @@
 > Last updated: 2026-06-14
 > GitHub Issue: [#162](https://github.com/kirin0198/aphelion-agents/issues/162)
-> Authored by: analyst-intake (2026-06-14)
-> Next: analyst-core
+> Authored by: analyst-intake (2026-06-14); §5-8 by analyst-core (2026-06-14)
+> Next: architect
 
 <!-- analyst-handoff
 planning_doc_path: docs/design-notes/release-automation-actions.md
@@ -161,6 +161,126 @@ GitHub Actions（release.yml）:
 
 ---
 
-## §5–8
+## §5 詳細分析（analyst-core）
 
-（analyst-core が記入）
+> Updated: 2026-06-14 (GitHub Actions によるリリース自動化)
+
+コードベース実調査により以下を確認した。
+
+### 既存 CI 文化との整合
+
+既存ワークフローと連携・流儀を踏襲する。
+
+| 既存資産 | 役割 | 本件との関係 |
+|----------|------|--------------|
+| `.github/workflows/archive-closed-plans.yml` | PR open 時に `Closes #N` で設計ノートを `archived/` へ移動 | 移動された archived ノートが本件の突合対象になる。前段として依存 |
+| `.github/workflows/archive-orphan-plans.yml` | merge 後の孤児設計ノートを archive | 同じ grep 正準表現を使用 |
+| `.github/workflows/check-readme-wiki-sync.yml` | README ↔ Wiki 整合の advisory CI | per-page parity は強制しない → Release-Notes.md 追加で壊れない |
+| `scripts/check-archive-match.sh` | archive grep 表現の回帰テスト | **正準 grep 表現の単一ソース。新スクリプトはこれを再利用する** |
+| `scripts/sync-wiki.mjs` | `docs/wiki/{en,ja}/*.md` を全 glob して Starlight サイトへ発行 | Release-Notes.md を両ロケールに置けば自動公開される |
+
+### 突合キーの正準表現（再利用必須）
+
+`check-archive-match.sh` / 両 archive ワークフローで char-for-char 同期されている正準表現を再利用する。
+
+```
+^>[[:space:]]*(GitHub Issue:|Issue)[[:space:]]*\[?#${n}\b
+| ^[[:space:]]*ISSUE_NUMBER:[[:space:]]*${n}\b
+| ^[[:space:]]*ISSUE_URL:.*/issues/${n}\b
+```
+
+行頭アンカーにより prose / テーブルセル内の `#N` 誤マッチを防ぐ。新スクリプトでもこの慣習（char-for-char 同期コメント）を踏襲する。
+
+### CHANGELOG の現状
+
+- `CHANGELOG.md` は `## [Unreleased]` セクションのみ。バージョン付きセクション（`## [vX.Y.Z]`）は皆無。
+- issue 参照形式は `(#N)`。
+
+### 【最重要制約】既存の archive ↔ CHANGELOG 乖離 20 件
+
+調査結果（2026-06-14 時点）:
+
+- archived 設計ノートでヘッダーから issue 番号を抽出できたもの: **47 件**
+- CHANGELOG に `(#N)` 参照がある issue: **53 件**
+- **archived だが CHANGELOG に参照が無い issue: 20 件**
+  → #40 #42 #59 #65 #71 #73 #77 #84 #89 #94 #105 #108 #109 #114 #130 #141 #146 #150 #156 #158
+
+含意: 「全 archived ノートに CHANGELOG エントリ必須」という素朴な CI ゲートは**初回から即 fail する**。
+突合は **リリースウィンドウ（前タグ〜今回タグの差分に含まれる archived ノート）にスコープ**しなければならない。
+初回リリース前にこの 20 件を棚卸しするか、あるいは差分スコープにより構造的に回避するかは architect が設計する。
+
+---
+
+## §6 アプローチ詳細
+
+### 成果物
+
+| ファイル | 種別 | 内容 |
+|----------|------|------|
+| `.github/workflows/release.yml` | 新規 | `v*` タグ push トリガーのリリース自動化 |
+| `scripts/check-changelog-sync.sh` | 新規 | リリースウィンドウにスコープした archive ↔ CHANGELOG 突合 |
+| `docs/wiki/en/Release-Notes.md` | 新設 | リリースノート英語版（canonical） |
+| `docs/wiki/ja/Release-Notes.md` | 新設 | リリースノート日本語版（同 PR 同期） |
+| `docs/wiki/{en,ja}/Home.md` | 更新 | Table of Contents に Release-Notes へのリンク追記 |
+
+### release.yml フロー（案A: SemVer はタグ名で人間確定）
+
+```
+開発者が v1.2.0 を push
+    ↓
+release.yml:
+  Step 1: check-changelog-sync.sh（CI ゲート）
+          - リリースウィンドウ内の archived ノートを列挙
+          - 各 `> GitHub Issue: #N` をキーに CHANGELOG と突合
+          - 漏れがあれば fail（リリースを止める）
+  Step 2: gh release create（タグ名ベース）
+  Step 3: CHANGELOG 該当セクション → リリースノート化
+  Step 4: Wiki Release-Notes.md（en/ja）更新
+```
+
+### 漏れ検出時のフロー
+
+```
+Actions が漏れを検出して fail
+  → 開発者が手元で Claude Code を使い CHANGELOG を追記（doc-writer 等）
+  → 再 push → CI pass → リリース成立
+```
+
+「更新漏れがあるとそもそもリリースできない」強制力が生まれる。
+
+### doc-reviewer との役割分離
+
+- doc-reviewer: 設計ドキュメント間整合（SPEC.md ↔ ARCHITECTURE.md 等）
+- release.yml: リリース文書間整合（archive ↔ CHANGELOG ↔ Wiki）
+- 対象が異なり重複しない。
+
+---
+
+## §7 ドキュメント変更
+
+| ドキュメント | 変更 | 理由 |
+|--------------|------|------|
+| SPEC.md | no change（不在） | 本件は CI/リリース基盤であり、機能仕様 UC の追加対象外 |
+| UI_SPEC.md | no change（不在） | UI なし |
+| ARCHITECTURE.md | no change（不在） | architect が必要に応じて判断（本リポジトリは Aphelion 自身でありアプリ ARCHITECTURE.md を持たない） |
+
+bilingual sync: `Release-Notes.md` en/ja および `Home.md` TOC は同一 PR で同期する（language-rules.md §"Repo-root README sync convention" に準じた wiki Bilingual Sync Policy）。
+
+---
+
+## §8 architect への引き継ぎ
+
+architect が設計すべき未解決事項:
+
+1. **突合スクリプトのスコープ設計（最重要）**: リリースウィンドウ（前タグ〜今回タグの git 差分に含まれる archived ノートのみ）に限定するか、archive 全体を対象に既存 20 件を許容リスト化するか。前者を推奨（既存乖離を構造的に回避）。
+2. **release.yml のトークン権限**: GitHub Release 作成（`contents: write`）と、Wiki Release-Notes.md コミットの認証方式。本リポジトリの Wiki は `docs/wiki/` 配下のリポジトリ内ファイルであり別 Wiki repo ではないため、`GITHUB_TOKEN` 標準スコープで足りる見込み（PAT 不要）。
+3. **リリースノート自動生成フォーマット**: CHANGELOG セクション全体をそのまま転記するか、要約するか。
+4. **既存資産の再利用**: `scripts/check-archive-match.sh` の正準 grep 表現を再利用し、char-for-char 同期コメントの慣習を踏襲すること。`check-changelog-sync.sh` にも回帰テストを設けるのが既存流儀。
+5. **初回リリース前の棚卸し**: 既存 20 件の archive↔CHANGELOG 乖離をどう扱うか（差分スコープなら不要、archive 全体スコープなら初回タスク化）。
+6. **SemVer**: 案A（タグ名で人間確定）を採用。案B（自動提案）は将来拡張。
+
+### 設計制約（不変）
+
+- 突合キーは設計ノートヘッダー `> GitHub Issue: #N` 形式（既存 archive ワークフローと共有。変更不可）。
+- `.github/workflows/` および `scripts/` は npm 配布対象外であることが自明。
+- 既存 archive-closed-plans.yml の動作を破壊しないこと（archived/ への移動は前段依存）。
