@@ -1,7 +1,7 @@
 > Last updated: 2026-06-14
 > GitHub Issue: [#160](https://github.com/kirin0198/aphelion-agents/issues/160)
-> Authored by: analyst-intake (2026-06-14)
-> Next: analyst-core
+> Authored by: analyst-intake (2026-06-14); analyst-core (2026-06-14)
+> Next: architect
 
 <!-- analyst-handoff
 planning_doc_path: docs/design-notes/grillme-adoption.md
@@ -129,4 +129,122 @@ Wave 3+（1-3問）: 暗黙の前提・盲点
 
 ---
 
-*§5-8（分析・アプローチ・ドキュメント変更・ハンドオフ概要）は analyst-core が記述する*
+## §5 Analysis
+
+> Authored by: analyst-core (2026-06-14)
+
+### 5.1 スコープの読み替え（重要）
+
+intake 段階では対象を `interviewer.md` / `analyst.md` としていたが、analyst チェーンは
+2026-04 のモデル分割（`analyst-model-split-design.md`）で **3層構造** に再編されている:
+
+- `analyst.md` — top-level orchestrator。**Bash を持たず、git 操作も intake 問答も行わない**。
+  実際の intake（Step A–B の `AskUserQuestion` 問答、センチネル再質問）は子エージェントが担う。
+- `analyst-intake.md` — Sonnet 層。**intake 問答の実体**（Step A: 最大4問バンドル、
+  Step B: センチネル再質問1回）を保持する。
+- `analyst-core.md` — Opus 層。深掘り分析（Step 1–5）を担う。
+
+したがって grill-me 思想（Wave 構造・assumption validation・合意ゲート）の取り込み先として
+`analyst.md` は適切でない（問答ロジックを持たないため）。**問答の実体を持つ
+`analyst-intake.md` が正しい対象**である。本件はユーザー承認済み（質問2）として
+スコープを `analyst.md → analyst-intake.md` に読み替える。
+
+### 5.2 現状分析（2エージェントの問答構造）
+
+| 観点 | interviewer.md 現状 | analyst-intake.md 現状 |
+|------|---------------------|------------------------|
+| 問答の構造化 | Step 1–5 の思考プロセス（全体像→機能要件→暗黙要件→PRODUCT_TYPE→UI） | Step A（最大4問）+ Step B（センチネル再質問1回） |
+| バンドル制約 | 「AskUserQuestion 最大4問」明記（L75） | 「count ≤ 3 unless 4th is load-bearing」明記（L188-189） |
+| ループ | なし（基本1パス、rollback 時のみ revision） | なし（Step B は1ラウンドまで） |
+| assumption validation | なし（"Do not proceed on assumptions" は受動的） | センチネル検知（TBD/不明 等）のみ。矛盾・曖昧への能動指摘なし |
+| 合意ゲート | なし | なし |
+| センチネル機構 | なし | あり（L196-202、grill-me の「不明点明示」と一致） |
+
+### 5.3 取り込むべき3点と既存構造との整合
+
+1. **Wave 構造** — interviewer の Step 1–5、analyst-intake の Step A を「Wave 1（目標・
+   コンテキスト・制約）」と位置づけ、その上に Wave 2（エッジケース・矛盾・依存）・
+   Wave 3+（暗黙の前提・盲点）を**追加**する（既存質問の置換ではなく上積み）。
+   オープンクエスチョン（§4）「Wave 1 に位置づけるか追加するか」への回答 = **位置づけ + 上積み**。
+
+2. **Assumption validation** — Wave 間の遷移時に、それまでのユーザー回答を走査し
+   「矛盾・曖昧・リスク」があれば能動的に指摘・再質問する行動ルールを追加。
+   既存のセンチネル機構（受動的・不明点の明示）とは**別物**として共存させる
+   （センチネルは「空欄/TBD の検知」、assumption validation は「内容の矛盾検知」）。
+
+3. **合意ゲート** — 全 Wave 完了後に「ユーザーの意図とエージェントの解釈が一致したか」を
+   確認するゲートを設置。不一致なら該当 Wave に戻るループとする。
+   オープンクエスチョン（§4）「判定基準」への回答 = **ユーザー明示承認**を採用
+   （エージェント自己評価のみでは grill-me の「合意に達するまで」を満たせず、
+   かつ既存の approval-gate 文化と整合するため）。
+
+### 5.4 4問バンドル制約との両立
+
+§4 制約のとおり、AskUserQuestion ツール仕様（1コールあたり選択肢4問まで）は変更しない。
+Wave 構造は「**何回の問答ラウンドを重ねるか**」の話であり、1ラウンドあたりの設問数とは
+独立。したがって「4問バンドルに縛られない」とは **Wave を重ねることでトータル設問数の
+上限が事実上なくなる**ことを意味し、1コールの設問数上限（4）は維持する。
+analyst-intake の「count ≤ 3」記述は Wave 1 内の初回問答に限定する旨へ補正が必要。
+
+---
+
+## §6 Approach
+
+architect / developer が実装する変更方針。対象は agent 定義ファイル2点。
+
+### 6.1 interviewer.md
+
+- 「Interview Approach」セクションに **"Grill Mode (Wave Structure)"** サブセクションを追加。
+  - 既存 Step 1–5 を Wave 1 として明示。
+  - Wave 2（エッジケース・矛盾・依存）、Wave 3+（暗黙の前提・盲点）の質問観点を追加。
+  - 各 Wave 遷移時の **assumption validation** 行動ルールを追加（矛盾・曖昧・リスクへの能動再質問）。
+  - 全 Wave 後の **合意ゲート**（ユーザー明示承認、不一致なら該当 Wave へ戻るループ）を追加。
+- 「Questioning Principles」に「トークン消費を考慮しない（4問バンドルに縛られず Wave を
+  重ねてよい／ループ制限なし）」旨を追記。
+- Workflow（Initial Execution）に Wave ループと合意ゲートのステップを反映。
+- 既存のセンチネル相当（"Unresolved Items" 出力）・rollback モードは**変更しない**。
+
+### 6.2 analyst-intake.md
+
+- 「Intake during standalone invocation」に Wave 構造を導入。
+  - Step A を Wave 1 と位置づけ、「count ≤ 3」制約を **Wave 1 初回問答に限定**する旨へ補正。
+  - Wave 2 / Wave 3+ の追加問答ステップを新設。
+  - Step B のセンチネル再質問は**維持**しつつ、別途 **assumption validation**
+    （内容矛盾の能動検知・再質問）を Wave 遷移時に追加。
+  - 全 Wave 後に **合意ゲート**（ユーザー明示承認、不一致なら Wave へ戻る）を追加。
+- 「トークン消費を考慮しない・ループ制限なし」をこの2エージェント限定の例外として明記。
+- injection-only モード・HANDOFF_PAYLOAD スキーマ（13フィールド）は**変更しない**
+  （問答強化は fresh モードの Step A–B 周辺に閉じる）。
+
+### 6.3 共通
+
+- センチネル機構と assumption validation は**共存**（一方が他方を置換しない）。
+- 「token を考慮しない」例外は interviewer / analyst-intake **限定**であることを各ファイルに明記。
+
+---
+
+## §7 Document Changes
+
+- **SPEC.md**: not_exists（本件は Aphelion 自身の agent 定義変更。製品 SPEC は存在しない）
+- **UI_SPEC.md**: not_exists（UI 変更なし）
+- **ARCHITECTURE.md**: not_exists（agent 定義は ARCHITECTURE.md 管理外）
+- 実変更対象（architect/developer が編集）:
+  - `.claude/agents/interviewer.md`
+  - `.claude/agents/analyst-intake.md`（intake 問答の実体。`analyst.md` ではない）
+
+---
+
+## §8 Handoff Brief (for architect)
+
+- **スコープ読み替え**: 当初 `analyst.md` 想定 → **`analyst-intake.md`** が正しい対象
+  （`analyst.md` は orchestrator で Bash・intake 問答を持たない／問答実体は intake 層）。
+  ユーザー承認済み（質問2）。
+- **3つの取り込み**: Wave 構造（既存 Step を Wave 1 に位置づけ + Wave 2/3+ を上積み）、
+  assumption validation（Wave 遷移時の矛盾・曖昧への能動再質問、センチネルとは別物で共存）、
+  合意ゲート（**ユーザー明示承認**方式、不一致なら Wave へ戻るループ）。
+- **設計上の制約**: AskUserQuestion の1コール4問上限は維持。Wave は「ラウンド数」であり
+  設問数とは独立。「token 非考慮・ループ制限なし」は本2エージェント限定の例外。
+- **不変更**: センチネル機構、interviewer の rollback モード、analyst-intake の
+  injection-only モード・HANDOFF_PAYLOAD 13フィールドスキーマ。
+- **後続依存**: 本件完了は `approval-mode-memo.md`（autonomous モード）の前提。
+  approval-mode issue は本件をブロック依存とすること。
