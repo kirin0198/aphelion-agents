@@ -11,7 +11,7 @@ Status: In progress
 ### Phase 1 — プロトコル & 規約基盤（直列）
 - [x] TASK-001: ESCALATION フィールド追加 (agent-communication-protocol.md) | Target file: src/.claude/rules/agent-communication-protocol.md
 - [x] TASK-002: Approval Mode セクション追加 (orchestrator-rules.md) | Target file: .claude/orchestrator-rules.md
-- [ ] TASK-003: Phase Execution Loop 三段判定 + Rollback 上限ゲート追記 (orchestrator-rules.md) | Target file: .claude/orchestrator-rules.md
+- [x] TASK-003: Phase Execution Loop 三段判定 + Rollback 上限ゲート追記 (orchestrator-rules.md) | Target file: .claude/orchestrator-rules.md
 
 ### Phase 2 — フローオーケストレーター 5本への結線（並行可、Phase 1 完了後）
 - [ ] TASK-004: delivery-flow.md に承認モード決定 + エスカレーション検知追記 | Target file: .claude/agents/delivery-flow.md

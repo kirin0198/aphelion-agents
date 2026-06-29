@@ -539,11 +539,30 @@ Each phase follows this common loop. Domain-specific steps (rollback checks, etc
   3. Verify the agent's AGENT_RESULT block
   4. Evaluate STATUS and handle error / blocked / failure
      (for failure, follow domain-specific rollback rules)
-  5. If AUTO_APPROVE: true:
-     → Auto-select "Approve and continue" and output text only (skip AskUserQuestion)
-     If AUTO_APPROVE: false:
-     → Stop at the approval gate (see "Approval Gate" below) and request user approval
-  6. Only if AUTO_APPROVE: false: wait for the user's response (never advance automatically)
+  5. Evaluate the approval decision using the following three-tier priority:
+
+     (a) AUTO_APPROVE == true:
+         → Auto-confirm all gates including escalation. Auto-select "Approve and continue"
+           and output text only (skip AskUserQuestion).
+           * If AGENT_RESULT contains ESCALATION_REQUIRED: true, log the ESCALATION_REASON
+             and continue automatically (treated as evaluation data for external systems).
+
+     (b) AUTO_APPROVE == false AND APPROVAL_MODE == autonomous:
+         → Check the most recent AGENT_RESULT's ESCALATION_REQUIRED and orchestrator-
+           detected conditions (unresolved security CRITICAL / shared rollback limit reached):
+            - Any condition met (Route A or B) → STOP at escalation gate
+              (see §"Approval Mode" → "Escalation State Transition"). Do not auto-continue.
+            - No condition met → skip the HITL approval gate. Output phase completion
+              summary as text and proceed to next phase.
+         * Invariant: even in autonomous mode, doc-reviewer / security-auditor / reviewer
+           auto-insertion and automatic rollback are maintained (only the HITL gate is relaxed).
+
+     (c) AUTO_APPROVE == false AND APPROVAL_MODE == interactive:
+         → Stop at the Approval Gate (see §"Approval Gate" below) and request user approval.
+
+  6. Only if step 5 resulted in a stop — either (b) escalation gate or (c) normal gate:
+     wait for the user's response (never advance automatically).
+     Cases (a) and (b) no-escalation proceed to the next phase without waiting.
   7. Proceed to the next phase
 ```
 
@@ -701,7 +720,9 @@ After rollback, the orchestrator clears the
 ### Approval Gate after Doc Review FAIL (rollback limit exceeded)
 
 When `doc-reviewer` repeatedly fails and the shared rollback limit is
-reached, the orchestrator presents a special gate:
+reached, the orchestrator presents a special gate. **This gate fires in
+both `interactive` and `autonomous` mode** — reaching the rollback limit
+is an escalation condition (Route B) that always requires user confirmation.
 
 ```json
 {
