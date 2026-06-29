@@ -15,7 +15,7 @@ Status: In progress
 
 ### Phase 2 — フローオーケストレーター 5本への結線（並行可、Phase 1 完了後）
 - [x] TASK-004: delivery-flow.md に承認モード決定 + エスカレーション検知追記 | Target file: .claude/agents/delivery-flow.md
-- [ ] TASK-005: discovery-flow.md に承認モード決定 + エスカレーション検知追記 | Target file: .claude/agents/discovery-flow.md
+- [x] TASK-005: discovery-flow.md に承認モード決定 + エスカレーション検知追記 | Target file: .claude/agents/discovery-flow.md
 - [ ] TASK-006: operations-flow.md に承認モード決定 + エスカレーション検知追記 | Target file: .claude/agents/operations-flow.md
 - [ ] TASK-007: maintenance-flow.md に承認モード決定 + エスカレーション検知追記（必須 HITL ゲート注意） | Target file: .claude/agents/maintenance-flow.md
 - [ ] TASK-008: doc-flow.md に承認モード決定 + エスカレーション検知追記 | Target file: .claude/agents/doc-flow.md
