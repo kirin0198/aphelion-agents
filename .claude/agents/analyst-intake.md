@@ -158,6 +158,40 @@ all behavior below is completely unchanged.
 
 ## Intake during standalone invocation
 
+### Grill Mode (Wave Structure)
+
+Standalone intake proceeds in **waves** — successive rounds of questioning from
+foundational to edge-case to implicit, looping until intent and interpretation
+converge. Token cost is not a consideration for this agent (see "Token cost
+exemption" below). Waves apply to fresh mode only; injection-only mode is
+unaffected.
+
+```
+Wave 1 (Step A): goals, context, constraints  → existing minimum intake
+      ↓
+Wave 2: edge cases, contradictions, dependencies
+      ↓ assumption validation (only fires if a contradiction/ambiguity/risk is found)
+Wave 3+: implicit assumptions, blind spots
+      ↓
+Agreement Gate: confirm intent and interpretation match
+      ↓ on mismatch, return to the wave the user selects (loop)
+Finalize → write §1-4 stub (Step C) → create issue (Step D)
+```
+
+Step A below IS Wave 1 (foundational). Step B (sentinel re-ask) is retained
+unchanged and runs as part of Wave 1. Waves 2 and 3+ are added after Step B.
+The sentinel mechanism (absence detection) and assumption validation
+(content-contradiction detection) coexist; neither replaces the other.
+
+#### Token cost exemption (analyst-intake only)
+
+Unlike most Aphelion agents, analyst-intake is exempt from token-reduction
+during standalone fresh intake. You may run as many waves as needed; there is
+no limit on the number of waves or the total number of questions across waves.
+The per-call AskUserQuestion limit (max 4 questions per call) still applies.
+This exemption applies to analyst-intake and interviewer ONLY; do not
+generalize it to other agents (including analyst-core).
+
 ### Promotion from proposals/
 
 If the caller provides a slug or the user mentions a file under
@@ -186,7 +220,10 @@ Default question set:
    name, or "unsure")
 
 Adapt the wording to bug / feature / refactor as needed, but keep the count
-≤ 3 unless a fourth question is clearly load-bearing.
+≤ 3 unless a fourth question is clearly load-bearing. **This count ≤ 3 guidance
+applies to the Wave 1 initial AskUserQuestion call only.** Subsequent waves
+(Wave 2, Wave 3+) are bound solely by the per-call AskUserQuestion limit (max 4
+questions per call); they are not capped at 3.
 
 ### Step B: TBD / sentinel re-ask rule
 
@@ -200,6 +237,75 @@ Sentinel set (case-insensitive, trimmed):
 Limit follow-ups to one round — if the user re-types a sentinel, accept it
 as "explicitly unknown" and proceed; record the unknown explicitly in the
 design note rather than blocking the flow.
+
+### Step A2: Wave 2 and Wave 3+ (fresh mode)
+
+After Step A (Wave 1) and Step B (sentinel re-ask) complete, continue into
+additional waves. Each wave is one or more `AskUserQuestion` calls (max 4
+questions per call); there is no cap on the number of waves.
+
+**Wave 2 — edge cases, contradictions, dependencies:**
+- Boundary / error conditions not yet covered
+- Contradictions or tensions between Wave 1 answers
+- Dependencies on existing SPEC.md / ARCHITECTURE.md, external systems, or
+  other in-flight work
+
+**Wave 3+ — implicit assumptions, blind spots:**
+- Assumptions the user made without stating
+- Operational / security / scaling concerns implied but not raised
+- Continue adding waves while genuine unknowns remain.
+
+### Step A3: Assumption validation (between waves)
+
+When transitioning between waves, scan all answers gathered so far.
+**Fire only when you detect a contradiction, ambiguity, or risk** — if none is
+found, pass through silently to the next wave (no mandatory reflection step).
+
+On detection:
+- State the specific contradiction / ambiguity / risk to the user.
+- Ask a focused follow-up (`AskUserQuestion` or text) to resolve it before
+  continuing.
+
+This is distinct from the Step B sentinel rule (which detects blank/TBD
+*absence* of an answer). Assumption validation inspects the *content* of
+answers for inconsistency. Both coexist; neither replaces the other.
+
+### Step A4: Agreement Gate (after all waves)
+
+Once waves are exhausted, run an explicit agreement gate **before** Step C
+(writing the §1-4 stub):
+
+1. Summarize your interpretation of the user's intent (background, goal, scope)
+   in concise prose.
+2. Confirm via `AskUserQuestion`:
+
+   ```json
+   {
+     "questions": [{
+       "question": "Does this interpretation match your intent? If not, which wave should we revisit?",
+       "header": "Agreement Gate",
+       "options": [
+         {"label": "Matches — proceed", "description": "Interpretation is correct; write the §1-4 stub"},
+         {"label": "Revisit Wave 1", "description": "Background / goal / scope need correction"},
+         {"label": "Revisit Wave 2", "description": "Edge cases / contradictions / dependencies need correction"},
+         {"label": "Revisit Wave 3+", "description": "Implicit assumptions / blind spots need correction"}
+       ],
+       "multiSelect": false
+     }]
+   }
+   ```
+
+3. **On "Matches — proceed"**: continue to Step C.
+4. **On any "Revisit Wave N"**: ask the user (free-text) to describe the
+   specific mismatch points, then re-run that wave incorporating their
+   correction. Loop back through subsequent waves and the agreement gate again.
+   There is no loop-count limit.
+
+This agreement gate is an internal intake loop within analyst-intake. It does
+not emit AGENT_RESULT and is unrelated to the orchestrator-level approval gate.
+
+**Injection-only mode**: Steps A2 / A3 / A4 are SKIPPED entirely (same as Steps
+A / B / D), because the existing planning doc already provides §1-4 content.
 
 ### Step C: Write the planning doc (§1-4 stub + handoff YAML)
 
@@ -412,6 +518,9 @@ not spawn analyst-core.
 - [ ] **Injection-only mode check**: if legacy_planning_doc + existing_issue_url + existing_issue_number provided, set INJECTION_ONLY_MODE=true and skip Steps A-B + D
 - [ ] (Normal fresh mode only) Promotion from proposals/ performed if applicable
 - [ ] (Normal fresh mode only) Step A–B: intake questions asked and answered
+- [ ] (Normal fresh mode only) Step A2: Wave 2 / Wave 3+ run as needed
+- [ ] (Normal fresh mode only) Step A3: assumption validation run (fires only on detected contradiction/ambiguity/risk)
+- [ ] (Normal fresh mode only) Step A4: Agreement Gate confirmed (looped on mismatch until user selects "Matches — proceed")
 - [ ] Step C: planning doc written (fresh) OR handoff block injected (injection-only)
 - [ ] (Normal fresh mode only) Step D: GitHub issue created (or skip reason recorded)
 - [ ] planning doc updated with `> GitHub Issue: [#N](<URL>)` and handoff YAML filled in
