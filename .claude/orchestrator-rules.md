@@ -407,6 +407,120 @@ If the file is empty, use default triage behavior and auto-approve the result.
 
 ---
 
+## Approval Mode (autonomous / interactive)
+
+This section defines how each flow orchestrator determines and applies the `APPROVAL_MODE`
+session variable. `APPROVAL_MODE` controls whether HITL approval gates are skipped (`autonomous`)
+or enforced (`interactive`). It is distinct from `AUTO_APPROVE`, which is a higher-priority
+external-evaluation flag that bypasses everything including escalation gates.
+
+### Triage-Linked Default
+
+| Triage Plan | Default APPROVAL_MODE | User override allowed |
+|-------------|----------------------|-----------------------|
+| Minimal     | `autonomous`         | — (fixed)             |
+| Light       | `autonomous`         | — (fixed)             |
+| Standard    | `interactive`        | Yes — can relax to `autonomous` (see below) |
+| Full        | `interactive`        | No — forced `interactive` even if user requests autonomous |
+
+### APPROVAL_MODE Resolution Order (ADR-005)
+
+Resolve `APPROVAL_MODE` once at flow startup and hold it as a session variable:
+
+1. If `AUTO_APPROVE == true`: `APPROVAL_MODE` is not consulted for gate decisions
+   (log its triage-default value for audit purposes only).
+2. Triage-rule default (see table above).
+3. **Standard-only relaxation**: if (a) the user explicitly requests autonomous at startup,
+   or (b) `.claude/rules/project-rules.md` contains a `## Approval Mode` section with
+   `Standard: autonomous`, override the Standard default to `autonomous`.
+   - **Full plan never relaxes**: if autonomous is requested for a Full plan, emit a warning
+     and maintain `interactive`.
+   - When `project-rules.md` has no `## Approval Mode` section, fall back to the triage default.
+
+### Three-Tier Priority: AUTO_APPROVE > APPROVAL_MODE (ADR-002)
+
+```
+Priority 1 (highest): AUTO_APPROVE == true
+  → All gates (including escalation) are auto-confirmed. "Approve and continue" is
+    automatically selected (text output only, no AskUserQuestion).
+  → Note: .aphelion-auto-approve and legacy .telescope-auto-approve filenames are
+    immutable (Ouroboros external-evaluation compatibility). Never rename these files.
+
+Priority 2: AUTO_APPROVE == false AND APPROVAL_MODE == autonomous
+  → HITL approval gates are skipped (phase completion summary output as text).
+  → Escalation conditions (see below) trigger a pause for user confirmation.
+
+Priority 3 (default): AUTO_APPROVE == false AND APPROVAL_MODE == interactive
+  → All approval gates stop and wait for user confirmation (existing behavior).
+```
+
+### Invariant Rules (§5.3)
+
+The following must NOT be relaxed regardless of `APPROVAL_MODE` or `AUTO_APPROVE`:
+- `doc-reviewer` auto-insertion and its automatic rollback chain
+- `security-auditor` execution
+- `reviewer` execution
+
+These agents always run. Only the **HITL approval gate** (the AskUserQuestion pause between
+phases) is skipped in `autonomous` mode. Automatic quality checks are never bypassed.
+
+### Escalation Conditions (ADR-003)
+
+Two routes trigger an escalation pause in `autonomous` mode:
+
+**Route A — Agent self-report (`ESCALATION_REQUIRED: true`):**
+An agent (developer, architect, security-auditor, tester, reviewer) sets
+`ESCALATION_REQUIRED: true` in its `AGENT_RESULT` when:
+- A technical decision outside the scope of SPEC.md is required
+- A destructive change is needed (DB schema, API compatibility break)
+- Multiple valid implementation approaches exist and SPEC.md does not disambiguate
+
+**Route B — Orchestrator detection:**
+The orchestrator detects the following conditions directly:
+- `security-auditor` returned unresolved CRITICAL findings
+- The shared rollback limit (3 times) was reached
+
+### Escalation State Transition (ADR-004)
+
+When an escalation condition is detected in `autonomous` mode:
+
+```
+RUNNING_AUTONOMOUS
+  │
+  ▼ phase complete AGENT_RESULT received
+  │
+  ├── No escalation → skip HITL gate → proceed to next phase (autonomous)
+  │
+  └── Escalation detected (Route A or B)
+        │
+        ▼
+    ESCALATION_PAUSED
+    AskUserQuestion (escalation gate):
+    {
+      "questions": [{
+        "question": "autonomous 実行中にエスカレーション条件に該当しました: {ESCALATION_REASON}。どう進めますか？",
+        "header": "エスカレーション",
+        "options": [
+          {"label": "承認して続行", "description": "判断を承認し autonomous 実行を再開"},
+          {"label": "修正を指示", "description": "現フェーズに修正を指示して再実行"},
+          {"label": "中断", "description": "ワークフローを停止"}
+        ],
+        "multiSelect": false
+      }]
+    }
+        │
+        ├── "承認して続行" → RUNNING_AUTONOMOUS (proceed to next phase)
+        ├── "修正を指示"   → re-run current phase agent with instructions
+        │                     → if ESCALATION_REQUIRED: false → RUNNING_AUTONOMOUS
+        │                     → if ESCALATION_REQUIRED: true  → ESCALATION_PAUSED again
+        └── "中断"         → workflow stop (provide resume instructions)
+```
+
+When `AUTO_APPROVE == true`, the escalation gate is NOT shown. "承認して続行" is auto-selected
+and `ESCALATION_REASON` is logged as output (see §9.2-(a) in planning doc).
+
+---
+
 ### Phase Execution Loop
 
 Each phase follows this common loop. Domain-specific steps (rollback checks, etc.) are additions on top of this template.
