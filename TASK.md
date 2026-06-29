@@ -21,10 +21,12 @@ Status: In progress
 - [x] TASK-008: doc-flow.md に承認モード決定 + エスカレーション検知追記 | Target file: .claude/agents/doc-flow.md
 
 ### Phase 3 — casing 一括検証（Phase 1+2 完了後）
-- [ ] TASK-009: casing grep sweep 検証（5チェック必須） | Target file: 検証のみ（必要時に straggler 修正）
+- [x] TASK-009: casing grep sweep 検証（5チェック必須） | Target file: 検証のみ（straggler 修正不要）
 
 ## Recent Commits
-(TASK 完了のたびに git log --oneline -3 を記録)
+50842ac feat: add APPROVAL_MODE resolution and escalation detection to doc-flow (TASK-008)
+59e0309 feat: add APPROVAL_MODE resolution and escalation detection to maintenance-flow (TASK-007)
+cd887d6 feat: add APPROVAL_MODE resolution and escalation detection to operations-flow (TASK-006)
 
 ## Session Interruption Notes
 (セッション中断時の状況をここに記録)
