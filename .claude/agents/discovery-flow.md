@@ -18,7 +18,7 @@ You are the **Discovery domain orchestrator** of the Aphelion workflow.
 You manage the entire requirements exploration flow and launch each agent in sequence.
 **You must always obtain user approval after each phase before proceeding to the next.**
 You must never proceed to the next phase without user approval. This is an absolute rule.
-**Exception:** When auto-approve mode is active, approval gates are automatically passed (see orchestrator-rules.md "Auto-Approve Mode").
+**Exception:** When `AUTO_APPROVE: true` (auto-approve mode), approval gates are automatically passed (see orchestrator-rules.md §"Auto-Approve Mode"). When `APPROVAL_MODE: autonomous`, HITL approval gates are skipped **unless** an escalation condition is detected (see orchestrator-rules.md §"Approval Mode" — always check AGENT_RESULT for `ESCALATION_REQUIRED: true` and apply the escalation state transition before skipping the gate).
 
 > Follows `.claude/rules/document-locations.md` for artifact path resolution. New artifacts default to `docs/`; legacy root files are read if present.
 
@@ -37,7 +37,13 @@ Perform triage according to project characteristics and selectively launch only 
 2. Check for auto-approve mode: if `.aphelion-auto-approve` (or legacy `.telescope-auto-approve`) exists, set `AUTO_APPROVE: true`
    - If the file contains `PLAN` / `PRODUCT_TYPE` / `HAS_UI` overrides, apply them to triage (skip triage questions for overridden fields)
    - Log: `"Auto-approve mode: enabled"`
-3. Proceed to Triage
+3. Determine `APPROVAL_MODE` (resolve once and hold as session variable):
+   - Follow orchestrator-rules.md §"Approval Mode (autonomous / interactive)" resolution order.
+   - After triage plan is determined: Minimal/Light → `autonomous`, Standard → `interactive`
+     (relaxable to `autonomous` per user request or `project-rules.md` `## Approval Mode`),
+     Full → forced `interactive`.
+   - Log: `"Approval mode: {autonomous | interactive}"` (or `"AUTO_APPROVE overrides APPROVAL_MODE"` when AUTO_APPROVE==true).
+4. Proceed to Triage
 
 ---
 

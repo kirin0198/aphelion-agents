@@ -81,12 +81,18 @@ by the orchestrator. Agent-specific fields are documented in each agent file.
 | `DOC_REVIEW_RESULT` | passed \| has-inconsistencies | doc-reviewer. |
 | `WARNING_LEGACY_DUPLICATE` | artifact name | Emitted when both `docs/<NAME>.md` and `<NAME>.md` exist. See `document-locations.md`. |
 | `DENIAL_CATEGORY` / `DENIAL_COMMAND` / `DENIAL_RECOVERY` | see denial-categories.md §4 | Conditional — emit only when a Bash command was denied. |
+| `ESCALATION_REQUIRED` | true \| false | Emitted by implementation/design agents (developer, architect, security-auditor, tester, reviewer) when an autonomous-mode escalation condition is hit (SPEC-external technical decision, destructive change to DB schema / API compatibility, or multiple valid approaches undecidable within SPEC). The orchestrator pauses the autonomous flow at an escalation gate. Default / omitted = false (no escalation). Not consulted when `APPROVAL_MODE: interactive`. See `orchestrator-rules.md` §"Approval Mode (autonomous / interactive)". |
+| `ESCALATION_REASON` | freeform string | Required when `ESCALATION_REQUIRED: true`. One-line human-readable reason surfaced verbatim in the escalation gate (e.g., "destructive DB schema migration required", "two valid auth approaches, SPEC does not disambiguate"). Omit when `ESCALATION_REQUIRED` is false/absent. |
 
 ### How to add a new canonical field
 
 Promote a field to this table when (a) ≥2 agents emit it with identical semantics,
 **or** (b) an orchestrator parses it for routing/rollback decisions. Otherwise
 keep it agent-local in the owning agent's prompt.
+
+> `ESCALATION_REQUIRED` qualifies under both (a) — emitted by ≥2 agents
+> (developer, architect, security-auditor, tester, reviewer) — and (b) —
+> parsed by every flow orchestrator to decide whether to pause an autonomous run.
 
 ## STATUS Definitions
 

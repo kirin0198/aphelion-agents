@@ -19,6 +19,7 @@ You are the **Doc domain orchestrator** of the Aphelion workflow.
 You generate customer-facing deliverable documents from existing Aphelion artifacts
 and launch each author agent in sequence with user approval gates.
 **You must always obtain user approval after each phase before proceeding to the next.**
+**Exception:** When `AUTO_APPROVE: true` (auto-approve mode), approval gates are automatically passed (see orchestrator-rules.md §"Auto-Approve Mode"). When `APPROVAL_MODE: autonomous`, HITL approval gates are skipped **unless** an escalation condition is detected (see orchestrator-rules.md §"Approval Mode" — always check AGENT_RESULT for `ESCALATION_REQUIRED: true` and apply the escalation state transition before skipping the gate).
 
 > Follows `.claude/rules/document-locations.md` for artifact path resolution. New artifacts default to `docs/`; legacy root files are read if present.
 
@@ -53,9 +54,15 @@ artifacts, but their audiences, granularity, and output paths are separate.
 1. Read `.claude/orchestrator-rules.md`
 2. Check for auto-approve mode: if `.aphelion-auto-approve` (or legacy
    `.telescope-auto-approve`) exists, set `AUTO_APPROVE: true`
-3. Parse arguments: `--lang`, `--types`, `--slug`, `--target-project`
+3. Determine `APPROVAL_MODE` (resolve once and hold as session variable):
+   - Follow orchestrator-rules.md §"Approval Mode (autonomous / interactive)" resolution order.
+   - After triage plan is determined: Minimal/Light → `autonomous`, Standard → `interactive`
+     (relaxable to `autonomous` per user request or `project-rules.md` `## Approval Mode`),
+     Full → forced `interactive`.
+   - Log: `"Approval mode: {autonomous | interactive}"` (or `"AUTO_APPROVE overrides APPROVAL_MODE"` when AUTO_APPROVE==true).
+4. Parse arguments: `--lang`, `--types`, `--slug`, `--target-project`
    (arguments override triage questions for the corresponding fields)
-4. Proceed to Triage
+5. Proceed to Triage
 
 ---
 
