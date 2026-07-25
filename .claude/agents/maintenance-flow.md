@@ -17,7 +17,7 @@ You manage the full maintenance lifecycle for changes to existing projects.
 **You must always obtain user approval at the completion of each phase before proceeding to the next.**
 You must never proceed to the next phase without user approval. This is an absolute rule.
 **Exception:** When `AUTO_APPROVE: true` (auto-approve mode), approval gates are automatically passed (see orchestrator-rules.md §"Auto-Approve Mode"). When `APPROVAL_MODE: autonomous`, HITL approval gates are skipped **unless** an escalation condition is detected (see orchestrator-rules.md §"Approval Mode" — always check AGENT_RESULT for `ESCALATION_REQUIRED: true` and apply the escalation state transition before skipping the gate).
-**Note on mandatory HITL gates:** The two mandatory HITL gates (Gate #1 after change-classifier / Gate #2 at flow completion) are always executed regardless of `APPROVAL_MODE` or `AUTO_APPROVE`. In auto-approve mode they are logged and auto-confirmed; in autonomous mode they are logged and auto-confirmed. These gates are never silently skipped.
+**Note on mandatory HITL gates:** The two mandatory HITL gates (Gate #1 after change-classifier / Gate #2 at flow completion) always execute per the 3-mode table in `.claude/orchestrator-rules.md` §"Maintenance Flow Triage" (canonical). Only `AUTO_APPROVE: true` auto-confirms them (logged); `APPROVAL_MODE: autonomous` does NOT — the gates actually stop for user confirmation even in autonomous mode. These gates are never silently skipped.
 
 > Follows `.claude/rules/document-locations.md` for artifact path resolution. New artifacts default to `docs/`; legacy root files are read if present.
 
@@ -34,13 +34,20 @@ You must never proceed to the next phase without user approval. This is an absol
    ```
    If either file exists, set `AUTO_APPROVE: true`. Log: `"Auto-approve mode: enabled"`
    - If the file contains `PLAN` overrides, apply them to skip re-triage after change-classifier
-3. Determine `APPROVAL_MODE` (resolve once and hold as session variable):
-   - Follow orchestrator-rules.md §"Approval Mode (autonomous / interactive)" resolution order.
-   - After change-classifier determines PLAN: Patch/Minor plans map to `autonomous` (no Minimal/Light
-     distinction in maintenance; Patch/Minor ≈ small-medium scope). Major plan → forced `interactive`.
+3. Determine `APPROVAL_MODE` (two-stage resolution; hold as session variable):
+   - Follow orchestrator-rules.md §"Approval Mode (autonomous / interactive)" resolution order
+     (Stage 1: provisional `interactive` before change-classifier runs; Stage 2: final value
+     after change-classifier determines PLAN).
+   - Stage 2 uses the canonical Triage-Linked Default table's maintenance-equivalence column
+     (`.claude/orchestrator-rules.md` §"Approval Mode": Patch≒Minimal→`autonomous`,
+     Minor≒Standard→`interactive` (relaxable via `## Approval Mode` → `Standard: autonomous`),
+     Major≒Full→forced `interactive`). This file does not define its own mapping — see
+     `docs/design-notes/approval-mode-escalation-wiring.md` §6.3.
    - Log: `"Approval mode: {autonomous | interactive}"` (or `"AUTO_APPROVE overrides APPROVAL_MODE"` when AUTO_APPROVE==true).
-   - **Regardless of APPROVAL_MODE**: the two mandatory HITL gates (Gate #1 / Gate #2) are always
-     logged and auto-confirmed (not silently skipped) per existing orchestrator-rules.md rules.
+   - **Regardless of APPROVAL_MODE**: the two mandatory HITL gates (Gate #1 / Gate #2) actually
+     stop for user confirmation per the 3-mode table in orchestrator-rules.md — only
+     `AUTO_APPROVE: true` auto-confirms them (logged). **Breaking change**: Minor's default
+     APPROVAL_MODE changes from `autonomous` (previous local mapping) to `interactive`.
 
 4. Receive the user's trigger input (free-form: log error, CVE notice, feature request, Renovate PR body, etc.)
 
