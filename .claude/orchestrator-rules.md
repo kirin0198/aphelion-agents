@@ -497,9 +497,47 @@ The following must NOT be relaxed regardless of `APPROVAL_MODE` or `AUTO_APPROVE
 - `doc-reviewer` auto-insertion and its automatic rollback chain
 - `security-auditor` execution
 - `reviewer` execution
+- **`change-classifier`'s internal G1 gate (maintenance Gate #1)** — see "In-agent Approval
+  Gates" below. Unlike other G1 gates, it is NOT symmetrized to the standard three-tier
+  priority: it always stops under `APPROVAL_MODE: autonomous` and is auto-confirmed only when
+  `AUTO_APPROVE == true`. This is the sole exception to the G1 symmetrization rule (see
+  `docs/design-notes/approval-mode-escalation-wiring.md` §6.4).
 
 These agents always run. Only the **HITL approval gate** (the AskUserQuestion pause between
 phases) is skipped in `autonomous` mode. Automatic quality checks are never bypassed.
+
+### In-agent Approval Gates (G1 / G2 / G3)
+
+`APPROVAL_MODE` / `AUTO_APPROVE` are orchestrator session variables. Sub-agents run in
+independent contexts and cannot read them unless the orchestrator injects them into the
+spawn prompt (see "Phase Execution Loop" step 2 below). This section defines how sub-agent
+*internal* `AskUserQuestion` gates — distinct from the orchestrator's own phase approval
+gates — behave once the value is injected.
+
+**Gate types:**
+
+| Type | Definition | Examples | APPROVAL_MODE applies? |
+|------|------------|----------|------------------------|
+| **G1 — approval gate** | Confirms an intermediate work-product; structurally identical to an orchestrator phase gate | `change-classifier` §User Approval Gate, `impact-analyzer` §User Approval Gate, `analyst-core` §Step 3, `codebase-analyzer` §User Confirmation, `scope-planner` handoff-not-ready gate | Yes — three-tier priority below (except the invariant exception above) |
+| **G2 — input intake** | Collects input required to start processing; not an approval | `interviewer`, `analyst-intake` (fresh-mode intake), `visual-designer` intake, `rules-designer`, `codebase-analyzer` output-location question, `user-manual-author` degraded-output confirmation | No — always runs. Only the **unattended default** (used when `AUTO_APPROVE == true` and no human is present) must be documented per agent |
+| **G3 — reference only** | A general "ask if unclear" pointer, not a gate | `spec-designer` L141 (`user-questions.md` reference) | No — no behavior change |
+
+**Three-tier priority for G1 gates** (same shape as the orchestrator's own gate priority):
+
+| Mode | G1 gate behavior |
+|------|-------------------|
+| `AUTO_APPROVE == true` | Auto-confirm — adopt the agent's recommended option; emit a one-line text summary instead of calling `AskUserQuestion` |
+| `APPROVAL_MODE == autonomous` | Skip and adopt the recommended option (text summary only) |
+| `APPROVAL_MODE == interactive` (default / fail-safe when the value is absent) | Stop (`AskUserQuestion`) |
+
+**Invariant exception**: `change-classifier`'s G1 gate (maintenance Gate #1) does NOT follow
+this three-tier table — see Invariant Rules above.
+
+**AUTO_APPROVE hang fix**: prior to the propagation mechanism defined in "Phase Execution
+Loop" step 2, G1 gates had no way to learn `AUTO_APPROVE == true` and would stop even during
+unattended (Ouroboros) evaluation runs, in violation of the "auto-approve mode is never
+silently blocked" contract. The injection closes this gap (see
+`docs/design-notes/approval-mode-escalation-wiring.md` §5.3/§6.4).
 
 ### Escalation Conditions (ADR-003)
 
@@ -573,6 +611,12 @@ Each phase follows this common loop. Domain-specific steps (rollback checks, etc
      ─ On the first phase of a flow, build ARTIFACT_PATHS by running
        Glob("{docs/<NAME>.md,<NAME>.md}") once per artifact name. Prefer docs/ on tie
        and emit WARNING_LEGACY_DUPLICATE when both exist.
+     ─ MUST also inject the current session's `APPROVAL_MODE` and `AUTO_APPROVE` values into
+       every agent's spawn prompt, so in-agent G1 gates can apply the three-tier priority
+       (see "In-agent Approval Gates" above). Receiving agents default to `interactive`
+       when the value is absent from the prompt (fail-safe). For the analyst chain, this
+       value is carried as the `approval_mode` field of `HANDOFF_PAYLOAD` rather than a
+       bare prompt injection (see `agent-communication-protocol.md` §"Field Reference").
   3. Verify the agent's AGENT_RESULT block
   4. Evaluate STATUS and handle error / blocked / failure
      (for failure, follow domain-specific rollback rules)
