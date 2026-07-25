@@ -10,7 +10,7 @@ Status: In progress
 
 ### Phase 1 (canonical, sequential)
 - [x] TASK-001 (T-01): ESCALATION_REQUIRED per-agent trigger table + non-duplication rule; HANDOFF_PAYLOAD 13→14 fields | Target file: src/.claude/rules/agent-communication-protocol.md
-- [ ] TASK-002 (T-02): Triage-Linked Default table maintenance mapping; mandatory-checkpoint 3-mode table; two-stage APPROVAL_MODE resolution | Target file: .claude/orchestrator-rules.md
+- [x] TASK-002 (T-02): Triage-Linked Default table maintenance mapping; mandatory-checkpoint 3-mode table; two-stage APPROVAL_MODE resolution | Target file: .claude/orchestrator-rules.md
 - [ ] TASK-003 (T-03): In-agent approval gates (G1/G2/G3) section; invariant exception for change-classifier; Phase Execution Loop step 2 propagation | Target file: .claude/orchestrator-rules.md
 
 ### Phase 2 (parallel, depends on Phase 1)

@@ -63,8 +63,20 @@ Each orchestrator must `Read` this file at startup before beginning work.
 > `change-classifier` proposes inserting `codebase-analyzer` as Phase 0 (with user confirmation).
 
 > **Two mandatory HITL gates**: (1) After change-classifier — user approves the change plan and triage result.
-> (2) At flow completion — user confirms the final state before the flow ends. These gates are never skipped
-> even in auto-approve mode (they are logged but auto-confirmed).
+> (2) At flow completion — user confirms the final state before the flow ends. These gates are never silently
+> skipped. Unlike ordinary phase approval gates, they follow a dedicated **3-mode table** that deliberately
+> diverges from the standard `AUTO_APPROVE > APPROVAL_MODE > interactive` three-tier priority used elsewhere
+> in this document (see §"Approval Mode" below):
+>
+> | Mode | Gate #1 / Gate #2 behavior |
+> |------|------------------------------|
+> | `AUTO_APPROVE == true` | Logged and auto-confirmed (does not stop) |
+> | `APPROVAL_MODE == autonomous` | **Actually stops** for user confirmation (`AskUserQuestion`) |
+> | `APPROVAL_MODE == interactive` | Actually stops for user confirmation (`AskUserQuestion`) |
+>
+> Only `AUTO_APPROVE` bypasses these gates; `autonomous` alone does not. This is the sole deliberate
+> asymmetry against the otherwise-symmetric priority table. Rationale:
+> `docs/design-notes/approval-mode-escalation-wiring.md` §6.2.
 
 ### Doc Flow Triage
 
@@ -416,16 +428,41 @@ external-evaluation flag that bypasses everything including escalation gates.
 
 ### Triage-Linked Default
 
-| Triage Plan | Default APPROVAL_MODE | User override allowed |
-|-------------|----------------------|-----------------------|
-| Minimal     | `autonomous`         | — (fixed)             |
-| Light       | `autonomous`         | — (fixed)             |
-| Standard    | `interactive`        | Yes — can relax to `autonomous` (see below) |
-| Full        | `interactive`        | No — forced `interactive` even if user requests autonomous |
+This is the **single canonical table** for APPROVAL_MODE defaults across all five flows,
+including Maintenance Flow. Maintenance's Patch/Minor/Major plans map onto it by equivalence
+(see "Maintenance Equivalent" column) rather than defining a second table — `maintenance-flow.md`
+must reference this table, not restate its own mapping (see
+`docs/design-notes/approval-mode-escalation-wiring.md` §6.3).
+
+| Triage Plan | Maintenance Equivalent | Default APPROVAL_MODE | User override allowed |
+|-------------|------------------------|------------------------|-----------------------|
+| Minimal     | Patch                   | `autonomous`         | — (fixed)             |
+| Light       | —                        | `autonomous`         | — (fixed)             |
+| Standard    | Minor                    | `interactive`        | Yes — can relax to `autonomous` (see below) |
+| Full        | Major                    | `interactive`        | No — forced `interactive` even if user requests autonomous |
+
+> **Breaking change note (#179)**: Maintenance's Minor plan previously defaulted to `autonomous`
+> under a local (now-removed) mapping in `maintenance-flow.md`. Under this canonical table, Minor≒Standard
+> defaults to `interactive`. The `## Approval Mode` → `Standard: autonomous` project-rules.md override key
+> relaxes both Delivery/Discovery/Doc's Standard plan **and** Maintenance's Minor plan — they share the
+> same override key by design, since they share the same table row.
 
 ### APPROVAL_MODE Resolution Order (ADR-005)
 
-Resolve `APPROVAL_MODE` once at flow startup and hold it as a session variable:
+Resolve `APPROVAL_MODE` in **two stages**. The triage-rule default (step 2 below) requires the
+finalized Triage Plan, which is only known *after* triage completes — resolving everything in a
+single step at "flow startup" (before triage runs) is order-inconsistent (see
+`docs/design-notes/approval-mode-escalation-wiring.md` §5.4 for the discovered defect).
+
+- **Stage 1 (at flow startup, before triage)**: set a provisional `APPROVAL_MODE: interactive`
+  (fail-safe default). Also resolve `AUTO_APPROVE` per the Auto-Approve Mode check — this does
+  not depend on triage and is resolved once.
+- **Stage 2 (immediately after the triage plan is finalized)**: re-resolve `APPROVAL_MODE` to its
+  final value using steps 1–3 below and hold it as the session variable for the remainder of the
+  flow. Log the final value: `"Approval mode: {autonomous | interactive}"` (or
+  `"AUTO_APPROVE overrides APPROVAL_MODE"` when `AUTO_APPROVE == true`).
+
+Steps 1–3 (used to compute both the Stage 1 provisional value and the Stage 2 final value):
 
 1. If `AUTO_APPROVE == true`: `APPROVAL_MODE` is not consulted for gate decisions
    (log its triage-default value for audit purposes only).
