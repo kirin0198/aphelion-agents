@@ -29,12 +29,13 @@ You must never proceed to the next phase without user approval. This is an absol
 2. Check for auto-approve mode: if `.aphelion-auto-approve` (or legacy `.telescope-auto-approve`) exists, set `AUTO_APPROVE: true`
    - If the file contains `PLAN` / `PRODUCT_TYPE` / `HAS_UI` overrides, apply them to triage
    - Log: `"Auto-approve mode: enabled"`
-3. Determine `APPROVAL_MODE` (resolve once and hold as session variable):
-   - Follow orchestrator-rules.md §"Approval Mode (autonomous / interactive)" resolution order.
-   - After triage plan is determined: Minimal/Light → `autonomous`, Standard → `interactive`
-     (relaxable to `autonomous` per user request or `project-rules.md` `## Approval Mode`),
-     Full → forced `interactive`.
-   - Log: `"Approval mode: {autonomous | interactive}"` (or `"AUTO_APPROVE overrides APPROVAL_MODE"` when AUTO_APPROVE==true).
+3. Set a provisional `APPROVAL_MODE: interactive` (Stage 1 — fail-safe default until the triage
+   plan is known; see orchestrator-rules.md §"Approval Mode" → "APPROVAL_MODE Resolution Order").
+   After the triage plan is finalized below (see "Triage" section), resolve `APPROVAL_MODE` to
+   its final value (Stage 2): Minimal/Light → `autonomous`, Standard → `interactive`
+   (relaxable to `autonomous` per user request or `project-rules.md` `## Approval Mode`),
+   Full → forced `interactive`. Log: `"Approval mode: {autonomous | interactive}"`
+   (or `"AUTO_APPROVE overrides APPROVAL_MODE"` when AUTO_APPROVE==true).
 
 If `DISCOVERY_RESULT.md` exists, validate the following required fields.
 If any are missing, report to the user and request corrections before proceeding to triage.

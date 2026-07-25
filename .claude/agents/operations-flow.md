@@ -34,12 +34,13 @@ Generate `OPS_RESULT.md` as the final artifact, bringing the project to a deploy
 Verify the following before starting work:
 
 0. Read `.claude/orchestrator-rules.md`. Check for auto-approve mode: if `.aphelion-auto-approve` (or legacy `.telescope-auto-approve`) exists, set `AUTO_APPROVE: true` and apply any overrides. Log: `"Auto-approve mode: enabled"`
-0a. Determine `APPROVAL_MODE` (resolve once and hold as session variable):
-   - Follow orchestrator-rules.md §"Approval Mode (autonomous / interactive)" resolution order.
-   - After triage plan is determined: Light → `autonomous`, Standard → `interactive`
-     (relaxable to `autonomous` per user request or `project-rules.md` `## Approval Mode`),
-     Full → forced `interactive`.
-   - Log: `"Approval mode: {autonomous | interactive}"` (or `"AUTO_APPROVE overrides APPROVAL_MODE"` when AUTO_APPROVE==true).
+0a. Set a provisional `APPROVAL_MODE: interactive` (Stage 1 — fail-safe default until the triage
+   plan is known; see orchestrator-rules.md §"Approval Mode" → "APPROVAL_MODE Resolution Order").
+   After the triage plan is finalized below (see "Triage" section), resolve `APPROVAL_MODE` to
+   its final value (Stage 2): Light → `autonomous`, Standard → `interactive`
+   (relaxable to `autonomous` per user request or `project-rules.md` `## Approval Mode`),
+   Full → forced `interactive`. Log: `"Approval mode: {autonomous | interactive}"`
+   (or `"AUTO_APPROVE overrides APPROVAL_MODE"` when AUTO_APPROVE==true).
 1. Does `DELIVERY_RESULT.md` exist? If not, prompt the user to complete Delivery Flow first
 2. Validate required fields of `DELIVERY_RESULT.md`:
    - Is `PRODUCT_TYPE` set to `service`? If `tool` / `library` / `cli`, report that Operations is not needed and stop
