@@ -15,15 +15,14 @@ intake_summary: |
   【背景・動機】
   直前にマージされた #161「承認モード（autonomous/interactive）のトリアージ連動とエスカレーション機構」
   (PR #165, commit 2cb8245) が導入した機能自体に、2026-07-04 全体レビュー（ADR:
-  docs/design-notes/adr-repo-review-2026-07-04.md、ブランチ docs/adr-repo-review-2026-07-04、
-  PR #217 で main 未マージ、`git show docs/adr-repo-review-2026-07-04:docs/design-notes/adr-repo-review-2026-07-04.md`
-  で参照可）で4件の欠陥が検出された。ADR の Decision §1（最優先）に「本ブランチが導入した機能自体の
+  docs/design-notes/adr-repo-review-2026-07-04.md、PR #217 で main にマージ済み、commit 9352b18）
+  で4件の欠陥が検出された。ADR の Decision §1（最優先）に「本ブランチが導入した機能自体の
   欠陥であり、マージ前修正が最も安価」として #166 と #178/#179/#180 が並記されている。
 
   【目標 / 受け入れ条件】
   1. #166 (critical): ESCALATION_REQUIRED / ESCALATION_REASON を Route A（developer / architect /
      security-auditor / tester / reviewer の自己申告）で実際に発行させる。発行側5エージェントの
-     AGENT_RESULT 節に addトリガーを追加し、orchestrator-rules.md §"Approval Mode" の Route A 記述
+     AGENT_RESULT 節に emit トリガーを追加し、orchestrator-rules.md §"Approval Mode" の Route A 記述
      ・agent-communication-protocol.md の Field Reference と整合させる。
   2. #178 (warning): maintenance-flow.md の「2つの必須 HITL ゲート」が autonomous（Patch/Minor既定）
      下で自動確認され人間不在になる矛盾を解消する。orchestrator-rules.md L65-67 の「mandatory HITL」契約
@@ -71,8 +70,7 @@ output_language: ja
 直前にマージされた #161「承認モード（autonomous / interactive）のトリアージ連動とエスカレーション機構」
 （PR #165、commit `2cb8245`）は、下流フローの自走（autonomous）とその安全網（エスカレーション機構）を
 Aphelion に導入した。しかし 2026-07-04 の全体レビュー（ADR:
-`docs/design-notes/adr-repo-review-2026-07-04.md`、ブランチ `docs/adr-repo-review-2026-07-04`、
-PR #217 として main 未マージ。参照は `git show docs/adr-repo-review-2026-07-04:docs/design-notes/adr-repo-review-2026-07-04.md`）
+`docs/design-notes/adr-repo-review-2026-07-04.md`、PR #217 として main にマージ済み、commit `9352b18`）
 で、この機能自体が配線不全であることが判明した。
 
 ADR の Findings（agents 節）は次のように総括している:
@@ -187,9 +185,9 @@ ADR の Decision §1（最優先）は、この4件を次のように位置づ�
   「個別エージェントへ emit 指示を追記しない（ADR-006）ため、経路 A の ESCALATION_REQUIRED が
   実運用で under-emit される」リスクを**自認した上でフォローアップ issue へ切り出す**方針が
   明記されていた。#166 はこのフォローアップの実体化である。
-- `docs/design-notes/adr-repo-review-2026-07-04.md` は現在 main 未マージ（PR #217 レビュー中、
-  ブランチ `docs/adr-repo-review-2026-07-04`）。本設計ノートが参照する ADR 本文はブランチ経由でのみ
-  読める点に留意（`git show docs/adr-repo-review-2026-07-04:docs/design-notes/adr-repo-review-2026-07-04.md`）。
+- `docs/design-notes/adr-repo-review-2026-07-04.md` は PR #217（commit `9352b18`）で main にマージ済み。
+  本設計ノートが参照する ADR 本文は `docs/design-notes/adr-repo-review-2026-07-04.md` として直接
+  読める。
 
 **オープン課題（analyst-core が承認ゲートでユーザーに確認すべき論点）:**
 
