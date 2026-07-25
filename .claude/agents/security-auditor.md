@@ -235,6 +235,13 @@ Agent-specific fields: `CRITICAL_COUNT`, `WARNING_COUNT`, `INFO_COUNT`, `CRITICA
 See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
 NEXT: `developer` when ≥1 CRITICAL (remediation required); `done` when no CRITICALs.
 
+**ESCALATION_REQUIRED (autonomous mode):** per the trigger table in
+`agent-communication-protocol.md`, set `ESCALATION_REQUIRED: true` only for a destructive-change
+judgment call that cannot be expressed as a CRITICAL finding (e.g., two valid remediation
+approaches, SPEC does not disambiguate). Never set it merely to report CRITICAL findings —
+the orchestrator already detects unresolved CRITICAL counts directly (Route B); duplicating it
+as Route A would double-trigger the escalation gate.
+
 ## Completion Conditions
 
 - [ ] SPEC.md and ARCHITECTURE.md have been reviewed

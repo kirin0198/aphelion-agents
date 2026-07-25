@@ -14,7 +14,7 @@ Status: In progress
 - [x] TASK-003 (T-03): In-agent approval gates (G1/G2/G3) section; invariant exception for change-classifier; Phase Execution Loop step 2 propagation | Target file: .claude/orchestrator-rules.md
 
 ### Phase 2 (parallel, depends on Phase 1)
-- [ ] TASK-004 (T-04): ESCALATION_REQUIRED emit triggers | Target files: .claude/agents/{developer,architect,security-auditor,tester,reviewer}.md
+- [x] TASK-004 (T-04): ESCALATION_REQUIRED emit triggers | Target files: .claude/agents/{developer,architect,security-auditor,tester,reviewer}.md
 - [ ] TASK-005 (T-05): fix mandatory HITL gate description; remove local APPROVAL_MODE mapping | Target file: .claude/agents/maintenance-flow.md
 - [ ] TASK-006 (T-06): two-stage APPROVAL_MODE resolution wording | Target files: .claude/agents/{discovery,delivery,operations,doc}-flow.md
 - [ ] TASK-007 (T-07): G1 gate three-tier priority + invariant exception + default option | Target files: .claude/agents/{change-classifier,impact-analyzer,analyst-core,codebase-analyzer,scope-planner}.md
