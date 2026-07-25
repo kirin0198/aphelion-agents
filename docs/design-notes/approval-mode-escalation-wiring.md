@@ -1,7 +1,8 @@
 > Last updated: 2026-07-25
 > GitHub Issue: [#166](https://github.com/kirin0198/aphelion-agents/issues/166)
-> Authored by: analyst-intake (2026-07-25)
-> Next: analyst-core
+> Authored by: analyst-intake (2026-07-25) / analyst-core (2026-07-25, §5-8)
+> Related issues: #178, #179, #180（#166 と同一 PR で解決）
+> Next: architect
 
 <!-- analyst-handoff
 planning_doc_path: docs/design-notes/approval-mode-escalation-wiring.md
@@ -189,7 +190,7 @@ ADR の Decision §1（最優先）は、この4件を次のように位置づ�
   本設計ノートが参照する ADR 本文は `docs/design-notes/adr-repo-review-2026-07-04.md` として直接
   読める。
 
-**オープン課題（analyst-core が承認ゲートでユーザーに確認すべき論点）:**
+**オープン課題（analyst-core が承認ゲートでユーザーに確認すべき論点） — 全件 §6 で解決済み（2026-07-25）:**
 
 1. **#178 の設計選択**: maintenance の必須 HITL ゲート×2 を autonomous 下でどう扱うか。
    (a) ゲート自体を autonomous の緩和対象外として実停止させる、(b) orchestrator-rules 側で
@@ -363,10 +364,17 @@ rules-designer の生成テンプレート（rules-designer.md:290-386）に**�
 EN/JA 同時更新義務と `check-readme-wiki-sync.sh` が発火し PR が肥大するため、フォローアップとする）。
 ops 系エージェント（db-ops / releaser / infra-builder / observability）への ESCALATION_REQUIRED 拡張。
 
-## §6 アプローチ
+## §6 アプローチ（確定）
 
-> **状態: 設計選択3件がユーザー承認待ち（analyst-core は AskUserQuestion ツールを保持しないため、
-> 呼び出し元エージェントが承認ゲートを代行する）。** 決定後に本節を確定させる。
+> **状態: 確定（2026-07-25）。** 設計選択3件はいずれも推奨案どおりユーザーが承認した
+> （analyst-core は AskUserQuestion ツールを保持しないため、呼び出し元の analyst オーケストレーターが
+> 承認ゲートを代行）。以下は決定内容と根拠であり、architect はこの範囲で差分設計すること。
+>
+> | 論点 | 決定 | 一言要約 |
+> |---|---|---|
+> | #178 | **案 A** | maintenance の必須ゲート×2 は autonomous でも実停止。自動確認は `AUTO_APPROVE` のときのみ |
+> | #179 | **案 B** | Patch≒Minimal / Minor≒Standard / Major≒Full の等価写像で canonical 表を一本化 |
+> | #180 | **案 A** | G1 内部ゲートを三段優先順位に対称化（maintenance Gate #1 のみ invariant な例外） |
 
 ### 6.1 確定済み（選択不要）
 
@@ -382,37 +390,147 @@ ops 系エージェント（db-ops / releaser / infra-builder / observability）
 4. **解決タイミングの二段化** — 起動時は暫定 `interactive`、トリアージ確定後に最終決定（§5.4）。
 5. **rules-designer テンプレートへの `## Approval Mode` 追加**（§5.4）。
 
-### 6.2 設計選択 1（#178）— maintenance の必須ゲート×2 を autonomous 下でどう扱うか
+### 6.2 決定 1（#178）— maintenance の必須ゲート×2 は autonomous でも実停止【案 A 確定】
 
-| 案 | 内容 | 利点 | 欠点 |
+**決定**: Gate #1（change-classifier 直後の変更計画承認）と Gate #2（フロー完了時の最終確認）は
+`APPROVAL_MODE: autonomous` でも**実際に停止する**。自動確認されるのは `AUTO_APPROVE == true` のときのみ。
+
+**採用しなかった案 B**: autonomous でも log+自動確認とし「mandatory HITL」表現を弱める案。
+既定の Patch 実行で人間の確認が完全にゼロになるため不採用。
+
+**根拠**:
+
+1. `AUTO_APPROVE` と `autonomous` は意味論的に非対称である（§5.3）。前者は「人間が存在しない」ことの
+   表明（Ouroboros 外部評価）であり自動確認は必然。後者は「人間は端末の前にいるが割り込みを減らしたい」
+   モードにすぎない。両者を同一視することは「fewer interruptions」を「zero oversight」にすり替える範疇違反。
+2. maintenance は**既存コードベースへ変更を適用する**フローであり、Patch が既定経路である。
+   ここで人間チェックポイントが 0 になる設計は受け入れられない。
+3. autonomous の利益は損なわれない。Minor 経路で省略されるフェーズゲートは依然として大半が省略され、
+   停止回数は概ね 9 → 2 に減る。
+4. `change-classifier.md:143-183` の**無条件 `AskUserQuestion` という現行実装が既に案 A の挙動である**
+   （ユーザー実地検証済み）。案 A は実装追認ではなく、実装が正しく記述が誤っているという判断。
+
+**重要（修正方向の明示）**: `maintenance-flow.md:20` の
+「in autonomous mode they are logged and auto-confirmed」が**誤りの側**である。
+実装（change-classifier の無条件ゲート）を記述に合わせるのではなく、**記述を実装に合わせて訂正する**。
+`.claude/orchestrator-rules.md:65-67` の「Two mandatory HITL gates」記述も、
+`AUTO_APPROVE` のみが自動確認であることを明示する3モード表へ改める。
+
+**canonical に置く3モード表（骨子）**:
+
+| モード | Gate #1 / Gate #2 の挙動 |
+|---|---|
+| `AUTO_APPROVE == true` | ログ出力のうえ自動確認（停止しない） |
+| `APPROVAL_MODE == autonomous` | **実停止**（AskUserQuestion） |
+| `APPROVAL_MODE == interactive` | 実停止（AskUserQuestion） |
+
+### 6.3 決定 2（#179）— 等価マッピングで canonical 表を一本化【案 B 確定】
+
+**決定**: maintenance の Patch/Minor/Major を既存4段トリアージ語彙へ写像する。
+
+| maintenance PLAN | 写像先 | 既定 APPROVAL_MODE | override |
 |---|---|---|---|
-| **A（推奨）** | Gate #1/#2 は `APPROVAL_MODE: autonomous` でも**実停止**。自動確認するのは `AUTO_APPROVE: true` のときのみ。「mandatory checkpoint」の3モード表を canonical に置き、maintenance-flow.md:20 の記述を削除 | Patch/Minor の既定実行に人間チェックポイントが2つ残る。autonomous の利益（Minor で約7つのフェーズゲートを省略）はほぼ維持され、停止は 9→2 に減る。`AUTO_APPROVE` と `autonomous` の意味論的非対称性（§5.3）を正しく反映 | Patch の完全無停止実行はできない |
-| B | autonomous でも log+自動確認とし、orchestrator-rules.md:65-67 の「mandatory HITL」表現を「mandatory checkpoint（記録は必須、確認は APPROVAL_MODE 依存）」へ改める | maintenance-flow の現在の宣言に canonical を追随させるだけで済む。Patch が完全無停止になる | 既定の Patch 実行で人間の確認がゼロになる。「必須 HITL」という既存契約の意味が実質的に消滅 |
+| Patch | ≒ Minimal | `autonomous` | 不可（固定） |
+| Minor | ≒ Standard | `interactive` | 可（`## Approval Mode` の `Standard: autonomous` で緩和可） |
+| Major | ≒ Full | `interactive` | 不可（forced interactive） |
 
-### 6.3 設計選択 2（#179）— APPROVAL_MODE マッピングの canonical をどこに置くか
+`.claude/orchestrator-rules.md:417` の Triage-Linked Default 表を**唯一の canonical** とし、
+写像行（またはプラン名の併記列）をその表に加える。**第2表は新設しない。**
+`project-rules.md` の maintenance 専用キー（例 `Minor: autonomous`）も**新設しない**。
 
-| 案 | 内容 | 利点 | 欠点 |
-|---|---|---|---|
-| **B（推奨）: 等価マッピング** | maintenance の Patch/Minor/Major を既存4段へ写像（Patch≒Minimal / Minor≒Standard / Major≒Full）。canonical 表は1つのまま、maintenance-flow.md は写像宣言＋canonical 参照のみ | 表が1つで済み #131/#132 の重複排除方針に合致。Standard の「relax 可」「Full は不可」の意味論をそのまま継承でき、**Minor に override 経路が自動的に生える**（#179 の受け入れ条件を直接満たす）。新しい project-rules キーが不要 | Minor の既定が `autonomous` → `interactive` に変わる（挙動変更）。`Standard: autonomous` キーが maintenance の Minor にも波及する点の明記が必要 |
-| A | canonical に Patch/Minor/Major の第2表を追加（語彙別に2表を併存）。project-rules に maintenance 専用キー（例 `Minor: autonomous`）を新設 | maintenance の既定（Patch/Minor→autonomous）を維持できる。フロー間の独立性が高い | 表とキーが二重化し、将来の変更で乖離しやすい。Minor 既定 autonomous のまま＝#179 の懸念（Standard 相当規模が autonomous 固定）が半分残る |
+**採用しなかった案 A**: 語彙別に2表を併存させ maintenance 専用キーを新設する案。
+表とキーが二重化して将来乖離しやすく、#131/#132 の重複排除方針に反するため不採用。
 
-### 6.4 設計選択 3（#180）— G1 内部承認ゲートを autonomous で飛ばすか
+**根拠**:
 
-（前提: 伝播路の導入と AUTO_APPROVE 自動確認は §6.1 で確定済み。以下は autonomous のときの G1 の扱いのみ）
+1. 5フロー中 maintenance だけが canonical 表の外にいるという #179 の指摘（§5.4 で正確と確認）に対し、
+   語彙を写像するだけで表を増やさずに解消できる。
+2. Standard の意味論（「relax 可」「Full は不可」）をそのまま継承できるため、
+   **Minor に override 経路が自動的に生える**。#179 の受け入れ条件（Minor の relax/tighten 可能化）を
+   新規キーなしで直接満たす。
+3. `maintenance-flow.md:37-43` のローカル既定記述は**削除**し、canonical 表への参照へ統一する。
 
-| 案 | 内容 | 利点 | 欠点 |
-|---|---|---|---|
-| **A（推奨）: 対称化** | G1 ゲートはオーケストレーターのフェーズゲートと同じ三段優先順位に従う（AUTO_APPROVE→自動確認 / autonomous→スキップして推奨選択肢を採用・テキスト要約のみ出力 / interactive→停止）。ただし maintenance Gate #1（change-classifier）は設計選択1の結果に従う | autonomous の意味がフロー全体で一貫する。フェーズごとの挙動不揃い（#180 の主訴）が解消 | 各 G1 ゲートに「autonomous 時に採用する既定選択肢」を明示する必要がある（実質は各ゲートの "(recommended)" 選択肢） |
-| B: 不変条件化 | 「G1 内部ゲートは APPROVAL_MODE では緩和しない」を Invariant Rules に明記（AUTO_APPROVE のみ自動確認） | 追記が最小（3行程度）。安全側に倒れる | autonomous 実行でも Minor 経路で3回停止（change-classifier / impact-analyzer / analyst-core）。autonomous が「骨抜き」という #180 の主訴は未解決のまま |
+**⚠ 破壊的変更（BREAKING）— Minor の既定が `autonomous` → `interactive` に変わる**
 
-## §7 ドキュメント変更計画
+- 現行: `maintenance-flow.md:39-40` により Minor は無条件で `autonomous`。
+- 変更後: Minor ≒ Standard となり既定は `interactive`。フェーズごとの承認ゲートが復活する。
+- **ユーザーはこの挙動変更を承知のうえで案 B を選択している。**
+- 緩和経路は用意されている: `.claude/rules/project-rules.md` の `## Approval Mode` に
+  `Standard: autonomous` を書けば、Standard-only relaxation が Minor にも適用される。
+  この波及（Delivery の Standard と maintenance の Minor が同一キーを共有する点）は
+  canonical 表に明記すること。
+- この破壊的変更は **#179 の issue 本文と本設計ノートの両方に明示的に記録する**（実施済み）。
+
+### 6.4 決定 3（#180）— G1 内部承認ゲートを三段優先順位へ対称化【案 A 確定】
+
+**決定**: サブエージェント内部の G1 承認ゲートは、オーケストレーターのフェーズゲートと**同じ三段優先順位**
+（`AUTO_APPROVE` > `APPROVAL_MODE` > 既定 `interactive`）に従う。
+
+| モード | G1 ゲートの挙動 |
+|---|---|
+| `AUTO_APPROVE == true` | 自動確認（推奨選択肢を採用、テキスト要約のみ出力） |
+| `APPROVAL_MODE == autonomous` | スキップし推奨選択肢を採用（テキスト要約のみ出力） |
+| `APPROVAL_MODE == interactive`（既定・値未受領時のフェイルセーフ） | 停止（AskUserQuestion） |
+
+**採用しなかった案 B**: 「G1 は APPROVAL_MODE では緩和しない」と Invariant Rules に書くだけの案。
+追記は最小だが、autonomous 実行でも Minor 経路で3回停止し、
+「autonomous が骨抜き」という #180 の主訴が未解決のまま残るため不採用。
+
+**⚠ 対称化の例外（invariant）— maintenance Gate #1**
+
+決定1（§6.2）により、**`change-classifier` の G1 ゲート（maintenance Gate #1）は対称化の対象外**とする。
+すなわち `autonomous` でも実停止し、`AUTO_APPROVE == true` のときのみ自動確認する。
+この例外は canonical に**不変条件として明記**すること。記載場所は
+`.claude/orchestrator-rules.md:457` の `### Invariant Rules (§5.3)` の隣接箇所が適当
+（同節が既に「APPROVAL_MODE / AUTO_APPROVE によらず緩和してはならない事項」を列挙しているため）。
+
+他の G1 ゲート（`impact-analyzer` / `analyst-core` §Step 3 / `codebase-analyzer` / `scope-planner`）は
+通常の三段優先順位に従う。
+
+**AUTO_APPROVE ハングの解消**: §5.3 で新規発見した「`AUTO_APPROVE == true` でも内部ゲートが停止し
+無人実行がハングする」という `orchestrator-rules.md:65-67` の canonical 契約違反は、
+本決定の伝播路導入によって解消される。**新規 issue は起票せず #180 に統合する**（ユーザー指示）。
+
+**autonomous 時の既定選択肢の明示**: 案 A の代償として、各 G1 ゲートに
+「autonomous 時に採用する既定選択肢」を明示する必要がある。実質は各ゲートの
+`(recommended)` / `(推奨)` 選択肢であり、既存の AskUserQuestion 定義から機械的に決まる。
+architect は各 G1 ゲートについてこの既定選択肢を差分設計で確定させること。
+
+## §7 ドキュメント変更計画と実装タスク分割
+
+### 7.1 ドキュメント変更計画
 
 - **SPEC.md**: 変更なし（本リポジトリに SPEC.md は存在しない — `artifact_paths: SPEC: missing`）
 - **UI_SPEC.md**: 変更なし（存在しない）
 - **ARCHITECTURE.md**: 変更なし（存在しない。本リポジトリの「設計」は `.claude/orchestrator-rules.md` と
-  `src/.claude/rules/*.md` が担う）
-- **本設計ノート**: §5 記入済み。§6 は設計選択確定後に確定版へ更新
-- **変更対象は §5.6 の一覧のとおり**（ルール・エージェント定義ファイル群）。architect が差分設計を確定させる
+  `src/.claude/rules/*.md` が担う。architect は ARCHITECTURE.md を新規作成せず、
+  これらの canonical への差分設計として設計ノートに記述すること）
+- **本設計ノート**: §5（詳細分析）記入済み、§6（アプローチ）確定済み、§7/§8 本節にて最終化
+- **`docs/wiki/`**: 変更なし（現状 approval-mode 記述は 0 件。追加すると EN/JA 同時更新義務と
+  `check-readme-wiki-sync.sh` が発火し PR が肥大するためフォローアップ扱い）
+
+### 7.2 実装タスク分割（architect が TASK 化する際の推奨単位）
+
+依存関係の順に並べる。TASK-001〜003（canonical 3点）が先行し、以降は並行可能。
+
+| # | タスク | 対象ファイル | 対応 issue | 依存 |
+|---|---|---|---|---|
+| **T-01** | `ESCALATION_REQUIRED` / `ESCALATION_REASON` の Field Reference 拡張。**エージェント別トリガー表**と**Route A/B 非重複規則**（§5.2-(d)）を新設。`STATUS` との直交性を明記 | `src/.claude/rules/agent-communication-protocol.md` | #166 | — |
+| **T-02** | §"Approval Mode" 改訂: ①Triage-Linked Default 表（L417）に maintenance 写像列（Patch≒Minimal / Minor≒Standard / Major≒Full）を追加 ②mandatory checkpoint の**3モード表**（§6.2）で L65-67 を置換 ③APPROVAL_MODE 解決タイミングの**二段化**（起動時は暫定 `interactive`、トリアージ確定後に最終決定） | `.claude/orchestrator-rules.md` | #178 / #179 | — |
+| **T-03** | ①§"In-agent approval gates" 新設（G1/G2/G3 のゲート3類型＋三段優先順位、§5.5-(c)/§6.4） ②`### Invariant Rules (§5.3)`（L457）隣接に **maintenance Gate #1 の対称化例外**を invariant として明記 ③`### Phase Execution Loop` step 2（L533 の ARTIFACT_PATHS verbatim 引き継ぎ）に **`APPROVAL_MODE` / `AUTO_APPROVE` 注入 1行**を並置 | `.claude/orchestrator-rules.md` | #180 | T-02 |
+| **T-04** | 5 emitters の Output on Completion に emit 条件を**1〜2行の canonical 参照＋固有トリガー**として追記。本文複製は禁止。各ファイルの境界条件: developer=`STATUS: blocked`、architect=`TECH_STACK_CHANGED: true` を `ESCALATION_REQUIRED` に接続、security-auditor=Route B と非重複、tester=`STATUS: failure` と非重複、reviewer=自動 rollback と非重複 | `.claude/agents/{developer,architect,security-auditor,tester,reviewer}.md` | #166 | T-01 |
+| **T-05** | L20 の「in autonomous mode they are logged and auto-confirmed」を**削除・訂正**（§6.2: 記述側が誤り）。L37-43 のローカル APPROVAL_MODE マッピング発明を**削除**し canonical 表参照へ統一 | `.claude/agents/maintenance-flow.md` | #178 / #179 | T-02 |
+| **T-06** | APPROVAL_MODE 決定ステップの二段化に伴う文言修正（各1〜2行）。現状は決定ステップがトリアージより前の番号（discovery/delivery/doc は step 3、operations は step 0a）に置かれ**ステップ番号順に実行不能**（§5.4） | `.claude/agents/{discovery,delivery,operations,doc}-flow.md` | #179 | T-02 |
+| **T-07** | G1 ゲートに挙動条件1行（三段優先順位への参照）と **autonomous 時に採用する既定選択肢**の明示。`change-classifier` のみ invariant な例外（autonomous でも実停止）として別文言 | `.claude/agents/{change-classifier,impact-analyzer,analyst-core,codebase-analyzer,scope-planner}.md` | #180 | T-03 |
+| **T-08** | HANDOFF_PAYLOAD に `approval_mode` フィールド追加（**13 → 14 フィールド**）。送出側 `analyst-intake`、受領側 `analyst-core`、および `agent-communication-protocol.md` の Field Reference の3箇所を同時更新 | `.claude/agents/{analyst-intake,analyst-core}.md` + `src/.claude/rules/agent-communication-protocol.md` | #180 | T-01 / T-03 |
+| **T-09** | project-rules テンプレートに `## Approval Mode` セクションを追加（L290-386 のテンプレ内）。`Standard: autonomous` キーと、それが **maintenance の Minor にも波及する**旨を明記（§6.3） | `.claude/agents/rules-designer.md` | #179 | T-02 |
+
+**受け入れ確認（実装後に検証すべき点）**:
+
+- `grep -rn ESCALATION .claude/agents/{developer,architect,security-auditor,tester,reviewer}.md` が 0 件でなくなる（#166 の直接の受け入れ条件）
+- `agent-communication-protocol.md` の HANDOFF_PAYLOAD フィールド数記述が 13 → 14 に更新され、`analyst-intake` / `analyst-core` の記述と一致する
+- `maintenance-flow.md` に APPROVAL_MODE のローカル既定マッピングが残っていない
+- canonical 表が1つのままである（第2表が新設されていない）
 
 ## §8 architect ハンドオフブリーフ
 
@@ -440,4 +558,42 @@ ops 系エージェント（db-ops / releaser / infra-builder / observability）
 - `src/.claude/rules/` が rules の canonical、`.claude/agents/` と `.claude/orchestrator-rules.md` が
   agents/orchestrator の canonical（`src/.claude/README.md` 参照）。`.claude/rules/` を作らないこと。
 
-**未決事項**: §6.2 / §6.3 / §6.4 の設計選択3件。ユーザー承認後に §6 を確定させてから architect へ渡すこと。
+**確定済みの設計判断（architect は再検討不要。この前提で差分設計すること）**:
+
+| 論点 | 決定 | 節 |
+|---|---|---|
+| #178 | maintenance 必須ゲート×2 は autonomous でも**実停止**。自動確認は `AUTO_APPROVE` のみ。`maintenance-flow.md:20` の記述が誤りの側であり、記述を実装に合わせて訂正する | §6.2 |
+| #179 | Patch≒Minimal / Minor≒Standard / Major≒Full の**等価写像**で canonical 表を一本化。第2表・maintenance 専用キーは新設しない。**Minor の既定が autonomous → interactive に変わる破壊的変更**をユーザーは承認済み | §6.3 |
+| #180 | G1 内部ゲートを三段優先順位へ**対称化**。ただし maintenance Gate #1（change-classifier）は **invariant な例外**として autonomous でも実停止 | §6.4 |
+
+### 8.1 影響ファイル一覧（確定・全 19 ファイル）
+
+| # | ファイル | 変更内容 | 対応 issue | タスク |
+|---|---|---|---|---|
+| 1 | `src/.claude/rules/agent-communication-protocol.md` | ESCALATION_REQUIRED の Field Reference 拡張（エージェント別トリガー表・Route A/B 非重複規則・STATUS との直交性）、HANDOFF_PAYLOAD 13→14 フィールド | #166 / #180 | T-01 / T-08 |
+| 2 | `.claude/orchestrator-rules.md` | Triage-Linked Default 表への maintenance 写像列、mandatory checkpoint 3モード表、解決タイミング二段化、§In-agent approval gates 新設、Invariant Rules への例外明記、Phase Execution Loop step 2 への伝播1行 | #178 / #179 / #180 | T-02 / T-03 |
+| 3 | `.claude/agents/developer.md` | emit 条件1〜2行（`STATUS: blocked` との境界） | #166 | T-04 |
+| 4 | `.claude/agents/architect.md` | emit 条件1〜2行（`TECH_STACK_CHANGED: true` を接続） | #166 | T-04 |
+| 5 | `.claude/agents/security-auditor.md` | emit 条件1〜2行（Route B と非重複） | #166 | T-04 |
+| 6 | `.claude/agents/tester.md` | emit 条件1〜2行（`STATUS: failure` と非重複） | #166 | T-04 |
+| 7 | `.claude/agents/reviewer.md` | emit 条件1〜2行（自動 rollback と非重複） | #166 | T-04 |
+| 8 | `.claude/agents/maintenance-flow.md` | L20 の誤記述訂正、L37-43 のローカル発明削除 → canonical 参照 | #178 / #179 | T-05 |
+| 9 | `.claude/agents/discovery-flow.md` | APPROVAL_MODE 決定ステップ二段化の文言修正 | #179 | T-06 |
+| 10 | `.claude/agents/delivery-flow.md` | 同上 | #179 | T-06 |
+| 11 | `.claude/agents/operations-flow.md` | 同上（step 0a） | #179 | T-06 |
+| 12 | `.claude/agents/doc-flow.md` | 同上 | #179 | T-06 |
+| 13 | `.claude/agents/change-classifier.md` | G1 ゲートに **invariant な例外**の文言（autonomous でも実停止、AUTO_APPROVE のみ自動確認） | #178 / #180 | T-07 |
+| 14 | `.claude/agents/impact-analyzer.md` | G1 ゲートに三段優先順位1行＋autonomous 時の既定選択肢 | #180 | T-07 |
+| 15 | `.claude/agents/analyst-core.md` | 同上（§Step 3）＋ HANDOFF_PAYLOAD `approval_mode` 受領 | #180 | T-07 / T-08 |
+| 16 | `.claude/agents/codebase-analyzer.md` | 同上 | #180 | T-07 |
+| 17 | `.claude/agents/scope-planner.md` | 同上 | #180 | T-07 |
+| 18 | `.claude/agents/analyst-intake.md` | HANDOFF_PAYLOAD に `approval_mode` 送出（13→14） | #180 | T-08 |
+| 19 | `.claude/agents/rules-designer.md` | project-rules テンプレートに `## Approval Mode` セクション追加 | #179 | T-09 |
+
+**スコープ外（本 PR では扱わない）**:
+
+- `docs/wiki/` への approval-mode 記述追加（現状 0 件。bilingual sync 義務の発火回避のためフォローアップ）
+- ops 系エージェント（`db-ops` / `releaser` / `infra-builder` / `observability`）への
+  ESCALATION_REQUIRED 拡張（§5.2-(b) で今回は5エージェント確定と判断。将来課題）
+- 新規エージェント追加、トリアージ判定ロジック自体の変更
+- casing 規約（`APPROVAL_MODE` / `AUTO_APPROVE`）の再設計（#161 ADR-001 で確定済み）
