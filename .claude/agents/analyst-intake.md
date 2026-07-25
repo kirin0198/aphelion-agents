@@ -77,6 +77,11 @@ Perform Steps A–D of the analyst workflow:
    ```
    Set `AUTO_APPROVE=true` if either file exists.
 
+3a. Resolve `approval_mode`: use the value injected into this agent's spawn prompt by the
+    caller (flow orchestrator, per `.claude/orchestrator-rules.md` §"Phase Execution Loop"
+    step 2) if present; otherwise default to `interactive` (fail-safe, e.g. standalone `/analyst`
+    invocation). Carry this value forward into `HANDOFF_PAYLOAD.approval_mode` unchanged.
+
 4. Resolve output language:
    ```bash
    grep -m1 "Output Language:" .claude/rules/project-rules.md 2>/dev/null | awk '{print $NF}'
@@ -110,7 +115,7 @@ When all three are present, set `INJECTION_ONLY_MODE=true` and proceed as follow
 
 2. **Inject** the `<!-- analyst-handoff -->` block immediately after the header block
    (after the `> Next: analyst-core` line or the last `>` header line).
-   Construct all 13 fields from the existing doc content and the passed `existing_issue_*` params:
+   Construct all 14 fields from the existing doc content and the passed `existing_issue_*` params:
 
    ```markdown
    <!-- analyst-handoff
@@ -130,6 +135,7 @@ When all three are present, set `INJECTION_ONLY_MODE=true` and proceed as follow
      - UI_SPEC: <resolved path or missing>
      - ARCHITECTURE: <resolved path or missing>
    auto_approve: true | false
+   approval_mode: autonomous | interactive
    output_language: en | ja
    -->
    ```
@@ -149,7 +155,7 @@ When all three are present, set `INJECTION_ONLY_MODE=true` and proceed as follow
 
 5. **Push** to remote (same rules as normal fresh mode).
 
-6. **Emit `AGENT_RESULT`** with `HANDOFF_PAYLOAD` (all 13 fields, same schema as fresh mode).
+6. **Emit `AGENT_RESULT`** with `HANDOFF_PAYLOAD` (all 14 fields, same schema as fresh mode).
 
 **Regression boundary**: when `INJECTION_ONLY_MODE` is NOT set (normal fresh mode),
 all behavior below is completely unchanged.
@@ -343,6 +349,7 @@ artifact_paths:
   - UI_SPEC: <resolved path or missing>
   - ARCHITECTURE: <resolved path or missing>
 auto_approve: true | false
+approval_mode: autonomous | interactive
 output_language: en | ja
 -->
 ```
@@ -471,7 +478,7 @@ This guard applies in both fresh mode AND injection-only mode.
 ## Required Output on Completion
 
 Emit an `AGENT_RESULT` block. On `STATUS: success`, include `HANDOFF_PAYLOAD`
-with the 13-field YAML schema so the caller can forward it directly to
+with the 14-field YAML schema so the caller can forward it directly to
 `analyst-core` as the spawn prompt.
 
 ```
@@ -501,6 +508,7 @@ HANDOFF_PAYLOAD: |
     - UI_SPEC: <resolved path or missing>
     - ARCHITECTURE: <resolved path or missing>
   auto_approve: true | false
+  approval_mode: autonomous | interactive
   output_language: en | ja
 NEXT: analyst-core
 ```
@@ -526,4 +534,4 @@ not spawn analyst-core.
 - [ ] planning doc updated with `> GitHub Issue: [#N](<URL>)` and handoff YAML filled in
 - [ ] Work branch created from main (injection-only: always from main; fresh: from main when current branch is main)
 - [ ] Initial commit pushed (or skip noted)
-- [ ] AGENT_RESULT emitted with HANDOFF_PAYLOAD (all 13 fields)
+- [ ] AGENT_RESULT emitted with HANDOFF_PAYLOAD (all 14 fields)

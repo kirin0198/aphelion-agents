@@ -18,7 +18,7 @@ Status: In progress
 - [x] TASK-005 (T-05): fix mandatory HITL gate description; remove local APPROVAL_MODE mapping | Target file: .claude/agents/maintenance-flow.md
 - [x] TASK-006 (T-06): two-stage APPROVAL_MODE resolution wording | Target files: .claude/agents/{discovery,delivery,operations,doc}-flow.md
 - [x] TASK-007 (T-07): G1 gate three-tier priority + invariant exception + default option | Target files: .claude/agents/{change-classifier,impact-analyzer,analyst-core,codebase-analyzer,scope-planner}.md
-- [ ] TASK-008 (T-08): HANDOFF_PAYLOAD approval_mode field (13→14) | Target files: .claude/agents/{analyst-intake,analyst-core}.md
+- [x] TASK-008 (T-08): HANDOFF_PAYLOAD approval_mode field (13→14) | Target files: .claude/agents/{analyst-intake,analyst-core}.md (+ analyst.md consistency fix, out-of-scope but same-domain trivial fix)
 - [ ] TASK-009 (T-09): project-rules template `## Approval Mode` section | Target file: .claude/agents/rules-designer.md
 
 ## Recent Commits

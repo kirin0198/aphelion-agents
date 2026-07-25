@@ -40,12 +40,15 @@ Perform Steps 1-5 of the analyst workflow:
 
 ## Handoff Input Validation
 
-Your spawn prompt contains a HANDOFF_PAYLOAD YAML block with 13 fields (from analyst-intake).
+Your spawn prompt contains a HANDOFF_PAYLOAD YAML block with 14 fields (from analyst-intake).
 At startup, validate all required fields are present:
 
 Required fields: `planning_doc_path`, `slug`, `branch_name`, `issue_url`, `issue_number`,
 `issue_title`, `issue_type`, `intake_summary`, `proposals_source`, `repo_state`,
-`artifact_paths`, `auto_approve`, `output_language`
+`artifact_paths`, `auto_approve`, `approval_mode`, `output_language`
+
+`approval_mode` (added by #180) is `autonomous | interactive`, forwarded verbatim from the
+caller's session variable via analyst-intake. Used by Step 3's G1 approval gate below.
 
 If any required field is missing:
 
@@ -325,7 +328,7 @@ On `STATUS: error`, include `ERROR_REASON`.
 
 ## Completion Conditions
 
-- [ ] Handoff YAML payload validated (all 13 fields present)
+- [ ] Handoff YAML payload validated (all 14 fields present)
 - [ ] Work branch verified (`git rev-parse --abbrev-ref HEAD` matches `branch_name`)
 - [ ] Planning doc read (for context)
 - [ ] SPEC.md / UI_SPEC.md read from paths in artifact_paths
