@@ -105,6 +105,10 @@ If any item is unmet, explain the reason via text output and use `AskUserQuestio
 }
 ```
 
+Follow the G1 three-tier priority in `.claude/orchestrator-rules.md` §"In-agent Approval
+Gates". Under `AUTO_APPROVE == true` or `APPROVAL_MODE == autonomous`, auto-adopt "Proceed to
+Delivery" and emit the NOT READY reason above as text instead of calling `AskUserQuestion`.
+
 ---
 
 ## Output Files

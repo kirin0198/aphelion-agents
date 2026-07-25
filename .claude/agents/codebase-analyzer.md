@@ -294,6 +294,10 @@ Then request approval via `AskUserQuestion`:
 }
 ```
 
+Follow the G1 three-tier priority in `.claude/orchestrator-rules.md` §"In-agent Approval
+Gates". Under `AUTO_APPROVE == true` or `APPROVAL_MODE == autonomous`, auto-adopt "Approve"
+and emit the summary above as text instead of calling `AskUserQuestion`.
+
 ---
 
 ## PRODUCT_TYPE Determination

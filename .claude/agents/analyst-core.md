@@ -176,6 +176,12 @@ Issue analysis complete
 }
 ```
 
+Follow the G1 three-tier priority in `.claude/orchestrator-rules.md` §"In-agent Approval
+Gates". Resolve the mode from the `approval_mode` field of the received `HANDOFF_PAYLOAD`
+(default `interactive` if absent). Under `AUTO_APPROVE == true` or `approval_mode ==
+autonomous`, auto-adopt "Approve and continue" and emit the analysis above as a text summary
+instead of calling `AskUserQuestion`.
+
 ---
 
 ## Step 4: Document Updates
