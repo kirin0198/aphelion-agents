@@ -3,6 +3,7 @@
 > **Language**: [English](../en/Agents-Orchestrators.md) | [日本語](../ja/Agents-Orchestrators.md)
 > **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: doc-reviewer 項 — pass/fail の語彙、STATUS との対応、visual-designer トリガー、フィールド一覧を修正 (#173 #174 #184)
 >   - 2026-07-29: delivery-flow の入力に MAINTENANCE_RESULT.md を追加（Maintenance Major 引き渡しの消費側契約）(#168)
 >   - 2026-05-30: analyst チェーン spawn コントラクト + legacy-resume injection-only mode を文書化 (#141)
 >   - 2026-04-30: doc-flow を第 5 のフローとして追加 (#54)
@@ -126,11 +127,11 @@ Flow Orchestrator はドメイン全体を管理します。トリアージで�
 
 - **正規**: [.claude/agents/doc-reviewer.md](../../../.claude/agents/doc-reviewer.md)
 - **ドメイン**: 品質（横断的）
-- **責務**: マークダウン成果物（SPEC.md / ARCHITECTURE.md / UI_SPEC.md / docs/design-notes/、DISCOVERY_RESULT.md）の文書間整合性をレビューします。Flow Orchestrator が spec-designer / architect / ux-designer / scope-planner / analyst の各完了直後に自動挿入（post-insert）します。生成元エージェントから独立したコンテキストで動作。読み取り専用 — ファイルの生成・更新は行わず、テキストレポートのみを返します。
+- **責務**: マークダウン成果物（SPEC.md / ARCHITECTURE.md / UI_SPEC.md / VISUAL_SPEC.md / docs/design-notes/、DISCOVERY_RESULT.md）の文書間整合性をレビューします。Flow Orchestrator が spec-designer / ux-designer / visual-designer / architect / scope-planner / analyst-core の各完了直後に自動挿入（post-insert）します。生成元エージェントから独立したコンテキストで動作。読み取り専用 — ファイルの生成・更新は行わず、テキストレポートのみを返します。
 - **入力**: 直前フェーズの対象成果物 + それが依存する上流成果物（例: ARCHITECTURE.md レビュー時は SPEC.md も読む）。`TRIGGERED_BY` フィールドで上流エージェントを識別。
 - **出力**: severity 付き findings のテキストレポート（🔴 DR / 🟡 DA / 🟢 DI）。ファイル成果物なし。
 - **5つの観点**: coverage / naming / scope / version / acceptance
-- **AGENT_RESULT フィールド**: `STATUS`、`DOC_REVIEW_RESULT`（`pass` | `fail` | `conditional`）、`INCONSISTENCY_COUNT`、`TRIGGERED_BY`、`REVIEWED_FILES`、`FINDINGS`、`NEXT`
+- **AGENT_RESULT フィールド**: `STATUS`、`DOC_REVIEW_RESULT`（`pass` | `fail` — `fail` は常に `STATUS: failure` とセット。rollback トリガーが両者の AND 条件のため）、`INCONSISTENCY_COUNT`、`ADVISORY_COUNT`、`INFO_COUNT`、`TRIGGERED_BY`、`TARGET_ARTIFACTS`、`INCONSISTENCY_ITEMS`、`NEXT`
 - **NEXT 条件**:
   - `DOC_REVIEW_RESULT: pass` → 次フェーズ
   - `DOC_REVIEW_RESULT: fail` → 上流エージェントへ rollback（`orchestrator-rules.md` の Rollback Limit Common に従い max 3 回）。上限超過時は approval gate で「Approve despite findings」を提示

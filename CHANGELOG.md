@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed (doc-reviewer contract)
+
+- **`DOC_REVIEW_RESULT` vocabulary unified on `pass` / `fail`** (#173): the canonical
+  Field Reference in `agent-communication-protocol.md` declared
+  `passed | has-inconsistencies`, while the emitter (`doc-reviewer.md`) and every parser
+  (`orchestrator-rules.md`, `discovery-flow.md`) used `pass | fail`. Anyone implementing
+  against the protocol table would have broken the rollback trigger. The wiki's third
+  value (`conditional`), which existed nowhere in the implementation, is gone too.
+
+- **`DOC_REVIEW_RESULT: fail` now requires `STATUS: failure`** (#174): the Doc Review FAIL
+  rollback fires on the AND of both fields, but `doc-reviewer.md` never said what STATUS to
+  emit when INCONSISTENCY_COUNT ≥ 1 — a `success` + `fail` pair silently skipped the
+  rollback chain. The pairing is now mandatory in the agent definition and the protocol
+  table, and `orchestrator-rules.md` treats a mismatched pair as a fail (safe side).
+
+- **doc-reviewer knows about visual-designer** (#184): the agent's own trigger list omitted
+  `visual-designer` even though both `orchestrator-rules.md` and `delivery-flow.md` insert it
+  there, and `VISUAL_SPEC.md` was missing from the read order — so a visual-designer-triggered
+  review never read the artifact under review. Adds the read-order entry (HAS_UI=true and
+  plan ≥ Standard), a TRIGGERED_BY → required-document table for the `STATUS: error` rule,
+  and corrects the stale `analyst` references to `analyst-core` (#139 split).
+
 ### Added
 
 - **`update --prune`** (#207): `update` now compares the target `.claude/` against a

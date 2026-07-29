@@ -2,12 +2,12 @@
 name: doc-reviewer
 description: |
   Cross-cutting agent that reviews consistency among markdown artifacts
-  (SPEC.md / ARCHITECTURE.md / UI_SPEC.md / docs/design-notes/ /
-  DISCOVERY_RESULT.md). Auto-inserted by flow orchestrators after
-  spec / design / scope / analyst agents.
+  (SPEC.md / ARCHITECTURE.md / UI_SPEC.md / VISUAL_SPEC.md /
+  docs/design-notes/ / DISCOVERY_RESULT.md). Auto-inserted by flow
+  orchestrators after spec / design / scope / analyst agents.
   Used in the following situations:
-  - Orchestrator inserts after spec-designer / ux-designer / architect /
-    scope-planner / analyst (post-insertion)
+  - Orchestrator inserts after spec-designer / ux-designer / visual-designer /
+    architect / scope-planner / analyst-core (post-insertion)
   - User invokes standalone for ad-hoc consistency check
   Prerequisites: at least two markdown artifacts must exist for
   consistency comparison; runs in read-only mode.
@@ -48,23 +48,36 @@ At least two markdown artifacts must exist for a meaningful comparison.
 1. SPEC.md (upstream truth)
 2. ARCHITECTURE.md (design layer)
 3. UI_SPEC.md (UI design layer; only when HAS_UI=true)
-4. DISCOVERY_RESULT.md (requirements layer)
-5. INTERVIEW_RESULT.md (requirements layer, if present)
-6. `docs/design-notes/<slug>.md` (one level deep only — use `Glob("docs/design-notes/*.md")`)
+4. VISUAL_SPEC.md (visual design layer; only when HAS_UI=true and plan ≥ Standard —
+   the tiers in which `visual-designer` runs. Absent on Minimal / Light, where
+   `ux-designer` writes the lightweight-default block into UI_SPEC.md Section 1 instead)
+5. DISCOVERY_RESULT.md (requirements layer)
+6. INTERVIEW_RESULT.md (requirements layer, if present)
+7. `docs/design-notes/<slug>.md` (one level deep only — use `Glob("docs/design-notes/*.md")`)
    - **Inclusion condition:** header contains `> Next: developer` or `> Next: architect`
    - **Excluded:**
      - files under `docs/design-notes/archived/` (closed planning docs)
      - files under `docs/design-notes/proposals/` (pre-issue ideas, no `> GitHub Issue:` header)
      - drafts with `> Next: TBD` / `> Next: (none)`
-7. (Optional) RESEARCH_RESULT.md / POC_RESULT.md / SCOPE_PLAN.md
+8. (Optional) RESEARCH_RESULT.md / POC_RESULT.md / SCOPE_PLAN.md
 
 ### Behavior on Missing Inputs
 
 - Only one comparison target available →
   `STATUS: success` / `DOC_REVIEW_RESULT: pass` / `INCONSISTENCY_COUNT: 0` /
   `NOTES: "No comparison target available."` — return immediately.
-- TRIGGERED_BY agent's required upstream document (e.g., SPEC.md when triggered by
-  spec-designer) is missing → `STATUS: error`.
+- TRIGGERED_BY agent's required upstream document is missing → `STATUS: error`.
+  Required document per trigger:
+
+  | TRIGGERED_BY | Required upstream document |
+  |--------------|----------------------------|
+  | `spec-designer` | SPEC.md |
+  | `ux-designer` | UI_SPEC.md |
+  | `visual-designer` | VISUAL_SPEC.md |
+  | `architect` | ARCHITECTURE.md |
+  | `scope-planner` | SCOPE_PLAN.md (or DISCOVERY_RESULT.md when scope-planner wrote it directly) |
+  | `analyst-core` | the planning doc `docs/design-notes/<slug>.md` |
+  | `standalone` | none — fall back to the "only one comparison target" rule above |
 
 ---
 
@@ -115,8 +128,14 @@ At least two markdown artifacts must exist for a meaningful comparison.
 | 🟢 INFO | DI-XXX | Informational only | Not a rollback trigger |
 
 **DOC_REVIEW_RESULT determination:**
-- INCONSISTENCY count ≥ 1 → `DOC_REVIEW_RESULT: fail`
-- INCONSISTENCY count = 0 (ADVISORY / INFO only, or no findings) → `DOC_REVIEW_RESULT: pass`
+- INCONSISTENCY count ≥ 1 → `DOC_REVIEW_RESULT: fail` **and `STATUS: failure`**
+- INCONSISTENCY count = 0 (ADVISORY / INFO only, or no findings) → `DOC_REVIEW_RESULT: pass` and `STATUS: success`
+
+`STATUS` and `DOC_REVIEW_RESULT` must always agree. The orchestrator's Doc Review FAIL
+rollback fires on the **AND** of `STATUS: failure` and `DOC_REVIEW_RESULT: fail`
+(`.claude/orchestrator-rules.md` §"Doc Reviewer Auto-insertion"), so emitting
+`STATUS: success` alongside `DOC_REVIEW_RESULT: fail` silently disables the rollback
+chain and lets an inconsistent artifact set pass the gate.
 
 ---
 
@@ -143,13 +162,14 @@ Omit sections 4–6 when they have no entries.
 
 Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
 Agent-specific fields: `DOC_REVIEW_RESULT` (pass|fail), `INCONSISTENCY_COUNT`, `ADVISORY_COUNT`, `INFO_COUNT`, `TARGET_ARTIFACTS` (list), `INCONSISTENCY_ITEMS` (list), `TRIGGERED_BY`.
+`DOC_REVIEW_RESULT: fail` MUST be paired with `STATUS: failure` (see §"Severity Definition").
 See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
 
 ---
 
 ## Workflow
 
-1. Read project-rules.md (Project-Specific Behavior block)
+1. Read `.claude/rules/project-rules.md` for project context (Output Language, etc.)
 2. Identify TRIGGERED_BY (caller agent name; `standalone` if not provided)
 3. Read input artifacts per the priority order in Inputs
    - Use `Glob` to enumerate `docs/design-notes/<slug>.md` candidates

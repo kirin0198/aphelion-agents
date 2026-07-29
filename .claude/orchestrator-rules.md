@@ -166,7 +166,7 @@ The orchestrator inserts `doc-reviewer` **after** receiving an
 |------|----------------|------------|
 | delivery-flow | spec-designer, ux-designer, visual-designer, architect | All plans (Minimal+). ux-designer triggers only when HAS_UI=true. visual-designer triggers only when HAS_UI=true AND plan ≥ Standard |
 | discovery-flow | scope-planner | Light/Standard/Full only. Minimal has no scope-planner so doc-reviewer is not triggered structurally. |
-| maintenance-flow | analyst | Patch: only if `analyst.DOCS_UPDATED` contains SPEC.md (no_change → skip). Minor/Major: always |
+| maintenance-flow | analyst-core | Patch: only if `analyst-core.DOCS_UPDATED` contains SPEC.md (no_change → skip). Minor/Major: always |
 
 ### Double-Execution Prevention
 
@@ -197,6 +197,11 @@ Parse the returned `AGENT_RESULT` block:
 - `STATUS: success` and `DOC_REVIEW_RESULT: pass` → proceed to approval gate
 - `STATUS: failure` and `DOC_REVIEW_RESULT: fail` → enter Doc Review FAIL Rollback Flow (§Rollback Rules)
 - `STATUS: error` → follow Common Error Handling
+- **Mismatched pair** (`DOC_REVIEW_RESULT: fail` with any STATUS other than `failure`, or
+  `DOC_REVIEW_RESULT: pass` with `STATUS: failure`) → treat as a **fail** and enter the
+  Doc Review FAIL Rollback Flow. `doc-reviewer.md` requires the two fields to agree
+  (§"Severity Definition"); a mismatch is an emitter bug, and defaulting to the safe side
+  prevents an inconsistent artifact set from silently passing the gate.
 
 ---
 
