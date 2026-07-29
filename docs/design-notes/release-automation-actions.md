@@ -1,4 +1,7 @@
-> Last updated: 2026-06-14
+> Last updated: 2026-07-29
+> Update history:
+>   - 2026-07-29: ja リリースノートの生成主体と releaser との境界を §8 未解決事項に追記 (#215)
+>   - 2026-06-14: 初版
 > GitHub Issue: [#162](https://github.com/kirin0198/aphelion-agents/issues/162)
 > Authored by: analyst-intake (2026-06-14); §5-8 by analyst-core (2026-06-14)
 > Next: architect
@@ -278,6 +281,24 @@ architect が設計すべき未解決事項:
 4. **既存資産の再利用**: `scripts/check-archive-match.sh` の正準 grep 表現を再利用し、char-for-char 同期コメントの慣習を踏襲すること。`check-changelog-sync.sh` にも回帰テストを設けるのが既存流儀。
 5. **初回リリース前の棚卸し**: 既存 20 件の archive↔CHANGELOG 乖離をどう扱うか（差分スコープなら不要、archive 全体スコープなら初回タスク化）。
 6. **SemVer**: 案A（タグ名で人間確定）を採用。案B（自動提案）は将来拡張。
+7. **ja リリースノートの生成主体（#214/#215、2026-07-29 追記 — 未解決）**: §3 は
+   `docs/wiki/en/Release-Notes.md` と `docs/wiki/ja/Release-Notes.md` の**両方**を Actions が
+   生成するとしているが、§2 の役割分担表は「文章生成は Claude Code（開発者手元）」に割り当てて
+   いる。CHANGELOG は英語（release-notes convention、`language-rules.md`）であり、Actions は
+   ja の narrative を機械生成できない。さらに bot が `main` へ直接コミットする方式は、wiki の
+   Bilingual Sync Policy（同一 PR での人手同期）と Contributing の PR チェックリストを素通りする。
+   実装前に次のいずれかを選ぶこと:
+
+   | 案 | 内容 | トレードオフ |
+   |----|------|-------------|
+   | A（推奨） | Actions は en のみ生成し、ja は Claude Code が同一 PR で追従する（既存の bilingual 運用と同型） | 自動化の範囲は狭まるが、既存ポリシーと矛盾しない |
+   | B | Actions が en を生成し、ja は「EN canonical 未同期」プレースホルダを置いて follow-up issue を自動起票 | 完全自動だが、公開 wiki に未翻訳ページが一時的に出る |
+   | C | リリースノートを wiki に置かず `gh release` の body のみとする | bilingual 問題自体が消滅。wiki の Release-Notes.md 新設（§3）を取り下げることになる |
+
+8. **`releaser` エージェントとの境界（#215 付随、未解決）**: 既存の `releaser` エージェントは
+   ユーザープロジェクト内の `docs/RELEASE_NOTES.md` を生成する（`document-locations.md` 参照）。
+   本メモが新設する `docs/wiki/{en,ja}/Release-Notes.md` は **Aphelion 自身のリリース履歴**で
+   あり、別物。名称が近く混同されやすいため、両ファイルに相互参照の注記を入れること。
 
 ### 設計制約（不変）
 
