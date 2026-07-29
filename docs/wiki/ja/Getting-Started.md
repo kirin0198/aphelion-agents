@@ -1,8 +1,8 @@
 # Getting Started
 
 > **Language**: [English](../en/Getting-Started.md) | [日本語](../ja/Getting-Started.md)
-> **Last updated**: 2026-05-31 (updated 2026-05-31: /getting-started/ の HTTP 500 復旧のため CF Pages アセットを強制リハッシュ, #156; 2026-05-28: 既存プロジェクト向けクイックスタート + --user ガイド追加, #130 PR-3)
-> **EN canonical**: 2026-05-31 (updated 2026-05-31) of wiki/en/Getting-Started.md
+> **Last updated**: 2026-07-29 (updated 2026-07-29: 壊れていた `cp -r .claude/` 手動インストール手順をローカルクローン CLI 手順に置換, #170; 2026-05-31: /getting-started/ の HTTP 500 復旧のため CF Pages アセットを強制リハッシュ, #156; 2026-05-28: 既存プロジェクト向けクイックスタート + --user ガイド追加, #130 PR-3)
+> **EN canonical**: 2026-07-29 (updated 2026-07-29) of wiki/en/Getting-Started.md
 > **Audience**: 新規ユーザー
 
 このページはAphelionを使い始めるために必要なすべてをカバーします：Claude Code のセットアップ、初回実行のウォークスルー、利用シナリオ、コマンドリファレンス、トラブルシューティング。
@@ -28,7 +28,7 @@
 |---------|------|
 | Claude Code | Claude Code CLIのインストールと認証 |
 
-`npx github:kirin0198/aphelion-agents init` でインストールすることもできます（クローン不要）。または、リポジトリを手動でクローンする方法もあります：
+`npx github:kirin0198/aphelion-agents init` でインストールします（クローン不要）。オフライン環境やバージョンを固定したい場合は、リポジトリをクローンしてクローン内の同じ CLI を実行してください（[ローカルクローンからインストール](#ローカルクローンからインストールオフライン--バージョン固定の代替手順)を参照）：
 
 ```bash
 git clone https://github.com/kirin0198/aphelion-agents.git
@@ -69,19 +69,24 @@ npx github:kirin0198/aphelion-agents update --user
 > `init --user` でグローバルにインストールした場合でも、`project-rules.md` は各プロジェクトで `/aphelion-init` を実行して生成してください。
 > `~/.claude/rules/` にグローバルで `project-rules.md` を置くと、無関係なプロジェクトにも影響が及ぶ可能性があります。
 
-### git clone でインストール（代替手順）
+### ローカルクローンからインストール（オフライン / バージョン固定の代替手順）
 
-リポジトリをクローンしてから手動でファイルをコピーする方法：
-
-`.claude/` ディレクトリをプロジェクトにコピーしてClaude Codeを起動：
+インストール時に npm へ到達できない場合や、特定のコミットに固定したい場合に使います。リポジトリをクローンし、**クローン内の CLI** を対象プロジェクトのディレクトリで実行します：
 
 ```bash
-cp -r .claude /path/to/your-project/
-cd /path/to/your-project && claude
+git clone https://github.com/kirin0198/aphelion-agents.git
+
+cd /path/to/your-project
+node /path/to/aphelion-agents/bin/aphelion-agents.mjs init
+claude
 
 /aphelion-init
 /discovery-flow TODOアプリを作りたい
 ```
+
+`init` はコピー元をクローンから、コピー先をカレントディレクトリから解決するため、`npx … init` と完全に同じ配置になります。`update` も同様です。
+
+> **クローンの `.claude/` を `cp -r` しないでください。** リポジトリの `.claude/` には `agents/`・`commands/`・`templates/`・`orchestrator-rules.md` しか入っていません。rules と hooks は `src/.claude/` から配布され、リポジトリ自身の `.claude/settings.json` は `${CLAUDE_PROJECT_DIR}/src/.claude/hooks/` 配下のフックを登録する dogfooding 用ファイルです。これらのパスはコピー先には存在しないため、すべての Bash / Write / Edit でフック不在エラーが発生し、`/aphelion-check` も失敗します。
 
 ---
 
@@ -93,7 +98,7 @@ cd /path/to/your-project && claude
 
 ```bash
 npx github:kirin0198/aphelion-agents init
-# または: cp -r /path/to/aphelion-agents/.claude /path/to/your-project/
+# またはローカルクローンから: node /path/to/aphelion-agents/bin/aphelion-agents.mjs init
 ```
 
 **ステップ2: プロジェクト固有ルールのセットアップ**
@@ -138,11 +143,11 @@ npx github:kirin0198/aphelion-agents init
 
 このウォークスルーは新規プロジェクトでClaude Codeを使用します。
 
-**ステップ1：Aphelionをプロジェクトにコピー**
+**ステップ1：Aphelionをプロジェクトにインストール**
 
 ```bash
-cp -r /path/to/aphelion-agents/.claude /path/to/your-project/
 cd /path/to/your-project
+npx github:kirin0198/aphelion-agents init
 claude
 ```
 
@@ -367,7 +372,7 @@ Flow Orchestrator がオプションを表示します：
 
 ## 正規ソース
 
-- [README.ja.md](../../README.ja.md) — プロジェクト概要とクイックスタート
-- [.claude/commands/](../../.claude/commands/) — スラッシュコマンド定義
-- [.claude/agents/discovery-flow.md](../../.claude/agents/discovery-flow.md) — Discovery フロー起動手順
-- [.claude/agents/delivery-flow.md](../../.claude/agents/delivery-flow.md) — Delivery フロー起動手順
+- [README.ja.md](../../../README.ja.md) — プロジェクト概要とクイックスタート
+- [.claude/commands/](../../../.claude/commands/) — スラッシュコマンド定義
+- [.claude/agents/discovery-flow.md](../../../.claude/agents/discovery-flow.md) — Discovery フロー起動手順
+- [.claude/agents/delivery-flow.md](../../../.claude/agents/delivery-flow.md) — Delivery フロー起動手順
