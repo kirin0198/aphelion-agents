@@ -1,5 +1,9 @@
 # feat: add performance-optimizer agent to maintenance-flow
 
+> Last updated: 2026-07-29
+> Update history:
+>   - 2026-07-29: post-#131 規約への追従と refresh パス必須化 (#172)
+>   - 2026-04-26: 初版 (#58)
 > Reference: current `main` (HEAD `9bc00e5`, 2026-04-26)
 > Created: 2026-04-26
 > Analyzed by: analyst (2026-04-26)
