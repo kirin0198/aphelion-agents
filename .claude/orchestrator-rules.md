@@ -63,8 +63,20 @@ Each orchestrator must `Read` this file at startup before beginning work.
 > `change-classifier` proposes inserting `codebase-analyzer` as Phase 0 (with user confirmation).
 
 > **Two mandatory HITL gates**: (1) After change-classifier — user approves the change plan and triage result.
-> (2) At flow completion — user confirms the final state before the flow ends. These gates are never skipped
-> even in auto-approve mode (they are logged but auto-confirmed).
+> (2) At flow completion — user confirms the final state before the flow ends. These gates are never silently
+> skipped. Unlike ordinary phase approval gates, they follow a dedicated **3-mode table** that deliberately
+> diverges from the standard `AUTO_APPROVE > APPROVAL_MODE > interactive` three-tier priority used elsewhere
+> in this document (see §"Approval Mode" below):
+>
+> | Mode | Gate #1 / Gate #2 behavior |
+> |------|------------------------------|
+> | `AUTO_APPROVE == true` | Logged and auto-confirmed (does not stop) |
+> | `APPROVAL_MODE == autonomous` | **Actually stops** for user confirmation (`AskUserQuestion`) |
+> | `APPROVAL_MODE == interactive` | Actually stops for user confirmation (`AskUserQuestion`) |
+>
+> Only `AUTO_APPROVE` bypasses these gates; `autonomous` alone does not. This is the sole deliberate
+> asymmetry against the otherwise-symmetric priority table. Rationale:
+> `docs/design-notes/approval-mode-escalation-wiring.md` §6.2.
 
 ### Doc Flow Triage
 
@@ -416,16 +428,41 @@ external-evaluation flag that bypasses everything including escalation gates.
 
 ### Triage-Linked Default
 
-| Triage Plan | Default APPROVAL_MODE | User override allowed |
-|-------------|----------------------|-----------------------|
-| Minimal     | `autonomous`         | — (fixed)             |
-| Light       | `autonomous`         | — (fixed)             |
-| Standard    | `interactive`        | Yes — can relax to `autonomous` (see below) |
-| Full        | `interactive`        | No — forced `interactive` even if user requests autonomous |
+This is the **single canonical table** for APPROVAL_MODE defaults across all five flows,
+including Maintenance Flow. Maintenance's Patch/Minor/Major plans map onto it by equivalence
+(see "Maintenance Equivalent" column) rather than defining a second table — `maintenance-flow.md`
+must reference this table, not restate its own mapping (see
+`docs/design-notes/approval-mode-escalation-wiring.md` §6.3).
+
+| Triage Plan | Maintenance Equivalent | Default APPROVAL_MODE | User override allowed |
+|-------------|------------------------|------------------------|-----------------------|
+| Minimal     | Patch                   | `autonomous`         | — (fixed)             |
+| Light       | —                        | `autonomous`         | — (fixed)             |
+| Standard    | Minor                    | `interactive`        | Yes — can relax to `autonomous` (see below) |
+| Full        | Major                    | `interactive`        | No — forced `interactive` even if user requests autonomous |
+
+> **Breaking change note (#179)**: Maintenance's Minor plan previously defaulted to `autonomous`
+> under a local (now-removed) mapping in `maintenance-flow.md`. Under this canonical table, Minor≒Standard
+> defaults to `interactive`. The `## Approval Mode` → `Standard: autonomous` project-rules.md override key
+> relaxes both Delivery/Discovery/Doc's Standard plan **and** Maintenance's Minor plan — they share the
+> same override key by design, since they share the same table row.
 
 ### APPROVAL_MODE Resolution Order (ADR-005)
 
-Resolve `APPROVAL_MODE` once at flow startup and hold it as a session variable:
+Resolve `APPROVAL_MODE` in **two stages**. The triage-rule default (step 2 below) requires the
+finalized Triage Plan, which is only known *after* triage completes — resolving everything in a
+single step at "flow startup" (before triage runs) is order-inconsistent (see
+`docs/design-notes/approval-mode-escalation-wiring.md` §5.4 for the discovered defect).
+
+- **Stage 1 (at flow startup, before triage)**: set a provisional `APPROVAL_MODE: interactive`
+  (fail-safe default). Also resolve `AUTO_APPROVE` per the Auto-Approve Mode check — this does
+  not depend on triage and is resolved once.
+- **Stage 2 (immediately after the triage plan is finalized)**: re-resolve `APPROVAL_MODE` to its
+  final value using steps 1–3 below and hold it as the session variable for the remainder of the
+  flow. Log the final value: `"Approval mode: {autonomous | interactive}"` (or
+  `"AUTO_APPROVE overrides APPROVAL_MODE"` when `AUTO_APPROVE == true`).
+
+Steps 1–3 (used to compute both the Stage 1 provisional value and the Stage 2 final value):
 
 1. If `AUTO_APPROVE == true`: `APPROVAL_MODE` is not consulted for gate decisions
    (log its triage-default value for audit purposes only).
@@ -460,9 +497,47 @@ The following must NOT be relaxed regardless of `APPROVAL_MODE` or `AUTO_APPROVE
 - `doc-reviewer` auto-insertion and its automatic rollback chain
 - `security-auditor` execution
 - `reviewer` execution
+- **`change-classifier`'s internal G1 gate (maintenance Gate #1)** — see "In-agent Approval
+  Gates" below. Unlike other G1 gates, it is NOT symmetrized to the standard three-tier
+  priority: it always stops under `APPROVAL_MODE: autonomous` and is auto-confirmed only when
+  `AUTO_APPROVE == true`. This is the sole exception to the G1 symmetrization rule (see
+  `docs/design-notes/approval-mode-escalation-wiring.md` §6.4).
 
 These agents always run. Only the **HITL approval gate** (the AskUserQuestion pause between
 phases) is skipped in `autonomous` mode. Automatic quality checks are never bypassed.
+
+### In-agent Approval Gates (G1 / G2 / G3)
+
+`APPROVAL_MODE` / `AUTO_APPROVE` are orchestrator session variables. Sub-agents run in
+independent contexts and cannot read them unless the orchestrator injects them into the
+spawn prompt (see "Phase Execution Loop" step 2 below). This section defines how sub-agent
+*internal* `AskUserQuestion` gates — distinct from the orchestrator's own phase approval
+gates — behave once the value is injected.
+
+**Gate types:**
+
+| Type | Definition | Examples | APPROVAL_MODE applies? |
+|------|------------|----------|------------------------|
+| **G1 — approval gate** | Confirms an intermediate work-product; structurally identical to an orchestrator phase gate | `change-classifier` §User Approval Gate, `impact-analyzer` §User Approval Gate, `analyst-core` §Step 3, `codebase-analyzer` §User Confirmation, `scope-planner` handoff-not-ready gate | Yes — three-tier priority below (except the invariant exception above) |
+| **G2 — input intake** | Collects input required to start processing; not an approval | `interviewer`, `analyst-intake` (fresh-mode intake), `visual-designer` intake, `rules-designer`, `codebase-analyzer` output-location question, `user-manual-author` degraded-output confirmation | No — always runs. Only the **unattended default** (used when `AUTO_APPROVE == true` and no human is present) must be documented per agent |
+| **G3 — reference only** | A general "ask if unclear" pointer, not a gate | `spec-designer` L141 (`user-questions.md` reference) | No — no behavior change |
+
+**Three-tier priority for G1 gates** (same shape as the orchestrator's own gate priority):
+
+| Mode | G1 gate behavior |
+|------|-------------------|
+| `AUTO_APPROVE == true` | Auto-confirm — adopt the agent's recommended option; emit a one-line text summary instead of calling `AskUserQuestion` |
+| `APPROVAL_MODE == autonomous` | Skip and adopt the recommended option (text summary only) |
+| `APPROVAL_MODE == interactive` (default / fail-safe when the value is absent) | Stop (`AskUserQuestion`) |
+
+**Invariant exception**: `change-classifier`'s G1 gate (maintenance Gate #1) does NOT follow
+this three-tier table — see Invariant Rules above.
+
+**AUTO_APPROVE hang fix**: prior to the propagation mechanism defined in "Phase Execution
+Loop" step 2, G1 gates had no way to learn `AUTO_APPROVE == true` and would stop even during
+unattended (Ouroboros) evaluation runs, in violation of the "auto-approve mode is never
+silently blocked" contract. The injection closes this gap (see
+`docs/design-notes/approval-mode-escalation-wiring.md` §5.3/§6.4).
 
 ### Escalation Conditions (ADR-003)
 
@@ -536,6 +611,12 @@ Each phase follows this common loop. Domain-specific steps (rollback checks, etc
      ─ On the first phase of a flow, build ARTIFACT_PATHS by running
        Glob("{docs/<NAME>.md,<NAME>.md}") once per artifact name. Prefer docs/ on tie
        and emit WARNING_LEGACY_DUPLICATE when both exist.
+     ─ MUST also inject the current session's `APPROVAL_MODE` and `AUTO_APPROVE` values into
+       every agent's spawn prompt, so in-agent G1 gates can apply the three-tier priority
+       (see "In-agent Approval Gates" above). Receiving agents default to `interactive`
+       when the value is absent from the prompt (fail-safe). For the analyst chain, this
+       value is carried as the `approval_mode` field of `HANDOFF_PAYLOAD` rather than a
+       bare prompt injection (see `agent-communication-protocol.md` §"Field Reference").
   3. Verify the agent's AGENT_RESULT block
   4. Evaluate STATUS and handle error / blocked / failure
      (for failure, follow domain-specific rollback rules)

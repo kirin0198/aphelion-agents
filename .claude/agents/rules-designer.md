@@ -255,6 +255,11 @@ Record the answers as `## Authoring` and `## Localization` sections in the gener
 
 Based on the determined rules, generate `.claude/rules/project-rules.md`.
 
+The `## Approval Mode` section is not part of the interactive rounds above — leave its
+`Standard: autonomous` line commented out by default (interactive stays the default for
+Standard/Minor). Only uncomment it if the user explicitly asks, during any round, to reduce
+approval-gate interruptions on Standard-tier (or Maintenance Minor-tier) work.
+
 ### Step 4: Present and Confirm
 
 Output a summary of the generated rules as text, then request approval:
@@ -382,6 +387,16 @@ Remote type: {github | gitlab | gitea | local-only | none}
 
 - Output Language: {en | ja}
 - Fallback Language: en
+
+## Approval Mode
+
+<!-- Optional. Uncomment and set to `autonomous` to relax the Standard-plan default from
+     `interactive` to `autonomous` (see `.claude/orchestrator-rules.md` §"Approval Mode" ->
+     "Triage-Linked Default"). This key also relaxes Maintenance Flow's Minor plan, since
+     Minor maps onto Standard by equivalence (Patch=Minimal / Minor=Standard / Major=Full;
+     see docs/design-notes/approval-mode-escalation-wiring.md §6.3). Full plan (and
+     Maintenance Major) never relax regardless of this key. -->
+<!-- Standard: autonomous -->
 
 ## Project-Specific Rules
 

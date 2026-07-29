@@ -325,6 +325,16 @@ The flow orchestrator launches the agent specified in `BLOCKED_TARGET` in lightw
 
 ---
 
+## ESCALATION_REQUIRED (autonomous mode)
+
+Follow `.claude/rules/agent-communication-protocol.md` §"Field Reference" → ESCALATION_REQUIRED
+per-agent trigger table. Set `ESCALATION_REQUIRED: true` + `ESCALATION_REASON` only when a
+SPEC-external technical decision is a human/product judgment call that `STATUS: blocked` →
+architect lightweight query cannot resolve. Never set both for the same condition — they are
+mutually exclusive routing paths.
+
+---
+
 ## Output on Completion (Required)
 
 Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `BRANCH`, `PR_URL`.

@@ -169,6 +169,11 @@ Impact scope analysis complete
 }
 ```
 
+Follow the G1 three-tier priority in `.claude/orchestrator-rules.md` §"In-agent Approval
+Gates". Under `AUTO_APPROVE == true` or `APPROVAL_MODE == autonomous`, auto-adopt "Approve and
+continue (recommended)" and emit the impact report above as a text summary instead of calling
+`AskUserQuestion`.
+
 ---
 
 ## Required Output on Completion

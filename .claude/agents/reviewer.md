@@ -176,6 +176,12 @@ Agent-specific fields: `CRITICAL_COUNT`, `WARNING_COUNT`, `SUGGESTION_COUNT`, `C
 See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
 STATUS: `rejected` (≥1 CRITICAL, NEXT: developer) | `conditional` (warnings only) | `approved` (suggestions or no findings).
 
+**ESCALATION_REQUIRED (autonomous mode):** per the trigger table in
+`agent-communication-protocol.md`, set `ESCALATION_REQUIRED: true` only for a judgment call
+beyond an ordinary CRITICAL finding (e.g., two valid designs and SPEC is silent on which to
+prefer). Never set it for a routine CRITICAL finding — that already triggers automatic rollback
+to developer.
+
 ## Completion Conditions
 
 - [ ] SPEC.md, ARCHITECTURE.md, and all implementation code have been reviewed

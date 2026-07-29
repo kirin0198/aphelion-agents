@@ -182,6 +182,12 @@ Change classification complete
 }
 ```
 
+**Invariant note (maintenance Gate #1):** This gate is exempt from the standard G1 three-tier
+priority in `.claude/orchestrator-rules.md` §"In-agent Approval Gates". It always stops for
+user confirmation, including under `APPROVAL_MODE: autonomous`. Only `AUTO_APPROVE == true`
+auto-confirms it — in that case, automatically adopt "Approve and continue (recommended)" and
+emit the analysis above as a text summary instead of calling `AskUserQuestion`.
+
 ---
 
 ## Required Output on Completion

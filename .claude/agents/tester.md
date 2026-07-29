@@ -250,6 +250,12 @@ Agent-specific fields: `TOTAL`, `PASSED`, `FAILED`, `SKIPPED`, `FAILED_TESTS` (l
 See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
 STATUS: `failure` when FAILED>0; NEXT: `test-designer` (or `developer` in Minimal plan where test-designer is unavailable); `reviewer` on success.
 
+**ESCALATION_REQUIRED (autonomous mode):** per the trigger table in
+`agent-communication-protocol.md`, set `ESCALATION_REQUIRED: true` only when a test reveals a
+SPEC-undefined judgment call that automatic rollback (`STATUS: failure` → test-designer →
+developer → re-run) cannot resolve (e.g., the acceptance criteria itself is ambiguous). Never
+set it for an ordinary failing test — that already routes via `STATUS: failure`.
+
 ## Completion Conditions
 
 - [ ] Test code exists for all test cases in TEST_PLAN.md (or SPEC.md)

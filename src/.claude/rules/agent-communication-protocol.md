@@ -75,7 +75,7 @@ by the orchestrator. Agent-specific fields are documented in each agent file.
 | `BRANCH` | branch name | MUST when a work branch was created/reused. Planning-tier and Implementation-tier agents. |
 | `PR_URL` | URL \| skipped \| reused | Implementation-tier only. See `git-rules.md` §"Branch & PR Strategy". |
 | `HANDOFF_TO` | agent-name \| flow-name | Used by analyst-intake / analyst-core / maintenance-flow at flow boundaries. |
-| `HANDOFF_PAYLOAD` | YAML literal block (13 fields) | Emitted by analyst-intake in AGENT_RESULT; consumed by the caller (analyst orchestrator or flow orchestrator) to forward to analyst-core. Fields: planning_doc_path, slug, branch_name, issue_url, issue_number, issue_title, issue_type, intake_summary, proposals_source, repo_state, artifact_paths, auto_approve, output_language. See docs/design-notes/analyst-model-split-design.md §3. |
+| `HANDOFF_PAYLOAD` | YAML literal block (14 fields) | Emitted by analyst-intake in AGENT_RESULT; consumed by the caller (analyst orchestrator or flow orchestrator) to forward to analyst-core. Fields: planning_doc_path, slug, branch_name, issue_url, issue_number, issue_title, issue_type, intake_summary, proposals_source, repo_state, artifact_paths, auto_approve, approval_mode, output_language. `approval_mode` was added by #180 (see docs/design-notes/approval-mode-escalation-wiring.md §6.4/§8.1) so analyst-core's internal G1 gate (§Step 3) can apply the three-tier priority defined in `orchestrator-rules.md` §"In-agent Approval Gates". See docs/design-notes/analyst-model-split-design.md §3. |
 | `GITHUB_ISSUE` | URL \| skipped (REPO_STATE=<value>) | See `git-rules.md` §"Behavior by Remote Type". |
 | `DECISION` | allowed \| asked_and_allowed \| denied \| skipped | sandbox-runner. See `sandbox-policy.md`. |
 | `DOC_REVIEW_RESULT` | passed \| has-inconsistencies | doc-reviewer. |
@@ -83,6 +83,32 @@ by the orchestrator. Agent-specific fields are documented in each agent file.
 | `DENIAL_CATEGORY` / `DENIAL_COMMAND` / `DENIAL_RECOVERY` | see denial-categories.md §4 | Conditional — emit only when a Bash command was denied. |
 | `ESCALATION_REQUIRED` | true \| false | Emitted by implementation/design agents (developer, architect, security-auditor, tester, reviewer) when an autonomous-mode escalation condition is hit (SPEC-external technical decision, destructive change to DB schema / API compatibility, or multiple valid approaches undecidable within SPEC). The orchestrator pauses the autonomous flow at an escalation gate. Default / omitted = false (no escalation). Not consulted when `APPROVAL_MODE: interactive`. See `orchestrator-rules.md` §"Approval Mode (autonomous / interactive)". |
 | `ESCALATION_REASON` | freeform string | Required when `ESCALATION_REQUIRED: true`. One-line human-readable reason surfaced verbatim in the escalation gate (e.g., "destructive DB schema migration required", "two valid auth approaches, SPEC does not disambiguate"). Omit when `ESCALATION_REQUIRED` is false/absent. |
+
+### ESCALATION_REQUIRED — Per-Agent Trigger Table and Non-Duplication Rule
+
+`ESCALATION_REQUIRED` (Route A, see `orchestrator-rules.md` §"Approval Mode" →
+"Escalation Conditions (ADR-003)") is emitted by five agents. Each already owns an
+existing routing signal; Route A must be scoped so it does **not** duplicate them.
+This table is the single canonical source — agent definition files carry only a
+1–2 line reference to it (per #131/#132 token-reduction convention), not a copy of
+this text.
+
+| Agent | Existing signal (do NOT duplicate) | Route A applies only when |
+|-------|-------------------------------------|----------------------------|
+| `developer` | `STATUS: blocked` + `BLOCKED_TARGET` (lightweight architect query) | The SPEC-external decision is a human/product judgment call that a lightweight architect query cannot resolve (not an architecture-placement ambiguity) |
+| `architect` | `TECH_STACK_CHANGED: true` (previously had no realized escalation path in autonomous mode) | Always — whenever `TECH_STACK_CHANGED: true` is set, `ESCALATION_REQUIRED: true` MUST also be set. This connects the pre-existing pseudo-escalation signal to the actual escalation gate. |
+| `security-auditor` | Route B (orchestrator directly detects unresolved CRITICAL findings) | A destructive-change judgment call that cannot be expressed as a CRITICAL finding (e.g., two valid remediation approaches, SPEC does not disambiguate). Never for reporting CRITICAL counts — that stays Route B. |
+| `tester` | `STATUS: failure` → automatic rollback (test-designer → developer → re-run) | A SPEC-undefined judgment call that rollback cannot resolve (e.g., ambiguous acceptance criteria). Never for an ordinary failing test. |
+| `reviewer` | CRITICAL finding → automatic rollback to developer | A judgment call beyond an ordinary CRITICAL finding (e.g., two valid designs, SPEC silent). Never for a routine CRITICAL finding, which already triggers rollback. |
+
+**Non-duplication rule:**
+
+1. `ESCALATION_REQUIRED` is orthogonal to `STATUS` — it may be set together with `STATUS: success`.
+2. If `STATUS: blocked` or `STATUS: failure` is emitted for a given condition, the existing
+   routing (blocked → `BLOCKED_TARGET` lightweight query; failure → rollback) takes precedence.
+   Do not also set `ESCALATION_REQUIRED: true` for the *same* condition.
+3. Any condition the orchestrator can already observe directly (Route B: unresolved CRITICAL
+   count, shared rollback limit reached) must never be re-emitted as Route A.
 
 ### How to add a new canonical field
 

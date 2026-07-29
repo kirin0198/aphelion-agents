@@ -52,7 +52,7 @@ Grep("> GitHub Issue:", <each file>)
 
 Condition: the planning doc contains a `<!-- analyst-handoff -->` block.
 
-1. Parse the YAML inside `<!-- analyst-handoff ... -->` to extract the 13 fields.
+1. Parse the YAML inside `<!-- analyst-handoff ... -->` to extract the 14 fields.
 2. Confirm with the user:
 
 ```json
