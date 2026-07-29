@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`check-archive-match.sh` runs in CI** (#209): the script implements six regression locks
+  on the issue-matching grep that `archive-closed-plans.yml`, `archive-orphan-plans.yml` and
+  the script itself must keep char-for-char identical — including the #150 `head -n 20` bug —
+  but was wired into no workflow, no npm script and no checklist. It now runs on every PR
+  alongside the README ↔ wiki check, and is listed in the PR checklist (en/ja).
+
 - **README badge counts are checked in CI** (#198): `check-readme-wiki-sync.sh` gains
   Check 5, comparing the agents / commands / rules / hooks badges in both READMEs against
   the real file counts (hooks excluding the dogfooding scripts). The badges had drifted for
@@ -267,6 +273,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `/pm` slash command (functionally identical to `/delivery-flow`) (#55 / #67)
 
 ### Fixed
+
+- **Archive workflow concurrency** (#210): `archive-closed-plans.yml` had no `concurrency:`
+  key, so a rapid `edited` + `synchronize` pair could run two jobs that both `git mv` and
+  push to the same PR branch, one failing on a non-fast-forward. It now serializes per PR.
+  The orphan sweeper's comment claiming its group avoided "a race vs the PR-driven workflow"
+  was wrong — concurrency groups do not span workflows — and now states what it actually
+  does, and why the cross-workflow overlap is harmless (same idempotent move, different
+  target branches).
+
+- **Design-memo premises corrected** (#213, #216): `approval-mode-triage.md`'s TASK-009
+  casing check now states that it scopes to `APPROVAL_MODE` *values*, so the `RUNNING_AUTONOMOUS`
+  state label it defines elsewhere is not a violation, and gives the grep that distinguishes
+  them; the Field Reference line budget from #131 is formally relaxed, with the reasoning
+  (28 lines targeted duplication inside agent files, not the canonical index).
+  `token-reduction.md` records that "≤85 lines" was a one-time landing criterion rather than
+  a standing budget, and its broken `./archived/…` self-link is fixed.
 
 - **Stale counts across README and wiki** (#198): `commands-14` (15 command files),
   `hooks-3` (4 distributed hooks), "Delivery (12 agents)" ×4 (13 since visual-designer),
