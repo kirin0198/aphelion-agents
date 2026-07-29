@@ -128,7 +128,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          branch="chore/archive-orphan-plans-$(date -u +%Y%m%d)"
+          # The run ID suffix keeps a same-day re-run (manual dispatch after a
+          # failure) from colliding with the branch the previous run pushed,
+          # which would fail on a non-fast-forward push.
+          branch="chore/archive-orphan-plans-$(date -u +%Y%m%d)-${GITHUB_RUN_ID}"
           git checkout -b "${branch}"
 
           moved_list=$(printf '%s\n' "$MOVED" | tr ',' '\n')
@@ -162,7 +165,15 @@ jobs:
           gh pr create \
             --base main \
             --title "chore: archive orphaned planning docs" \
-            --label "chore,automated" \
             --body-file "${pr_body_file}"
+
+          # Labelling is deliberately a separate, non-fatal step. `gh pr create
+          # --label` resolves label IDs up front and hard-fails the whole run when
+          # a label does not exist, which would leave the pushed branch stranded
+          # with no PR. `documentation` is used because it already exists in this
+          # repo; the workflow cannot create labels itself (that needs
+          # `issues: write`, and this job only requests `issues: read`).
+          gh pr edit --add-label "documentation" \
+            || echo "::warning::could not apply the 'documentation' label; the PR was created without it"
 
           rm -f "${pr_body_file}"
