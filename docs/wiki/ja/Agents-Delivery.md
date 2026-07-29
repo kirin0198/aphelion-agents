@@ -1,13 +1,14 @@
 # Agents Reference: Delivery Domain
 
 > **Language**: [English](../en/Agents-Delivery.md) | [日本語](../ja/Agents-Delivery.md)
-> **Last updated**: 2026-05-15
+> **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: architect に Bash・設計ノートのコミット責務・BRANCH フィールドを追加 (#167)
 >   - 2026-05-15: developer 行に TASK.md リセット責務を追加 (#128)
 >   - 2026-05-01: visual-designer を追加 (HAS_UI かつ Standard/Full のみ)、ux-designer の NEXT 更新 (#109)
 >   - 2026-04-26: Sync with #72, #74 (issue #77)
 >   - 2026-04-25: terminology rebalance per #40
-> **EN canonical**: 2026-05-15 of wiki/en/Agents-Delivery.md
+> **EN canonical**: 2026-07-29 of wiki/en/Agents-Delivery.md
 > **Audience**: エージェント開発者
 
 このページはもとの Agents-Reference.md を 5 ページに分割したもの（#42）です。Delivery ドメインエージェントを扱います。他のドメインは関連ページを参照してください: [Flow Orchestrator・横断系](./Agents-Orchestrators.md)、[Discovery](./Agents-Discovery.md)、[Operations](./Agents-Operations.md)、[Maintenance](./Agents-Maintenance.md)。
@@ -64,8 +65,8 @@ Deliveryドメイン（13エージェント）は設計・実装・テスト・�
 - **ドメイン**: Delivery
 - **責務**: SPEC.md（および UI_SPEC.md / VISUAL_SPEC.md）を読み込み、技術スタック決定・モジュール設計・データモデル・API設計・テスト戦略・実装順序を含む ARCHITECTURE.md を生成します。
 - **入力**: SPEC.md、UI_SPEC.md（HAS_UIの場合）、VISUAL_SPEC.md（HAS_UI かつ プラン ≥ Standard の場合）、DISCOVERY_RESULT.md（利用可能な場合）
-- **出力**: ARCHITECTURE.md
-- **AGENT_RESULT フィールド**: `TECH_STACK`、`TECH_STACK_CHANGED`、`PHASES`
+- **出力**: ARCHITECTURE.md、`docs/design-notes/<slug>-design.md`（付随する設計ノート。作業ブランチにコミットする。architect は Planning-tier エージェントであり、そのために `Bash` を所有する）
+- **AGENT_RESULT フィールド**: `TECH_STACK`、`TECH_STACK_CHANGED`、`PHASES`、`BRANCH`（Planning-tier のため。`PR_URL` は出さない）
 - **NEXT条件**:
   - Standard / Fullプラン → `scaffolder`
   - Minimal / Lightプラン → `developer`

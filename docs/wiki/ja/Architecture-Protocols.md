@@ -1,8 +1,8 @@
 # Architecture: Protocols
 
 > **Language**: [English](../en/Architecture-Protocols.md) | [日本語](../ja/Architecture-Protocols.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: terminology rebalance per #40)
-> **EN canonical**: 2026-04-25 of wiki/en/Architecture-Protocols.md
+> **Last updated**: 2026-07-29 (updated 2026-07-29: MAINTENANCE_RESULT.md のスキーマ節を追加, #168; 2026-04-25: terminology rebalance per #40)
+> **EN canonical**: 2026-07-29 of wiki/en/Architecture-Protocols.md
 > **Audience**: エージェント開発者
 
 このページはもとの Architecture.md を3ページに分割したもの（#42）です。ハンドオフファイルスキーマとエージェント間通信プロトコル（AGENT_RESULT）、`blocked` STATUSを扱います。ドメインモデルと運用ルールは関連ページを参照してください: [ドメインモデル](./Architecture-Domain-Model.md)、[運用ルール](./Architecture-Operational-Rules.md)。
@@ -84,6 +84,19 @@ PRODUCT_TYPE: {service | tool | library | cli}
 **必須フィールド：**
 - 「成果物一覧」テーブル
 - 「デプロイ準備状態」チェックリスト
+
+### MAINTENANCE_RESULT.md
+
+`maintenance-flow` の **Major** プランでのみ生成されます。`delivery-flow` の入力であり、起動時に検証されます。`DISCOVERY_RESULT.md` が併存する場合はこちらが優先されます。analyst チェーンは `maintenance-flow` 内で実行済みのため、`spec-designer` はスキップされ、`architect` の差分モードからフローが開始します。
+
+**必須フィールド：**
+- `PRODUCT_TYPE`（service / tool / library / cli のいずれか）
+- 「Change Overview」セクション（空でないこと）
+- 「impact-analyzer Findings」セクション（`TARGET_FILES` と `REGRESSION_RISK` を含むこと）
+- 「security-auditor Pre-audit Results」セクション（CRITICAL / WARNING の件数を含むこと）
+- 「Handoff to delivery-flow」セクション（`Recommended plan` を含むこと）
+
+フィールド欠落は hard error です。`delivery-flow` はユーザーヒアリングにフォールバックせず `STATUS: error` を報告します（フォールバックすると Major の前処理結果が捨てられるため）。
 
 ---
 

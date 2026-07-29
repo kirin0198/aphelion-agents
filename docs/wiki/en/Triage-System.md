@@ -1,8 +1,9 @@
 # Triage System
 
 > **Language**: [English](../en/Triage-System.md) | [日本語](../ja/Triage-System.md)
-> **Last updated**: 2026-05-01
+> **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: describe the MAINTENANCE_RESULT.md consumer contract in the Major handoff section (#168)
 >   - 2026-05-01: Add visual-designer to Delivery triage (HAS_UI + Standard/Full only) (#109)
 >   - 2026-04-30: Add Doc Flow Triage section (#54)
 >   - 2026-04-30: doc-reviewer references per #91 follow-up

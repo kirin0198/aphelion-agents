@@ -1,12 +1,13 @@
 # Triage System
 
 > **Language**: [English](../en/Triage-System.md) | [日本語](../ja/Triage-System.md)
-> **Last updated**: 2026-05-01
+> **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: Major 引き渡し節に MAINTENANCE_RESULT.md の消費側契約を記載 (#168)
 >   - 2026-05-01: Delivery トリアージに visual-designer を追加（HAS_UI かつ Standard/Full のみ）(#109)
 >   - 2026-04-30: Doc フロートリアージセクション追加 (#54)
 >   - 2026-04-30: doc-reviewer 参照を反映 (#91 follow-up)
-> **EN canonical**: 2026-05-01 of wiki/en/Triage-System.md
+> **EN canonical**: 2026-07-29 of wiki/en/Triage-System.md
 > **Audience**: 新規ユーザー / エージェント開発者
 
 トリアージシステムはフロー開始時にプロジェクトの特性を自動的に評価し、必要な最小限のエージェントセットを選択します。このページでは4段階の選択ロジック、条件、ドメイン別エージェントマトリクスを説明します。

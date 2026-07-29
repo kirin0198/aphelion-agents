@@ -1,14 +1,15 @@
 # Agents Reference: Orchestrators & Cross-Cutting
 
 > **Language**: [English](../en/Agents-Orchestrators.md) | [日本語](../ja/Agents-Orchestrators.md)
-> **Last updated**: 2026-05-30
+> **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: delivery-flow の入力に MAINTENANCE_RESULT.md を追加（Maintenance Major 引き渡しの消費側契約）(#168)
 >   - 2026-05-30: analyst チェーン spawn コントラクト + legacy-resume injection-only mode を文書化 (#141)
 >   - 2026-04-30: doc-flow を第 5 のフローとして追加 (#54)
 >   - 2026-04-30: Add doc-reviewer (Quality Agents) per #91
 >   - 2026-04-26: Sync with #62, #66, #72, #74 (issue #77)
 >   - 2026-04-25: terminology rebalance per #40
-> **EN canonical**: 2026-05-30 of wiki/en/Agents-Orchestrators.md
+> **EN canonical**: 2026-07-29 of wiki/en/Agents-Orchestrators.md
 > **Audience**: エージェント開発者
 
 このページはもとの Agents-Reference.md を 6 ページに分割したもの（#42）です。Flow Orchestrator（フローオーケストレーター）、セーフティエージェント、品質エージェント、スタンドアロンエージェント（横断系エージェント）を扱います。ドメイン別エージェントは関連ページを参照してください: [Discovery](./Agents-Discovery.md)、[Delivery](./Agents-Delivery.md)、[Operations](./Agents-Operations.md)、[Maintenance](./Agents-Maintenance.md)、[Doc](./Agents-Doc.md)。
@@ -44,8 +45,8 @@ Flow Orchestrator はドメイン全体を管理します。トリアージで�
 
 - **正規**: [.claude/agents/delivery-flow.md](../../.claude/agents/delivery-flow.md)
 - **ドメイン**: Flow Orchestrator（Delivery）
-- **責務**: 設計・実装・テスト・レビューフロー全体を管理します。DISCOVERY_RESULT.md を読み込んでトリアージを実行し、テスト/レビュー失敗時のロールバックを処理したうえで、DELIVERY_RESULT.md を生成します。
-- **入力**: DISCOVERY_RESULT.md（オプション）、既存のSPEC.md / ARCHITECTURE.md
+- **責務**: 設計・実装・テスト・レビューフロー全体を管理します。DISCOVERY_RESULT.md（Maintenance Major の引き渡し時は MAINTENANCE_RESULT.md）を読み込んでトリアージを実行し、テスト/レビュー失敗時のロールバックを処理したうえで、DELIVERY_RESULT.md を生成します。
+- **入力**: DISCOVERY_RESULT.md（オプション）、MAINTENANCE_RESULT.md（オプション — Maintenance Major の引き渡し。DISCOVERY_RESULT.md より優先され、`architect` の差分モードからフローを開始する）、既存のSPEC.md / ARCHITECTURE.md
 - **出力**: DELIVERY_RESULT.md（最終ハンドオフ）、SPEC.md、ARCHITECTURE.md、実装コード、TEST_PLAN.md、SECURITY_AUDIT.md、README.md
 - **AGENT_RESTULTフィールド**: N/A
 - **NEXT条件**: 完了後、ユーザーに`/operations-flow`の実行を促す（serviceの場合）

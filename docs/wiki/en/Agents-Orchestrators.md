@@ -1,8 +1,9 @@
 # Agents Reference: Orchestrators & Cross-Cutting
 
 > **Language**: [English](../en/Agents-Orchestrators.md) | [日本語](../ja/Agents-Orchestrators.md)
-> **Last updated**: 2026-05-30
+> **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: add MAINTENANCE_RESULT.md to delivery-flow inputs (Maintenance Major consumer contract) (#168)
 >   - 2026-05-30: document analyst chain spawn contract + legacy-resume injection-only mode (#141)
 >   - 2026-04-30: Add doc-flow as the 5th flow orchestrator (#54)
 >   - 2026-04-30: Add doc-reviewer (Quality Agents) per #91
@@ -43,8 +44,8 @@ Flow orchestrators manage entire domains. They are not triage-selected agents bu
 
 - **Canonical**: [.claude/agents/delivery-flow.md](../../.claude/agents/delivery-flow.md)
 - **Domain**: Orchestrator (Delivery)
-- **Responsibility**: Manages the entire design, implementation, testing, and review flow. Reads DISCOVERY_RESULT.md, performs triage, handles rollbacks on test/review failures, generates DELIVERY_RESULT.md.
-- **Inputs**: DISCOVERY_RESULT.md (optional), existing SPEC.md / ARCHITECTURE.md
+- **Responsibility**: Manages the entire design, implementation, testing, and review flow. Reads DISCOVERY_RESULT.md (or MAINTENANCE_RESULT.md on a Maintenance Major handoff), performs triage, handles rollbacks on test/review failures, generates DELIVERY_RESULT.md.
+- **Inputs**: DISCOVERY_RESULT.md (optional), MAINTENANCE_RESULT.md (optional — Maintenance Major handoff; takes precedence over DISCOVERY_RESULT.md and starts the flow at `architect` in differential mode), existing SPEC.md / ARCHITECTURE.md
 - **Outputs**: DELIVERY_RESULT.md (final handoff), SPEC.md, ARCHITECTURE.md, implementation code, TEST_PLAN.md, SECURITY_AUDIT.md, README.md
 - **AGENT_RESULT fields**: N/A
 - **NEXT conditions**: Prompts user to run `/operations-flow` (if service) after completion
