@@ -3,6 +3,7 @@
 > **Language**: [English](../en/Hooks-Reference.md) | [日本語](../ja/Hooks-Reference.md)
 > **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: document the distribution manifest — removed hooks stay removed (#202), orphan files reported / --prune (#207)
 >   - 2026-07-29: fix repository-root relative-link depth ../../ -> ../../../ (#169)
 >   - 2026-05-30: add Hook D — aphelion-project-rules-check (SessionStart advisory) (#130 PR-6)
 >   - 2026-05-01: initial release — MVP 3 hooks (#107)
@@ -249,12 +250,23 @@ npx github:kirin0198/aphelion-agents init
 npx aphelion-agents update
 ```
 
-- **`settings.json`** — Merge: re-applies all Aphelion-managed hook entries (identified by
-  `aphelion-` in the command path) while preserving your custom or disabled entries. The
-  `SessionStart` block for hook D is automatically added to existing installations.
+- **`settings.json`** — Merge: refreshes the Aphelion-managed hook entries (identified by
+  `aphelion-` in the command path) that are still present, adds hooks that are new since
+  the previous run, and preserves your custom entries. Hooks you deleted stay deleted —
+  see "Disabling a hook" below.
 - **`hooks/`** — Overlay: always re-copied from canonical. Ensures bug fixes and new
   secret patterns reach your project automatically.
+- **`.aphelion-manifest.json`** — Rewritten each run. Records which files Aphelion
+  distributed and which hook scripts it knows about.
+- **Removed-upstream files** — Reported as a warning (for example, a command that was
+  deleted from Aphelion but still sits in your `.claude/commands/`, where Claude Code
+  keeps offering it). `update` never deletes them on its own; pass `--prune` to remove
+  them. Anything you leave in place is reported again on the next run.
 - Restores execute permissions if lost (e.g., after a Windows git clone).
+
+```bash
+npx aphelion-agents update --prune   # also delete files Aphelion no longer ships
+```
 
 ---
 
@@ -281,8 +293,19 @@ comment out the relevant entry.
 }
 ```
 
-The change will not be overwritten by `npx aphelion-agents update` because
-`settings.json` merges are idempotent for user-deleted entries.
+The change survives `npx aphelion-agents update`. Since 0.3.9 the CLI records the hooks it
+knows about in `.claude/.aphelion-manifest.json`; on the next update, a template hook that
+was known last run and is missing from your `settings.json` is treated as deliberately
+removed and is not re-added. One line per skipped hook is printed so the behaviour is visible.
+
+Edge cases worth knowing:
+
+| Situation | Result |
+|-----------|--------|
+| Aphelion ships a **brand-new** hook | Added automatically — it was never in your manifest, so it is not a removal |
+| You delete `.claude/.aphelion-manifest.json` | The memory resets; the next `update` re-adds every template hook, including ones you removed |
+| Install predates 0.3.9 (no manifest) | The **first** `update` re-adds all template hooks once and prints a notice; removals stick from the run after that |
+| You want a removed hook back | Restore the entry by hand, or run `npx aphelion-agents init --force` (your other `settings.json` fields are preserved) |
 
 ---
 

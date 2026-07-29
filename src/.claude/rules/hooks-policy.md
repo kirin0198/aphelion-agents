@@ -1,8 +1,9 @@
 # Hooks Policy
 
-> **Last updated**: 2026-05-30
+> **Last updated**: 2026-07-29
 > **Auto-loaded**: Yes — placed in `.claude/rules/`, loaded by Claude Code on every session start
 > Update history:
+>   - 2026-07-29: document the distribution manifest — removed hook entries now survive `update` (#202) and orphan files are reported (#207)
 >   - 2026-05-30: add hook D (aphelion-project-rules-check, SessionStart advisory) (#130 PR-6)
 >   - 2026-05-01: initial release — MVP 3 hooks (A / B / E) (#107)
 
@@ -176,6 +177,26 @@ and emits a stderr message recommending the matching vulnerability scan command.
 When hook A blocks due to a false positive (e.g., a placeholder value that looks like a real
 secret), use `/secrets-scan` to confirm it is safe, then append `[skip-secrets-check]` and retry.
 
+### Removing a hook entry survives `update` (#202)
+
+Deleting a hook's entry from `.claude/settings.json` is a **permanent** disable, not a
+temporary one. `init` / `update` record the hook scripts Aphelion knows about in
+`.claude/.aphelion-manifest.json`; on the next `update`, a template hook that is
+(a) known from the previous run and (b) absent from your `settings.json` is read as
+"the user removed this" and is **not** re-added. The CLI prints one line per skipped hook.
+
+Consequences to be aware of:
+
+- A hook that is genuinely **new upstream** (not in the previous manifest) is still added
+  automatically — that is how hook D reached existing installations.
+- Deleting `.claude/.aphelion-manifest.json` resets this memory: the next `update` re-adds
+  every template hook, including ones you had removed.
+- To re-enable a removed hook, restore its entry in `settings.json` by hand, or run
+  `npx aphelion-agents init --force` (which merges the full template back in while keeping
+  your other `settings.json` fields).
+- Installations created before 0.3.9 have no manifest. Their **first** `update` re-adds every
+  template hook once (and prints a notice); from the run after that, removals stick.
+
 ---
 
 ## 4. Distribution Policy
@@ -205,8 +226,10 @@ by the same overlay-copy mechanism as `src/.claude/rules/`.
 - Sets execute bit (`chmod 0755`) on all `*.sh` files via `chmodHooks()`.
 
 `npx aphelion-agents update`:
-- **`settings.json`** — Merge: `mergeSettingsJson()` re-applies all Aphelion-managed hook entries (identified by the `aphelion-` marker in the `command` path) while preserving all user-added or user-disabled entries. This means the `SessionStart` block for hook D **is automatically added** to existing installations on update. No manual editing required.
+- **`settings.json`** — Merge: `mergeSettingsJson()` refreshes the Aphelion-managed hook entries (identified by the `aphelion-` marker in the `command` path) that are still present, adds template hooks that are new since the previous run, and preserves every user-added entry. A hook the user removed is **not** re-added — see §3 "Removing a hook entry survives update". This is why the `SessionStart` block for hook D was added automatically to installations that predated it: it was new, not removed.
 - **`hooks/`** — Overlay: always re-copied from canonical. `aphelion-project-rules-check.sh` reaches existing installations automatically on the next `update`.
+- **`.aphelion-manifest.json`** — Rewritten each run. Records the distributed file list (used to report files removed upstream) and the hook scripts Aphelion knows about (used for the removal memory above).
+- **Orphan reporting** — Files that Aphelion distributed previously but no longer ships are listed as a warning. `update` never deletes them unless `--prune` is passed; unresolved ones are carried in the manifest and reported again on the next run (#207).
 - Re-runs `chmodHooks()` to restore execute bits if lost (e.g., after a Windows git clone).
 
 **For users who update manually:** If you prefer not to run `npx aphelion-agents update`, add the following to your `.claude/settings.json` under `hooks.SessionStart`:
@@ -231,8 +254,10 @@ To add a custom hook without losing it on `update`:
 - Register it in `.claude/settings.json` under the relevant event section.
 
 To disable an Aphelion hook:
-- Edit `.claude/settings.json` and delete or comment out the relevant entry.
-- The entry will not be restored by `update` (user-disabled entries are preserved by the merge logic).
+- Edit `.claude/settings.json` and delete the relevant entry.
+- The entry will not be restored by `update`, as long as `.claude/.aphelion-manifest.json`
+  is present (that file is how the CLI remembers what it had installed). See §3
+  "Removing a hook entry survives `update`" for the exact rule and its edge cases.
 
 ---
 
