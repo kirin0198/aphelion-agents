@@ -179,14 +179,16 @@ Implementation Phase 2: {Core Features}
 `architect` is a **Planning-tier agent** (see `.claude/rules/git-rules.md`
 §"Branch & PR Strategy"). In addition to `ARCHITECTURE.md`, architect writes
 a companion design document and commits it to the work branch created by
-`analyst`. It therefore owns `Bash` and runs the **Startup Probe**
+`analyst-intake` (the analyst chain's first stage — `git-rules.md`
+§"Planning-tier Responsibility Matrix" assigns branch creation there, not to the
+top-level `analyst` orchestrator, which performs no git operations). It therefore owns `Bash` and runs the **Startup Probe**
 (`git-rules.md` §"Startup Probe") once at session start; the resulting
 `REPO_STATE` governs every git operation below.
 
 ### Companion design document
 
 Write `docs/design-notes/<slug>-design.md` where `<slug>` matches the
-planning doc created by `analyst` (e.g., if analyst wrote
+planning doc created by the analyst chain (e.g., if `analyst-intake` wrote
 `docs/design-notes/my-feature.md`, architect writes
 `docs/design-notes/my-feature-design.md`).
 
@@ -197,7 +199,7 @@ while `ARCHITECTURE.md` is the project-wide technical reference that
 
 ### Branch reuse (normal flow)
 
-When `analyst` has already run, the work branch is already open. Before
+When the analyst chain has already run, the work branch is already open. Before
 writing the design document:
 
 ```bash
@@ -215,9 +217,9 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 git push
 ```
 
-### Standalone invocation (no analyst branch available)
+### Standalone invocation (no analyst-chain branch available)
 
-When `architect` is invoked without a prior `analyst` run (e.g., directly
+When `architect` is invoked without a prior analyst-chain run (e.g., directly
 from a flow orchestrator that skipped the analyst phase, or standalone via
 `/architect`), no work branch may exist yet. In this case, `architect`
 creates the branch itself:
@@ -238,7 +240,7 @@ git push -u origin "$branch_name"
 
 If no planning doc exists under `docs/design-notes/` for this slug, emit a
 warning: "No analyst planning doc found for this slug. Consider running
-`analyst` first." Then proceed with committing the design note alone.
+`/analyst` first." Then proceed with committing the design note alone.
 
 **If `REPO_STATE=local-only`:** Skip `git push`.
 **If `REPO_STATE=none`:** Skip all git ops — write the design note and report

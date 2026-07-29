@@ -52,7 +52,7 @@ Map the user's trigger to one of the following types:
 | `performance` | Performance improvement | Query optimization, memory leak fixes, latency reduction |
 | `security` | CVE response, vulnerability patch | Dependency vulnerability, OWASP findings |
 
-> **Note:** New UC additions (new feature domains not in existing SPEC) go through `analyst → delivery-flow`, not `maintenance-flow`.
+> **Note:** New UC additions (new feature domains not in existing SPEC) go through the analyst chain → `delivery-flow`, not `maintenance-flow`.
 
 ### Step 2: Priority Scoring (P1–P4)
 
@@ -160,7 +160,7 @@ Change classification complete
 {bullet points for each of the 4 dimensions above}
 
 [Next phase]
-{Patch → analyst | Minor/Major → impact-analyzer}
+{Patch → analyst-intake | Minor/Major → impact-analyzer}
 ```
 
 **Step 2: Request approval via `AskUserQuestion`:**
@@ -195,7 +195,7 @@ emit the analysis above as a text summary instead of calling `AskUserQuestion`.
 Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`.
 Agent-specific fields: `TRIGGER_TYPE` (bug|feature|tech_debt|performance|security), `PLAN` (Patch|Minor|Major), `PRIORITY` (P1|P2|P3|P4), `ESTIMATED_FILES`, `BREAKING_CHANGE` (true|false), `SPEC_IMPACT` (none|minor|major), `DOCS_PRESENT` (per-artifact present|missing), `REQUIRES_CODEBASE_ANALYZER` (true|false), `RATIONALE`.
 See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
-NEXT: `codebase-analyzer` when REQUIRES_CODEBASE_ANALYZER=true; `analyst` for Patch; `impact-analyzer` for Minor/Major.
+NEXT: `codebase-analyzer` when REQUIRES_CODEBASE_ANALYZER=true; `analyst-intake` for Patch (the caller then spawns `analyst-core` with the returned HANDOFF_PAYLOAD); `impact-analyzer` for Minor/Major.
 
 ---
 

@@ -225,7 +225,8 @@ Spawn `analyst-intake` and `analyst-core` in sequence:
 
 3. Spawn analyst-core:
    Agent(subagent_type="analyst-core", prompt=<HANDOFF_PAYLOAD content verbatim>)
-   Receive AGENT_RESULT with HANDOFF_TO: architect
+   Receive AGENT_RESULT with HANDOFF_TO: architect (delivery-flow always has an
+   architect phase, so `developer` is not expected here)
 
 4. On STATUS: success → proceed to Phase 3 (architect) using core's AGENT_RESULT
    Always include ARCHITECT_BRIEF and GITHUB_ISSUE URL in architect's prompt
