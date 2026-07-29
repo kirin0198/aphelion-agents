@@ -29,9 +29,9 @@ Each orchestrator must `Read` this file at startup before beginning work.
 
 > **sandbox-runner placement**: In Standard and above, `sandbox-runner` is automatically inserted by the orchestrator when a `required`-tier command (per `sandbox-policy.md`) is detected. In Light, only explicit delegation from the calling agent is permitted. In Minimal, `sandbox-runner` is not used — policy violations trigger an advisory warning to the user only.
 
-> **About analyst:** `analyst` is a side-entry agent outside the triage flow. It is triggered by bug reports, feature requests, or refactoring requests for existing projects. After completion, Delivery Flow joins from Phase 3 (architect).
+> **About the analyst chain:** the analyst chain is a side entry outside the triage flow, triggered by bug reports, feature requests, or refactoring requests for existing projects. A user runs it standalone via `/analyst` (the top-level `analyst` orchestrator); a flow orchestrator instead spawns `analyst-intake` → `analyst-core` directly — **never** `analyst` itself, which uses the Agent tool internally and cannot run as a sub-agent. After completion, Delivery Flow joins from Phase 3 (architect).
 
-> **About codebase-analyzer:** `codebase-analyzer` is a standalone agent for existing projects that lack SPEC.md / ARCHITECTURE.md. It reverse-engineers these documents from the codebase, enabling the project to join the standard workflow via `analyst` → `delivery-flow`.
+> **About codebase-analyzer:** `codebase-analyzer` is a standalone agent for existing projects that lack SPEC.md / ARCHITECTURE.md. It reverse-engineers these documents from the codebase, enabling the project to join the standard workflow via the analyst chain → `delivery-flow`.
 
 ### Operations Flow Triage
 
@@ -49,7 +49,7 @@ Each orchestrator must `Read` this file at startup before beginning work.
 
 | Plan | Condition | Agents to Launch |
 |------|-----------|-----------------|
-| Patch | Bug fix / security patch / 1–3 files / no breaking change | change-classifier → analyst → developer → tester |
+| Patch | Bug fix / security patch / 1–3 files / no breaking change | change-classifier → analyst-intake → analyst-core → developer → tester |
 | Minor | Feature addition / refactor / 4–10 files / no breaking change | + impact-analyzer → architect (differential mode) → reviewer |
 | Major | Breaking change / DB schema change / 11+ files / major SPEC impact | + security-auditor → handoff to delivery-flow |
 
@@ -832,7 +832,7 @@ reviewer (CRITICAL detected) → developer (fix) → tester (re-run) → reviewe
 ```
 doc-reviewer (DOC_REVIEW_RESULT: fail)
   → triggering agent (spec-designer / ux-designer / visual-designer /
-                      architect / scope-planner / analyst) for fix
+                      architect / scope-planner / analyst-core) for fix
     → doc-reviewer (re-check)
 ```
 
