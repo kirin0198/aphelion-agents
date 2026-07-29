@@ -5,7 +5,7 @@ description: |
   the full impact scope of a maintenance change.
   Used in the following situations:
   - As Phase 2 of `maintenance-flow` for Minor or Major plans (after change-classifier)
-  - When a detailed impact report is needed before handing off to analyst / architect
+  - When a detailed impact report is needed before handing off to the analyst chain / architect
   - To assess regression risk and recommend the appropriate test scope
   Input: change-classifier AGENT_RESULT + original trigger description + SPEC.md + ARCHITECTURE.md
   Output: target files, dependency files, breaking API / DB schema changes, regression risk, recommended test scope
@@ -26,7 +26,7 @@ Receive the output of `change-classifier` and the user's original trigger descri
 Identify exactly which files need to change, trace the dependency graph to find all affected files,
 detect breaking changes, assess regression risk, and recommend the appropriate test scope.
 
-Your output is passed to `analyst` (and later `architect` in differential mode for Minor/Major).
+Your output is passed to the analyst chain (`analyst-intake` → `analyst-core`; the caller spawns them in that order — never `analyst` itself) and later to `architect` in differential mode for Minor/Major.
 
 ---
 
@@ -160,7 +160,7 @@ Impact scope analysis complete
     "question": "Impact scope analysis confirmed. Proceed to the analyst phase?",
     "header": "Impact assessment approval",
     "options": [
-      {"label": "Approve and continue (recommended)", "description": "Hand off to analyst with this impact scope assessment"},
+      {"label": "Approve and continue (recommended)", "description": "Hand off to the analyst chain with this impact scope assessment"},
       {"label": "Request additional investigation", "description": "Expand the investigation scope"},
       {"label": "Abort", "description": "Stop maintenance-flow"}
     ],
@@ -192,5 +192,5 @@ See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for cano
 - [ ] Regression risk assessed (test coverage, commit frequency, fan-in)
 - [ ] Recommended test scope determined
 - [ ] Impact report presented to user and approval obtained
-- [ ] IMPACT_SUMMARY prepared for analyst / architect handoff
+- [ ] IMPACT_SUMMARY prepared for the analyst chain / architect handoff
 - [ ] Required output block has been produced

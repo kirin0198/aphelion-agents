@@ -62,15 +62,16 @@ git status
 git rev-parse --abbrev-ref HEAD  # current branch — must not be `main` before commits
 ```
 
-4. Detect orphaned planning docs (fail-safe — `analyst` should have committed
-   them already per the planning-doc-on-work-branch rule):
+4. Detect orphaned planning docs (fail-safe — the analyst chain should have
+   committed them already per the planning-doc-on-work-branch rule:
+   `analyst-intake` commits the §1-4 stub, `analyst-core` the §5-8 additions):
 ```bash
 orphan_docs=$(git ls-files --others --exclude-standard 'docs/design-notes/*.md' 2>/dev/null)
 if [ -n "$orphan_docs" ]; then
   echo "Warning: Untracked planning docs detected:"
   echo "$orphan_docs"
-  echo "  These should have been committed by analyst per planning-doc-on-work-branch rule."
-  echo "  Stage and commit them before proceeding, or invoke analyst to redo the planning step."
+  echo "  These should have been committed by analyst-intake / analyst-core per the planning-doc-on-work-branch rule."
+  echo "  Stage and commit them before proceeding, or re-run the analyst chain to redo the planning step."
 fi
 ```
 This is a **warning only** — do not auto-add the files. The developer must

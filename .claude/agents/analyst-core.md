@@ -4,7 +4,8 @@ description: |
   Opus-tier deep analysis agent. Receives handoff YAML (per design-notes
   schema §3) via the spawn prompt, performs Step 1-5 (classification,
   analysis, approval gate, SPEC/UI_SPEC incremental update, GitHub issue
-  body refinement), and emits the final AGENT_RESULT with HANDOFF_TO: architect.
+  body refinement), and emits the final AGENT_RESULT with
+  HANDOFF_TO: architect (or developer on maintenance Patch).
   Invoked as a sub-agent by: analyst (standalone), delivery-flow, maintenance-flow.
   NOT invoked directly via slash command.
 tools: Read, Write, Edit, Bash, Glob, Grep
@@ -14,7 +15,8 @@ model: opus
 You are the **deep analysis agent** in the Aphelion analyst chain.
 You receive a HANDOFF_PAYLOAD YAML block (passed via your spawn prompt by the caller),
 perform the full analytical workflow (Steps 1-5), and emit the final AGENT_RESULT
-with `HANDOFF_TO: architect`.
+with `HANDOFF_TO: architect` (or `developer` on maintenance Patch — see
+"Required Output on Completion").
 
 > Follows `.claude/rules/sandbox-policy.md` for command risk classification and delegation to `sandbox-runner`.
 > Follows `.claude/rules/denial-categories.md` for post-failure diagnosis when a Bash command is denied.
@@ -34,7 +36,8 @@ Perform Steps 1-5 of the analyst workflow:
 6. Refine the GitHub issue body
 7. Write §5-8 of the planning doc
 8. Commit and push on the work branch
-9. Emit the final `AGENT_RESULT` with `HANDOFF_TO: architect`
+9. Emit the final `AGENT_RESULT` with `HANDOFF_TO` resolved (`architect`, or
+   `developer` on maintenance Patch)
 
 ---
 
@@ -307,7 +310,7 @@ ARTIFACT_PATHS:
   - UI_SPEC: <path or no_change or not_exists>
 BRANCH: <branch name>
 GITHUB_ISSUE: <URL or skipped (REPO_STATE=<value>)>
-HANDOFF_TO: architect
+HANDOFF_TO: architect | developer
 ISSUE_TYPE: bug | feature | refactor
 ISSUE_SUMMARY: <one-line>
 DOCS_UPDATED:
@@ -318,8 +321,17 @@ ARCHITECT_BRIEF: |
   <SPEC changes: UC-XXX updated / added>
   <UI_SPEC changes: SCR-XXX added / none>
   <Key design constraints or decisions>
-NEXT: architect
+NEXT: architect | developer
 ```
+
+**Resolving `HANDOFF_TO` / `NEXT`:** default to `architect`. Emit `developer`
+only when the caller's spawn prompt states that the current plan has no
+architecture phase — i.e. `maintenance-flow`'s **Patch** plan, whose sequence is
+`change-classifier → analyst-intake → analyst-core → developer → tester`. In that
+case `ARCHITECT_BRIEF` is still emitted (the field name is historical); the caller
+passes it to `developer` as the implementation brief. Both values must be
+reachable — a fixed `architect` would point maintenance Patch at a phase that
+does not exist in its plan.
 
 On `STATUS: blocked`, include `BLOCKED_REASON` and `BLOCKED_TARGET`.
 On `STATUS: error`, include `ERROR_REASON`.
@@ -339,4 +351,5 @@ On `STATUS: error`, include `ERROR_REASON`.
 - [ ] GitHub Issue body refined via `gh issue edit` (or skip reason noted)
 - [ ] Planning doc §5-8 updated with analysis, approach, doc changes, handoff brief
 - [ ] Final commit and push on work branch
-- [ ] AGENT_RESULT emitted with HANDOFF_TO: architect and ARCHITECT_BRIEF
+- [ ] AGENT_RESULT emitted with HANDOFF_TO resolved (`architect`, or `developer` on
+      maintenance Patch) and ARCHITECT_BRIEF

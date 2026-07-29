@@ -92,7 +92,10 @@ Phase 4: Test execution                  → tester             → ⏸ User app
 1. Spawn `analyst-intake` with change-classifier AGENT_RESULT as context
 2. Receive AGENT_RESULT; extract HANDOFF_PAYLOAD
 3. Spawn `analyst-core` with HANDOFF_PAYLOAD verbatim
-4. Receive analyst-core AGENT_RESULT (HANDOFF_TO: architect / developer)
+4. Receive analyst-core AGENT_RESULT. On the Patch plan, state in the spawn prompt that
+   this plan has no architect phase, so analyst-core resolves `HANDOFF_TO: developer`
+   (see `analyst-core.md` §"Required Output on Completion"). Minor / Major leave it at
+   the default `architect`.
 5. Use analyst-core's AGENT_RESULT for doc-reviewer trigger decision and Phase 3 input
 
 **NOTE:** Do NOT spawn `analyst.md` directly — it uses the Agent tool internally
@@ -105,9 +108,12 @@ Phase 5: Security audit (opt) → security-auditor   → ⏸ User approval
 ```
 
 > **Conditional auto for doc-reviewer (Patch only)**: doc-reviewer is
-> auto-inserted only when `analyst-core.DOCS_UPDATED` contains SPEC.md or
-> ARCHITECTURE.md with a non-empty diff. If `DOCS_UPDATED` reports
-> SPEC.md as `no_change`, doc-reviewer is skipped (no rollback chain formed).
+> auto-inserted only when `analyst-core.DOCS_UPDATED` reports SPEC.md or
+> UI_SPEC.md as `updated`. `analyst-core` never writes ARCHITECTURE.md (that is
+> `architect`'s job, and Patch has no architect phase), so its `DOCS_UPDATED`
+> schema has no ARCHITECTURE.md key — an ARCHITECTURE.md condition here could
+> never hold. If every key reports `no_change`, doc-reviewer is skipped (no
+> rollback chain formed).
 
 ### Minor Plan
 ```

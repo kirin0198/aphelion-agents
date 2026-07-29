@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed (analyst chain)
+
+- **Stale `analyst` references swept from rules and agents** (#175): flow orchestrators
+  document that `analyst` must never be spawned as a sub-agent (it uses the Agent tool
+  internally) and that `analyst-intake` → `analyst-core` is the only correct spawn path —
+  but `orchestrator-rules.md` (Maintenance triage, rollback targets), `change-classifier.md`
+  (`NEXT: analyst`), `impact-analyzer.md`, `architect.md`, `developer.md`,
+  `document-locations.md` and `agent-communication-protocol.md` still named the old agent.
+  Following them literally meant spawning a broken agent or misattributing git
+  responsibilities (`git-rules.md` assigns branch creation to `analyst-intake`; the
+  top-level `analyst` performs no git operations). Wiki-side occurrences are tracked
+  separately.
+
+- **`analyst-core.HANDOFF_TO` is plan-dependent** (#176): the contract emitted a fixed
+  `architect`, while `maintenance-flow` expected `architect | developer` — and the Patch
+  plan has no architect phase, so the routing hint pointed at a phase that does not exist.
+  `HANDOFF_TO` / `NEXT` now resolve to `developer` when the caller states the plan has no
+  architect phase, and `maintenance-flow` says so in the Patch spawn prompt.
+
+- **maintenance Patch's doc-reviewer condition is satisfiable** (#177): it required
+  `analyst-core.DOCS_UPDATED` to contain SPEC.md **or ARCHITECTURE.md**, but analyst-core
+  is explicitly forbidden from writing ARCHITECTURE.md and its DOCS_UPDATED schema has only
+  SPEC.md / UI_SPEC.md keys — half the condition could never hold. Now reads SPEC.md or
+  UI_SPEC.md, matching the emitter. (The third divergent wording in `orchestrator-rules.md`
+  was corrected in #224.)
+
 ### Fixed (doc-reviewer contract)
 
 - **`DOC_REVIEW_RESULT` vocabulary unified on `pass` / `fail`** (#173): the canonical

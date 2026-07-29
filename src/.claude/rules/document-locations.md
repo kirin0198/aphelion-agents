@@ -14,7 +14,7 @@ the repository root.
 
 | Artifact name           | Default (new project)          | Legacy fallback (root)      | Producer / Consumer |
 |-------------------------|--------------------------------|-----------------------------|---------------------|
-| `SPEC.md`               | `docs/SPEC.md`                 | `SPEC.md`                   | spec-designer / analyst write; many agents read |
+| `SPEC.md`               | `docs/SPEC.md`                 | `SPEC.md`                   | spec-designer / analyst-core write; many agents read |
 | `ARCHITECTURE.md`       | `docs/ARCHITECTURE.md`         | `ARCHITECTURE.md`           | architect / codebase-analyzer write |
 | `UI_SPEC.md`            | `docs/UI_SPEC.md`              | `UI_SPEC.md`                | ux-designer writes (skipped if HAS_UI=false) |
 | `VISUAL_SPEC.md`        | `docs/VISUAL_SPEC.md`          | `VISUAL_SPEC.md`            | visual-designer writes (Standard+ only) |
@@ -84,7 +84,8 @@ existing codebase and writes them for the first time. Its behavior:
 ## Agent contract
 
 - spec-designer, architect, ux-designer, visual-designer, codebase-analyzer,
-  analyst — write per the Write rules above. On first invocation in a new
+  analyst-intake, analyst-core — write per the Write rules above. (The top-level
+  `analyst` orchestrator writes nothing itself; it delegates to the chain.) On first invocation in a new
   project, write to `docs/<NAME>.md`. On incremental update, use the
   `ARTIFACT_PATHS` value passed in by the orchestrator.
 - developer, tester, reviewer, security-auditor, doc-reviewer,
