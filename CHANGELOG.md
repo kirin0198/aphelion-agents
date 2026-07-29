@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed (commands & hook distribution)
+
+- **Dogfooding hooks are no longer shipped** (#197): three hooks whose own headers say
+  "this repo only, NOT shipped via bin/init" were copied into every user project by the
+  recursive `hooks/` overlay — inert (the settings template never registers them) but
+  present and executable. `init` / `update` now exclude them by name, `hooks-policy.md`
+  documents their existence and exclusion, and installations that already received them get
+  them reported as removed-upstream files by `update` (#207 machinery).
+
+- **`/aphelion-check` checks hook D and gives working remediation** (#205): it verified only
+  three hooks, so an installation missing the `SessionStart` hook D entry — precisely the
+  legacy case `hooks-policy.md` warns about — reported green. Its remediation was stale too:
+  it described `init` as copy-if-absent and `settings.json` as protected after init, both
+  untrue since the #114 merge implementation, and told users to re-run `init`, which exits 1
+  when `.claude/` exists. Now: four hooks, `update` as the fix, plus a note that a hook you
+  deliberately removed stays removed (0.3.9 behaviour) and a manifest-presence report.
+
+- **`/rules-designer` and `/aphelion-init` match the agent** (#204): the command file claimed
+  the agent generates `CLAUDE.md` in the project root (it writes
+  `.claude/rules/project-rules.md`), and `/aphelion-init` promised existing-file detection
+  and standalone support the agent did not implement. Since `/aphelion-init` is the mandatory
+  first-run command, "INTERVIEW_RESULT.md required" pushed brand-new users into `interviewer`
+  before they could configure anything. The agent now treats all Discovery artifacts as
+  optional (asking directly when absent, defaulting from what the repo shows) and detects an
+  existing `project-rules.md` to offer amend / recreate instead of overwriting it.
+
+- **Getting-Started stops advertising commands that do not exist** (#206): Scenario 5 told
+  users to run `/security-auditor` and `/doc-writer`; neither has a command file. It now
+  lists the standalone commands that do exist and explains that other agents are invoked in
+  plain language.
+
 ### Fixed (agent tools & responsibilities)
 
 - **doc-flow creates its output directory** (#185): the six author agents own `Write` but not

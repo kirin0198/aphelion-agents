@@ -46,12 +46,27 @@ const APHELION_HOOK_MARKER = "aphelion-";
 const MANIFEST_NAME = ".aphelion-manifest.json";
 const MANIFEST_VERSION = 1;
 
+// このリポジトリ専用の dogfooding hook (#197)。
+// src/.claude/hooks/ に置かれているが配布対象外 — 各スクリプトのヘッダーが
+// "NOT shipped via bin/init" と宣言しており、settings.json テンプレートにも
+// 登録が無いため、配布しても inert なファイルがユーザー環境に増えるだけになる。
+// 既に配布済みの環境では、マニフェスト突合により orphan として報告される (#207)。
+const DOGFOODING_HOOKS = new Set([
+  "aphelion-md-sync.sh",
+  "aphelion-agent-count-check.sh",
+  "aphelion-task-md-lifecycle.sh",
+]);
+
 // マニフェスト導入 (0.3.9) より前に配布され、その後 upstream から撤去されたファイル。
 // 旧バージョンでインストールしたユーザーにはマニフェストが無く orphan を機械的に
 // 検出できないため、既知の撤去済みファイルだけは明示リストで拾う (#207)。
 // マニフェストが行き渡った後は、このリストに追記する必要はない。
 const LEGACY_REMOVED_FILES = [
   "commands/pm.md", // 77f1e47 で撤去 (#55 / #67) — undocumented な delivery-flow alias として残存
+  // 0.3.13 以前は dogfooding hook も配布されていた (#197)。inert だが実行ビット付きで残る。
+  "hooks/aphelion-md-sync.sh",
+  "hooks/aphelion-agent-count-check.sh",
+  "hooks/aphelion-task-md-lifecycle.sh",
 ];
 
 // ユーザーへのメッセージ (ANSI カラー: 最小限の直書き)
@@ -137,6 +152,7 @@ async function collectDistributedFiles() {
     files.push(`rules/${rel}`);
   }
   for (const rel of await listFilesRecursive(hooksSourcePath)) {
+    if (DOGFOODING_HOOKS.has(rel)) continue; // 配布対象外 (#197)
     files.push(`hooks/${rel}`);
   }
   return files.sort();
@@ -431,9 +447,11 @@ async function cmdInit(targetPath, force) {
     );
     reportMergeResult(initMergeResult);
     // hooks/: canonical 配布物を overlay copy し、実行ビットを付与 (#107, R8 mitigation)
+    // dogfooding hook は除外する (#197)
     await cp(hooksSourcePath, join(targetPath, "hooks"), {
       recursive: true,
       force: true,
+      filter: (src) => !DOGFOODING_HOOKS.has(src.split("/").pop()),
     });
     await chmodHooks(join(targetPath, "hooks"));
     // 配布マニフェストを記録 (#202, #207)
@@ -566,9 +584,11 @@ async function cmdUpdate(targetPath, prune = false) {
       );
     }
     // hooks/: canonical 更新を毎回反映 (regex / バグ修正の配布のため overlay copy) (#107)
+    // dogfooding hook は除外する (#197)
     await cp(hooksSourcePath, join(targetPath, "hooks"), {
       recursive: true,
       force: true,
+      filter: (src) => !DOGFOODING_HOOKS.has(src.split("/").pop()),
     });
     await chmodHooks(join(targetPath, "hooks"));
     const version = await getVersion();

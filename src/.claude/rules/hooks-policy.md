@@ -3,6 +3,7 @@
 > **Last updated**: 2026-07-29
 > **Auto-loaded**: Yes — placed in `.claude/rules/`, loaded by Claude Code on every session start
 > Update history:
+>   - 2026-07-29: document the three dogfooding hooks and their exclusion from distribution (#197)
 >   - 2026-07-29: document the distribution manifest — removed hook entries now survive `update` (#202) and orphan files are reported (#207)
 >   - 2026-05-30: add hook D (aphelion-project-rules-check, SessionStart advisory) (#130 PR-6)
 >   - 2026-05-01: initial release — MVP 3 hooks (A / B / E) (#107)
@@ -48,6 +49,15 @@ Four hooks are currently distributed. All scripts reside at
 
 A shared pattern library lives at `.claude/hooks/lib/secret-patterns.sh`.
 It defines `APHELION_SECRET_PATTERNS` (8 ERE regexes, IDs P1–P8) used by hook A.
+
+**Not distributed:** `src/.claude/hooks/` also holds three hooks used only for
+Aphelion's own development — `aphelion-md-sync.sh`, `aphelion-agent-count-check.sh`,
+`aphelion-task-md-lifecycle.sh`. They are registered in *this repository's*
+`.claude/settings.json` (which points at `src/.claude/hooks/…`) and are excluded from
+`init` / `update` by name (`DOGFOODING_HOOKS` in `bin/aphelion-agents.mjs`). Until
+0.3.13 they were copied into every user project, where they sat inert — never
+registered by the settings template, but present and executable (#197). Installations
+that received them see them reported as removed-upstream files by `update`.
 
 ### 2.1 Hook A — aphelion-secrets-precommit
 
