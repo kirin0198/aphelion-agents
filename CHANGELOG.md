@@ -7,7 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`update --prune`** (#207): `update` now compares the target `.claude/` against a
+  distribution manifest (`.claude/.aphelion-manifest.json`, written by `init` / `update`)
+  and reports files Aphelion distributed previously but no longer ships. Without the flag
+  nothing is deleted — the files are listed with the command to remove them, and any left
+  in place are carried in the manifest and reported again next run. `--prune` deletes them.
+  Installations that predate the manifest are still covered for known removals (e.g. the
+  `/pm` command dropped in #55 / #67, which kept appearing as a live skill).
+
 ### Fixed
+
+- **`update` no longer revives hooks the user removed** (#202): `mergeSettingsJson()`
+  deleted every `aphelion-`-marked entry and re-added the full template, so disabling a
+  hook by removing its `settings.json` entry — the method `hooks-policy.md` documents as
+  the only bypass for hook B — was undone on the next `update`. The merge now refreshes
+  entries that are still present, adds hooks that are new since the last run, preserves
+  user-owned entries, and skips (with a printed notice) any template hook that was known
+  last run and is now absent. Pre-manifest installations get one transitional run where
+  all template hooks are re-added, then removals stick. `hooks-policy.md` §3 / §4.2 / §4.3
+  and `docs/wiki/{en,ja}/Hooks-Reference.md` updated to match the implementation.
+
+- **doc-flow templates reach npx installs** (#203): `.claude/templates` was missing from
+  `package.json` `files`, so the 12 doc-flow templates never shipped through
+  `npx aphelion-agents init`. Every author agent's template resolution (steps 1-4) failed
+  and silently degraded to `TEMPLATE_USED: agent-emit-fallback`, while a dev-checkout
+  install behaved differently. Added to `files`, with a smoke-test lock.
 
 - **architect can now perform its own git workflow** (#167): `architect.md`
   declared `tools: Read, Write, Glob, Grep` while its body defined three

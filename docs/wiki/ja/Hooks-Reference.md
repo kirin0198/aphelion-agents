@@ -3,6 +3,7 @@
 > **Language**: [English](../en/Hooks-Reference.md) | [日本語](../ja/Hooks-Reference.md)
 > **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: 配布マニフェストを文書化 — 削除したフックが update 後も削除のままに (#202)、撤去済みファイルの報告と --prune (#207)
 >   - 2026-07-29: リポジトリルート参照の相対リンク深さを修正 ../../ -> ../../../ (#169)
 >   - 2026-05-30: add Hook D — aphelion-project-rules-check (SessionStart advisory) (#130 PR-6)
 >   - 2026-05-01: initial release — MVP 3 hooks (#107)
@@ -245,12 +246,22 @@ npx github:kirin0198/aphelion-agents init
 npx aphelion-agents update
 ```
 
-- **`settings.json`** — マージ: `command` パスに `aphelion-` を含む Aphelion 管理エントリを
-  再適用しつつ、ユーザーが追加・削除したエントリを保持します。Hook D の `SessionStart` ブロックが
-  既存インストールに自動追加されます。
+- **`settings.json`** — マージ: `command` パスに `aphelion-` を含む Aphelion 管理エントリのうち
+  現在も存在するものを更新し、前回以降に新設されたフックを追加し、ユーザー独自のエントリを保持します。
+  ユーザーが削除したフックは再追加されません（後述の「フックを無効化する」を参照）。
 - **`hooks/`** — オーバーレイ: 常に正規ソースから再コピー。バグ修正や新しいシークレットパターンが
   自動的にプロジェクトに反映されます。
+- **`.aphelion-manifest.json`** — 毎回書き換えられます。Aphelion が配布したファイル一覧と、
+  把握しているフックスクリプトを記録します。
+- **upstream から撤去されたファイル** — 警告として一覧表示されます（例: Aphelion から削除された
+  コマンドが `.claude/commands/` に残り、Claude Code がそれを提示し続けるケース）。`update` が
+  自動で削除することはありません。削除するには `--prune` を付けてください。残したファイルは
+  次回の実行でも再び報告されます。
 - 実行権限が失われた場合（例: Windows の git clone 後）に自動で復元します。
+
+```bash
+npx aphelion-agents update --prune   # Aphelion が配布しなくなったファイルも削除する
+```
 
 ---
 
@@ -277,7 +288,19 @@ npx aphelion-agents update
 }
 ```
 
-変更は `npx aphelion-agents update` で上書きされません（削除したエントリはマージ時も保持されます）。
+変更は `npx aphelion-agents update` で上書きされません。0.3.9 以降、CLI は把握しているフックを
+`.claude/.aphelion-manifest.json` に記録します。次回の update では、前回把握していて現在
+`settings.json` に無いテンプレートフックは「意図的に削除された」と判断され、再追加されません。
+スキップしたフックは 1 行ずつ表示されるため、挙動が見える形になっています。
+
+押さえておくべきエッジケース:
+
+| 状況 | 結果 |
+|------|------|
+| Aphelion が**新規フック**を追加した | 自動的に追加されます（マニフェストに無い＝削除ではないため） |
+| `.claude/.aphelion-manifest.json` を削除した | 記憶がリセットされ、次回の update で削除済みを含む全テンプレートフックが再追加されます |
+| 0.3.9 より前のインストール（マニフェスト無し） | **最初の** update で全テンプレートフックが一度だけ再追加され、通知が表示されます。以降の実行からは削除が維持されます |
+| 削除したフックを戻したい | エントリを手動で復元するか、`npx aphelion-agents init --force` を実行してください（`settings.json` の他のフィールドは保持されます） |
 
 ---
 
