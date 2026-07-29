@@ -21,7 +21,7 @@ Maintenance ドメイン（3 エージェント + Flow Orchestrator）はバグ�
 
 ### change-classifier
 
-- **正規**: [.claude/agents/change-classifier.md](../../.claude/agents/change-classifier.md)
+- **正規**: [.claude/agents/change-classifier.md](../../../.claude/agents/change-classifier.md)
 - **ドメイン**: Maintenance
 - **責務**: 入ってきた保守トリガーを Patch / Minor / Major プランに分類するとともに、P1–P4 の緊急度スコアリングを行います。トリガー種別 (bug / feature / tech_debt / performance / security) の識別、影響ファイル数の推定、破壊的変更の検出、SPEC.md への影響度評価を実施します。SPEC.md / ARCHITECTURE.md が存在しない場合は codebase-analyzer の起動を提案します。
 - **入力**: ユーザーのトリガー説明、SPEC.md、ARCHITECTURE.md、パッケージメタ情報 (package.json / pyproject.toml)
@@ -34,7 +34,7 @@ Maintenance ドメイン（3 エージェント + Flow Orchestrator）はバグ�
 
 ### impact-analyzer
 
-- **正規**: [.claude/agents/impact-analyzer.md](../../.claude/agents/impact-analyzer.md)
+- **正規**: [.claude/agents/impact-analyzer.md](../../../.claude/agents/impact-analyzer.md)
 - **ドメイン**: Maintenance
 - **責務**: 変更対象ファイルを具体的に特定して依存グラフをたどります。破壊的 API / DB スキーマ変更の検出、リグレッションリスク (low / medium / high) の評価、推奨テスト範囲 (unit / integration / e2e) の提示を行います。
 - **入力**: `change-classifier` の AGENT_RESULT、ユーザーのトリガー説明、SPEC.md、ARCHITECTURE.md
@@ -57,5 +57,5 @@ Maintenance ドメイン（3 エージェント + Flow Orchestrator）はバグ�
 
 ## 正規ソース
 
-- [.claude/agents/](../../.claude/agents/) — エージェント定義ファイル全体（権威あるソース）
-- [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — Flow Orchestrator ルールとトリアージ
+- [.claude/agents/](../../../.claude/agents/) — エージェント定義ファイル全体（権威あるソース）
+- [.claude/orchestrator-rules.md](../../../.claude/orchestrator-rules.md) — Flow Orchestrator ルールとトリアージ

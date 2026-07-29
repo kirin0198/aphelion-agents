@@ -172,7 +172,7 @@ README に**置かない**もの（= Wiki に送る）：
 **README en ↔ ja のパリティ**
 
 `README.md` と `README.ja.md` はリポジトリルートに英語正規のバイリンガルで置かれています。
-同期規約は[`language-rules.md` → "Hand-authored canonical narrative"](../../src/.claude/rules/language-rules.md)
+同期規約は[`language-rules.md` → "Hand-authored canonical narrative"](../../../src/.claude/rules/language-rules.md)
 と repo-root README sync convention によって管理されており、**この Wiki バイリンガル同期ポリシーではありません**。
 権威あるルールは `language-rules.md` を参照してください。(#75)
 
@@ -283,7 +283,7 @@ docs/design-notes/archived/<slug>.md      (履歴レコード)
 Wikiは英語を正規とするバイリンガルです。以下のルールはPRレビューで強制されます：
 
 > **正規ソース**: hand-authored な正規ナラティブ（Wiki、design notes、README）全体を覆う言語ポリシーは
-> [`language-rules.md` → "Hand-authored canonical narrative"](../../src/.claude/rules/language-rules.md) に
+> [`language-rules.md` → "Hand-authored canonical narrative"](../../../src/.claude/rules/language-rules.md) に
 > 宣言されています。本セクションは Wiki バイリンガル部分のみを強制します。
 > `docs/design-notes/` の単一ファイル規約や README 同期については `language-rules.md` を直接参照してください。
 
@@ -370,6 +370,6 @@ PRを開く前に確認してください：
 
 ## 正規ソース
 
-- [.claude/agents/](../../.claude/agents/) — エージェント定義ファイル（正規）
-- [.claude/rules/](../../.claude/rules/) — ルールファイル（正規）
+- [.claude/agents/](../../../.claude/agents/) — エージェント定義ファイル（正規）
+- [.claude/rules/](../../../src/.claude/rules/) — ルールファイル（正規）
 - [docs/design-notes/archived/wiki-information-architecture.md](../../design-notes/archived/wiki-information-architecture.md) — Wiki 情報アーキテクチャ設計（archived; #75 で `wiki/DESIGN.md` から移設）

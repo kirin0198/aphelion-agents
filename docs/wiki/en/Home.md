@@ -112,5 +112,5 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 
 ## Canonical Sources
 
-- [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md) — Aphelion workflow overview (auto-loaded)
-- [README.md](../../README.md) — Project entry point
+- [src/.claude/rules/aphelion-overview.md](../../../src/.claude/rules/aphelion-overview.md) — Aphelion workflow overview (auto-loaded)
+- [README.md](../../../README.md) — Project entry point

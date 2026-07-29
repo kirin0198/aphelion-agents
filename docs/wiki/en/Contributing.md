@@ -177,7 +177,7 @@ Updating one without the others is a defect; reviewers will block the PR.
 
 `README.md` and `README.ja.md` are bilingual at the repository root with English
 canonical. The sync convention is governed by
-[`language-rules.md` → "Hand-authored canonical narrative"](../../src/.claude/rules/language-rules.md)
+[`language-rules.md` → "Hand-authored canonical narrative"](../../../src/.claude/rules/language-rules.md)
 and the repo-root README sync convention — **not** by this Wiki Bilingual Sync
 Policy. See `language-rules.md` for the authoritative rule. (#75)
 
@@ -296,7 +296,7 @@ The wiki is bilingual with English as canonical. The following rules are enforce
 
 > **Source of truth.** The broader language policy covering hand-authored
 > canonical narrative (wiki, design notes, README) is declared in
-> [`language-rules.md` → "Hand-authored canonical narrative"](../../src/.claude/rules/language-rules.md).
+> [`language-rules.md` → "Hand-authored canonical narrative"](../../../src/.claude/rules/language-rules.md).
 > This section enforces only the wiki-bilingual subset. For `docs/design-notes/`
 > single-file conventions or README sync, consult `language-rules.md` directly.
 
@@ -430,6 +430,6 @@ keyword).
 
 ## Canonical Sources
 
-- [.claude/agents/](../../.claude/agents/) — Agent definition files (canonical)
-- [.claude/rules/](../../.claude/rules/) — Rule files (canonical)
+- [.claude/agents/](../../../.claude/agents/) — Agent definition files (canonical)
+- [.claude/rules/](../../../src/.claude/rules/) — Rule files (canonical)
 - [docs/design-notes/archived/wiki-information-architecture.md](../../design-notes/archived/wiki-information-architecture.md) — Wiki information architecture design (archived; relocated from `wiki/DESIGN.md` per #75)

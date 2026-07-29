@@ -25,7 +25,7 @@ The Delivery domain (13 agents) handles design, implementation, testing, and rel
 
 ### spec-designer
 
-- **Canonical**: [.claude/agents/spec-designer.md](../../.claude/agents/spec-designer.md)
+- **Canonical**: [.claude/agents/spec-designer.md](../../../.claude/agents/spec-designer.md)
 - **Domain**: Delivery
 - **Responsibility**: Transforms requirements from DISCOVERY_RESULT.md into a structured SPEC.md. Selects recommended tech stack. Determines HAS_UI and PRODUCT_TYPE.
 - **Inputs**: DISCOVERY_RESULT.md (optional), user requirements (if no Discovery)
@@ -37,7 +37,7 @@ The Delivery domain (13 agents) handles design, implementation, testing, and rel
 
 ### ux-designer
 
-- **Canonical**: [.claude/agents/ux-designer.md](../../.claude/agents/ux-designer.md)
+- **Canonical**: [.claude/agents/ux-designer.md](../../../.claude/agents/ux-designer.md)
 - **Domain**: Delivery
 - **Responsibility**: Reads SPEC.md and CONCEPT_VALIDATION.md to generate UI_SPEC.md with wireframes, screen flows, and component specs. Visual identity (color, typography, spacing, design system) is delegated to `visual-designer` on Standard/Full; on Minimal/Light, ux-designer applies a lightweight visual default and records it in UI_SPEC.md Section 1. Runs only when HAS_UI: true.
 - **Inputs**: SPEC.md, CONCEPT_VALIDATION.md (optional)
@@ -49,7 +49,7 @@ The Delivery domain (13 agents) handles design, implementation, testing, and rel
 
 ### visual-designer
 
-- **Canonical**: [.claude/agents/visual-designer.md](../../.claude/agents/visual-designer.md)
+- **Canonical**: [.claude/agents/visual-designer.md](../../../.claude/agents/visual-designer.md)
 - **Domain**: Delivery
 - **Responsibility**: Reads UI_SPEC.md (and CONCEPT_VALIDATION.md if present) and produces VISUAL_SPEC.md — the canonical visual specification: color palette, typography scale, spacing/radius/shadow tokens, design-token JSON export, component library selection with rationale, WCAG accessibility level, responsive breakpoints, tone & manner, iconography. Runs only when HAS_UI: true AND plan ≥ Standard. Skipped on Minimal/Light (ux-designer's lightweight default applies in that case).
 - **Inputs**: UI_SPEC.md, CONCEPT_VALIDATION.md (optional), SPEC.md (for non-functional constraints)
@@ -59,7 +59,7 @@ The Delivery domain (13 agents) handles design, implementation, testing, and rel
 
 ### architect
 
-- **Canonical**: [.claude/agents/architect.md](../../.claude/agents/architect.md)
+- **Canonical**: [.claude/agents/architect.md](../../../.claude/agents/architect.md)
 - **Domain**: Delivery
 - **Responsibility**: Reads SPEC.md (and UI_SPEC.md / VISUAL_SPEC.md) to produce ARCHITECTURE.md with tech stack decisions, module design, data models, API design, test strategy, and implementation order.
 - **Inputs**: SPEC.md, UI_SPEC.md (if HAS_UI), VISUAL_SPEC.md (if HAS_UI and plan ≥ Standard), DISCOVERY_RESULT.md (if available)
@@ -71,7 +71,7 @@ The Delivery domain (13 agents) handles design, implementation, testing, and rel
 
 ### scaffolder
 
-- **Canonical**: [.claude/agents/scaffolder.md](../../.claude/agents/scaffolder.md)
+- **Canonical**: [.claude/agents/scaffolder.md](../../../.claude/agents/scaffolder.md)
 - **Domain**: Delivery
 - **Responsibility**: Initializes the project structure from ARCHITECTURE.md: creates directories, installs dependencies, places config files, creates an entry point, and verifies the build. Runs on Standard and above.
 - **Inputs**: SPEC.md, ARCHITECTURE.md
@@ -81,7 +81,7 @@ The Delivery domain (13 agents) handles design, implementation, testing, and rel
 
 ### developer
 
-- **Canonical**: [.claude/agents/developer.md](../../.claude/agents/developer.md)
+- **Canonical**: [.claude/agents/developer.md](../../../.claude/agents/developer.md)
 - **Domain**: Delivery
 - **Responsibility**: Implements code following ARCHITECTURE.md implementation order. Owns branch creation, push, and PR submission per `git-rules.md` `## Branch & PR Strategy`. Manages progress via TASK.md (supports resume). Commits per task, runs lint/format checks after each task. **Resets TASK.md to the empty placeholder at phase completion** per `document-versioning.md` §"TASK.md Lifecycle".
 - **Inputs**: SPEC.md, ARCHITECTURE.md, UI_SPEC.md (if HAS_UI), VISUAL_SPEC.md (if HAS_UI and plan ≥ Standard), TASK.md (if resuming), `docs/design-notes/<slug>.md` (if invoked from analyst handoff)
@@ -94,7 +94,7 @@ The Delivery domain (13 agents) handles design, implementation, testing, and rel
 
 ### test-designer
 
-- **Canonical**: [.claude/agents/test-designer.md](../../.claude/agents/test-designer.md)
+- **Canonical**: [.claude/agents/test-designer.md](../../../.claude/agents/test-designer.md)
 - **Domain**: Delivery
 - **Responsibility**: Creates TEST_PLAN.md with test cases covering all UC acceptance criteria. Also performs root cause analysis on test failures (rollback mode). Does not write test code.
 - **Inputs**: SPEC.md, ARCHITECTURE.md, implementation code
@@ -107,7 +107,7 @@ The Delivery domain (13 agents) handles design, implementation, testing, and rel
 
 ### e2e-test-designer
 
-- **Canonical**: [.claude/agents/e2e-test-designer.md](../../.claude/agents/e2e-test-designer.md)
+- **Canonical**: [.claude/agents/e2e-test-designer.md](../../../.claude/agents/e2e-test-designer.md)
 - **Domain**: Delivery
 - **Responsibility**: Appends E2E and GUI test cases to TEST_PLAN.md. Selects E2E tool (Playwright, pywinauto, pyautogui) based on project type. Runs only when HAS_UI: true.
 - **Inputs**: SPEC.md, ARCHITECTURE.md, UI_SPEC.md, TEST_PLAN.md, implementation code
@@ -117,7 +117,7 @@ The Delivery domain (13 agents) handles design, implementation, testing, and rel
 
 ### tester
 
-- **Canonical**: [.claude/agents/tester.md](../../.claude/agents/tester.md)
+- **Canonical**: [.claude/agents/tester.md](../../../.claude/agents/tester.md)
 - **Domain**: Delivery
 - **Responsibility**: Creates test code from TEST_PLAN.md and executes it. Reports results including per-test-case pass/fail status. In Minimal plan, also handles test design.
 - **Inputs**: TEST_PLAN.md, ARCHITECTURE.md, implementation code
@@ -129,7 +129,7 @@ The Delivery domain (13 agents) handles design, implementation, testing, and rel
 
 ### reviewer
 
-- **Canonical**: [.claude/agents/reviewer.md](../../.claude/agents/reviewer.md)
+- **Canonical**: [.claude/agents/reviewer.md](../../../.claude/agents/reviewer.md)
 - **Domain**: Delivery
 - **Responsibility**: Reviews code across 5 perspectives: spec compliance, design consistency, code quality, test quality, API contracts. Does not modify code. Runs on Light and above.
 - **Inputs**: SPEC.md, ARCHITECTURE.md, implementation code, test results
@@ -141,7 +141,7 @@ The Delivery domain (13 agents) handles design, implementation, testing, and rel
 
 ### security-auditor
 
-- **Canonical**: [.claude/agents/security-auditor.md](../../.claude/agents/security-auditor.md)
+- **Canonical**: [.claude/agents/security-auditor.md](../../../.claude/agents/security-auditor.md)
 - **Domain**: Delivery
 - **Responsibility**: Audits implementation for OWASP Top 10, dependency vulnerabilities, auth/authorization gaps, hardcoded secrets, input validation, and CWE items. **Mandatory on all plans.**
 - **Inputs**: SPEC.md, ARCHITECTURE.md, implementation code, dependency files
@@ -153,7 +153,7 @@ The Delivery domain (13 agents) handles design, implementation, testing, and rel
 
 ### doc-writer
 
-- **Canonical**: [.claude/agents/doc-writer.md](../../.claude/agents/doc-writer.md)
+- **Canonical**: [.claude/agents/doc-writer.md](../../../.claude/agents/doc-writer.md)
 - **Domain**: Delivery
 - **Responsibility**: Generates README.md, CHANGELOG.md, and API documentation from SPEC.md, ARCHITECTURE.md, and git log. Runs on Standard and above.
 - **Inputs**: SPEC.md, ARCHITECTURE.md, implementation code, git log
@@ -165,7 +165,7 @@ The Delivery domain (13 agents) handles design, implementation, testing, and rel
 
 ### releaser
 
-- **Canonical**: [.claude/agents/releaser.md](../../.claude/agents/releaser.md)
+- **Canonical**: [.claude/agents/releaser.md](../../../.claude/agents/releaser.md)
 - **Domain**: Delivery
 - **Responsibility**: Assigns SemVer version, updates CHANGELOG.md, generates RELEASE_NOTES.md, updates version files, creates a git tag, and optionally creates a GitHub Release draft. Runs on Full plan only.
 - **Inputs**: SPEC.md, CHANGELOG.md, git tags, test/review/security results
@@ -188,5 +188,5 @@ The Delivery domain (13 agents) handles design, implementation, testing, and rel
 
 ## Canonical Sources
 
-- [.claude/agents/](../../.claude/agents/) — All agent definition files (authoritative source)
-- [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — Flow orchestrator rules and triage
+- [.claude/agents/](../../../.claude/agents/) — All agent definition files (authoritative source)
+- [.claude/orchestrator-rules.md](../../../.claude/orchestrator-rules.md) — Flow orchestrator rules and triage

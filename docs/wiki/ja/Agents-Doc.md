@@ -40,7 +40,7 @@ Doc ドメイン（6 種の author エージェント + `doc-flow` オーケス�
 
 ### hld-author
 
-- **正規**: [.claude/agents/hld-author.md](../../.claude/agents/hld-author.md)
+- **正規**: [.claude/agents/hld-author.md](../../../.claude/agents/hld-author.md)
 - **ドメイン**: Doc（顧客向け納品）
 - **責務**: 顧客のアーキテクトおよびプロジェクトリードに向けて High-Level Design ドキュメントを生成します。`SPEC.md` と `ARCHITECTURE.md` をコンポーネント境界レベルのシステム全体像に再パッケージします。実装の詳細は含めません。
 - **固定章立て**（IEEE 1471 / ISO/IEC/IEEE 42010 参考）:
@@ -69,7 +69,7 @@ Doc ドメイン（6 種の author エージェント + `doc-flow` オーケス�
 
 ### lld-author
 
-- **正規**: [.claude/agents/lld-author.md](../../.claude/agents/lld-author.md)
+- **正規**: [.claude/agents/lld-author.md](../../../.claude/agents/lld-author.md)
 - **ドメイン**: Doc（顧客向け納品）
 - **責務**: 顧客の開発担当・保守チームに向けて Low-Level Design ドキュメントを生成します。`ARCHITECTURE.md` と `src/*` をシグネチャレベルで読み込み、モジュール・クラス・API シグネチャレベルのドキュメントを生成します。実装ロジックを逐行説明することはしません。
 - **固定章立て**（IEEE 1016 SDD 参考）:
@@ -95,7 +95,7 @@ Doc ドメイン（6 種の author エージェント + `doc-flow` オーケス�
 
 ### api-reference-author
 
-- **正規**: [.claude/agents/api-reference-author.md](../../.claude/agents/api-reference-author.md)
+- **正規**: [.claude/agents/api-reference-author.md](../../../.claude/agents/api-reference-author.md)
 - **ドメイン**: Doc（顧客向け納品）
 - **責務**: 顧客の開発者向け API リファレンスを生成します。`SPEC.md` のユースケース、`ARCHITECTURE.md` の API 設計セクション、`src/*` のエンドポイントシグネチャを統合し、外部 SDK / API 利用ガイドの粒度でドキュメントを生成します。`doc-writer` が生成する内部 API doc とは読者・粒度・出力パスが異なります。
 - **入力**:
@@ -116,7 +116,7 @@ Doc ドメイン（6 種の author エージェント + `doc-flow` オーケス�
 
 ### ops-manual-author
 
-- **正規**: [.claude/agents/ops-manual-author.md](../../.claude/agents/ops-manual-author.md)
+- **正規**: [.claude/agents/ops-manual-author.md](../../../.claude/agents/ops-manual-author.md)
 - **ドメイン**: Doc（顧客向け納品）
 - **責務**: インフラスクリプト・デプロイ手順・可観測性ランブックを顧客運用チーム向けに再パッケージします。起動・停止・監視・リストア・エスカレーションフローを 1 冊の運用マニュアルにまとめます。
 - **章立て**（ITIL v4 Service Operation 参考）:
@@ -139,7 +139,7 @@ Doc ドメイン（6 種の author エージェント + `doc-flow` オーケス�
 
 ### user-manual-author
 
-- **正規**: [.claude/agents/user-manual-author.md](../../.claude/agents/user-manual-author.md)
+- **正規**: [.claude/agents/user-manual-author.md](../../../.claude/agents/user-manual-author.md)
 - **ドメイン**: Doc（顧客向け納品）
 - **責務**: システムの実利用者向けに UC 別の操作手順書を生成します。`UI_SPEC.md` がある場合のみ実質的なドキュメントを生成でき、ない場合は `STATUS: skipped` を返します（CLI / ライブラリ / ツール型プロジェクトで典型）。`SPEC.md` の各ユースケースが 1 章となり、`UI_SPEC.md` がある場合は各 UC 章内に画面操作の補足セクションが追加されます。
 - **入力**:
@@ -159,7 +159,7 @@ Doc ドメイン（6 種の author エージェント + `doc-flow` オーケス�
 
 ### handover-author
 
-- **正規**: [.claude/agents/handover-author.md](../../.claude/agents/handover-author.md)
+- **正規**: [.claude/agents/handover-author.md](../../../.claude/agents/handover-author.md)
 - **ドメイン**: Doc（顧客向け納品）
 - **責務**: プロジェクト完了時に後任保守チームへの引継ぎパッケージを生成します。SPEC.md・ARCHITECTURE.md・SECURITY_AUDIT.md・TEST_PLAN.md と有効な `docs/design-notes/*.md`（archived は除外）を統合し、1 冊の引継ぎドキュメントにまとめます。同一実行で生成された他の deliverable への相互参照を含みます。
 - **固定章立て**:
@@ -196,6 +196,6 @@ Doc ドメイン（6 種の author エージェント + `doc-flow` オーケス�
 
 ## 正規ソース
 
-- [.claude/agents/](../../.claude/agents/) — エージェント定義ファイル全体（権威あるソース）
-- [.claude/agents/doc-flow.md](../../.claude/agents/doc-flow.md) — Doc Flow オーケストレーター定義
-- [.claude/templates/doc-flow/](../../.claude/templates/doc-flow/) — ドキュメントテンプレート（HLD・LLD・API リファレンス・運用マニュアル・ユーザーマニュアル・引継ぎ資料）
+- [.claude/agents/](../../../.claude/agents/) — エージェント定義ファイル全体（権威あるソース）
+- [.claude/agents/doc-flow.md](../../../.claude/agents/doc-flow.md) — Doc Flow オーケストレーター定義
+- [.claude/templates/doc-flow/](../../../.claude/templates/doc-flow/) — ドキュメントテンプレート（HLD・LLD・API リファレンス・運用マニュアル・ユーザーマニュアル・引継ぎ資料）

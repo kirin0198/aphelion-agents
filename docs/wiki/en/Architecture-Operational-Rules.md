@@ -39,7 +39,7 @@ HAS_UI: true
 - Maximum 3 retries per agent on error
 - Rollback limit: shared across test / review CRITICAL / security audit CRITICAL /
   doc review FAIL rollbacks (max 3 total). See
-  [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) §Rollback Rules
+  [.claude/orchestrator-rules.md](../../../.claude/orchestrator-rules.md) §Rollback Rules
   → Rollback Limit (Common) for the canonical definition.
 
 ---
@@ -117,7 +117,7 @@ flowchart LR
 Rollbacks are triggered automatically by test failures, review CRITICAL findings,
 security audit CRITICAL findings, and doc review FAIL results. The shared rollback
 limit (max 3 across all four types) is defined as **Rollback Limit (Common)** in
-[.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) §Rollback Rules.
+[.claude/orchestrator-rules.md](../../../.claude/orchestrator-rules.md) §Rollback Rules.
 
 ### Test Failure Rollback (Delivery domain)
 
@@ -159,7 +159,7 @@ Unlike the other four rollback flows above (which are pre-insert against tester 
 reviewer / security-auditor), this rollback fires **after** an upstream
 markdown-producing agent finishes. The triggering agent is identified by
 `doc-reviewer`'s `TRIGGERED_BY` field. See
-[.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md)
+[.claude/orchestrator-rules.md](../../../.claude/orchestrator-rules.md)
 §Doc Review FAIL Rollback Flow for the rollback prompt template, and §Approval Gate
 after Doc Review FAIL for the rollback-limit-exceeded handling.
 
@@ -176,7 +176,7 @@ poc-engineer (blocked, BLOCKED_ITEMS > 0)
 
 ## Sandbox Defense Layers
 
-Aphelion uses two complementary layers to protect against dangerous command execution. See [.claude/rules/sandbox-policy.md](../../.claude/rules/sandbox-policy.md) for sandbox-mode configuration details.
+Aphelion uses two complementary layers to protect against dangerous command execution. See [src/.claude/rules/sandbox-policy.md](../../../src/.claude/rules/sandbox-policy.md) for sandbox-mode configuration details.
 
 <!-- source: docs/design-notes/archived/sandbox-design.md (§1, §2, Addendum §A.2) -->
 ```mermaid
@@ -225,6 +225,6 @@ flowchart TB
 
 ## Canonical Sources
 
-- [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md) — Workflow model and design principles (auto-loaded)
-- [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — Triage, handoff schema, approval gate, rollback rules
-- [.claude/rules/agent-communication-protocol.md](../../.claude/rules/agent-communication-protocol.md) — AGENT_RESULT format and STATUS definitions
+- [src/.claude/rules/aphelion-overview.md](../../../src/.claude/rules/aphelion-overview.md) — Workflow model and design principles (auto-loaded)
+- [.claude/orchestrator-rules.md](../../../.claude/orchestrator-rules.md) — Triage, handoff schema, approval gate, rollback rules
+- [src/.claude/rules/agent-communication-protocol.md](../../../src/.claude/rules/agent-communication-protocol.md) — AGENT_RESULT format and STATUS definitions

@@ -113,5 +113,5 @@ Aphelion のリポジトリの README はクイックスタートと概要をカ
 
 ## 正規ソース
 
-- [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md) — Aphelionワークフロー概要（自動ロード）
-- [README.ja.md](../../README.ja.md) — プロジェクト入口（日本語）
+- [src/.claude/rules/aphelion-overview.md](../../../src/.claude/rules/aphelion-overview.md) — Aphelionワークフロー概要（自動ロード）
+- [README.ja.md](../../../README.ja.md) — プロジェクト入口（日本語）

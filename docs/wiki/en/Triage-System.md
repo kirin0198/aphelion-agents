@@ -282,12 +282,12 @@ Certain agents run on **all plans** regardless of triage outcome:
 | `security-auditor` | Delivery | Security audit cannot be omitted. OWASP Top 10 + dependency scans run even on Minimal |
 | `doc-reviewer` | Quality (cross-cutting) | Markdown artifact consistency must be verified on all plans (Minimal+). Read-only, no destructive ops; auto-inserted after spec / design / scope / analyst agents |
 
-The `security-auditor` mandate is defined in [.claude/rules/library-and-security-policy.md](../../.claude/rules/library-and-security-policy.md):
+The `security-auditor` mandate is defined in [src/.claude/rules/library-and-security-policy.md](../../../src/.claude/rules/library-and-security-policy.md):
 
 > `security-auditor` **must run on all Delivery plans (including Minimal)**.
 
 The `doc-reviewer` mandate is defined in
-[.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) §Doc Reviewer
+[.claude/orchestrator-rules.md](../../../.claude/orchestrator-rules.md) §Doc Reviewer
 Auto-insertion. It runs as a post-insert step after the trigger agents listed there.
 
 ---
@@ -350,11 +350,11 @@ HAS_UI: true
 
 ## Canonical Sources
 
-- [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — Triage plans, conditions, and agent sequences per domain
-- [.claude/agents/discovery-flow.md](../../.claude/agents/discovery-flow.md) — Discovery triage implementation
-- [.claude/agents/delivery-flow.md](../../.claude/agents/delivery-flow.md) — Delivery triage implementation
-- [.claude/agents/operations-flow.md](../../.claude/agents/operations-flow.md) — Operations triage implementation
-- [.claude/agents/maintenance-flow.md](../../.claude/agents/maintenance-flow.md) — Maintenance triage implementation
-- [.claude/agents/doc-flow.md](../../.claude/agents/doc-flow.md) — Doc Flow triage implementation
-- [.claude/rules/library-and-security-policy.md](../../.claude/rules/library-and-security-policy.md) — security-auditor mandatory rule
-- [.claude/agents/doc-reviewer.md](../../.claude/agents/doc-reviewer.md) — doc-reviewer agent definition and trigger conditions
+- [.claude/orchestrator-rules.md](../../../.claude/orchestrator-rules.md) — Triage plans, conditions, and agent sequences per domain
+- [.claude/agents/discovery-flow.md](../../../.claude/agents/discovery-flow.md) — Discovery triage implementation
+- [.claude/agents/delivery-flow.md](../../../.claude/agents/delivery-flow.md) — Delivery triage implementation
+- [.claude/agents/operations-flow.md](../../../.claude/agents/operations-flow.md) — Operations triage implementation
+- [.claude/agents/maintenance-flow.md](../../../.claude/agents/maintenance-flow.md) — Maintenance triage implementation
+- [.claude/agents/doc-flow.md](../../../.claude/agents/doc-flow.md) — Doc Flow triage implementation
+- [src/.claude/rules/library-and-security-policy.md](../../../src/.claude/rules/library-and-security-policy.md) — security-auditor mandatory rule
+- [.claude/agents/doc-reviewer.md](../../../.claude/agents/doc-reviewer.md) — doc-reviewer agent definition and trigger conditions

@@ -39,7 +39,7 @@ The Doc domain (6 author agents + `doc-flow` orchestrator) generates customer-de
 
 ### hld-author
 
-- **Canonical**: [.claude/agents/hld-author.md](../../.claude/agents/hld-author.md)
+- **Canonical**: [.claude/agents/hld-author.md](../../../.claude/agents/hld-author.md)
 - **Domain**: Doc (customer-deliverable)
 - **Responsibility**: Generates a High-Level Design document for customer architects and project leads. Repackages `SPEC.md` and `ARCHITECTURE.md` into a system overview at component boundary level. Does not include implementation details.
 - **Fixed chapter structure** (IEEE 1471 / ISO/IEC/IEEE 42010 reference):
@@ -68,7 +68,7 @@ The Doc domain (6 author agents + `doc-flow` orchestrator) generates customer-de
 
 ### lld-author
 
-- **Canonical**: [.claude/agents/lld-author.md](../../.claude/agents/lld-author.md)
+- **Canonical**: [.claude/agents/lld-author.md](../../../.claude/agents/lld-author.md)
 - **Domain**: Doc (customer-deliverable)
 - **Responsibility**: Generates a Low-Level Design document for the customer's developer and maintenance team. Reads `ARCHITECTURE.md` and `src/*` at signature level to produce module/class/API signature documentation. Does not explain implementation logic line by line.
 - **Fixed chapter structure** (IEEE 1016 SDD reference):
@@ -94,7 +94,7 @@ The Doc domain (6 author agents + `doc-flow` orchestrator) generates customer-de
 
 ### api-reference-author
 
-- **Canonical**: [.claude/agents/api-reference-author.md](../../.claude/agents/api-reference-author.md)
+- **Canonical**: [.claude/agents/api-reference-author.md](../../../.claude/agents/api-reference-author.md)
 - **Domain**: Doc (customer-deliverable)
 - **Responsibility**: Generates a customer-developer facing API reference. Integrates `SPEC.md` use cases, `ARCHITECTURE.md` API design section, and `src/*` endpoint signatures. Produces external SDK / API usage guide level documentation. Distinct from `doc-writer`'s internal API docs — different audience, granularity, and output path.
 - **Inputs**:
@@ -115,7 +115,7 @@ The Doc domain (6 author agents + `doc-flow` orchestrator) generates customer-de
 
 ### ops-manual-author
 
-- **Canonical**: [.claude/agents/ops-manual-author.md](../../.claude/agents/ops-manual-author.md)
+- **Canonical**: [.claude/agents/ops-manual-author.md](../../../.claude/agents/ops-manual-author.md)
 - **Domain**: Doc (customer-deliverable)
 - **Responsibility**: Repackages infrastructure scripts, deployment procedures, and observability runbooks into a customer operations team facing manual. Covers startup/shutdown, monitoring, restore, and escalation flows in a single operations manual.
 - **Chapter structure** (ITIL v4 Service Operation reference):
@@ -138,7 +138,7 @@ The Doc domain (6 author agents + `doc-flow` orchestrator) generates customer-de
 
 ### user-manual-author
 
-- **Canonical**: [.claude/agents/user-manual-author.md](../../.claude/agents/user-manual-author.md)
+- **Canonical**: [.claude/agents/user-manual-author.md](../../../.claude/agents/user-manual-author.md)
 - **Domain**: Doc (customer-deliverable)
 - **Responsibility**: Generates a UC-by-UC operation guide for the actual end users of the system. Requires `UI_SPEC.md` to produce meaningful output; returns `STATUS: skipped` when `UI_SPEC.md` is absent (typical for CLI / library / tool projects). Each Use Case from `SPEC.md` becomes one chapter; UI screen operation notes are added as subsections when `UI_SPEC.md` is present.
 - **Inputs**:
@@ -158,7 +158,7 @@ The Doc domain (6 author agents + `doc-flow` orchestrator) generates customer-de
 
 ### handover-author
 
-- **Canonical**: [.claude/agents/handover-author.md](../../.claude/agents/handover-author.md)
+- **Canonical**: [.claude/agents/handover-author.md](../../../.claude/agents/handover-author.md)
 - **Domain**: Doc (customer-deliverable)
 - **Responsibility**: Generates a handover package for the successor maintenance team at project closeout. Integrates SPEC.md, ARCHITECTURE.md, SECURITY_AUDIT.md, TEST_PLAN.md, and active `docs/design-notes/*.md` (archived docs excluded) into a single handover document. Includes cross-references to all other deliverables generated in the same run.
 - **Fixed chapter structure**:
@@ -195,6 +195,6 @@ The Doc domain (6 author agents + `doc-flow` orchestrator) generates customer-de
 
 ## Canonical Sources
 
-- [.claude/agents/](../../.claude/agents/) — All agent definition files (authoritative source)
-- [.claude/agents/doc-flow.md](../../.claude/agents/doc-flow.md) — Doc Flow orchestrator definition
-- [.claude/templates/doc-flow/](../../.claude/templates/doc-flow/) — Document templates (HLD, LLD, API reference, Ops manual, User manual, Handover)
+- [.claude/agents/](../../../.claude/agents/) — All agent definition files (authoritative source)
+- [.claude/agents/doc-flow.md](../../../.claude/agents/doc-flow.md) — Doc Flow orchestrator definition
+- [.claude/templates/doc-flow/](../../../.claude/templates/doc-flow/) — Document templates (HLD, LLD, API reference, Ops manual, User manual, Handover)

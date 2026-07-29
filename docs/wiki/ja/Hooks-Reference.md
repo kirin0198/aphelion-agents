@@ -13,7 +13,7 @@
 積極的なコンテンツスキャンを追加します。
 
 エージェント向けの完全なポリシー（自動ロードルール）は
-[hooks-policy.md](../../.claude/rules/hooks-policy.md) を参照してください。
+[hooks-policy.md](../../../src/.claude/rules/hooks-policy.md) を参照してください。
 
 ## 目次
 
@@ -355,6 +355,6 @@ WSL ファイルシステム（`/home/…`）内に配置することで、Hook 
 
 ## 正規ソース
 
-- [src/.claude/hooks/](../../src/.claude/hooks/) — 正規フックスクリプト
-- [src/.claude/settings.json](../../src/.claude/settings.json) — フック登録テンプレート
-- [src/.claude/rules/hooks-policy.md](../../src/.claude/rules/hooks-policy.md) — 自動ロードポリシールール
+- [src/.claude/hooks/](../../../src/.claude/hooks/) — 正規フックスクリプト
+- [src/.claude/settings.json](../../../src/.claude/settings.json) — フック登録テンプレート
+- [src/.claude/rules/hooks-policy.md](../../../src/.claude/rules/hooks-policy.md) — 自動ロードポリシールール

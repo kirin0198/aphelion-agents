@@ -39,7 +39,7 @@ For full details, follow the **Canonical** link to the source file.
 
 ## aphelion-overview
 
-- **Canonical**: [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md)
+- **Canonical**: [src/.claude/rules/aphelion-overview.md](../../../src/.claude/rules/aphelion-overview.md)
 - **Scope**: All agents and orchestrators; provides the top-level workflow context
 - **Auto-load**: Yes — placed in `.claude/rules/`, loaded by Claude Code on every session start
 - **Key constraint**: Defines the three-domain model (Discovery / Delivery / Operations), the independent Maintenance flow (fourth flow for existing-project maintenance), triage tiers, and agent directory location. All agents operate within this framework.
@@ -49,7 +49,7 @@ For full details, follow the **Canonical** link to the source file.
 
 ## agent-communication-protocol
 
-- **Canonical**: [.claude/rules/agent-communication-protocol.md](../../.claude/rules/agent-communication-protocol.md)
+- **Canonical**: [src/.claude/rules/agent-communication-protocol.md](../../../src/.claude/rules/agent-communication-protocol.md)
 - **Scope**: All agents; flow orchestrators are exempt from emitting AGENT_RESULT (they produce handoff files instead)
 - **Auto-load behavior**: Auto-loaded by Claude Code on every session start
 - **Interactions**: Orchestrators parse AGENT_RESULT STATUS values to drive approval gates, rollbacks, and error handling (see `orchestrator-rules.md`). The `blocked` STATUS triggers a lightweight architect query before developer can resume.
@@ -59,7 +59,7 @@ For full details, follow the **Canonical** link to the source file.
 
 ## build-verification-commands
 
-- **Canonical**: [.claude/rules/build-verification-commands.md](../../.claude/rules/build-verification-commands.md)
+- **Canonical**: [src/.claude/rules/build-verification-commands.md](../../../src/.claude/rules/build-verification-commands.md)
 - **Scope**: `developer` (per-task verification) and `tester` (test execution)
 - **Auto-load behavior**: Auto-loaded by Claude Code on every session start
 - **Interactions**: Defines the lint/format gate that `developer` must pass before committing each task. `tester` uses the test execution commands column. `e2e-test-designer` and `tester` use the E2E commands table (only when `HAS_UI: true`).
@@ -69,7 +69,7 @@ For full details, follow the **Canonical** link to the source file.
 
 ## document-locations
 
-- **Canonical**: [.claude/rules/document-locations.md](../../.claude/rules/document-locations.md)
+- **Canonical**: [src/.claude/rules/document-locations.md](../../../src/.claude/rules/document-locations.md)
 - **Scope**: All agents and flow orchestrators that read or write Aphelion-generated planning / design / handoff documents (SPEC.md, ARCHITECTURE.md, UI_SPEC.md, etc.)
 - **Auto-load**: Yes — placed in `.claude/rules/`, loaded by Claude Code on every session start
 - **Key constraint**: Defines the canonical path-resolution algorithm for Aphelion-generated documents. New projects default to `docs/<NAME>.md`; existing projects with root-level files continue to work via a root fallback (`Glob("{docs/<NAME>.md,<NAME>.md}")` single call).
@@ -90,7 +90,7 @@ For full details, follow the **Canonical** link to the source file.
 
 ## document-versioning
 
-- **Canonical**: [.claude/rules/document-versioning.md](../../.claude/rules/document-versioning.md)
+- **Canonical**: [src/.claude/rules/document-versioning.md](../../../src/.claude/rules/document-versioning.md)
 - **Scope**: `architect`, `spec-designer`, `ux-designer`, `test-designer`, `developer`, all flow orchestrators
 - **Auto-load behavior**: Auto-loaded by Claude Code on every session start
 - **Interactions**: Each agent that produces a design document (`SPEC.md`, `ARCHITECTURE.md`, `UI_SPEC.md`, `TEST_PLAN.md`) must record `最終更新` and `更新履歴` at the top. `developer` uses the TASK.md format defined here. Flow orchestrators use this to record artifact versions from the previous domain in the handoff file.
@@ -100,7 +100,7 @@ For full details, follow the **Canonical** link to the source file.
 
 ## file-operation-principles
 
-- **Canonical**: [.claude/rules/file-operation-principles.md](../../.claude/rules/file-operation-principles.md)
+- **Canonical**: [src/.claude/rules/file-operation-principles.md](../../../src/.claude/rules/file-operation-principles.md)
 - **Scope**: All agents that read or write files
 - **Auto-load behavior**: Auto-loaded by Claude Code on every session start
 - **Interactions**: Applies to every file write operation. Works together with `git-rules` (no deletion, no staging sensitive files). Prevents `developer` from creating directories not listed in ARCHITECTURE.md.
@@ -110,7 +110,7 @@ For full details, follow the **Canonical** link to the source file.
 
 ## git-rules
 
-- **Canonical**: [.claude/rules/git-rules.md](../../.claude/rules/git-rules.md)
+- **Canonical**: [src/.claude/rules/git-rules.md](../../../src/.claude/rules/git-rules.md)
 - **Scope**: All Bash-owning agents (run the Startup Probe at session start); `developer`, `releaser`, `scaffolder` and any agent making git commits or PRs (commit / branch / PR rules).
 - **Auto-load behavior**: Auto-loaded by Claude Code on every session start
 - **Interactions**:
@@ -123,7 +123,7 @@ For full details, follow the **Canonical** link to the source file.
 
 ## hooks-policy
 
-- **Canonical**: [.claude/rules/hooks-policy.md](../../.claude/rules/hooks-policy.md)
+- **Canonical**: [src/.claude/rules/hooks-policy.md](../../../src/.claude/rules/hooks-policy.md)
 - **Scope**: All agents that recommend or perform `git commit`, file write (`Write`/`Edit`), or dependency install commands; agents interacting with hook bypass markers.
 - **Auto-load behavior**: Auto-loaded by Claude Code on every session start
 - **Interactions**:
@@ -143,7 +143,7 @@ For full details, follow the **Canonical** link to the source file.
 
 ## language-rules
 
-- **Canonical**: [.claude/rules/language-rules.md](../../.claude/rules/language-rules.md)
+- **Canonical**: [src/.claude/rules/language-rules.md](../../../src/.claude/rules/language-rules.md)
 - **Scope**: All agents producing any text output
 - **Auto-load behavior**: Auto-loaded by Claude Code on every session start
 - **Interactions**: Sets language for every output type. Works with `agent-communication-protocol` (AGENT_RESULT keys/values must be English). Applies to all user-facing content in `user-questions`.
@@ -155,7 +155,7 @@ For full details, follow the **Canonical** link to the source file.
 
 ## library-and-security-policy
 
-- **Canonical**: [.claude/rules/library-and-security-policy.md](../../.claude/rules/library-and-security-policy.md)
+- **Canonical**: [src/.claude/rules/library-and-security-policy.md](../../../src/.claude/rules/library-and-security-policy.md)
 - **Scope**: `architect` (library selection), `developer` (library adoption), `security-auditor` (vulnerability scanning). **`security-auditor` mandate applies to all plans.**
 - **Auto-load behavior**: Auto-loaded by Claude Code on every session start
 - **Interactions**: `architect` records selected libraries in ARCHITECTURE.md with adoption rationale. `developer` follows ARCHITECTURE.md but can add libraries if needed (must verify adoption criteria first). `security-auditor` performs final verification via dependency scanning. The security-auditor mandatory execution rule overrides triage decisions — it runs even on Minimal plan.
@@ -165,7 +165,7 @@ For full details, follow the **Canonical** link to the source file.
 
 ## localization-dictionary
 
-- **Canonical**: [.claude/rules/localization-dictionary.md](../../.claude/rules/localization-dictionary.md)
+- **Canonical**: [src/.claude/rules/localization-dictionary.md](../../../src/.claude/rules/localization-dictionary.md)
 - **Scope**: All agents that emit fixed UI strings (approval gates, AskUserQuestion boilerplate, progress displays, "Phase N complete" headers)
 - **Auto-load behavior**: Auto-loaded by Claude Code on every session start
 - **Interactions**: Resolves at runtime against `project-rules.md` → `## Localization` → `Output Language`. Cooperates with `language-rules.md` Hybrid Localization Strategy: dictionary entries cover fixed UI strings, while free-form narrative is generated directly by the agent in the resolved language.
@@ -175,7 +175,7 @@ For full details, follow the **Canonical** link to the source file.
 
 ## sandbox-policy
 
-- **Canonical**: [.claude/rules/sandbox-policy.md](../../.claude/rules/sandbox-policy.md)
+- **Canonical**: [src/.claude/rules/sandbox-policy.md](../../../src/.claude/rules/sandbox-policy.md)
 - **Scope**: All agents that own the `Bash` tool: `developer`, `tester`, `poc-engineer`, `scaffolder`, `infra-builder`, `codebase-analyzer`, `security-auditor`, `db-ops`, `releaser`, `observability`. (`sandbox-runner` is the policy executor, not a subject.)
 - **Auto-load behavior**: Auto-loaded by Claude Code on every session start
 - **Interactions**: Defines the 5 dangerous command categories (`destructive_fs`, `prod_db`, `privilege_escalation`, `secret_access`, `external_net`) and 3 delegation tiers (`required`, `recommended`, `optional`). `sandbox-runner` reads this policy at startup to re-classify commands. Orchestrators reference the tier definitions to decide when to auto-insert `sandbox-runner` (Standard+ plans). Each Bash-owning agent definition file contains a one-line reference to this rule. `infra-builder` generates the devcontainer files referenced by the `container` isolation mode.
@@ -188,7 +188,7 @@ For full details, follow the **Canonical** link to the source file.
 
 ## denial-categories
 
-- **Canonical**: [.claude/rules/denial-categories.md](../../.claude/rules/denial-categories.md)
+- **Canonical**: [src/.claude/rules/denial-categories.md](../../../src/.claude/rules/denial-categories.md)
 - **Scope**: All agents that own the `Bash` tool (same set as `sandbox-policy.md`), plus `analyst-intake` / `analyst-core` for issue triage
 - **Auto-load behavior**: Auto-loaded by Claude Code on every session start
 - **Interactions**: Companion to `sandbox-policy.md`. Where `sandbox-policy.md` covers *prevention* (categorise commands before execution and delegate to `sandbox-runner`), this rule covers *post-failure diagnosis* (classify what kind of denial occurred and pick the right recovery). 13 Bash-owning agents reference both rules.
@@ -205,7 +205,7 @@ For full details, follow the **Canonical** link to the source file.
 
 ## user-questions
 
-- **Canonical**: [.claude/rules/user-questions.md](../../.claude/rules/user-questions.md)
+- **Canonical**: [src/.claude/rules/user-questions.md](../../../src/.claude/rules/user-questions.md)
 - **Scope**: All agents that need to ask the user for clarification or input
 - **Auto-load behavior**: Auto-loaded by Claude Code on every session start
 - **Interactions**: Flow orchestrators use `AskUserQuestion` for triage interviews, approval gates, and phase confirmations. Any agent (including `developer` when blocked) can use it to stop and ask rather than guessing.
@@ -223,7 +223,7 @@ For full details, follow the **Canonical** link to the source file.
 
 ## Canonical Sources
 
-- [.claude/rules/](../../.claude/rules/) — All 14 rule files (authoritative source)
-- [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md) — Workflow overview (now part of the rules collection)
-- [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — Orchestrator behavior that depends on agent-communication-protocol
+- [.claude/rules/](../../../src/.claude/rules/) — All 14 rule files (authoritative source)
+- [src/.claude/rules/aphelion-overview.md](../../../src/.claude/rules/aphelion-overview.md) — Workflow overview (now part of the rules collection)
+- [.claude/orchestrator-rules.md](../../../.claude/orchestrator-rules.md) — Orchestrator behavior that depends on agent-communication-protocol
 - [Hooks Reference](./Hooks-Reference.md) — User-facing guide for the hook set

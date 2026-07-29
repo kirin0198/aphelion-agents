@@ -20,7 +20,7 @@ The Operations domain (4 agents) handles deployment infrastructure and operation
 
 ### infra-builder
 
-- **Canonical**: [.claude/agents/infra-builder.md](../../.claude/agents/infra-builder.md)
+- **Canonical**: [.claude/agents/infra-builder.md](../../../.claude/agents/infra-builder.md)
 - **Domain**: Operations
 - **Responsibility**: Generates Dockerfile (multi-stage), docker-compose.yml, GitHub Actions CI/CD, .env.example, security headers, and **sandbox infrastructure** (`.devcontainer/devcontainer.json` and `docker-compose.dev.yml` for container-isolated execution). Runs on all Operations plans.
 - **Inputs**: DELIVERY_RESULT.md, ARCHITECTURE.md, implementation code
@@ -34,7 +34,7 @@ The Operations domain (4 agents) handles deployment infrastructure and operation
 
 ### db-ops
 
-- **Canonical**: [.claude/agents/db-ops.md](../../.claude/agents/db-ops.md)
+- **Canonical**: [.claude/agents/db-ops.md](../../../.claude/agents/db-ops.md)
 - **Domain**: Operations
 - **Responsibility**: Defines production DB configuration, migration procedures (with rollback), destructive change risk assessment, backup/restore procedures, and monitoring thresholds. Runs on Standard and Full plans.
 - **Inputs**: ARCHITECTURE.md (data model, tech stack), migration files
@@ -46,7 +46,7 @@ The Operations domain (4 agents) handles deployment infrastructure and operation
 
 ### observability
 
-- **Canonical**: [.claude/agents/observability.md](../../.claude/agents/observability.md)
+- **Canonical**: [.claude/agents/observability.md](../../../.claude/agents/observability.md)
 - **Domain**: Operations
 - **Responsibility**: Designs and implements health checks, structured logging, RED metrics, alert rules, and performance baselines. Runs on Full plan only.
 - **Inputs**: ARCHITECTURE.md, DELIVERY_RESULT.md, implementation code
@@ -56,7 +56,7 @@ The Operations domain (4 agents) handles deployment infrastructure and operation
 
 ### ops-planner
 
-- **Canonical**: [.claude/agents/ops-planner.md](../../.claude/agents/ops-planner.md)
+- **Canonical**: [.claude/agents/ops-planner.md](../../../.claude/agents/ops-planner.md)
 - **Domain**: Operations
 - **Responsibility**: Creates deploy procedures (with rollback points), rollback trigger conditions, incident response playbooks (P1-P4 severity), and maintenance checklists. Generates OPS_RESULT.md.
 - **Inputs**: ARCHITECTURE.md, DELIVERY_RESULT.md, infra-builder/db-ops/observability artifacts
@@ -79,5 +79,5 @@ The Operations domain (4 agents) handles deployment infrastructure and operation
 
 ## Canonical Sources
 
-- [.claude/agents/](../../.claude/agents/) — All agent definition files (authoritative source)
-- [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — Flow orchestrator rules and triage
+- [.claude/agents/](../../../.claude/agents/) — All agent definition files (authoritative source)
+- [.claude/orchestrator-rules.md](../../../.claude/orchestrator-rules.md) — Flow orchestrator rules and triage

@@ -283,12 +283,12 @@ Doc フローは [必須エージェント](#必須エージェント常時実�
 | `security-auditor` | Delivery | セキュリティ監査は省略不可。OWASP Top 10 + 依存関係スキャンはMinimalでも実行 |
 | `doc-reviewer` | Quality (横断的) | マークダウン成果物の整合性は全プラン（Minimal+）で検証する。読み取り専用で破壊的操作なし。spec / design / scope / analyst エージェント直後に auto-insert される |
 
-`security-auditor` の必須化は [.claude/rules/library-and-security-policy.md](../../.claude/rules/library-and-security-policy.md) で定義されています：
+`security-auditor` の必須化は [src/.claude/rules/library-and-security-policy.md](../../../src/.claude/rules/library-and-security-policy.md) で定義されています：
 
 > `security-auditor` は **全Deliveryプランで必ず実行**（Minimalを含む）。
 
 `doc-reviewer` の必須化は
-[.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) §Doc Reviewer
+[.claude/orchestrator-rules.md](../../../.claude/orchestrator-rules.md) §Doc Reviewer
 Auto-insertion で定義されています。そこに列挙されたトリガーエージェントの後にポスト挿入ステップとして実行されます。
 
 ---
@@ -351,11 +351,11 @@ HAS_UI: true
 
 ## 正規ソース
 
-- [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — トリアージプラン、条件、ドメイン別エージェントシーケンス
-- [.claude/agents/discovery-flow.md](../../.claude/agents/discovery-flow.md) — Discovery トリアージの実装
-- [.claude/agents/delivery-flow.md](../../.claude/agents/delivery-flow.md) — Delivery トリアージの実装
-- [.claude/agents/operations-flow.md](../../.claude/agents/operations-flow.md) — Operations トリアージの実装
-- [.claude/agents/maintenance-flow.md](../../.claude/agents/maintenance-flow.md) — Maintenance トリアージの実装
-- [.claude/agents/doc-flow.md](../../.claude/agents/doc-flow.md) — Doc フロートリアージの実装
-- [.claude/rules/library-and-security-policy.md](../../.claude/rules/library-and-security-policy.md) — security-auditor 必須ルール
-- [.claude/agents/doc-reviewer.md](../../.claude/agents/doc-reviewer.md) — doc-reviewer エージェント定義とトリガー条件
+- [.claude/orchestrator-rules.md](../../../.claude/orchestrator-rules.md) — トリアージプラン、条件、ドメイン別エージェントシーケンス
+- [.claude/agents/discovery-flow.md](../../../.claude/agents/discovery-flow.md) — Discovery トリアージの実装
+- [.claude/agents/delivery-flow.md](../../../.claude/agents/delivery-flow.md) — Delivery トリアージの実装
+- [.claude/agents/operations-flow.md](../../../.claude/agents/operations-flow.md) — Operations トリアージの実装
+- [.claude/agents/maintenance-flow.md](../../../.claude/agents/maintenance-flow.md) — Maintenance トリアージの実装
+- [.claude/agents/doc-flow.md](../../../.claude/agents/doc-flow.md) — Doc フロートリアージの実装
+- [src/.claude/rules/library-and-security-policy.md](../../../src/.claude/rules/library-and-security-policy.md) — security-auditor 必須ルール
+- [.claude/agents/doc-reviewer.md](../../../.claude/agents/doc-reviewer.md) — doc-reviewer エージェント定義とトリガー条件

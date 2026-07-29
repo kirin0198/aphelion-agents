@@ -32,7 +32,7 @@ Flow Orchestrator はドメイン全体を管理します。トリアージで�
 
 ### discovery-flow
 
-- **正規**: [.claude/agents/discovery-flow.md](../../.claude/agents/discovery-flow.md)
+- **正規**: [.claude/agents/discovery-flow.md](../../../.claude/agents/discovery-flow.md)
 - **ドメイン**: Flow Orchestrator（Discovery）
 - **責務**: 要件探索フロー全体を管理します。トリアージの実行、エージェントの順次起動、承認とロールバックの処理を担い、最終成果物として DISCOVERY_RESULT.md を生成します。
 - **入力**: ユーザーのプロジェクト説明（コマンド引数経由）
@@ -42,7 +42,7 @@ Flow Orchestrator はドメイン全体を管理します。トリアージで�
 
 ### delivery-flow
 
-- **正規**: [.claude/agents/delivery-flow.md](../../.claude/agents/delivery-flow.md)
+- **正規**: [.claude/agents/delivery-flow.md](../../../.claude/agents/delivery-flow.md)
 - **ドメイン**: Flow Orchestrator（Delivery）
 - **責務**: 設計・実装・テスト・レビューフロー全体を管理します。DISCOVERY_RESULT.md を読み込んでトリアージを実行し、テスト/レビュー失敗時のロールバックを処理したうえで、DELIVERY_RESULT.md を生成します。
 - **入力**: DISCOVERY_RESULT.md（オプション）、既存のSPEC.md / ARCHITECTURE.md
@@ -52,7 +52,7 @@ Flow Orchestrator はドメイン全体を管理します。トリアージで�
 
 ### operations-flow
 
-- **正規**: [.claude/agents/operations-flow.md](../../.claude/agents/operations-flow.md)
+- **正規**: [.claude/agents/operations-flow.md](../../../.claude/agents/operations-flow.md)
 - **ドメイン**: Flow Orchestrator（Operations）
 - **責務**: デプロイと運用フローを管理します。PRODUCT_TYPE: serviceの場合のみ実行。DELIVERY_RESULT.mdを読み込み、トリアージを実行し、OPS_RESULT.mdを生成します。
 - **入力**: DELIVERY_RESULT.md（必須）、ARCHITECTURE.md、SPEC.md
@@ -62,7 +62,7 @@ Flow Orchestrator はドメイン全体を管理します。トリアージで�
 
 ### maintenance-flow
 
-- **正規**: [.claude/agents/maintenance-flow.md](../../.claude/agents/maintenance-flow.md)
+- **正規**: [.claude/agents/maintenance-flow.md](../../../.claude/agents/maintenance-flow.md)
 - **ドメイン**: Flow Orchestrator（Maintenance — 第 4 のフロー）
 - **責務**: 既存プロジェクトの保守ライフサイクルを管理します。トリガー (バグ / CVE / パフォーマンス / 技術的負債 / 機能追加) を受け取り、`change-classifier` で Patch / Minor / Major のトリアージを行い、対応するエージェントを順次起動します。Patch と Minor は単独完結、Major は `MAINTENANCE_RESULT.md` を生成して delivery-flow に引き渡します。
 - **入力**: ユーザーが指定するトリガー情報 (ログエラー / CVE 通知 / 機能要望 等)、SPEC.md、ARCHITECTURE.md
@@ -74,7 +74,7 @@ Flow Orchestrator はドメイン全体を管理します。トリアージで�
 
 ### doc-flow
 
-- **正規**: [.claude/agents/doc-flow.md](../../.claude/agents/doc-flow.md)
+- **正規**: [.claude/agents/doc-flow.md](../../../.claude/agents/doc-flow.md)
 - **ドメイン**: Flow Orchestrator（Doc — 第 5 のフロー）
 - **責務**: 既存の Aphelion 成果物（SPEC.md、ARCHITECTURE.md 等）から顧客向け納品ドキュメント（HLD / LLD / API リファレンス / 運用マニュアル / ユーザーマニュアル / 引継ぎ資料）を生成します。doc type ベースのトリアージを実施し、6 種の author エージェントをユーザー承認ゲートとともに順番に起動し、`DOC_FLOW_RESULT.md` を生成します。他のフローからの自動連鎖はなく、SPEC.md と ARCHITECTURE.md が揃った任意のタイミングでユーザーが `/doc-flow` で起動します。
 - **入力**: SPEC.md、ARCHITECTURE.md（および任意で DISCOVERY_RESULT.md、UI_SPEC.md、インフラ成果物、OPS_RESULT.md）; 引数 `--types`、`--lang`、`--slug`、`--target-project`
@@ -99,7 +99,7 @@ Flow Orchestrator はドメイン全体を管理します。トリアージで�
 
 ### sandbox-runner
 
-- **正規**: [.claude/agents/sandbox-runner.md](../../.claude/agents/sandbox-runner.md)
+- **正規**: [.claude/agents/sandbox-runner.md](../../../.claude/agents/sandbox-runner.md)
 - **ドメイン**: セーフティ（横断的）
 - **責務**: 最も強力な利用可能な隔離を使って高リスクコマンドを実行します。まず `container` モード（devcontainer + Docker）を試み、利用不可の場合はプラットフォームのパーミッション制御にフォールバックします。`sandbox-policy.md`に照らしてコマンドを再分類し、フォールバック理由を含む完全な監査証跡を返します。
 - **入力**: `command`、`working_directory`、`timeout_sec`、`risk_hint`、`allow_network`、`allow_write_paths`、`dry_run`、`reason`、`caller_agent`
@@ -123,7 +123,7 @@ Flow Orchestrator はドメイン全体を管理します。トリアージで�
 
 ### doc-reviewer
 
-- **正規**: [.claude/agents/doc-reviewer.md](../../.claude/agents/doc-reviewer.md)
+- **正規**: [.claude/agents/doc-reviewer.md](../../../.claude/agents/doc-reviewer.md)
 - **ドメイン**: 品質（横断的）
 - **責務**: マークダウン成果物（SPEC.md / ARCHITECTURE.md / UI_SPEC.md / docs/design-notes/、DISCOVERY_RESULT.md）の文書間整合性をレビューします。Flow Orchestrator が spec-designer / architect / ux-designer / scope-planner / analyst の各完了直後に自動挿入（post-insert）します。生成元エージェントから独立したコンテキストで動作。読み取り専用 — ファイルの生成・更新は行わず、テキストレポートのみを返します。
 - **入力**: 直前フェーズの対象成果物 + それが依存する上流成果物（例: ARCHITECTURE.md レビュー時は SPEC.md も読む）。`TRIGGERED_BY` フィールドで上流エージェントを識別。
@@ -148,7 +148,7 @@ analyst チェーンは 3 ファイルで構成されます: トップレベル�
 
 ### analyst（トップレベルオーケストレーター）
 
-- **正規**: [.claude/agents/analyst.md](../../.claude/agents/analyst.md)
+- **正規**: [.claude/agents/analyst.md](../../../.claude/agents/analyst.md)
 - **ドメイン**: スタンドアロン（トップレベルオーケストレーター、`/analyst` スラッシュコマンド**のみ**で起動）
 - **モデル**: Sonnet
 - **責務**: analyst チェーンのトップレベルオーケストレーター。Agent tool を使って `analyst-intake` → `analyst-core` をチェーンします。既存の planning doc を 3 つの resume ケース（post-Pattern-B resume / legacy resume / fresh）で検出します。ファイル書き込みや git 操作は行わず、オーケストレーションのみを担当。
@@ -173,7 +173,7 @@ Flow Orchestrator やメインセッションは `Agent(subagent_type="analyst")
 
 ### analyst-intake
 
-- **正規**: [.claude/agents/analyst-intake.md](../../.claude/agents/analyst-intake.md)
+- **正規**: [.claude/agents/analyst-intake.md](../../../.claude/agents/analyst-intake.md)
 - **ドメイン**: スタンドアロン（サブエージェント; `analyst` オーケストレーターまたは flow orchestrator から起動）
 - **モデル**: Sonnet
 - **責務**: 構造化インテイクフェーズ（Steps A–D）。`AskUserQuestion` で最小限の情報を収集し、resume 検出用の `<!-- analyst-handoff -->` YAML を埋め込んだ planning doc §1-4 スタブを作成し、GitHub イシューを作成し、ワークブランチの初回コミットを行います。呼び出し元が `analyst-core` に転送するための `HANDOFF_PAYLOAD` を発行します。レガシー doc の resume 用に **injection-only mode** もサポートしています（下記参照）。
@@ -191,7 +191,7 @@ Flow Orchestrator やメインセッションは `Agent(subagent_type="analyst")
 
 ### analyst-core
 
-- **正規**: [.claude/agents/analyst-core.md](../../.claude/agents/analyst-core.md)
+- **正規**: [.claude/agents/analyst-core.md](../../../.claude/agents/analyst-core.md)
 - **ドメイン**: スタンドアロン（サブエージェント; `analyst` オーケストレーターまたは flow orchestrator から起動）
 - **モデル**: Opus
 - **責務**: 深掘り分析フェーズ（Steps 1–5）。handoff payload を検証し、課題を分類し、完全な分析を実行し、ユーザー承認を要求し、SPEC.md / UI_SPEC.md をインクリメンタルに更新し（必要な場合）、GitHub イシュー本文を精製し、planning doc §5-8 を記述し、最終状態をコミットします。
@@ -202,7 +202,7 @@ Flow Orchestrator やメインセッションは `Agent(subagent_type="analyst")
 
 ### codebase-analyzer
 
-- **正規**: [.claude/agents/codebase-analyzer.md](../../.claude/agents/codebase-analyzer.md)
+- **正規**: [.claude/agents/codebase-analyzer.md](../../../.claude/agents/codebase-analyzer.md)
 - **ドメイン**: スタンドアロン
 - **責務**: ドキュメントがない既存コードベースからSPEC.mdとARCHITECTURE.mdをリバースエンジニアリングします。analyst → delivery-flowを通じてプロジェクトが標準Aphelionワークフローに参加できるようにします。
 - **入力**: 既存コードベース（作業ディレクトリ内のソースファイル）
@@ -226,5 +226,5 @@ Flow Orchestrator やメインセッションは `Agent(subagent_type="analyst")
 
 ## 正規ソース
 
-- [.claude/agents/](../../.claude/agents/) — エージェント定義ファイル全体（権威あるソース）
-- [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — Flow Orchestrator ルールとトリアージ
+- [.claude/agents/](../../../.claude/agents/) — エージェント定義ファイル全体（権威あるソース）
+- [.claude/orchestrator-rules.md](../../../.claude/orchestrator-rules.md) — Flow Orchestrator ルールとトリアージ
