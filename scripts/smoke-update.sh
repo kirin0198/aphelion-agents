@@ -415,3 +415,36 @@ if ! echo "$OUT" | grep -q "commands/pm.md"; then
 fi
 rm -rf "$TMP_LEGACY"
 echo "PASS [dist-legacy]: known removed files detected on pre-manifest installs (#207)"
+
+# ────────────────────────────────────────────────────────────────────
+# Dogfooding hooks must not be distributed (#197)
+# ────────────────────────────────────────────────────────────────────
+TMP_DOGFOOD="$(mktemp -d)"
+(cd "$TMP_DOGFOOD" && node "$REPO_ROOT/bin/aphelion-agents.mjs" init >/dev/null 2>&1)
+for dev_hook in aphelion-md-sync.sh aphelion-agent-count-check.sh aphelion-task-md-lifecycle.sh; do
+  if [ -f "$TMP_DOGFOOD/.claude/hooks/$dev_hook" ]; then
+    echo "FAIL [dogfooding]: $dev_hook was distributed to a user project (#197)"
+    rm -rf "$TMP_DOGFOOD"
+    exit 1
+  fi
+done
+# the four user-facing hooks must still arrive
+for user_hook in aphelion-secrets-precommit.sh aphelion-sensitive-file-guard.sh \
+                 aphelion-deps-postinstall.sh aphelion-project-rules-check.sh; do
+  if ! [ -f "$TMP_DOGFOOD/.claude/hooks/$user_hook" ]; then
+    echo "FAIL [dogfooding]: user-facing hook $user_hook is missing after init"
+    rm -rf "$TMP_DOGFOOD"
+    exit 1
+  fi
+done
+# a pre-0.3.13 install that already has one is reported as an orphan
+echo "stale" > "$TMP_DOGFOOD/.claude/hooks/aphelion-md-sync.sh"
+rm -f "$TMP_DOGFOOD/.claude/.aphelion-manifest.json"
+OUT=$( (cd "$TMP_DOGFOOD" && node "$REPO_ROOT/bin/aphelion-agents.mjs" update) 2>&1 )
+if ! echo "$OUT" | grep -q "aphelion-md-sync.sh"; then
+  echo "FAIL [dogfooding]: a previously distributed dogfooding hook was not reported as an orphan"
+  rm -rf "$TMP_DOGFOOD"
+  exit 1
+fi
+rm -rf "$TMP_DOGFOOD"
+echo "PASS [dogfooding]: dev-only hooks excluded from distribution, user hooks intact, legacy copies reported (#197)"

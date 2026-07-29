@@ -1,7 +1,7 @@
 # Getting Started
 
 > **Language**: [English](../en/Getting-Started.md) | [日本語](../ja/Getting-Started.md)
-> **Last updated**: 2026-07-29 (updated 2026-07-29: 壊れていた `cp -r .claude/` 手動インストール手順をローカルクローン CLI 手順に置換, #170; リポジトリルート参照の相対リンク深さを修正, #169; 「Major は自動で引き渡される」という記述を修正, #168; 2026-05-31: /getting-started/ の HTTP 500 復旧のため CF Pages アセットを強制リハッシュ, #156; 2026-05-28: 既存プロジェクト向けクイックスタート + --user ガイド追加, #130 PR-3)
+> **Last updated**: 2026-07-29 (updated 2026-07-29: シナリオ5 から存在しないコマンドの案内を削除, #206; 壊れていた `cp -r .claude/` 手動インストール手順をローカルクローン CLI 手順に置換, #170; リポジトリルート参照の相対リンク深さを修正, #169; 「Major は自動で引き渡される」という記述を修正, #168; 2026-05-31: /getting-started/ の HTTP 500 復旧のため CF Pages アセットを強制リハッシュ, #156; 2026-05-28: 既存プロジェクト向けクイックスタート + --user ガイド追加, #130 PR-3)
 > **EN canonical**: 2026-07-29 (updated 2026-07-29) of wiki/en/Getting-Started.md
 > **Audience**: 新規ユーザー
 
@@ -262,13 +262,16 @@ Deliveryが完了した後（serviceプロジェクトの場合）：
 
 ### シナリオ5：スタンドアロンエージェント
 
-フローなしで任意のエージェントを直接起動できます：
+スラッシュコマンドを持つエージェントは、フローを介さず直接起動できます：
 
 ```
-/security-auditor  （既存コードにセキュリティ監査を実行）
-/reviewer          （コードレビューのみ実行）
-/doc-writer        （READMEとCHANGELOGを生成）
+/reviewer            （コードレビューのみ実行）
+/tester              （テストスイートを実行）
+/codebase-analyzer   （SPEC.md / ARCHITECTURE.md をリバースエンジニアリング）
+/analyst             （単一 issue を分析して方針を決定）
 ```
+
+スラッシュコマンドを持たないエージェント（`security-auditor`、`doc-writer`、`architect`、`spec-designer` など）は、「このリポジトリに security-auditor を実行して」のように自然言語で依頼して起動します。現在のコマンド一覧は `/aphelion-help` で確認できます。そこに無いものはスラッシュコマンドとして存在しません。
 
 ---
 
