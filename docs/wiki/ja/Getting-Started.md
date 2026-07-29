@@ -244,7 +244,7 @@ Deliveryが完了した後（serviceプロジェクトの場合）：
 /maintenance-flow メールアドレスに特殊文字が含まれるとログインエンドポイントで 500 エラーが発生する
 ```
 
-`change-classifier` がトリガーを分析して Patch / Minor / Major を提案します。Patch / Minor は単独で完結、Major は `MAINTENANCE_RESULT.md` 経由で `/delivery-flow` へ自動引き渡しされます。
+`change-classifier` がトリガーを分析して Patch / Minor / Major を提案します。Patch / Minor は単独で完結します。Major は `MAINTENANCE_RESULT.md` を生成して引き渡し確認ゲートで停止するため、ユーザーが `/delivery-flow` を実行すると、起動時にこのファイルが読み込まれます。
 
 `/maintenance-flow` を `/analyst` よりも優先する判断基準:
 - 変更に緊急性がある (P1/P2 インシデント)

@@ -215,7 +215,7 @@ If either is missing at flow start, `change-classifier` proposes inserting `code
 
 ### Handoff File (Major only)
 
-When the plan is Major, `maintenance-flow` generates `MAINTENANCE_RESULT.md` with fields compatible with `DISCOVERY_RESULT.md` (PRODUCT_TYPE, project overview, impact summary). This file is the handoff artifact for `delivery-flow`.
+When the plan is Major, `maintenance-flow` generates `MAINTENANCE_RESULT.md` from the canonical template in [`.claude/orchestrator-rules.md`](../../../.claude/orchestrator-rules.md) §"Handoff File Specification". `delivery-flow` reads it at startup, validates its required fields, and — when both files exist — gives it precedence over `DISCOVERY_RESULT.md`. Its `Recommended plan` becomes delivery triage's initial proposal, and because the analyst chain already ran, `spec-designer` is skipped and the flow starts at `architect` in differential mode.
 
 ---
 

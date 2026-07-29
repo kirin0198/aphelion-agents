@@ -216,7 +216,7 @@ Phase 5: 引き渡し        → MAINTENANCE_RESULT.md → delivery-flow
 
 ### ハンドオフファイル (Major のみ)
 
-プランが Major の場合、`maintenance-flow` は `DISCOVERY_RESULT.md` 互換のフィールド (PRODUCT_TYPE、プロジェクト概要、影響サマリ) を持つ `MAINTENANCE_RESULT.md` を生成します。これが `delivery-flow` への引き渡し成果物になります。
+プランが Major の場合、`maintenance-flow` は [`.claude/orchestrator-rules.md`](../../../.claude/orchestrator-rules.md) §"Handoff File Specification" の正典テンプレートに従って `MAINTENANCE_RESULT.md` を生成します。`delivery-flow` は起動時にこれを読み取って必須フィールドを検証し、`DISCOVERY_RESULT.md` と併存する場合は `MAINTENANCE_RESULT.md` を優先します。`Recommended plan` が Delivery トリアージの初期提案になり、analyst チェーンは既に実行済みのため `spec-designer` はスキップされ、`architect` の差分モードから開始します。
 
 ---
 
