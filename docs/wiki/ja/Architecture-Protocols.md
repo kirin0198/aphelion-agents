@@ -198,6 +198,6 @@ Flow Orchestrator は `BLOCKED_TARGET` に指定されたエージェントを**
 
 ## 正規ソース
 
-- [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md) — ワークフローモデルと設計原則（自動ロード）
-- [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — トリアージ、ハンドオフスキーマ、承認ゲート、差し戻しルール
-- [.claude/rules/agent-communication-protocol.md](../../.claude/rules/agent-communication-protocol.md) — AGENT_RESULT形式とSTATUSの定義
+- [src/.claude/rules/aphelion-overview.md](../../../src/.claude/rules/aphelion-overview.md) — ワークフローモデルと設計原則（自動ロード）
+- [.claude/orchestrator-rules.md](../../../.claude/orchestrator-rules.md) — トリアージ、ハンドオフスキーマ、承認ゲート、差し戻しルール
+- [src/.claude/rules/agent-communication-protocol.md](../../../src/.claude/rules/agent-communication-protocol.md) — AGENT_RESULT形式とSTATUSの定義

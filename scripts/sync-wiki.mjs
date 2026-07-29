@@ -252,7 +252,11 @@ function rewriteLinks(body, locale) {
     }
 
     // 3) wiki 外の .md → GitHub blob URL (大文字小文字を保持)
-    // 例: ../../.claude/rules/aphelion-overview.md → https://github.com/.../blob/main/.claude/rules/aphelion-overview.md
+    // 例: ../../../src/.claude/rules/aphelion-overview.md
+    //     → https://github.com/.../blob/main/src/.claude/rules/aphelion-overview.md
+    // 先頭の `../` は個数によらず全て剥がすため、リポジトリルート参照の深さ
+    // (docs/wiki/{en,ja}/ からは `../../../`) はサイト出力に影響しない。
+    // 深さ誤りは scripts/check-readme-wiki-sync.sh の Check 4 が検出する (#169)。
     const cleanedDir = dir.replace(/^(?:\.\.\/)+/, '');
     return `[${text}](${GITHUB_BLOB_BASE}${cleanedDir}${mdMatch[2]}.md${query}${anchor})`;
   });

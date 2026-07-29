@@ -1,8 +1,9 @@
 # Architecture: Domain Model
 
 > **Language**: [English](../en/Architecture-Domain-Model.md) | [日本語](../ja/Architecture-Domain-Model.md)
-> **Last updated**: 2026-04-30
+> **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: fix repository-root relative-link depth ../../ -> ../../../ (#169)
 >   - 2026-04-30: Expand to 5-domain model — add Doc Flow (#54)
 >   - 2026-04-25: split from Architecture.md; #42
 > **Audience**: Agent developers
@@ -136,6 +137,6 @@ Only `service` products require infrastructure, database operations, and deploym
 
 ## Canonical Sources
 
-- [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md) — Workflow model and design principles (auto-loaded)
-- [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — Triage, handoff schema, approval gate, rollback rules
-- [.claude/rules/agent-communication-protocol.md](../../.claude/rules/agent-communication-protocol.md) — AGENT_RESULT format and STATUS definitions
+- [src/.claude/rules/aphelion-overview.md](../../../src/.claude/rules/aphelion-overview.md) — Workflow model and design principles (auto-loaded)
+- [.claude/orchestrator-rules.md](../../../.claude/orchestrator-rules.md) — Triage, handoff schema, approval gate, rollback rules
+- [src/.claude/rules/agent-communication-protocol.md](../../../src/.claude/rules/agent-communication-protocol.md) — AGENT_RESULT format and STATUS definitions

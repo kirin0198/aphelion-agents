@@ -1,8 +1,9 @@
 # Aphelion Wiki
 
 > **Language**: [English](../en/Home.md) | [日本語](../ja/Home.md)
-> **Last updated**: 2026-05-16
+> **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: fix repository-root relative-link depth ../../ -> ../../../ (#169)
 >   - 2026-05-16: Bump agent count 40 → 42 for analyst split (analyst-intake + analyst-core) (#139)
 >   - 2026-05-12: Bump rule count 13 → 14 for document-locations rule (#117)
 >   - 2026-05-01: Add Hooks-Reference link, bump rule count 12 → 13 (#107)
@@ -112,5 +113,5 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 
 ## Canonical Sources
 
-- [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md) — Aphelion workflow overview (auto-loaded)
-- [README.md](../../README.md) — Project entry point
+- [src/.claude/rules/aphelion-overview.md](../../../src/.claude/rules/aphelion-overview.md) — Aphelion workflow overview (auto-loaded)
+- [README.md](../../../README.md) — Project entry point

@@ -1,11 +1,12 @@
 # Agents Reference: Discovery Domain
 
 > **Language**: [English](../en/Agents-Discovery.md) | [日本語](../ja/Agents-Discovery.md)
-> **Last updated**: 2026-04-26
+> **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: リポジトリルート参照の相対リンク深さを修正 ../../ -> ../../../ (#169)
 >   - 2026-04-26: Sync with #74 (issue #77)
 >   - 2026-04-25: terminology rebalance per #40
-> **EN canonical**: 2026-04-26 of wiki/en/Agents-Discovery.md
+> **EN canonical**: 2026-07-29 of wiki/en/Agents-Discovery.md
 > **Audience**: エージェント開発者
 
 このページはもとの Agents-Reference.md を 5 ページに分割したもの（#42）です。Discovery ドメインエージェントを扱います。他のドメインは関連ページを参照してください: [Flow Orchestrator・横断系](./Agents-Orchestrators.md)、[Delivery](./Agents-Delivery.md)、[Operations](./Agents-Operations.md)、[Maintenance](./Agents-Maintenance.md)。
@@ -24,7 +25,7 @@ Discoveryドメイン（6エージェント）は要件探索を担当します�
 
 ### interviewer
 
-- **正規**: [.claude/agents/interviewer.md](../../.claude/agents/interviewer.md)
+- **正規**: [.claude/agents/interviewer.md](../../../.claude/agents/interviewer.md)
 - **ドメイン**: Discovery
 - **責務**: 要件インタビューを実施するエージェントです。暗黙の要件を発掘したうえで PRODUCT_TYPE と HAS_UI を決定し、その結果を INTERVIEW_RESULT.md として生成します。全 Discovery プランで実行されます。
 - **入力**: ユーザーのプロジェクト説明（discovery-flowから）
@@ -38,7 +39,7 @@ Discoveryドメイン（6エージェント）は要件探索を担当します�
 
 ### researcher
 
-- **正規**: [.claude/agents/researcher.md](../../.claude/agents/researcher.md)
+- **正規**: [.claude/agents/researcher.md](../../../.claude/agents/researcher.md)
 - **ドメイン**: Discovery
 - **責務**: ドメイン知識、競合他社、外部API、技術的リスクを調査します。ユビキタス言語を定義します。StandardとFullプランで実行されます。
 - **入力**: INTERVIEW_RESULT.md
@@ -50,7 +51,7 @@ Discoveryドメイン（6エージェント）は要件探索を担当します�
 
 ### poc-engineer
 
-- **正規**: [.claude/agents/poc-engineer.md](../../.claude/agents/poc-engineer.md)
+- **正規**: [.claude/agents/poc-engineer.md](../../../.claude/agents/poc-engineer.md)
 - **ドメイン**: Discovery
 - **責務**: 最小限のPoCコードで技術的実現可能性を検証します。実現不可能な要件を特定し、代替案を提案します。StandardとFullプランで実行されます。
 - **入力**: INTERVIEW_RESULT.md、RESEARCH_RESULT.md
@@ -63,7 +64,7 @@ Discoveryドメイン（6エージェント）は要件探索を担当します�
 
 ### concept-validator
 
-- **正規**: [.claude/agents/concept-validator.md](../../.claude/agents/concept-validator.md)
+- **正規**: [.claude/agents/concept-validator.md](../../../.claude/agents/concept-validator.md)
 - **ドメイン**: Discovery
 - **責務**: ワイヤーフレームとユーザーフロー図を通じてUI/UXコンセプトを検証します。HAS_UI: trueのFullプランでのみ実行されます。
 - **入力**: INTERVIEW_RESULT.md、RESEARCH_RESULT.md（オプション）、POC_RESULT.md（オプション）
@@ -73,7 +74,7 @@ Discoveryドメイン（6エージェント）は要件探索を担当します�
 
 ### rules-designer
 
-- **正規**: [.claude/agents/rules-designer.md](../../.claude/agents/rules-designer.md)
+- **正規**: [.claude/agents/rules-designer.md](../../../.claude/agents/rules-designer.md)
 - **ドメイン**: Discovery
 - **責務**: プロジェクト固有のコーディング規約、Gitワークフロー、ビルドコマンド、および **Repository 宣言**（`Remote type`: `github` | `gitlab` | `gitea` | `local-only` | `none`、`git-rules.md` の Startup Probe が参照）をインタラクティブに決定します。`.claude/rules/project-rules.md`を生成します。Light以上で実行されます。
 - **入力**: INTERVIEW_RESULT.md、RESEARCH_RESULT.md（オプション）、POC_RESULT.md（オプション）
@@ -83,7 +84,7 @@ Discoveryドメイン（6エージェント）は要件探索を担当します�
 
 ### scope-planner
 
-- **正規**: [.claude/agents/scope-planner.md](../../.claude/agents/scope-planner.md)
+- **正規**: [.claude/agents/scope-planner.md](../../../.claude/agents/scope-planner.md)
 - **ドメイン**: Discovery
 - **責務**: MVP を定義するエージェントです。MoSCoW で要件に優先順位を付けたうえで、リスクとコストの評価およびハンドオフ準備状況の判定を行い、DISCOVERY_RESULT.md を生成します。Light 以上で実行されます。
 - **入力**: INTERVIEW_RESULT.md、RESEARCH_RESULT.md、POC_RESULT.md、CONCEPT_VALIDATION.md（利用可能なもの）
@@ -108,5 +109,5 @@ Discoveryドメイン（6エージェント）は要件探索を担当します�
 
 ## 正規ソース
 
-- [.claude/agents/](../../.claude/agents/) — エージェント定義ファイル全体（権威あるソース）
-- [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — Flow Orchestrator ルールとトリアージ
+- [.claude/agents/](../../../.claude/agents/) — エージェント定義ファイル全体（権威あるソース）
+- [.claude/orchestrator-rules.md](../../../.claude/orchestrator-rules.md) — Flow Orchestrator ルールとトリアージ

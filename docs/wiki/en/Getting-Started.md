@@ -1,7 +1,7 @@
 # Getting Started
 
 > **Language**: [English](../en/Getting-Started.md) | [日本語](../ja/Getting-Started.md)
-> **Last updated**: 2026-05-31 (updated 2026-05-31: force CF Pages asset re-hash to recover /getting-started/ HTTP 500, #156; 2026-05-28: add existing-project Quick Start + --user guide, #130 PR-3)
+> **Last updated**: 2026-07-29 (updated 2026-07-29: replace the broken `cp -r .claude/` manual install with the local-clone CLI path, #170; fix repository-root relative-link depth, #169; correct the "Major hands off automatically" claim, #168; 2026-05-31: force CF Pages asset re-hash to recover /getting-started/ HTTP 500, #156; 2026-05-28: add existing-project Quick Start + --user guide, #130 PR-3)
 > **Audience**: New users
 
 This page covers everything you need to start using Aphelion: Claude Code setup, first-run walkthrough, usage scenarios, command reference, and troubleshooting.
@@ -27,7 +27,9 @@ This page covers everything you need to start using Aphelion: Claude Code setup,
 |-------------|---------|
 | Claude Code | Claude Code CLI installed and authenticated |
 
-You can install Aphelion via `npx github:kirin0198/aphelion-agents init` (no clone required), or clone the repository manually:
+Install Aphelion with `npx github:kirin0198/aphelion-agents init` (no clone required).
+If you need an offline or version-pinned install, clone the repository and run the
+same CLI from the clone — see [Install from a local clone](#install-from-a-local-clone-offline--pinned-version-alternative):
 
 ```bash
 git clone https://github.com/kirin0198/aphelion-agents.git
@@ -74,25 +76,34 @@ npx github:kirin0198/aphelion-agents update --user
 > `project-rules.md` must still be generated per project via `/aphelion-init`. A globally placed
 > `project-rules.md` in `~/.claude/rules/` can cause unintended behavior across unrelated projects.
 
-### Install via git clone (alternative)
+### Install from a local clone (offline / pinned-version alternative)
 
-Clone the repository first:
+Use this when you cannot reach npm at install time, or you want to pin to a
+specific commit. Clone the repository, then run the CLI **from the clone**
+against your project directory:
 
 ```bash
 git clone https://github.com/kirin0198/aphelion-agents.git
-```
 
-Then copy the files manually:
-
-Copy the `.claude/` directory to your project and start Claude Code:
-
-```bash
-cp -r .claude /path/to/your-project/
-cd /path/to/your-project && claude
+cd /path/to/your-project
+node /path/to/aphelion-agents/bin/aphelion-agents.mjs init
+claude
 
 /aphelion-init
 /discovery-flow I want to build a TODO app
 ```
+
+`init` resolves its source from the clone and its target from the current
+working directory, so this produces exactly the same layout as `npx … init`.
+`update` works the same way.
+
+> **Do not `cp -r .claude/` from the clone.** The repository's `.claude/`
+> holds only `agents/`, `commands/`, `templates/`, and `orchestrator-rules.md`.
+> The rules and hooks are distributed from `src/.claude/`, and the repository's
+> own `.claude/settings.json` is a dogfooding file that registers hooks under
+> `${CLAUDE_PROJECT_DIR}/src/.claude/hooks/` — paths that do not exist in your
+> project. Copying it produces missing-hook errors on every Bash / Write / Edit
+> call and fails `/aphelion-check`.
 
 ---
 
@@ -104,7 +115,7 @@ Already have a codebase? Follow these steps to bring Aphelion in:
 
 ```bash
 npx github:kirin0198/aphelion-agents init
-# or: cp -r /path/to/aphelion-agents/.claude /path/to/your-project/
+# or, from a local clone: node /path/to/aphelion-agents/bin/aphelion-agents.mjs init
 ```
 
 **Step 2: Set up project-specific rules**
@@ -151,11 +162,11 @@ Does your project have SPEC.md and ARCHITECTURE.md?
 
 This walkthrough uses Claude Code for a new project.
 
-**Step 1: Copy Aphelion to your project**
+**Step 1: Install Aphelion into your project**
 
 ```bash
-cp -r /path/to/aphelion-agents/.claude /path/to/your-project/
 cd /path/to/your-project
+npx github:kirin0198/aphelion-agents init
 claude
 ```
 
@@ -385,7 +396,7 @@ The orchestrator will present options:
 
 ## Canonical Sources
 
-- [README.md](../../README.md) — Project overview and Quick Start
-- [.claude/commands/](../../.claude/commands/) — Slash command definitions
-- [.claude/agents/discovery-flow.md](../../.claude/agents/discovery-flow.md) — Discovery flow startup procedure
-- [.claude/agents/delivery-flow.md](../../.claude/agents/delivery-flow.md) — Delivery flow startup procedure
+- [README.md](../../../README.md) — Project overview and Quick Start
+- [.claude/commands/](../../../.claude/commands/) — Slash command definitions
+- [.claude/agents/discovery-flow.md](../../../.claude/agents/discovery-flow.md) — Discovery flow startup procedure
+- [.claude/agents/delivery-flow.md](../../../.claude/agents/delivery-flow.md) — Delivery flow startup procedure

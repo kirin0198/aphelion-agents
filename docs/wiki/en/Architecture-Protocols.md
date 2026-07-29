@@ -197,6 +197,6 @@ The flow orchestrator launches the agent named in `BLOCKED_TARGET` in **lightwei
 
 ## Canonical Sources
 
-- [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md) — Workflow model and design principles (auto-loaded)
-- [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — Triage, handoff schema, approval gate, rollback rules
-- [.claude/rules/agent-communication-protocol.md](../../.claude/rules/agent-communication-protocol.md) — AGENT_RESULT format and STATUS definitions
+- [src/.claude/rules/aphelion-overview.md](../../../src/.claude/rules/aphelion-overview.md) — Workflow model and design principles (auto-loaded)
+- [.claude/orchestrator-rules.md](../../../.claude/orchestrator-rules.md) — Triage, handoff schema, approval gate, rollback rules
+- [src/.claude/rules/agent-communication-protocol.md](../../../src/.claude/rules/agent-communication-protocol.md) — AGENT_RESULT format and STATUS definitions

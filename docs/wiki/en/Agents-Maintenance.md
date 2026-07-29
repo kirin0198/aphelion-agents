@@ -1,7 +1,7 @@
 # Agents Reference: Maintenance Domain
 
 > **Language**: [English](../en/Agents-Maintenance.md) | [日本語](../ja/Agents-Maintenance.md)
-> **Last updated**: 2026-04-25 (split from Agents-Reference.md; #42)
+> **Last updated**: 2026-07-29 (2026-07-29: fix repository-root relative-link depth ../../ -> ../../../ (#169); split from Agents-Reference.md; #42)
 > **Audience**: Agent developers
 
 This page is one of five pages split from the original Agents-Reference.md (#42). It covers the Maintenance domain agents. See the sibling pages for other domains: [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md).
@@ -20,7 +20,7 @@ The Maintenance domain (3 agents + orchestrator) handles bug fixes, CVE response
 
 ### change-classifier
 
-- **Canonical**: [.claude/agents/change-classifier.md](../../.claude/agents/change-classifier.md)
+- **Canonical**: [.claude/agents/change-classifier.md](../../../.claude/agents/change-classifier.md)
 - **Domain**: Maintenance
 - **Responsibility**: Classifies an incoming maintenance trigger into Patch / Minor / Major plan with P1–P4 priority scoring. Identifies trigger type (bug / feature / tech_debt / performance / security), estimates file impact, detects breaking changes, and assesses SPEC.md impact. Checks for SPEC.md / ARCHITECTURE.md presence and proposes codebase-analyzer if missing.
 - **Inputs**: User's trigger description, SPEC.md, ARCHITECTURE.md, package metadata (package.json / pyproject.toml)
@@ -33,7 +33,7 @@ The Maintenance domain (3 agents + orchestrator) handles bug fixes, CVE response
 
 ### impact-analyzer
 
-- **Canonical**: [.claude/agents/impact-analyzer.md](../../.claude/agents/impact-analyzer.md)
+- **Canonical**: [.claude/agents/impact-analyzer.md](../../../.claude/agents/impact-analyzer.md)
 - **Domain**: Maintenance
 - **Responsibility**: Identifies the concrete set of files to change and traces the dependency graph. Detects breaking API / DB schema changes, assesses regression risk (low / medium / high), and recommends test scope (unit / integration / e2e).
 - **Inputs**: `change-classifier` AGENT_RESULT, user's trigger description, SPEC.md, ARCHITECTURE.md
@@ -56,5 +56,5 @@ The Maintenance domain (3 agents + orchestrator) handles bug fixes, CVE response
 
 ## Canonical Sources
 
-- [.claude/agents/](../../.claude/agents/) — All agent definition files (authoritative source)
-- [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — Flow orchestrator rules and triage
+- [.claude/agents/](../../../.claude/agents/) — All agent definition files (authoritative source)
+- [.claude/orchestrator-rules.md](../../../.claude/orchestrator-rules.md) — Flow orchestrator rules and triage

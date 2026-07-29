@@ -1,8 +1,9 @@
 # Rules Reference
 
 > **Language**: [English](../en/Rules-Reference.md) | [日本語](../ja/Rules-Reference.md)
-> **Last updated**: 2026-05-12
+> **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: リポジトリルート参照の相対リンク深さを修正 ../../ -> ../../../ (#169)
 >   - 2026-05-12: document-locations エントリ追加、ルール数 13 → 14 に更新 (#117)
 >   - 2026-05-01: hooks-policy エントリ追加、ルール数 12 → 13 に更新 (#107)
 >   - 2026-04-30: add missing localization-dictionary entry, sync rule count to 12 (#105)
@@ -10,7 +11,7 @@
 >   - 2026-04-29: language-rules — "Hand-authored canonical narrative" セクションを追加 (#75)
 >   - 2026-04-26: Sync with #62, #66, #72, #74 (issue #77)
 >   - 2026-04-25: denial-categories ルール追加, #31
-> **EN canonical**: 2026-05-12 of wiki/en/Rules-Reference.md
+> **EN canonical**: 2026-07-29 of wiki/en/Rules-Reference.md
 > **Audience**: エージェント開発者
 
 このページは`.claude/rules/`にある 14 の行動ルールのコンパクトなリファレンスです。各エントリはスコープ、自動ロードの動作、他ルール・エージェントとのインタラクション、ルールが強制する主要な制約をまとめています。
@@ -40,7 +41,7 @@
 
 ## aphelion-overview
 
-- **正規**: [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md)
+- **正規**: [src/.claude/rules/aphelion-overview.md](../../../src/.claude/rules/aphelion-overview.md)
 - **スコープ**: 全エージェントと Flow Orchestrator（フローオーケストレーター）；トップレベルのワークフローコンテキストを提供
 - **自動ロードの動作**: `.claude/rules/`に配置され、Claude Codeが全セッション起動時に自動ロード
 - **概要**: 3ドメインモデル（Discovery / Delivery / Operations）、独立した Maintenance フロー（既存プロジェクト保守向けの第 4 フロー）、トリアージ階層、エージェントディレクトリの場所を定義します。全エージェントはこのフレームワーク内で動作します。
@@ -50,7 +51,7 @@
 
 ## agent-communication-protocol
 
-- **正規**: [.claude/rules/agent-communication-protocol.md](../../.claude/rules/agent-communication-protocol.md)
+- **正規**: [src/.claude/rules/agent-communication-protocol.md](../../../src/.claude/rules/agent-communication-protocol.md)
 - **スコープ**: 全エージェント；Flow Orchestrator は `AGENT_RESULT` の出力から免除（代わりにハンドオフファイルを生成）
 - **自動ロードの動作**: Claude Codeが全セッション起動時に自動ロード
 - **インタラクション**: Flow Orchestrator は `AGENT_RESULT` STATUS の値を解析して承認ゲート、ロールバック、エラーハンドリングを制御（`orchestrator-rules.md` 参照）。`blocked` STATUS は `developer` が再開できるようになる前に軽量な `architect` への問い合わせをトリガーします。
@@ -60,7 +61,7 @@
 
 ## build-verification-commands
 
-- **正規**: [.claude/rules/build-verification-commands.md](../../.claude/rules/build-verification-commands.md)
+- **正規**: [src/.claude/rules/build-verification-commands.md](../../../src/.claude/rules/build-verification-commands.md)
 - **スコープ**: `developer`（タスクごとの検証）および`tester`（テスト実行）
 - **自動ロードの動作**: Claude Codeが全セッション起動時に自動ロード
 - **インタラクション**: `developer`が各タスクをコミットする前に通過しなければならないlint/formatゲートを定義します。`tester`はテスト実行コマンド列を使用します。`e2e-test-designer`と`tester`はE2Eコマンドテーブルを使用します（`HAS_UI: true`の場合のみ）。
@@ -70,7 +71,7 @@
 
 ## document-locations
 
-- **正規**: [.claude/rules/document-locations.md](../../.claude/rules/document-locations.md)
+- **正規**: [src/.claude/rules/document-locations.md](../../../src/.claude/rules/document-locations.md)
 - **スコープ**: Aphelion が生成する計画 / 設計 / ハンドオフドキュメント（SPEC.md・ARCHITECTURE.md・UI_SPEC.md 等）を読み書きする全エージェントおよび Flow Orchestrator
 - **自動ロードの動作**: `.claude/rules/` に配置され、Claude Code が全セッション起動時に自動ロード
 - **主要制約**: Aphelion が生成するドキュメントのパス解決アルゴリズムを一元定義します。新規プロジェクトはデフォルトで `docs/<NAME>.md` に書き込み、既存プロジェクトのルート直下ファイルは `Glob("{docs/<NAME>.md,<NAME>.md}")` 1 回呼び出しによるフォールバックで認識されます。
@@ -91,7 +92,7 @@
 
 ## document-versioning
 
-- **正規**: [.claude/rules/document-versioning.md](../../.claude/rules/document-versioning.md)
+- **正規**: [src/.claude/rules/document-versioning.md](../../../src/.claude/rules/document-versioning.md)
 - **スコープ**: `architect`、`spec-designer`、`ux-designer`、`test-designer`、`developer`、全 Flow Orchestrator
 - **自動ロードの動作**: Claude Codeが全セッション起動時に自動ロード
 - **インタラクション**: 設計ドキュメント（`SPEC.md`、`ARCHITECTURE.md`、`UI_SPEC.md`、`TEST_PLAN.md`）を生成する各エージェントは先頭に `最終更新` と `更新履歴` を記録しなければなりません。`developer` はここで定義された TASK.md フォーマットを使用します。Flow Orchestrator はこれを使用してハンドオフファイルに前ドメインのアーティファクトバージョンを記録します。
@@ -101,7 +102,7 @@
 
 ## file-operation-principles
 
-- **正規**: [.claude/rules/file-operation-principles.md](../../.claude/rules/file-operation-principles.md)
+- **正規**: [src/.claude/rules/file-operation-principles.md](../../../src/.claude/rules/file-operation-principles.md)
 - **スコープ**: ファイルを読み書きする全エージェント
 - **自動ロードの動作**: Claude Codeが全セッション起動時に自動ロード
 - **インタラクション**: 全ファイル書き込み操作に適用されます。`git-rules`と連携します（削除禁止、機密ファイルのステージング禁止）。`developer`がARCHITECTURE.mdに記載されていないディレクトリを作成するのを防ぎます。
@@ -111,7 +112,7 @@
 
 ## git-rules
 
-- **正規**: [.claude/rules/git-rules.md](../../.claude/rules/git-rules.md)
+- **正規**: [src/.claude/rules/git-rules.md](../../../src/.claude/rules/git-rules.md)
 - **スコープ**: 全 Bash 保有エージェント（セッション起動時に Startup Probe を実行）；gitコミット・ブランチ・PRを作成する `developer`、`releaser`、`scaffolder` およびその他のエージェント（コミット / ブランチ / PR ルール）
 - **自動ロードの動作**: Claude Codeが全セッション起動時に自動ロード
 - **インタラクション**:
@@ -124,7 +125,7 @@
 
 ## hooks-policy
 
-- **正規**: [.claude/rules/hooks-policy.md](../../.claude/rules/hooks-policy.md)
+- **正規**: [src/.claude/rules/hooks-policy.md](../../../src/.claude/rules/hooks-policy.md)
 - **スコープ**: `git commit`・ファイル書き込み（`Write`/`Edit`）・依存関係インストールを推奨または実施する全エージェント；フック bypass マーカーと連携するエージェント
 - **自動ロードの動作**: Claude Code が全セッション起動時に自動ロード
 - **インタラクション**:
@@ -144,7 +145,7 @@
 
 ## language-rules
 
-- **正規**: [.claude/rules/language-rules.md](../../.claude/rules/language-rules.md)
+- **正規**: [src/.claude/rules/language-rules.md](../../../src/.claude/rules/language-rules.md)
 - **スコープ**: テキスト出力を生成する全エージェント
 - **自動ロードの動作**: Claude Codeが全セッション起動時に自動ロード
 - **インタラクション**: すべての出力タイプの言語を設定します。`agent-communication-protocol`と連携します（AGENT_RESULTのキー/値は英語でなければならない）。`user-questions`の全ユーザー向けコンテンツに適用されます。
@@ -156,7 +157,7 @@
 
 ## library-and-security-policy
 
-- **正規**: [.claude/rules/library-and-security-policy.md](../../.claude/rules/library-and-security-policy.md)
+- **正規**: [src/.claude/rules/library-and-security-policy.md](../../../src/.claude/rules/library-and-security-policy.md)
 - **スコープ**: `architect`（ライブラリ選択）、`developer`（ライブラリ採用）、`security-auditor`（脆弱性スキャン）。**`security-auditor`の必須実行ルールは全プランに適用。**
 - **自動ロードの動作**: Claude Codeが全セッション起動時に自動ロード
 - **インタラクション**: `architect`はARCHITECTURE.mdに採用根拠とともに選択したライブラリを記録します。`developer`はARCHITECTURE.mdに従いますが、必要に応じてライブラリを追加できます（まず採用基準を検証しなければならない）。`security-auditor`は依存関係スキャンによって最終検証を実施します。security-auditorの必須実行ルールはトリアージの決定を上書きします — Minimalプランでも実行されます。
@@ -166,7 +167,7 @@
 
 ## localization-dictionary
 
-- **正規**: [.claude/rules/localization-dictionary.md](../../.claude/rules/localization-dictionary.md)
+- **正規**: [src/.claude/rules/localization-dictionary.md](../../../src/.claude/rules/localization-dictionary.md)
 - **スコープ**: 固定 UI 文字列（承認ゲート、AskUserQuestion ボイラープレート、進捗表示、"Phase N complete" ヘッダーなど）を出力する全エージェント
 - **自動ロードの動作**: Claude Code が全セッション起動時に自動ロード
 - **インタラクション**: 実行時に `project-rules.md` → `## Localization` → `Output Language` に対して解決します。`language-rules.md` のハイブリッドローカライゼーション戦略と連携します：辞書エントリは固定 UI 文字列をカバーし、自由形式のナラティブはエージェントが解決済み言語で直接生成します。
@@ -176,7 +177,7 @@
 
 ## sandbox-policy
 
-- **正規**: [.claude/rules/sandbox-policy.md](../../.claude/rules/sandbox-policy.md)
+- **正規**: [src/.claude/rules/sandbox-policy.md](../../../src/.claude/rules/sandbox-policy.md)
 - **スコープ**: `Bash`ツールを持つ全エージェント：`developer`、`tester`、`poc-engineer`、`scaffolder`、`infra-builder`、`codebase-analyzer`、`security-auditor`、`db-ops`、`releaser`、`observability`。（`sandbox-runner`はポリシーの実行者であり対象外）
 - **自動ロードの動作**: Claude Codeが全セッション起動時に自動ロード
 - **インタラクション**: 5 つの危険コマンドカテゴリ（`destructive_fs`、`prod_db`、`privilege_escalation`、`secret_access`、`external_net`）と 3 つの委譲ティア（`required`、`recommended`、`optional`）を定義します。`sandbox-runner` はこのポリシーを起動時に読み込んでコマンドを再分類します。Flow Orchestrator はティア定義を参照して `sandbox-runner` をいつ自動挿入するか（Standard+ プラン）を決定します。Bash を持つ各エージェントの定義ファイルにはこのルールへの 1 行参照が含まれています。`infra-builder` は `container` 隔離モードが参照する devcontainer ファイルを生成します。
@@ -189,7 +190,7 @@
 
 ## denial-categories
 
-- **正規**: [.claude/rules/denial-categories.md](../../.claude/rules/denial-categories.md)
+- **正規**: [src/.claude/rules/denial-categories.md](../../../src/.claude/rules/denial-categories.md)
 - **スコープ**: `Bash` ツールを持つ全エージェント (`sandbox-policy.md` と同じ集合)、加えて issue triage 用の `analyst-intake` / `analyst-core`
 - **自動ロードの動作**: Claude Code が全セッション起動時に自動ロード
 - **インタラクション**: `sandbox-policy.md` のコンパニオンルールです。`sandbox-policy.md` は実行**前**の予防 (コマンドのカテゴリ分類と `sandbox-runner` への委譲) を扱うのに対し、本ルールは実行**後**の診断 (どの種類の拒否が起きたかを分類して適切なリカバリーを選ぶ) を扱います。13 の Bash 所有エージェントが両ルールを参照します。
@@ -206,7 +207,7 @@
 
 ## user-questions
 
-- **正規**: [.claude/rules/user-questions.md](../../.claude/rules/user-questions.md)
+- **正規**: [src/.claude/rules/user-questions.md](../../../src/.claude/rules/user-questions.md)
 - **スコープ**: ユーザーへの確認や入力を求める必要がある全エージェント
 - **自動ロードの動作**: Claude Codeが全セッション起動時に自動ロード
 - **インタラクション**: Flow Orchestrator はトリアージインタビュー、承認ゲート、フェーズ確認に `AskUserQuestion` を使用します。（`blocked` になった `developer` を含む）どのエージェントも推測するのではなく止まって質問するためにこれを使用できます。
@@ -224,7 +225,7 @@
 
 ## 正規ソース
 
-- [.claude/rules/](../../.claude/rules/) — 14 のルールファイル全体（権威あるソース）
-- [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md) — ワークフロー概要（rules コレクションの一部に統合）
-- [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — `agent-communication-protocol` に依存する Flow Orchestrator の動作
+- [.claude/rules/](../../../src/.claude/rules/) — 14 のルールファイル全体（権威あるソース）
+- [src/.claude/rules/aphelion-overview.md](../../../src/.claude/rules/aphelion-overview.md) — ワークフロー概要（rules コレクションの一部に統合）
+- [.claude/orchestrator-rules.md](../../../.claude/orchestrator-rules.md) — `agent-communication-protocol` に依存する Flow Orchestrator の動作
 - [Hooks Reference](./Hooks-Reference.md) — フックセットのユーザー向けガイド

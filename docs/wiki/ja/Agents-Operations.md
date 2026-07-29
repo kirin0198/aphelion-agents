@@ -1,8 +1,8 @@
 # Agents Reference: Operations Domain
 
 > **Language**: [English](../en/Agents-Operations.md) | [日本語](../ja/Agents-Operations.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: terminology rebalance per #40)
-> **EN canonical**: 2026-04-25 of wiki/en/Agents-Operations.md
+> **Last updated**: 2026-07-29 (2026-07-29: リポジトリルート参照の相対リンク深さを修正 ../../ -> ../../../ (#169); updated 2026-04-25: terminology rebalance per #40)
+> **EN canonical**: 2026-07-29 of wiki/en/Agents-Operations.md
 > **Audience**: エージェント開発者
 
 このページはもとの Agents-Reference.md を 5 ページに分割したもの（#42）です。Operations ドメインエージェントを扱います。他のドメインは関連ページを参照してください: [Flow Orchestrator・横断系](./Agents-Orchestrators.md)、[Discovery](./Agents-Discovery.md)、[Delivery](./Agents-Delivery.md)、[Maintenance](./Agents-Maintenance.md)。
@@ -21,7 +21,7 @@ Operationsドメイン（4エージェント）はデプロイインフラと運
 
 ### infra-builder
 
-- **正規**: [.claude/agents/infra-builder.md](../../.claude/agents/infra-builder.md)
+- **正規**: [.claude/agents/infra-builder.md](../../../.claude/agents/infra-builder.md)
 - **ドメイン**: Operations
 - **責務**: Dockerfile（マルチステージ）、docker-compose.yml、GitHub Actions CI/CD、.env.example、セキュリティヘッダー、および**sandbox インフラ**（コンテナ隔離実行のための `.devcontainer/devcontainer.json` と `docker-compose.dev.yml`）を生成します。全Operationsプランで実行されます。
 - **入力**: DELIVERY_RESULT.md、ARCHITECTURE.md、実装コード
@@ -35,7 +35,7 @@ Operationsドメイン（4エージェント）はデプロイインフラと運
 
 ### db-ops
 
-- **正規**: [.claude/agents/db-ops.md](../../.claude/agents/db-ops.md)
+- **正規**: [.claude/agents/db-ops.md](../../../.claude/agents/db-ops.md)
 - **ドメイン**: Operations
 - **責務**: 本番DB設定、マイグレーション手順（ロールバック付き）、破壊的変更リスク評価、バックアップ/リストア手順、監視しきい値を定義します。StandardとFullプランで実行されます。
 - **入力**: ARCHITECTURE.md（データモデル、技術スタック）、マイグレーションファイル
@@ -47,7 +47,7 @@ Operationsドメイン（4エージェント）はデプロイインフラと運
 
 ### observability
 
-- **正規**: [.claude/agents/observability.md](../../.claude/agents/observability.md)
+- **正規**: [.claude/agents/observability.md](../../../.claude/agents/observability.md)
 - **ドメイン**: Operations
 - **責務**: ヘルスチェック、構造化ログ、REDメトリクス、アラートルール、パフォーマンスベースラインを設計・実装します。Fullプランのみで実行されます。
 - **入力**: ARCHITECTURE.md、DELIVERY_RESULT.md、実装コード
@@ -57,7 +57,7 @@ Operationsドメイン（4エージェント）はデプロイインフラと運
 
 ### ops-planner
 
-- **正規**: [.claude/agents/ops-planner.md](../../.claude/agents/ops-planner.md)
+- **正規**: [.claude/agents/ops-planner.md](../../../.claude/agents/ops-planner.md)
 - **ドメイン**: Operations
 - **責務**: デプロイ手順（ロールバックポイント付き）、ロールバックトリガー条件、インシデント対応プレイブック（P1-P4重大度）、メンテナンスチェックリストを作成します。OPS_RESULT.mdを生成します。
 - **入力**: ARCHITECTURE.md、DELIVERY_RESULT.md、infra-builder/db-ops/observabilityの成果物
@@ -80,5 +80,5 @@ Operationsドメイン（4エージェント）はデプロイインフラと運
 
 ## 正規ソース
 
-- [.claude/agents/](../../.claude/agents/) — エージェント定義ファイル全体（権威あるソース）
-- [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — Flow Orchestrator ルールとトリアージ
+- [.claude/agents/](../../../.claude/agents/) — エージェント定義ファイル全体（権威あるソース）
+- [.claude/orchestrator-rules.md](../../../.claude/orchestrator-rules.md) — Flow Orchestrator ルールとトリアージ

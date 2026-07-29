@@ -1,8 +1,9 @@
 # Agents Reference: Discovery Domain
 
 > **Language**: [English](../en/Agents-Discovery.md) | [日本語](../ja/Agents-Discovery.md)
-> **Last updated**: 2026-04-26
+> **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: fix repository-root relative-link depth ../../ -> ../../../ (#169)
 >   - 2026-04-26: Sync with #74 (issue #77)
 >   - 2026-04-25: split from Agents-Reference.md; #42
 > **Audience**: Agent developers
@@ -23,7 +24,7 @@ The Discovery domain (6 agents) handles requirements exploration.
 
 ### interviewer
 
-- **Canonical**: [.claude/agents/interviewer.md](../../.claude/agents/interviewer.md)
+- **Canonical**: [.claude/agents/interviewer.md](../../../.claude/agents/interviewer.md)
 - **Domain**: Discovery
 - **Responsibility**: Conducts requirements interviews, discovers implicit requirements, determines PRODUCT_TYPE and HAS_UI, generates INTERVIEW_RESULT.md. Runs on all Discovery plans.
 - **Inputs**: User's project description (from discovery-flow)
@@ -37,7 +38,7 @@ The Discovery domain (6 agents) handles requirements exploration.
 
 ### researcher
 
-- **Canonical**: [.claude/agents/researcher.md](../../.claude/agents/researcher.md)
+- **Canonical**: [.claude/agents/researcher.md](../../../.claude/agents/researcher.md)
 - **Domain**: Discovery
 - **Responsibility**: Researches domain knowledge, competitors, external APIs, and technical risks. Defines ubiquitous language. Runs on Standard and Full plans.
 - **Inputs**: INTERVIEW_RESULT.md
@@ -49,7 +50,7 @@ The Discovery domain (6 agents) handles requirements exploration.
 
 ### poc-engineer
 
-- **Canonical**: [.claude/agents/poc-engineer.md](../../.claude/agents/poc-engineer.md)
+- **Canonical**: [.claude/agents/poc-engineer.md](../../../.claude/agents/poc-engineer.md)
 - **Domain**: Discovery
 - **Responsibility**: Validates technical feasibility with minimal PoC code. Identifies infeasible requirements and proposes alternatives. Runs on Standard and Full plans.
 - **Inputs**: INTERVIEW_RESULT.md, RESEARCH_RESULT.md
@@ -62,7 +63,7 @@ The Discovery domain (6 agents) handles requirements exploration.
 
 ### concept-validator
 
-- **Canonical**: [.claude/agents/concept-validator.md](../../.claude/agents/concept-validator.md)
+- **Canonical**: [.claude/agents/concept-validator.md](../../../.claude/agents/concept-validator.md)
 - **Domain**: Discovery
 - **Responsibility**: Validates UI/UX concept through wireframes and user flow diagrams. Runs only on Full plan when HAS_UI: true.
 - **Inputs**: INTERVIEW_RESULT.md, RESEARCH_RESULT.md (optional), POC_RESULT.md (optional)
@@ -72,7 +73,7 @@ The Discovery domain (6 agents) handles requirements exploration.
 
 ### rules-designer
 
-- **Canonical**: [.claude/agents/rules-designer.md](../../.claude/agents/rules-designer.md)
+- **Canonical**: [.claude/agents/rules-designer.md](../../../.claude/agents/rules-designer.md)
 - **Domain**: Discovery
 - **Responsibility**: Interactively determines project-specific coding conventions, Git workflow, build commands, and **Repository declaration** (`Remote type`: `github` | `gitlab` | `gitea` | `local-only` | `none`, consumed by `git-rules.md` Startup Probe). Generates `.claude/rules/project-rules.md`. Runs on Light and above.
 - **Inputs**: INTERVIEW_RESULT.md, RESEARCH_RESULT.md (optional), POC_RESULT.md (optional)
@@ -82,7 +83,7 @@ The Discovery domain (6 agents) handles requirements exploration.
 
 ### scope-planner
 
-- **Canonical**: [.claude/agents/scope-planner.md](../../.claude/agents/scope-planner.md)
+- **Canonical**: [.claude/agents/scope-planner.md](../../../.claude/agents/scope-planner.md)
 - **Domain**: Discovery
 - **Responsibility**: Defines MVP, prioritizes requirements with MoSCoW, assesses risks and costs, determines handoff readiness, and generates DISCOVERY_RESULT.md. Runs on Light and above.
 - **Inputs**: INTERVIEW_RESULT.md, RESEARCH_RESULT.md, POC_RESULT.md, CONCEPT_VALIDATION.md (as available)
@@ -107,5 +108,5 @@ The Discovery domain (6 agents) handles requirements exploration.
 
 ## Canonical Sources
 
-- [.claude/agents/](../../.claude/agents/) — All agent definition files (authoritative source)
-- [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — Flow orchestrator rules and triage
+- [.claude/agents/](../../../.claude/agents/) — All agent definition files (authoritative source)
+- [.claude/orchestrator-rules.md](../../../.claude/orchestrator-rules.md) — Flow orchestrator rules and triage

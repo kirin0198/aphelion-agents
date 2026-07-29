@@ -1,11 +1,12 @@
 # Hooks Reference
 
 > **Language**: [English](../en/Hooks-Reference.md) | [日本語](../ja/Hooks-Reference.md)
-> **Last updated**: 2026-05-30
+> **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: リポジトリルート参照の相対リンク深さを修正 ../../ -> ../../../ (#169)
 >   - 2026-05-30: add Hook D — aphelion-project-rules-check (SessionStart advisory) (#130 PR-6)
 >   - 2026-05-01: initial release — MVP 3 hooks (#107)
-> **EN canonical**: 2026-05-30 of wiki/en/Hooks-Reference.md
+> **EN canonical**: 2026-07-29 of wiki/en/Hooks-Reference.md
 > **Audience**: Aphelion ユーザー（ユーザープロジェクトでフックを運用する開発者）
 
 このページは Aphelion が配布する Claude Code フックのユーザー向けリファレンスです。
@@ -13,7 +14,7 @@
 積極的なコンテンツスキャンを追加します。
 
 エージェント向けの完全なポリシー（自動ロードルール）は
-[hooks-policy.md](../../.claude/rules/hooks-policy.md) を参照してください。
+[hooks-policy.md](../../../src/.claude/rules/hooks-policy.md) を参照してください。
 
 ## 目次
 
@@ -355,6 +356,6 @@ WSL ファイルシステム（`/home/…`）内に配置することで、Hook 
 
 ## 正規ソース
 
-- [src/.claude/hooks/](../../src/.claude/hooks/) — 正規フックスクリプト
-- [src/.claude/settings.json](../../src/.claude/settings.json) — フック登録テンプレート
-- [src/.claude/rules/hooks-policy.md](../../src/.claude/rules/hooks-policy.md) — 自動ロードポリシールール
+- [src/.claude/hooks/](../../../src/.claude/hooks/) — 正規フックスクリプト
+- [src/.claude/settings.json](../../../src/.claude/settings.json) — フック登録テンプレート
+- [src/.claude/rules/hooks-policy.md](../../../src/.claude/rules/hooks-policy.md) — 自動ロードポリシールール

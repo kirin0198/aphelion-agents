@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 # check-readme-wiki-sync.sh
 # Cross-source consistency check for README ↔ Wiki co-update set.
-# Checks three things:
+# Checks four things:
 #   1. Agent count parity across README.md, README.ja.md, wiki/en/Home.md, wiki/ja/Home.md
 #   2. Slash command list parity between .claude/commands/aphelion-help.md and
 #      docs/wiki/en/Getting-Started.md
 #   3. ^## heading count + order match between README.md and README.ja.md
+#   4. Every relative markdown link in docs/wiki/{en,ja}/*.md resolves to an
+#      existing file (guards the ../ depth regression fixed in #169)
 #
 # Usage: bash scripts/check-readme-wiki-sync.sh
 # Exit 0 on success (silent), exit 1 on any failure with stderr message.
@@ -92,6 +94,43 @@ if [ "$README_MD_LINES" != "$README_JA_LINES" ]; then
   echo "heading position mismatch between README.md and README.ja.md:" >&2
   echo "  README.md line positions:    $README_MD_LINES" >&2
   echo "  README.ja.md line positions: $README_JA_LINES" >&2
+  fail=1
+fi
+
+# ---------------------------------------------------------------------------
+# Check 4: Relative wiki links resolve to a real file
+#
+# Wiki pages live at docs/wiki/{en,ja}/X.md, so a repository-root reference
+# needs `../../../`. Before #169 every such link used `../../` and resolved
+# into docs/, producing ~220 dead links when the pages are read on GitHub.
+# The published site hid this because scripts/sync-wiki.mjs strips any number
+# of leading `../` before rewriting to a blob URL — so only a link-target
+# existence check can catch a regression.
+#
+# Placeholder targets inside templates/prose ({slug}, <URL>, ...) are skipped.
+# ---------------------------------------------------------------------------
+broken_links=0
+for wiki_file in "$REPO_ROOT"/docs/wiki/en/*.md "$REPO_ROOT"/docs/wiki/ja/*.md; do
+  wiki_dir="$(dirname "$wiki_file")"
+  while IFS= read -r target; do
+    # Strip anchor / query suffix
+    target="${target%%#*}"
+    target="${target%%\?*}"
+    [ -z "$target" ] && continue
+    # Skip absolute / external / placeholder targets
+    case "$target" in
+      http://*|https://*|mailto:*|/*) continue ;;
+      *'{'*|*'<'*|...) continue ;;
+    esac
+    if [ ! -e "$wiki_dir/$target" ]; then
+      echo "broken wiki link: ${wiki_file#"$REPO_ROOT"/} -> $target" >&2
+      broken_links=$((broken_links + 1))
+    fi
+  done < <(grep -oE '\]\([^)[:space:]]+\)' "$wiki_file" | sed -E 's/^\]\(//; s/\)$//')
+done
+
+if [ "$broken_links" -ne 0 ]; then
+  echo "$broken_links broken relative link(s) in docs/wiki/ — repository-root references need ../../../ (see #169)" >&2
   fail=1
 fi
 

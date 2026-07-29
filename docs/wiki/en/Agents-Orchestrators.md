@@ -32,7 +32,7 @@ Flow orchestrators manage entire domains. They are not triage-selected agents bu
 
 ### discovery-flow
 
-- **Canonical**: [.claude/agents/discovery-flow.md](../../.claude/agents/discovery-flow.md)
+- **Canonical**: [.claude/agents/discovery-flow.md](../../../.claude/agents/discovery-flow.md)
 - **Domain**: Orchestrator (Discovery)
 - **Responsibility**: Manages the entire requirements exploration flow. Performs triage, launches agents in sequence, handles approvals and rollbacks, generates DISCOVERY_RESULT.md.
 - **Inputs**: User's project description (via command argument)
@@ -42,7 +42,7 @@ Flow orchestrators manage entire domains. They are not triage-selected agents bu
 
 ### delivery-flow
 
-- **Canonical**: [.claude/agents/delivery-flow.md](../../.claude/agents/delivery-flow.md)
+- **Canonical**: [.claude/agents/delivery-flow.md](../../../.claude/agents/delivery-flow.md)
 - **Domain**: Orchestrator (Delivery)
 - **Responsibility**: Manages the entire design, implementation, testing, and review flow. Reads DISCOVERY_RESULT.md (or MAINTENANCE_RESULT.md on a Maintenance Major handoff), performs triage, handles rollbacks on test/review failures, generates DELIVERY_RESULT.md.
 - **Inputs**: DISCOVERY_RESULT.md (optional), MAINTENANCE_RESULT.md (optional — Maintenance Major handoff; takes precedence over DISCOVERY_RESULT.md and starts the flow at `architect` in differential mode), existing SPEC.md / ARCHITECTURE.md
@@ -52,7 +52,7 @@ Flow orchestrators manage entire domains. They are not triage-selected agents bu
 
 ### operations-flow
 
-- **Canonical**: [.claude/agents/operations-flow.md](../../.claude/agents/operations-flow.md)
+- **Canonical**: [.claude/agents/operations-flow.md](../../../.claude/agents/operations-flow.md)
 - **Domain**: Orchestrator (Operations)
 - **Responsibility**: Manages the deploy and operations flow. Only for PRODUCT_TYPE: service. Reads DELIVERY_RESULT.md, performs triage, generates OPS_RESULT.md.
 - **Inputs**: DELIVERY_RESULT.md (required), ARCHITECTURE.md, SPEC.md
@@ -62,7 +62,7 @@ Flow orchestrators manage entire domains. They are not triage-selected agents bu
 
 ### maintenance-flow
 
-- **Canonical**: [.claude/agents/maintenance-flow.md](../../.claude/agents/maintenance-flow.md)
+- **Canonical**: [.claude/agents/maintenance-flow.md](../../../.claude/agents/maintenance-flow.md)
 - **Domain**: Orchestrator (Maintenance — fourth flow)
 - **Responsibility**: Manages the maintenance lifecycle for existing projects. Receives a trigger (bug / CVE / performance / tech-debt / feature), performs Patch / Minor / Major triage via `change-classifier`, and launches the appropriate agent sequence. Patch and Minor complete standalone; Major generates `MAINTENANCE_RESULT.md` and hands off to delivery-flow.
 - **Inputs**: User-supplied trigger description (log error, CVE notice, feature request, etc.), SPEC.md, ARCHITECTURE.md
@@ -74,7 +74,7 @@ Flow orchestrators manage entire domains. They are not triage-selected agents bu
 
 ### doc-flow
 
-- **Canonical**: [.claude/agents/doc-flow.md](../../.claude/agents/doc-flow.md)
+- **Canonical**: [.claude/agents/doc-flow.md](../../../.claude/agents/doc-flow.md)
 - **Domain**: Orchestrator (Doc — fifth flow)
 - **Responsibility**: Generates customer-deliverable documents (HLD / LLD / API reference / ops manual / end-user manual / handover) from existing Aphelion artifacts (SPEC.md, ARCHITECTURE.md, etc.). Performs doc-type triage, launches each of the 6 author agents in sequence with user approval gates, and produces `DOC_FLOW_RESULT.md`. No automatic chaining from other flows — user invokes via `/doc-flow` at any point after SPEC.md and ARCHITECTURE.md are available.
 - **Inputs**: SPEC.md, ARCHITECTURE.md (and optionally DISCOVERY_RESULT.md, UI_SPEC.md, infra artifacts, OPS_RESULT.md); arguments `--types`, `--lang`, `--slug`, `--target-project`
@@ -99,7 +99,7 @@ These agents enforce safety policies across other agents. They may be invoked au
 
 ### sandbox-runner
 
-- **Canonical**: [.claude/agents/sandbox-runner.md](../../.claude/agents/sandbox-runner.md)
+- **Canonical**: [.claude/agents/sandbox-runner.md](../../../.claude/agents/sandbox-runner.md)
 - **Domain**: Safety (cross-cutting)
 - **Responsibility**: Executes high-risk commands using the strongest available isolation. First attempts `container` mode (devcontainer + Docker); falls back to platform permission controls if unavailable. Re-classifies commands against `sandbox-policy.md` and returns a complete audit trail including fallback reason.
 - **Inputs**: `command`, `working_directory`, `timeout_sec`, `risk_hint`, `allow_network`, `allow_write_paths`, `dry_run`, `reason`, `caller_agent`
@@ -123,7 +123,7 @@ These agents enforce quality gates across other agents' outputs. They are auto-i
 
 ### doc-reviewer
 
-- **Canonical**: [.claude/agents/doc-reviewer.md](../../.claude/agents/doc-reviewer.md)
+- **Canonical**: [.claude/agents/doc-reviewer.md](../../../.claude/agents/doc-reviewer.md)
 - **Domain**: Quality (cross-cutting)
 - **Responsibility**: Reviews cross-document consistency for markdown artifacts (SPEC.md / ARCHITECTURE.md / UI_SPEC.md / docs/design-notes/, DISCOVERY_RESULT.md). Auto-inserted by flow orchestrators after spec-designer / architect / ux-designer / scope-planner / analyst complete (post-insert). Runs in an isolated context independent from the producing agent. Read-only — does not generate or modify any files; emits a text report only.
 - **Inputs**: Target artifact(s) from the preceding phase + upstream artifacts they depend on (e.g., SPEC.md when reviewing ARCHITECTURE.md). `TRIGGERED_BY` field identifies the upstream agent.
@@ -148,7 +148,7 @@ The analyst chain consists of three files: the top-level orchestrator (`analyst`
 
 ### analyst (top-level orchestrator)
 
-- **Canonical**: [.claude/agents/analyst.md](../../.claude/agents/analyst.md)
+- **Canonical**: [.claude/agents/analyst.md](../../../.claude/agents/analyst.md)
 - **Domain**: Standalone (top-level orchestrator, invoked via `/analyst` slash command **only**)
 - **Model**: Sonnet
 - **Responsibility**: Top-level orchestrator for the analyst chain. Chains `analyst-intake` → `analyst-core` via the Agent tool. Detects existing planning docs for three resume cases (post-Pattern-B resume / legacy resume / fresh). Does not write files or run git; orchestration only.
@@ -173,7 +173,7 @@ This pattern applies to all three cases: fresh, post-Pattern-B resume, and legac
 
 ### analyst-intake
 
-- **Canonical**: [.claude/agents/analyst-intake.md](../../.claude/agents/analyst-intake.md)
+- **Canonical**: [.claude/agents/analyst-intake.md](../../../.claude/agents/analyst-intake.md)
 - **Domain**: Standalone (sub-agent; invoked by `analyst` orchestrator or flow orchestrators)
 - **Model**: Sonnet
 - **Responsibility**: Structured intake phase (Steps A–D). Collects minimum information via `AskUserQuestion`, writes the planning doc §1-4 stub with embedded `<!-- analyst-handoff -->` YAML (for resume detection), creates the GitHub issue, and commits the work branch initial state. Emits `HANDOFF_PAYLOAD` for the caller to forward to `analyst-core`. Also supports **injection-only mode** for legacy doc resume (see below).
@@ -191,7 +191,7 @@ In this mode:
 
 ### analyst-core
 
-- **Canonical**: [.claude/agents/analyst-core.md](../../.claude/agents/analyst-core.md)
+- **Canonical**: [.claude/agents/analyst-core.md](../../../.claude/agents/analyst-core.md)
 - **Domain**: Standalone (sub-agent; invoked by `analyst` orchestrator or flow orchestrators)
 - **Model**: Opus
 - **Responsibility**: Deep analysis phase (Steps 1–5). Validates the handoff payload, classifies the issue, performs full analysis, requests user approval, updates SPEC.md / UI_SPEC.md incrementally (when needed), refines the GitHub issue body, writes planning doc §5-8, and commits the final state.
@@ -202,7 +202,7 @@ In this mode:
 
 ### codebase-analyzer
 
-- **Canonical**: [.claude/agents/codebase-analyzer.md](../../.claude/agents/codebase-analyzer.md)
+- **Canonical**: [.claude/agents/codebase-analyzer.md](../../../.claude/agents/codebase-analyzer.md)
 - **Domain**: Standalone
 - **Responsibility**: Reverse-engineers SPEC.md and ARCHITECTURE.md from an existing codebase that lacks documentation. Enables the project to join the standard Aphelion workflow via analyst → delivery-flow.
 - **Inputs**: Existing codebase (source files in working directory)
@@ -226,5 +226,5 @@ In this mode:
 
 ## Canonical Sources
 
-- [.claude/agents/](../../.claude/agents/) — All agent definition files (authoritative source)
-- [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — Flow orchestrator rules and triage
+- [.claude/agents/](../../../.claude/agents/) — All agent definition files (authoritative source)
+- [.claude/orchestrator-rules.md](../../../.claude/orchestrator-rules.md) — Flow orchestrator rules and triage

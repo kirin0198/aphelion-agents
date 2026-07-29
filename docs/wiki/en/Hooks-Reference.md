@@ -1,8 +1,9 @@
 # Hooks Reference
 
 > **Language**: [English](../en/Hooks-Reference.md) | [日本語](../ja/Hooks-Reference.md)
-> **Last updated**: 2026-05-30
+> **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: fix repository-root relative-link depth ../../ -> ../../../ (#169)
 >   - 2026-05-30: add Hook D — aphelion-project-rules-check (SessionStart advisory) (#130 PR-6)
 >   - 2026-05-01: initial release — MVP 3 hooks (#107)
 > **Audience**: Aphelion users (developers operating hooks in user projects)
@@ -12,7 +13,7 @@ Hooks act as the fourth defense layer — proactive content scanning — on top 
 deny rules, sandbox isolation, and post-failure diagnosis.
 
 For the full policy (auto-load rule for agents), see
-[hooks-policy.md](../../.claude/rules/hooks-policy.md).
+[hooks-policy.md](../../../src/.claude/rules/hooks-policy.md).
 
 ## Table of Contents
 
@@ -361,6 +362,6 @@ If you use Aphelion on WSL2, ensure your project is stored inside the WSL filesy
 
 ## Canonical Sources
 
-- [src/.claude/hooks/](../../src/.claude/hooks/) — Canonical hook scripts
-- [src/.claude/settings.json](../../src/.claude/settings.json) — Hook registration template
-- [src/.claude/rules/hooks-policy.md](../../src/.claude/rules/hooks-policy.md) — Auto-loaded policy rule
+- [src/.claude/hooks/](../../../src/.claude/hooks/) — Canonical hook scripts
+- [src/.claude/settings.json](../../../src/.claude/settings.json) — Hook registration template
+- [src/.claude/rules/hooks-policy.md](../../../src/.claude/rules/hooks-policy.md) — Auto-loaded policy rule

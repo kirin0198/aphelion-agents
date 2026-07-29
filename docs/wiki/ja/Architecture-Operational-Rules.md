@@ -1,8 +1,8 @@
 # Architecture: Operational Rules
 
 > **Language**: [English](../en/Architecture-Operational-Rules.md) | [日本語](../ja/Architecture-Operational-Rules.md)
-> **Last updated**: 2026-04-30 (updated 2026-04-30: doc-reviewer ロールバック参照を反映 (#91 follow-up))
-> **EN canonical**: 2026-04-30 of wiki/en/Architecture-Operational-Rules.md
+> **Last updated**: 2026-07-29 (2026-07-29: リポジトリルート参照の相対リンク深さを修正 ../../ -> ../../../ (#169); updated 2026-04-30: doc-reviewer ロールバック参照を反映 (#91 follow-up))
+> **EN canonical**: 2026-07-29 of wiki/en/Architecture-Operational-Rules.md
 > **Audience**: エージェント開発者
 
 このページはもとの Architecture.md を3ページに分割したもの（#42）です。自動承認モード・フェーズ実行ループ・トリアージティア・差し戻しルール・sandbox防御レイヤーといったランタイム・運用挙動を扱います。概念モデルとプロトコルは関連ページを参照してください: [ドメインモデル](./Architecture-Domain-Model.md)、[プロトコル](./Architecture-Protocols.md)。
@@ -40,7 +40,7 @@ HAS_UI: true
 - エージェントごとの最大リトライ回数：3回
 - ロールバック上限: テスト失敗 / レビュー CRITICAL / セキュリティ監査 CRITICAL /
   ドキュメントレビュー FAIL の差し戻しで共有（合計最大3回）。正規の定義は
-  [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) §Rollback Rules
+  [.claude/orchestrator-rules.md](../../../.claude/orchestrator-rules.md) §Rollback Rules
   → Rollback Limit (Common) を参照。
 
 ---
@@ -118,7 +118,7 @@ flowchart LR
 差し戻しはテスト失敗、レビューの CRITICAL 指摘、セキュリティ監査の CRITICAL 指摘、
 およびドキュメントレビューの FAIL 結果によって自動的にトリガーされます。共有の差し戻し上限
 （4 種すべてを通じて最大 3 回）は
-[.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) §Rollback Rules
+[.claude/orchestrator-rules.md](../../../.claude/orchestrator-rules.md) §Rollback Rules
 で **Rollback Limit (Common)** として定義されています。
 
 ### テスト失敗による差し戻し（Deliveryドメイン）
@@ -161,7 +161,7 @@ doc-reviewer（DOC_REVIEW_RESULT: fail）
 とは異なり、この差し戻しは上流のマークダウン生成エージェントが完了した**後**に発動します。
 トリガーエージェントは `doc-reviewer` の `TRIGGERED_BY` フィールドで特定されます。差し戻し
 プロンプトテンプレートは
-[.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md)
+[.claude/orchestrator-rules.md](../../../.claude/orchestrator-rules.md)
 §Doc Review FAIL Rollback Flow を、差し戻し上限超過時の処理は §Approval Gate after Doc
 Review FAIL を参照してください。
 
@@ -178,7 +178,7 @@ poc-engineer（blocked、BLOCKED_ITEMS > 0）
 
 ## sandboxの2層防御
 
-Aphelionは危険なコマンド実行を防ぐために2つの相補的なレイヤーを使用します。sandbox モードの設定詳細は [.claude/rules/sandbox-policy.md](../../.claude/rules/sandbox-policy.md) を参照してください。
+Aphelionは危険なコマンド実行を防ぐために2つの相補的なレイヤーを使用します。sandbox モードの設定詳細は [src/.claude/rules/sandbox-policy.md](../../../src/.claude/rules/sandbox-policy.md) を参照してください。
 
 <!-- source: docs/design-notes/archived/sandbox-design.md (§1, §2, Addendum §A.2) -->
 ```mermaid
@@ -227,6 +227,6 @@ flowchart TB
 
 ## 正規ソース
 
-- [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md) — ワークフローモデルと設計原則（自動ロード）
-- [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — トリアージ、ハンドオフスキーマ、承認ゲート、差し戻しルール
-- [.claude/rules/agent-communication-protocol.md](../../.claude/rules/agent-communication-protocol.md) — AGENT_RESULT形式とSTATUSの定義
+- [src/.claude/rules/aphelion-overview.md](../../../src/.claude/rules/aphelion-overview.md) — ワークフローモデルと設計原則（自動ロード）
+- [.claude/orchestrator-rules.md](../../../.claude/orchestrator-rules.md) — トリアージ、ハンドオフスキーマ、承認ゲート、差し戻しルール
+- [src/.claude/rules/agent-communication-protocol.md](../../../src/.claude/rules/agent-communication-protocol.md) — AGENT_RESULT形式とSTATUSの定義
