@@ -3,6 +3,7 @@
 > **Language**: [English](../en/Rules-Reference.md) | [日本語](../ja/Rules-Reference.md)
 > **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: sandbox modes 5 -> 4 (advisory_only removed, no host detection) (#188)
 >   - 2026-07-29: fix repository-root relative-link depth ../../ -> ../../../ (#169)
 >   - 2026-05-12: add document-locations entry, sync rule count 13 → 14 (#117)
 >   - 2026-05-01: add hooks-policy entry, sync rule count 12 → 13 (#107)
@@ -180,8 +181,8 @@ For full details, follow the **Canonical** link to the source file.
 - **Scope**: All agents that own the `Bash` tool: `developer`, `tester`, `poc-engineer`, `scaffolder`, `infra-builder`, `codebase-analyzer`, `security-auditor`, `db-ops`, `releaser`, `observability`. (`sandbox-runner` is the policy executor, not a subject.)
 - **Auto-load behavior**: Auto-loaded by Claude Code on every session start
 - **Interactions**: Defines the 5 dangerous command categories (`destructive_fs`, `prod_db`, `privilege_escalation`, `secret_access`, `external_net`) and 3 delegation tiers (`required`, `recommended`, `optional`). `sandbox-runner` reads this policy at startup to re-classify commands. Orchestrators reference the tier definitions to decide when to auto-insert `sandbox-runner` (Standard+ plans). Each Bash-owning agent definition file contains a one-line reference to this rule. `infra-builder` generates the devcontainer files referenced by the `container` isolation mode.
-- **Sandbox Modes (§4)**: Five modes in priority order: `container` (real physical isolation via devcontainer — highest priority), `platform_permission` (Claude Code permission gate), `advisory_only` (warning only), `blocked` (execution refused), `bypassed` (no category match). Container mode is effective even when the platform operates in `auto`/`allow` mode because it provides a structural boundary independent of permission settings.
-- **Decision Tree (§3)**: Container availability is checked **before** platform detection. If `.devcontainer/devcontainer.json` exists and `docker info` succeeds → `container` mode. Otherwise, fall through to platform detection and existing permission mode logic. Fallback order: `container` → `platform_permission` → `advisory_only` → `blocked`.
+- **Sandbox Modes (§4)**: Four modes in priority order: `container` (real physical isolation via devcontainer — highest priority), `platform_permission` (Claude Code permission gate), `blocked` (execution refused), `bypassed` (no category match). Container mode is effective even when the platform operates in `auto`/`allow` mode because it provides a structural boundary independent of permission settings.
+- **Decision Tree (§3)**: Container availability is checked first. If `.devcontainer/devcontainer.json` exists and `docker info` succeeds → `container` mode. Otherwise fall through to the permission-mode logic. Fallback order: `container` → `platform_permission` → `blocked`. Aphelion is Claude Code-only, so no host-platform detection is performed (#188).
 - **Triage × devcontainer (§5)**: Minimal = skip devcontainer generation; Light = generate, optional launch; Standard = generate, mandatory launch (required-category commands run inside container only); Full = generate, mandatory launch + audit log.
 - **Summary**: Establishes when Bash-owning agents must delegate command execution to `sandbox-runner`. Provides the isolation mode decision tree keyed on container availability and platform detection. `required`-tier commands must always be delegated; `recommended`-tier should be delegated with a recorded reason if skipped; `optional`-tier is advisory only. When delegation is unavailable (Minimal plan, standalone context), the agent must warn the user and ask for explicit confirmation.
 

@@ -3,6 +3,7 @@
 > **Language**: [English](../en/Rules-Reference.md) | [日本語](../ja/Rules-Reference.md)
 > **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: サンドボックスモードを 5 → 4 に修正（advisory_only 廃止、ホスト検出なし）(#188)
 >   - 2026-07-29: リポジトリルート参照の相対リンク深さを修正 ../../ -> ../../../ (#169)
 >   - 2026-05-12: document-locations エントリ追加、ルール数 13 → 14 に更新 (#117)
 >   - 2026-05-01: hooks-policy エントリ追加、ルール数 12 → 13 に更新 (#107)
@@ -181,8 +182,8 @@
 - **スコープ**: `Bash`ツールを持つ全エージェント：`developer`、`tester`、`poc-engineer`、`scaffolder`、`infra-builder`、`codebase-analyzer`、`security-auditor`、`db-ops`、`releaser`、`observability`。（`sandbox-runner`はポリシーの実行者であり対象外）
 - **自動ロードの動作**: Claude Codeが全セッション起動時に自動ロード
 - **インタラクション**: 5 つの危険コマンドカテゴリ（`destructive_fs`、`prod_db`、`privilege_escalation`、`secret_access`、`external_net`）と 3 つの委譲ティア（`required`、`recommended`、`optional`）を定義します。`sandbox-runner` はこのポリシーを起動時に読み込んでコマンドを再分類します。Flow Orchestrator はティア定義を参照して `sandbox-runner` をいつ自動挿入するか（Standard+ プラン）を決定します。Bash を持つ各エージェントの定義ファイルにはこのルールへの 1 行参照が含まれています。`infra-builder` は `container` 隔離モードが参照する devcontainer ファイルを生成します。
-- **サンドボックスモード（§4）**: 優先順位順に5つのモード：`container`（devcontainerによる実体的な物理的隔離 — 最高優先）、`platform_permission`（Claude Codeパーミッションゲート）、`advisory_only`（警告のみ）、`blocked`（実行拒否）、`bypassed`（カテゴリ非該当）。`container`モードはプラットフォームが`auto`/`allow`モードで動作していても有効です。パーミッション設定に依存しない構造的な境界を提供するためです。
-- **決定ツリー（§3）**: コンテナ利用可能性はプラットフォーム検出の**前**に確認されます。`.devcontainer/devcontainer.json`が存在し`docker info`が成功する場合 → `container`モード。そうでなければ、プラットフォーム検出と既存のパーミッションモードロジックに降格。フォールバック順：`container` → `platform_permission` → `advisory_only` → `blocked`。
+- **サンドボックスモード（§4）**: 優先順位順に4つのモード：`container`（devcontainerによる実体的な物理的隔離 — 最高優先）、`platform_permission`（Claude Codeパーミッションゲート）、`blocked`（実行拒否）、`bypassed`（カテゴリ非該当）。`container`モードはプラットフォームが`auto`/`allow`モードで動作していても有効です。パーミッション設定に依存しない構造的な境界を提供するためです。
+- **決定ツリー（§3）**: 最初にコンテナ利用可能性を確認します。`.devcontainer/devcontainer.json`が存在し`docker info`が成功する場合 → `container`モード。そうでなければパーミッションモードのロジックに降格。フォールバック順：`container` → `platform_permission` → `blocked`。Aphelion は Claude Code 専用のため、ホストプラットフォーム検出は行いません (#188)。
 - **トリアージ × devcontainer（§5）**: Minimal = devcontainer生成スキップ；Light = 生成・任意起動；Standard = 生成・必須起動（required カテゴリのコマンドはコンテナ内のみ実行）；Full = 生成・必須起動 + 監査ログ。
 - **概要**: Bashを持つエージェントがいつコマンド実行を`sandbox-runner`に委譲しなければならないかを確立します。コンテナ利用可能性とプラットフォーム検出に基づく隔離モード決定ツリーを提供します。`required`ティアのコマンドは常に委譲しなければなりません；`recommended`ティアはスキップ時に記録された理由とともに委譲すべきです；`optional`ティアはadvisoryのみです。委譲が利用できない場合（Minimalプラン、スタンドアロンコンテキスト）、エージェントはユーザーに警告し明示的な確認を求めなければなりません。
 

@@ -43,7 +43,7 @@ Each orchestrator must `Read` this file at startup before beginning work.
 
 > **Why no Minimal plan:** Deploying `PRODUCT_TYPE: service` requires at minimum infrastructure definitions (infra-builder) and an operations plan (ops-planner), so Operations uses Light as the minimum plan.
 
-> **sandbox-runner placement in Operations Flow**: At Standard and above, `sandbox-runner` is placed before `db-ops`, `releaser`, and `observability`. This ensures that destructive DB operations and deployment commands pass through risk classification before execution.
+> **sandbox-runner placement in Operations Flow**: At Standard and above, `sandbox-runner` is placed before `db-ops` and `observability` — the two Operations agents that run destructive or infrastructure-touching commands. (`releaser` belongs to delivery-flow's Full plan, not Operations; its placement rule lives with the Delivery triage above.)
 
 ### Maintenance Flow Triage
 
@@ -391,7 +391,7 @@ rather than restating it.
 - Additional notes: {considerations for delivery-flow execution}
 
 ## PRODUCT_TYPE
-{Resolve via: SPEC.md > project-rules.md (`Product Type:` line under `## Project Overview`) > default `service`}
+{Resolve via the canonical chain in `.claude/rules/aphelion-overview.md` §"PRODUCT_TYPE Resolution Order". Maintenance enters from an existing project, so step 1 (handoff file) does not apply: SPEC.md > project-rules.md > default `service`}
 ```
 
 ### DOC_FLOW_RESULT.md
@@ -688,6 +688,13 @@ Each phase follows this common loop. Domain-specific steps (rollback checks, etc
        value is carried as the `approval_mode` field of `HANDOFF_PAYLOAD` rather than a
        bare prompt injection (see `agent-communication-protocol.md` §"Field Reference").
   3. Verify the agent's AGENT_RESULT block
+  3b. If the agent owns no `Bash` (spec-designer, ux-designer, visual-designer,
+      test-designer, e2e-test-designer, interviewer, researcher, scope-planner,
+      ops-planner, rules-designer, doc-flow authors), commit its artifacts on its
+      behalf after the phase gate is approved: stage exactly the paths in its
+      ARTIFACT_PATHS and make one commit for the phase
+      (see `git-rules.md` §"Artifacts written by Bash-less agents").
+      Skip push when REPO_STATE=local-only / none.
   4. Evaluate STATUS and handle error / blocked / failure
      (for failure, follow domain-specific rollback rules)
   5. Evaluate the approval decision using the following three-tier priority:
