@@ -34,7 +34,7 @@ flowchart LR
     DCR["DOC_FLOW_RESULT.md\n+ deliverables/{slug}/*.md"]
 
     Discovery["Discovery Flow\n(6 agents)"] -->|generates| DR
-    DR -->|input for| Delivery["Delivery Flow\n(12 agents)"]
+    DR -->|input for| Delivery["Delivery Flow\n(13 agents)"]
     Delivery -->|generates| DLR
     DLR -->|input for| Ops["Operations Flow\n(4 agents)\nservice only"]
     Ops -->|generates| OPR
@@ -71,9 +71,9 @@ flowchart LR
 ```mermaid
 flowchart LR
     D["Discovery<br/>(6 agents)<br/>interviewer → ... → scope-planner"]
-    DV["Delivery<br/>(12 agents)<br/>spec-designer → ... → releaser"]
+    DV["Delivery<br/>(13 agents)<br/>spec-designer → ... → releaser"]
     O["Operations<br/>(4 agents)<br/>infra-builder → ... → ops-planner"]
-    M["Maintenance<br/>(3 agents + reuse)<br/>change-classifier → impact-analyzer → analyst → ..."]
+    M["Maintenance<br/>(2 agents + reuse)<br/>change-classifier → impact-analyzer → analyst → ..."]
     DC["Doc<br/>(1 orchestrator + 6 authors)<br/>doc-flow → hld-author → ... → handover-author"]
     S["Standalone<br/>analyst / codebase-analyzer / sandbox-runner"]
 

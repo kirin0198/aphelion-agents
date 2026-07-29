@@ -133,13 +133,14 @@ For full details, follow the **Canonical** link to the source file.
   - Hook A fires before `git commit`, integrating with the `library-and-security-policy.md` secret-detection mandate.
   - Hook E fires after dependency installs, triggering the `/vuln-scan` workflow defined in `library-and-security-policy.md`.
   - `developer` should inform users about the `[skip-secrets-check]` bypass when hook A fires on a known-safe placeholder.
-- **Hook inventory (MVP)**:
+- **Hook inventory** (4 distributed hooks; three further hooks under `src/.claude/hooks/` are dogfooding-only and excluded from distribution, #197):
   - **A** `aphelion-secrets-precommit.sh` — `PreToolUse Bash(git commit*)` — scans staged diff for 8 secret patterns (P1–P8); exits 2 on match. Bypass: append `[skip-secrets-check]` to commit message.
   - **B** `aphelion-sensitive-file-guard.sh` — `PreToolUse Write|Edit` — blocks writes to conventional secret-file names (`.env*`, `*.pem`, `*.key`, etc.); allows `tests/`, `fixtures/`, and `.example`/`.template`/`.sample`/`.dist` suffixes. No bypass marker — edit `settings.json` to disable.
+  - **D** `aphelion-project-rules-check.sh` — `SessionStart` — warns when `.claude/rules/project-rules.md` is absent. Advisory only (always exits 0). Bypass: `APHELION_SKIP_RULES_CHECK=1`.
   - **E** `aphelion-deps-postinstall.sh` — `PostToolUse Bash(npm install*|uv add*|pip install*|cargo add*|go get*)` — non-blocking advisory; recommends `/vuln-scan` after dependency changes.
 - **Failure safety**: All hooks wrap their body in `trap ERR → exit 0` so an internal script error never blocks user work (fail-open).
-- **Distribution**: `src/.claude/hooks/` (canonical) deployed via `npx aphelion-agents init/update`. `settings.json` is protected after init (user customisations preserved); `hooks/` scripts are overlay-copied on every update.
-- **Summary**: Establishes that Aphelion's three MVP hooks act as a proactive content-scanning layer. Agents must know the bypass rules (hook A: `[skip-secrets-check]`; hook B: no bypass, `settings.json` edit required; hook E: no bypass needed). All hooks are fail-open by design. The canonical pattern library (`secret-patterns.sh`, IDs P1–P8) is the single source of truth shared by hook A and the `/secrets-scan` slash command.
+- **Distribution**: `src/.claude/hooks/` (canonical) deployed via `npx aphelion-agents init/update`. `settings.json` is **merged** on both init and update — user settings and hooks you deliberately removed are preserved (#114, #202); `hooks/` scripts are overlay-copied on every update.
+- **Summary**: Establishes that Aphelion's four distributed hooks act as a proactive content-scanning layer. Agents must know the bypass rules (hook A: `[skip-secrets-check]`; hook B: no bypass, `settings.json` edit required; hook D: `APHELION_SKIP_RULES_CHECK=1`; hook E: no bypass needed). All hooks are fail-open by design. The canonical pattern library (`secret-patterns.sh`, IDs P1–P8) is the single source of truth shared by hook A and the `/secrets-scan` slash command.
 
 ---
 
