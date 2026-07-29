@@ -225,6 +225,13 @@ Each flow orchestrator validates required fields of the handoff file at startup.
 - "Artifacts" table
 - "Deployment Readiness" checklist
 
+**MAINTENANCE_RESULT.md required fields:**
+- `PRODUCT_TYPE` (one of: service / tool / library / cli)
+- "Change Overview" section (must not be empty)
+- "impact-analyzer Findings" section (must include `TARGET_FILES` and `REGRESSION_RISK`)
+- "security-auditor Pre-audit Results" section (must include CRITICAL / WARNING counts)
+- "Handoff to delivery-flow" section (must include `Recommended plan`)
+
 ### DISCOVERY_RESULT.md
 
 Final output of Discovery Flow. Input for Delivery Flow's `spec-designer`.
@@ -322,6 +329,57 @@ Final output of Operations Flow. Used for final deployment readiness confirmatio
 
 ## Unresolved Items
 {List any remaining tasks}
+```
+
+### MAINTENANCE_RESULT.md
+
+Final output of Maintenance Flow's **Major** plan only. Input for Delivery Flow,
+which reads it at startup as a pre-processing handoff (see `delivery-flow.md`
+§"Startup Validation"). Patch / Minor plans never produce this file.
+
+This block is the **canonical template**; `maintenance-flow.md` references it
+rather than restating it.
+
+```markdown
+# Maintenance Result: {Change summary}
+
+> Created: {YYYY-MM-DD}
+> Maintenance Plan: Major
+> Trigger type: {bug | feature | tech_debt | performance | security}
+> Priority: {P1 | P2 | P3 | P4}
+
+## Change Overview
+{1–3 line summary}
+
+## change-classifier Verdict
+- PLAN: Major
+- BREAKING_CHANGE: {true | false}
+- SPEC_IMPACT: major
+- RATIONALE: {RATIONALE from change-classifier}
+
+## impact-analyzer Findings
+- TARGET_FILES: {TARGET_FILES list}
+- BREAKING_API_CHANGES: {list or "none"}
+- DB_SCHEMA_CHANGES: {true | false}
+- REGRESSION_RISK: {low | medium | high}
+- RECOMMENDED_TEST_SCOPE: {unit | integration | e2e}
+
+## analyst-core Differential Design Approach
+- SPEC.md diff: {from analyst-core AGENT_RESULT}
+- ARCHITECTURE.md impact: {areas where architect will apply differential design}
+- GitHub Issue URL: {GITHUB_ISSUE from analyst-core}
+
+## security-auditor Pre-audit Results
+- CRITICAL: {N}
+- WARNING: {N}
+- Required pre-remediation items: {list}
+
+## Handoff to delivery-flow
+- Recommended plan: Standard | Full
+- Additional notes: {considerations for delivery-flow execution}
+
+## PRODUCT_TYPE
+{Resolve via: SPEC.md > project-rules.md (`Product Type:` line under `## Project Overview`) > default `service`}
 ```
 
 ### DOC_FLOW_RESULT.md

@@ -9,6 +9,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **architect can now perform its own git workflow** (#167): `architect.md`
+  declared `tools: Read, Write, Glob, Grep` while its body defined three
+  mandatory bash workflows (branch check, design-note commit + push, standalone
+  branch creation) and its completion checklist required "committed and pushed" —
+  the agent could not satisfy its own completion conditions. `Bash` is added to
+  its tools, along with the `sandbox-policy` / `denial-categories` reference
+  lines, `REPO_STATE=local-only` / `none` downgrade behaviour, and the
+  Planning-tier `BRANCH` field (never `PR_URL`) in `AGENT_RESULT`.
+  `docs/wiki/{en,ja}/Agents-Delivery.md` updated. (#167)
+
+- **MAINTENANCE_RESULT.md consumer contract** (#168): `maintenance-flow`'s Major
+  plan generated `MAINTENANCE_RESULT.md`, but `delivery-flow` never read it and
+  `orchestrator-rules.md`'s Handoff File Specification had no entry for it, so the
+  recommended plan, impact analysis, and pre-audit remediation items were silently
+  discarded. Adds the canonical template + required-field validation to
+  `orchestrator-rules.md`, makes `maintenance-flow.md` reference that single
+  definition instead of restating it, and gives `delivery-flow.md` handoff-file
+  precedence, required-field validation (`STATUS: error`, no interview fallback),
+  a field-to-phase mapping, `Recommended plan` as the triage proposal, and
+  start-from-`architect` in differential mode.
+  `docs/wiki/{en,ja}/{Architecture-Protocols,Agents-Orchestrators,Triage-System,Getting-Started}.md`
+  updated. (#168)
+
 - **Planning-doc-on-work-branch rule** (#136): `analyst` is now a
   Planning-tier agent responsible for branch creation and committing the
   planning doc + any SPEC/UI_SPEC edits immediately after `gh issue create`.

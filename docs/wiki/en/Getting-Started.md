@@ -260,7 +260,7 @@ When the change is small and you want automatic triage:
 /maintenance-flow Login endpoint returns 500 when email contains special characters
 ```
 
-`change-classifier` analyzes the trigger and proposes Patch / Minor / Major. Patch and Minor complete in a single flow; Major hands off to `/delivery-flow` automatically via `MAINTENANCE_RESULT.md`.
+`change-classifier` analyzes the trigger and proposes Patch / Minor / Major. Patch and Minor complete in a single flow; Major writes `MAINTENANCE_RESULT.md` and stops at a handoff confirmation gate — you then run `/delivery-flow` yourself, and it picks the file up at startup.
 
 Prefer `/maintenance-flow` over `/analyst` when:
 - The change has urgency (P1/P2 incident)

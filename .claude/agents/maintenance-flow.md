@@ -206,49 +206,27 @@ Inherits `.claude/orchestrator-rules.md` Rollback Rules with the following maint
 
 ## MAINTENANCE_RESULT.md Generation (Major Plan Only)
 
-After Phase 4 (security-auditor) completes for the Major plan, generate `MAINTENANCE_RESULT.md`:
+After Phase 4 (security-auditor) completes for the Major plan, generate
+`MAINTENANCE_RESULT.md` **per the canonical template** in
+`.claude/orchestrator-rules.md` §"Handoff File Specification" →
+"MAINTENANCE_RESULT.md". Do not restate the template here — the consuming side
+(`delivery-flow`) validates against that single definition.
 
-```markdown
-# Maintenance Result: {Change summary}
+Write the file per `document-locations.md` (new file → `docs/MAINTENANCE_RESULT.md`).
 
-> Created: {YYYY-MM-DD}
-> Maintenance Plan: Major
-> Trigger type: {bug | feature | tech_debt | performance | security}
-> Priority: {P1 | P2 | P3 | P4}
+Fill the template from the upstream `AGENT_RESULT` blocks collected during this flow:
 
-## Change Overview
-{1–3 line summary}
+| Template section | Source |
+|------------------|--------|
+| `## change-classifier Verdict` | Phase 1 `change-classifier` |
+| `## impact-analyzer Findings` | Phase 2 `impact-analyzer` |
+| `## analyst-core Differential Design Approach` | Phase 3 `analyst-core` |
+| `## security-auditor Pre-audit Results` | Phase 4 `security-auditor` |
+| `## Handoff to delivery-flow` → `Recommended plan` | This orchestrator's judgement: `Full` when `BREAKING_CHANGE: true` or `REGRESSION_RISK: high`, otherwise `Standard` |
+| `## PRODUCT_TYPE` | Resolution chain in the canonical template |
 
-## change-classifier Verdict
-- PLAN: Major
-- BREAKING_CHANGE: {true | false}
-- SPEC_IMPACT: major
-- RATIONALE: {RATIONALE from change-classifier}
-
-## impact-analyzer Findings
-- TARGET_FILES: {TARGET_FILES list}
-- BREAKING_API_CHANGES: {list or "none"}
-- DB_SCHEMA_CHANGES: {true | false}
-- REGRESSION_RISK: {low | medium | high}
-- RECOMMENDED_TEST_SCOPE: {unit | integration | e2e}
-
-## analyst-core Differential Design Approach
-- SPEC.md diff: {from analyst-core AGENT_RESULT}
-- ARCHITECTURE.md impact: {areas where architect will apply differential design}
-- GitHub Issue URL: {GITHUB_ISSUE from analyst-core}
-
-## security-auditor Pre-audit Results
-- CRITICAL: {N}
-- WARNING: {N}
-- Required pre-remediation items: {list}
-
-## Handoff to delivery-flow
-- Recommended plan: Standard | Full
-- Additional notes: {considerations for delivery-flow execution}
-
-## PRODUCT_TYPE
-{Resolve via: SPEC.md > project-rules.md (`Product Type:` line under `## Project Overview`) > default `service`}
-```
+Every required field listed in the canonical spec's "Validation Rules" must be
+present — `delivery-flow` reports `STATUS: error` on a missing field and stops.
 
 ---
 

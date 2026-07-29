@@ -1,8 +1,9 @@
 # Agents Reference: Delivery Domain
 
 > **Language**: [English](../en/Agents-Delivery.md) | [日本語](../ja/Agents-Delivery.md)
-> **Last updated**: 2026-05-15
+> **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: architect gains Bash + design-note commit responsibility and the BRANCH field (#167)
 >   - 2026-05-15: Add TASK.md reset responsibility to developer row (#128)
 >   - 2026-05-01: Add visual-designer (HAS_UI + Standard/Full only); update ux-designer NEXT (#109)
 >   - 2026-04-26: Sync with #72, #74 (issue #77)
@@ -63,8 +64,8 @@ The Delivery domain (13 agents) handles design, implementation, testing, and rel
 - **Domain**: Delivery
 - **Responsibility**: Reads SPEC.md (and UI_SPEC.md / VISUAL_SPEC.md) to produce ARCHITECTURE.md with tech stack decisions, module design, data models, API design, test strategy, and implementation order.
 - **Inputs**: SPEC.md, UI_SPEC.md (if HAS_UI), VISUAL_SPEC.md (if HAS_UI and plan ≥ Standard), DISCOVERY_RESULT.md (if available)
-- **Outputs**: ARCHITECTURE.md
-- **AGENT_RESULT fields**: `TECH_STACK`, `TECH_STACK_CHANGED`, `PHASES`
+- **Outputs**: ARCHITECTURE.md, `docs/design-notes/<slug>-design.md` (companion design note, committed on the work branch — architect is a Planning-tier agent and owns `Bash` for this)
+- **AGENT_RESULT fields**: `TECH_STACK`, `TECH_STACK_CHANGED`, `PHASES`, `BRANCH` (Planning-tier; never `PR_URL`)
 - **NEXT conditions**:
   - Standard / Full plan → `scaffolder`
   - Minimal / Light plan → `developer`

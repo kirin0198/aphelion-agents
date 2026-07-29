@@ -4,6 +4,7 @@ description: |
   Orchestrator for the Delivery domain. Manages the entire design, implementation, testing, and review flow.
   Used in the following situations:
   - After Discovery is complete (with DISCOVERY_RESULT.md as input)
+  - After a Maintenance Major plan hands off (with MAINTENANCE_RESULT.md as input)
   - When the user says "start development" or "proceed with Delivery"
   - When starting development with an existing SPEC.md
   Launches each agent in sequence, obtaining user approval at each phase completion before proceeding to the next.
@@ -37,6 +38,20 @@ You must never proceed to the next phase without user approval. This is an absol
    Full → forced `interactive`. Log: `"Approval mode: {autonomous | interactive}"`
    (or `"AUTO_APPROVE overrides APPROVAL_MODE"` when AUTO_APPROVE==true).
 
+### Handoff file detection
+
+Delivery Flow has **two** possible upstream handoff files. Resolve both with a
+single `Glob("{docs/DISCOVERY_RESULT.md,DISCOVERY_RESULT.md}")` and
+`Glob("{docs/MAINTENANCE_RESULT.md,MAINTENANCE_RESULT.md}")` per
+`document-locations.md`, then apply this precedence:
+
+| Present | Entry mode | Behaviour |
+|---------|-----------|-----------|
+| MAINTENANCE_RESULT.md only | Maintenance Major handoff | Validate + consume it (below). Skip the Discovery interview. |
+| Both | Maintenance Major handoff | `MAINTENANCE_RESULT.md` wins — it is the newer, change-scoped contract. Read `DISCOVERY_RESULT.md` only for background context (original project overview); never let it override the maintenance recommended plan. |
+| DISCOVERY_RESULT.md only | Greenfield / Discovery handoff | Existing behaviour (below). |
+| Neither | Standalone | Skip validation and gather information by interviewing the user. |
+
 If `DISCOVERY_RESULT.md` exists, validate the following required fields.
 If any are missing, report to the user and request corrections before proceeding to triage.
 
@@ -44,14 +59,37 @@ If any are missing, report to the user and request corrections before proceeding
 - "Project Overview" section (must not be empty)
 - "Requirements Summary" section (must not be empty)
 
-If `DISCOVERY_RESULT.md` does not exist, skip validation and gather information by interviewing the user.
+If `MAINTENANCE_RESULT.md` exists, validate its required fields
+(see `.claude/orchestrator-rules.md` §"Handoff File Specification" →
+"Validation Rules"). If any are missing, report `STATUS: error` and stop —
+do **not** silently fall back to the user interview, which would discard the
+Major pre-processing already performed by `maintenance-flow`.
+
+On successful validation, carry the following into the flow:
+
+| MAINTENANCE_RESULT.md field | Use in Delivery Flow |
+|-----------------------------|----------------------|
+| `Handoff to delivery-flow` → `Recommended plan` | Initial triage proposal (see "Triage" below) |
+| `PRODUCT_TYPE` | Same role as DISCOVERY_RESULT.md's `PRODUCT_TYPE` |
+| `impact-analyzer Findings` → `TARGET_FILES` / `BREAKING_API_CHANGES` / `DB_SCHEMA_CHANGES` | Pass verbatim in the `architect` and `developer` spawn prompts as the change scope |
+| `impact-analyzer Findings` → `RECOMMENDED_TEST_SCOPE` | Pass to `test-designer` / `tester` as the minimum test scope |
+| `security-auditor Pre-audit Results` → `Required pre-remediation items` | Pass to `developer` as mandatory work items, and to the final `security-auditor` phase as a re-verification checklist |
+| `analyst-core Differential Design Approach` → `ARCHITECTURE.md impact` | Pass to `architect` as `analyst_brief` (differential mode) |
+
+Because `maintenance-flow` Major has already run the analyst chain (SPEC.md was
+updated by `analyst-core`), this entry mode follows the same rule as
+§"Side Entry: analyst chain (Joining via Issue)": **skip `spec-designer` and start
+from the architecture design phase**, launching `architect` in differential mode.
 
 ---
 
 ## Triage (Performed at Flow Start)
 
 At the start of the flow, assess project characteristics and select from 4 plan tiers.
-If `DISCOVERY_RESULT.md` is available, determine from it. Otherwise, interview the user.
+If `MAINTENANCE_RESULT.md` is available, its `Recommended plan` is the proposal
+presented at the triage approval gate (the user may still override it; record the
+override reason). Otherwise, if `DISCOVERY_RESULT.md` is available, determine from it.
+Otherwise, interview the user.
 
 **Assessment criteria:** Scale, complexity, public/private status
 
@@ -165,6 +203,13 @@ Phase 3: Architecture design → architect      → ⏸ User approval
 
 If you receive an `AGENT_RESULT` block from `analyst` (standalone path), start from Phase 3.
 Always include `ARCHITECT_BRIEF` and the GitHub Issue URL in the input to `architect`.
+
+**Maintenance Major handoff (`MAINTENANCE_RESULT.md` present):** the same
+start-from-Phase-3 rule applies. The analyst chain already ran inside
+`maintenance-flow`, so the `ARCHITECT_BRIEF` equivalent comes from the file's
+`analyst-core Differential Design Approach` section rather than from a live
+`AGENT_RESULT`. See §"Startup Validation" → "Handoff file detection" for the
+full field mapping.
 
 **If this flow initiates the analyst chain internally:**
 
