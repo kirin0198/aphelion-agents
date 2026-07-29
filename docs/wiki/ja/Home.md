@@ -1,8 +1,9 @@
 # Aphelion Wiki
 
 > **Language**: [English](../en/Home.md) | [日本語](../ja/Home.md)
-> **Last updated**: 2026-05-16
+> **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: リポジトリルート参照の相対リンク深さを修正 ../../ -> ../../../ (#169)
 >   - 2026-05-16: analyst 分割に伴いエージェント数を 40 → 42 に更新（analyst-intake + analyst-core 追加 #139）
 >   - 2026-05-12: ルール数 13 → 14 に更新（document-locations ルール追加 #117）
 >   - 2026-05-01: Hooks-Reference リンク追加、ルール数 12 → 13 に更新 (#107)
@@ -10,7 +11,7 @@
 >   - 2026-04-30: ルール数 9 → 12 に修正 (#103)
 >   - 2026-04-30: Agents-Doc.md を Agents Reference に追加（5 → 6 ページ）、Doc Flow を用語集に追加 (#54)
 >   - 2026-04-25: terminology rebalance per #40
-> **EN canonical**: 2026-05-16 of wiki/en/Home.md
+> **EN canonical**: 2026-07-29 of wiki/en/Home.md
 > **Audience**: 全ユーザー
 
 **Aphelion Wiki** へようこそ。このWikiはAphelion Claude Codeエージェントワークフローの詳細リファレンスです。

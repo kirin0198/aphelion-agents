@@ -1,11 +1,12 @@
 # Architecture: Domain Model
 
 > **Language**: [English](../en/Architecture-Domain-Model.md) | [日本語](../ja/Architecture-Domain-Model.md)
-> **Last updated**: 2026-04-30
+> **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: リポジトリルート参照の相対リンク深さを修正 ../../ -> ../../../ (#169)
 >   - 2026-04-30: 5 ドメインモデルに拡張 — Doc Flow 追加 (#54)
 >   - 2026-04-25: terminology rebalance per #40
-> **EN canonical**: 2026-04-30 of wiki/en/Architecture-Domain-Model.md
+> **EN canonical**: 2026-07-29 of wiki/en/Architecture-Domain-Model.md
 > **Audience**: エージェント開発者
 
 このページはもとの Architecture.md を 3 ページに分割したもの（#42）です。Aphelion の概念的ドメインモデル（5 ドメインモデル・セッション分離戦略・PRODUCT_TYPE 分岐）を扱います。プロトコルと運用ルールは関連ページを参照してください: [プロトコル](./Architecture-Protocols.md)、[運用ルール](./Architecture-Operational-Rules.md)。

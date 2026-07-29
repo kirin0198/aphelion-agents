@@ -1,8 +1,9 @@
 # Agents Reference: Doc Domain
 
 > **Language**: [English](../en/Agents-Doc.md) | [日本語](../ja/Agents-Doc.md)
-> **Last updated**: 2026-04-30
+> **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: fix repository-root relative-link depth ../../ -> ../../../ (#169)
 >   - 2026-04-30: New page — Doc domain agents added (#54)
 > **Audience**: Agent developers
 

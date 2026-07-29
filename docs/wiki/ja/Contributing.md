@@ -1,13 +1,14 @@
 # Contributing
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-05-13
+> **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: リポジトリルート参照の相対リンク深さを修正 ../../ -> ../../../ (#169)
 >   - 2026-05-13: design-notes ライフサイクル節を追加（proposals/、safety-net、evergreen notes）(#118)
 >   - 2026-04-30: Agents-Reference 分割しきい値を 6 ページに更新 + 新フローチェックリスト (#54)
 >   - 2026-04-30: README ↔ Wiki 責任分担を明文化 (#76)
 >   - 2026-04-29: wiki/design-notes/README の言語ポリシーを明確化 (#75)
-> **EN canonical**: 2026-05-13 of wiki/en/Contributing.md
+> **EN canonical**: 2026-07-29 of wiki/en/Contributing.md
 > **Audience**: エージェント開発者
 
 このページはAphelionへの貢献方法をカバーします：エージェントの追加・変更、ルールの更新、Wikiのメンテナンス。プルリクエストを開く前にこのページを読んでください。

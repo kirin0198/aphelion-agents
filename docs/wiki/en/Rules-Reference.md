@@ -1,8 +1,9 @@
 # Rules Reference
 
 > **Language**: [English](../en/Rules-Reference.md) | [日本語](../ja/Rules-Reference.md)
-> **Last updated**: 2026-05-12
+> **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: fix repository-root relative-link depth ../../ -> ../../../ (#169)
 >   - 2026-05-12: add document-locations entry, sync rule count 13 → 14 (#117)
 >   - 2026-05-01: add hooks-policy entry, sync rule count 12 → 13 (#107)
 >   - 2026-04-30: add missing localization-dictionary entry, sync rule count to 12 (#105)

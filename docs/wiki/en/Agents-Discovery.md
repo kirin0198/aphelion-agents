@@ -1,8 +1,9 @@
 # Agents Reference: Discovery Domain
 
 > **Language**: [English](../en/Agents-Discovery.md) | [日本語](../ja/Agents-Discovery.md)
-> **Last updated**: 2026-04-26
+> **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: fix repository-root relative-link depth ../../ -> ../../../ (#169)
 >   - 2026-04-26: Sync with #74 (issue #77)
 >   - 2026-04-25: split from Agents-Reference.md; #42
 > **Audience**: Agent developers

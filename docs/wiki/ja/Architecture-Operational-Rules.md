@@ -1,8 +1,8 @@
 # Architecture: Operational Rules
 
 > **Language**: [English](../en/Architecture-Operational-Rules.md) | [日本語](../ja/Architecture-Operational-Rules.md)
-> **Last updated**: 2026-04-30 (updated 2026-04-30: doc-reviewer ロールバック参照を反映 (#91 follow-up))
-> **EN canonical**: 2026-04-30 of wiki/en/Architecture-Operational-Rules.md
+> **Last updated**: 2026-07-29 (2026-07-29: リポジトリルート参照の相対リンク深さを修正 ../../ -> ../../../ (#169); updated 2026-04-30: doc-reviewer ロールバック参照を反映 (#91 follow-up))
+> **EN canonical**: 2026-07-29 of wiki/en/Architecture-Operational-Rules.md
 > **Audience**: エージェント開発者
 
 このページはもとの Architecture.md を3ページに分割したもの（#42）です。自動承認モード・フェーズ実行ループ・トリアージティア・差し戻しルール・sandbox防御レイヤーといったランタイム・運用挙動を扱います。概念モデルとプロトコルは関連ページを参照してください: [ドメインモデル](./Architecture-Domain-Model.md)、[プロトコル](./Architecture-Protocols.md)。

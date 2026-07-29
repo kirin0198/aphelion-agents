@@ -1,8 +1,9 @@
 # Contributing
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-05-13
+> **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: fix repository-root relative-link depth ../../ -> ../../../ (#169)
 >   - 2026-05-13: Add design-notes lifecycle section (proposals/, safety-net, evergreen notes) (#118)
 >   - 2026-04-30: Update Agents-Reference split threshold to 6 pages + New flow checklist (#54)
 >   - 2026-04-30: README ↔ Wiki responsibility split documented (#76)

@@ -1,11 +1,12 @@
 # Agents Reference: Discovery Domain
 
 > **Language**: [English](../en/Agents-Discovery.md) | [日本語](../ja/Agents-Discovery.md)
-> **Last updated**: 2026-04-26
+> **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: リポジトリルート参照の相対リンク深さを修正 ../../ -> ../../../ (#169)
 >   - 2026-04-26: Sync with #74 (issue #77)
 >   - 2026-04-25: terminology rebalance per #40
-> **EN canonical**: 2026-04-26 of wiki/en/Agents-Discovery.md
+> **EN canonical**: 2026-07-29 of wiki/en/Agents-Discovery.md
 > **Audience**: エージェント開発者
 
 このページはもとの Agents-Reference.md を 5 ページに分割したもの（#42）です。Discovery ドメインエージェントを扱います。他のドメインは関連ページを参照してください: [Flow Orchestrator・横断系](./Agents-Orchestrators.md)、[Delivery](./Agents-Delivery.md)、[Operations](./Agents-Operations.md)、[Maintenance](./Agents-Maintenance.md)。

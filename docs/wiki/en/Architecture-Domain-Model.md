@@ -1,8 +1,9 @@
 # Architecture: Domain Model
 
 > **Language**: [English](../en/Architecture-Domain-Model.md) | [日本語](../ja/Architecture-Domain-Model.md)
-> **Last updated**: 2026-04-30
+> **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: fix repository-root relative-link depth ../../ -> ../../../ (#169)
 >   - 2026-04-30: Expand to 5-domain model — add Doc Flow (#54)
 >   - 2026-04-25: split from Architecture.md; #42
 > **Audience**: Agent developers

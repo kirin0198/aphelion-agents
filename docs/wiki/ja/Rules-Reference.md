@@ -1,8 +1,9 @@
 # Rules Reference
 
 > **Language**: [English](../en/Rules-Reference.md) | [日本語](../ja/Rules-Reference.md)
-> **Last updated**: 2026-05-12
+> **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: リポジトリルート参照の相対リンク深さを修正 ../../ -> ../../../ (#169)
 >   - 2026-05-12: document-locations エントリ追加、ルール数 13 → 14 に更新 (#117)
 >   - 2026-05-01: hooks-policy エントリ追加、ルール数 12 → 13 に更新 (#107)
 >   - 2026-04-30: add missing localization-dictionary entry, sync rule count to 12 (#105)
@@ -10,7 +11,7 @@
 >   - 2026-04-29: language-rules — "Hand-authored canonical narrative" セクションを追加 (#75)
 >   - 2026-04-26: Sync with #62, #66, #72, #74 (issue #77)
 >   - 2026-04-25: denial-categories ルール追加, #31
-> **EN canonical**: 2026-05-12 of wiki/en/Rules-Reference.md
+> **EN canonical**: 2026-07-29 of wiki/en/Rules-Reference.md
 > **Audience**: エージェント開発者
 
 このページは`.claude/rules/`にある 14 の行動ルールのコンパクトなリファレンスです。各エントリはスコープ、自動ロードの動作、他ルール・エージェントとのインタラクション、ルールが強制する主要な制約をまとめています。

@@ -1,7 +1,7 @@
 # Architecture: Operational Rules
 
 > **Language**: [English](../en/Architecture-Operational-Rules.md) | [日本語](../ja/Architecture-Operational-Rules.md)
-> **Last updated**: 2026-04-30 (updated 2026-04-30: doc-reviewer rollback references per #91 follow-up)
+> **Last updated**: 2026-07-29 (2026-07-29: fix repository-root relative-link depth ../../ -> ../../../ (#169); updated 2026-04-30: doc-reviewer rollback references per #91 follow-up)
 > **Audience**: Agent developers
 
 This page is one of three pages split from the original Architecture.md (#42). It covers runtime and operational behaviors: Auto-Approve Mode, the Phase Execution Loop, Triage Tiers, Rollback Rules, and Sandbox Defense Layers. See the sibling pages for conceptual model and protocols: [Domain Model](./Architecture-Domain-Model.md), [Protocols](./Architecture-Protocols.md).

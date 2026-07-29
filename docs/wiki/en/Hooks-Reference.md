@@ -1,8 +1,9 @@
 # Hooks Reference
 
 > **Language**: [English](../en/Hooks-Reference.md) | [日本語](../ja/Hooks-Reference.md)
-> **Last updated**: 2026-05-30
+> **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: fix repository-root relative-link depth ../../ -> ../../../ (#169)
 >   - 2026-05-30: add Hook D — aphelion-project-rules-check (SessionStart advisory) (#130 PR-6)
 >   - 2026-05-01: initial release — MVP 3 hooks (#107)
 > **Audience**: Aphelion users (developers operating hooks in user projects)

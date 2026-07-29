@@ -1,10 +1,11 @@
 # Agents Reference: Doc Domain
 
 > **Language**: [English](../en/Agents-Doc.md) | [日本語](../ja/Agents-Doc.md)
-> **Last updated**: 2026-04-30
+> **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: リポジトリルート参照の相対リンク深さを修正 ../../ -> ../../../ (#169)
 >   - 2026-04-30: 新規ページ — Doc ドメインエージェント追加 (#54)
-> **EN canonical**: 2026-04-30 of wiki/en/Agents-Doc.md
+> **EN canonical**: 2026-07-29 of wiki/en/Agents-Doc.md
 > **Audience**: エージェント開発者
 
 このページは Doc ドメインエージェントを扱います。`doc-flow` が起動する 6 種の author エージェントで、顧客向け納品ドキュメントを生成します。このページは [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md)、[Discovery](./Agents-Discovery.md)、[Delivery](./Agents-Delivery.md)、[Operations](./Agents-Operations.md)、[Maintenance](./Agents-Maintenance.md) と並ぶ 6 つ目の Agents Reference ページです。

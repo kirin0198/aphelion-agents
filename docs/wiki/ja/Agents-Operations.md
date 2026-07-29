@@ -1,8 +1,8 @@
 # Agents Reference: Operations Domain
 
 > **Language**: [English](../en/Agents-Operations.md) | [日本語](../ja/Agents-Operations.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: terminology rebalance per #40)
-> **EN canonical**: 2026-04-25 of wiki/en/Agents-Operations.md
+> **Last updated**: 2026-07-29 (2026-07-29: リポジトリルート参照の相対リンク深さを修正 ../../ -> ../../../ (#169); updated 2026-04-25: terminology rebalance per #40)
+> **EN canonical**: 2026-07-29 of wiki/en/Agents-Operations.md
 > **Audience**: エージェント開発者
 
 このページはもとの Agents-Reference.md を 5 ページに分割したもの（#42）です。Operations ドメインエージェントを扱います。他のドメインは関連ページを参照してください: [Flow Orchestrator・横断系](./Agents-Orchestrators.md)、[Discovery](./Agents-Discovery.md)、[Delivery](./Agents-Delivery.md)、[Maintenance](./Agents-Maintenance.md)。
