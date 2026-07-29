@@ -90,7 +90,11 @@ echo "PASS: settings.json installed by init"
 
 # Assert: settings.json existing fields are preserved on update (merge, #114)
 # Note: merge reformats JSON with 2-space indent, so use grep with flexible spacing
+# Since #202 the manifest records which hooks Aphelion knows about, and an absent
+# entry is read as "the user removed it". Drop the manifest here so this test keeps
+# exercising the add path (equivalent to a pre-0.3.9 install).
 echo '{"custom":"hook_preserved"}' > "$TMP/.claude/settings.json"
+rm -f "$TMP/.claude/.aphelion-manifest.json"
 node "$REPO_ROOT/bin/aphelion-agents.mjs" update >/dev/null 2>&1
 # merge: custom field must be retained; Aphelion hooks must be added
 if ! grep -q '"custom"' "$TMP/.claude/settings.json" || ! grep -q '"hook_preserved"' "$TMP/.claude/settings.json"; then
@@ -296,3 +300,118 @@ else
   echo "FAIL [P7-regression]: PEM private key header not detected (got: $P7_RESULT)"
   exit 1
 fi
+
+# ────────────────────────────────────────────────────────────────────
+# Distribution reconciliation tests (#202 / #203 / #207)
+# 独立した tmp dir (TMP_DIST) を使う
+# ────────────────────────────────────────────────────────────────────
+TMP_DIST="$(mktemp -d)"
+trap 'rm -rf "$TMP" "$TMP_DIST"' EXIT
+
+(cd "$TMP_DIST" && node "$REPO_ROOT/bin/aphelion-agents.mjs" init >/dev/null 2>&1)
+
+# #203: doc-flow テンプレートが配布されること
+if ! [ -f "$TMP_DIST/.claude/templates/doc-flow/hld.en.md" ]; then
+  echo "FAIL [dist-templates]: init did not install .claude/templates/doc-flow/"
+  exit 1
+fi
+TEMPLATE_COUNT=$(ls "$TMP_DIST/.claude/templates/doc-flow/" | wc -l | tr -d ' ')
+if [ "$TEMPLATE_COUNT" -lt 12 ]; then
+  echo "FAIL [dist-templates]: expected >=12 doc-flow templates, found $TEMPLATE_COUNT"
+  exit 1
+fi
+# package.json files に templates が含まれること (npx 配布経路の回帰ロック)
+if ! grep -q '"\.claude/templates"' "$REPO_ROOT/package.json"; then
+  echo "FAIL [dist-templates]: package.json files does not list .claude/templates"
+  exit 1
+fi
+echo "PASS [dist-templates]: doc-flow templates installed and listed in package.json files (#203)"
+
+# マニフェストが生成されること
+MANIFEST="$TMP_DIST/.claude/.aphelion-manifest.json"
+if ! [ -f "$MANIFEST" ]; then
+  echo "FAIL [dist-manifest]: init did not write .aphelion-manifest.json"
+  exit 1
+fi
+echo "PASS [dist-manifest]: init writes the distribution manifest"
+
+# #202: ユーザーが削除した hook entry は update で復活しない
+node -e '
+const fs = require("fs");
+const p = process.argv[1];
+const s = JSON.parse(fs.readFileSync(p, "utf8"));
+s.hooks.PostToolUse = (s.hooks.PostToolUse ?? []).filter(
+  (e) => !JSON.stringify(e).includes("deps-postinstall"));
+s.hooks.PreToolUse.push({matcher: "Bash", hooks: [{type: "command", command: "/usr/local/bin/user-own.sh"}]});
+fs.writeFileSync(p, JSON.stringify(s, null, 2) + "\n");
+' "$TMP_DIST/.claude/settings.json"
+(cd "$TMP_DIST" && node "$REPO_ROOT/bin/aphelion-agents.mjs" update >/dev/null 2>&1)
+if grep -q 'deps-postinstall' "$TMP_DIST/.claude/settings.json"; then
+  echo "FAIL [dist-tombstone]: update revived a hook entry the user had removed (#202)"
+  exit 1
+fi
+if ! grep -q 'user-own.sh' "$TMP_DIST/.claude/settings.json"; then
+  echo "FAIL [dist-tombstone]: update dropped the user's own hook entry"
+  exit 1
+fi
+if ! grep -q 'aphelion-secrets-precommit.sh' "$TMP_DIST/.claude/settings.json"; then
+  echo "FAIL [dist-tombstone]: update dropped a hook the user had NOT removed"
+  exit 1
+fi
+# 再実行しても復活せず、重複もしない
+(cd "$TMP_DIST" && node "$REPO_ROOT/bin/aphelion-agents.mjs" update >/dev/null 2>&1)
+if grep -q 'deps-postinstall' "$TMP_DIST/.claude/settings.json"; then
+  echo "FAIL [dist-tombstone]: hook revived on the second update"
+  exit 1
+fi
+COUNT=$(grep -c 'aphelion-secrets-precommit.sh' "$TMP_DIST/.claude/settings.json" || true)
+if [ "$COUNT" -ne 1 ]; then
+  echo "FAIL [dist-tombstone]: idempotency broken — secrets-precommit appears $COUNT times"
+  exit 1
+fi
+echo "PASS [dist-tombstone]: user-removed hooks stay removed; others refreshed idempotently (#202)"
+
+# #207: orphan は既定では報告のみ、--prune で削除される
+echo "zombie" > "$TMP_DIST/.claude/agents/zombie-agent.md"
+node -e '
+const fs = require("fs");
+const p = process.argv[1];
+const m = JSON.parse(fs.readFileSync(p, "utf8"));
+m.files.push("agents/zombie-agent.md");
+fs.writeFileSync(p, JSON.stringify(m, null, 2) + "\n");
+' "$MANIFEST"
+OUT=$( (cd "$TMP_DIST" && node "$REPO_ROOT/bin/aphelion-agents.mjs" update) 2>&1 )
+if ! echo "$OUT" | grep -q "zombie-agent.md"; then
+  echo "FAIL [dist-orphan]: update did not report the orphaned file"
+  exit 1
+fi
+if ! [ -f "$TMP_DIST/.claude/agents/zombie-agent.md" ]; then
+  echo "FAIL [dist-orphan]: update deleted a file without --prune"
+  exit 1
+fi
+# 未解決 orphan は次回も報告される (carry-forward)
+OUT=$( (cd "$TMP_DIST" && node "$REPO_ROOT/bin/aphelion-agents.mjs" update) 2>&1 )
+if ! echo "$OUT" | grep -q "zombie-agent.md"; then
+  echo "FAIL [dist-orphan]: unresolved orphan was forgotten on the next update"
+  exit 1
+fi
+(cd "$TMP_DIST" && node "$REPO_ROOT/bin/aphelion-agents.mjs" update --prune >/dev/null 2>&1)
+if [ -f "$TMP_DIST/.claude/agents/zombie-agent.md" ]; then
+  echo "FAIL [dist-orphan]: --prune did not delete the orphaned file"
+  exit 1
+fi
+echo "PASS [dist-orphan]: orphans reported by default, carried forward, deleted only with --prune (#207)"
+
+# #207 legacy: マニフェスト無しの旧環境でも既知の撤去済みファイルを検出する
+TMP_LEGACY="$(mktemp -d)"
+(cd "$TMP_LEGACY" && node "$REPO_ROOT/bin/aphelion-agents.mjs" init >/dev/null 2>&1)
+rm -f "$TMP_LEGACY/.claude/.aphelion-manifest.json"
+echo "old pm shortcut" > "$TMP_LEGACY/.claude/commands/pm.md"
+OUT=$( (cd "$TMP_LEGACY" && node "$REPO_ROOT/bin/aphelion-agents.mjs" update) 2>&1 )
+if ! echo "$OUT" | grep -q "commands/pm.md"; then
+  echo "FAIL [dist-legacy]: legacy install without a manifest did not report commands/pm.md"
+  rm -rf "$TMP_LEGACY"
+  exit 1
+fi
+rm -rf "$TMP_LEGACY"
+echo "PASS [dist-legacy]: known removed files detected on pre-manifest installs (#207)"
