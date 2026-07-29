@@ -1,5 +1,9 @@
 # feat: add performance-optimizer agent to maintenance-flow
 
+> Last updated: 2026-07-29
+> Update history:
+>   - 2026-07-29: post-#131 規約への追従と refresh パス必須化 (#172)
+>   - 2026-04-26: 初版 (#58)
 > Reference: current `main` (HEAD `9bc00e5`, 2026-04-26)
 > Created: 2026-04-26
 > Analyzed by: analyst (2026-04-26)
@@ -7,6 +11,18 @@
 > Scope: design / planning document; the change will be executed in a follow-up `developer` phase
 > GitHub Issue: [#58](https://github.com/kirin0198/aphelion-agents/issues/58)
 > Linked Plan: docs/design-notes/performance-optimizer.md
+
+> **⚠ Refresh pass required before implementation (#172).**
+> 本メモは 2026-04-26 時点の `main` を前提に書かれており、その後のリファクタで
+> 前提の一部が失効している。実装に着手する `developer` / `architect` は、
+> **まずメモ全体を現在の `main` に対して読み直し、失効箇所を更新してからタスクを切ること**。
+> 既知の失効箇所:
+>
+> | 箇所 | 失効理由 |
+> |------|---------|
+> | §6.1 / §8.2 の `## Project-Specific Behavior` 要求 | #131 で全エージェントから削除済み（本 PR で修正済み） |
+> | §1.2 / §2.1 / §3.2 / §3.3 / §3.4 / §5.2 / §7 の `analyst` 配線（`NEXT: analyst`、`change-classifier → analyst → …`） | #139 で `analyst-intake` (Sonnet) + `analyst-core` (Opus) に分割済み。挿入位置・`NEXT` 値・ロールバック先の再設計が必要（#175 と併せて対応） |
+> | §3.2 のフロー図に並ぶ `⏸ User approval` | #161 で APPROVAL_MODE がトリアージ連動になり、`autonomous` では通常ゲートがスキップされる。全フェーズが必ず停止する前提で書かれている記述を要確認 |
 
 ---
 
@@ -309,7 +325,10 @@ maintenance-flow が再 triage する。
 
 - [ ] `.claude/agents/performance-optimizer.md` が存在し、以下を含む
   - frontmatter (`name`, `description`, `tools`, `model`)
-  - `## Project-Specific Behavior` セクション
+  - post-#131 のエージェント定義規約に準拠していること（`## Project-Specific Behavior`
+    セクションは #131 で全エージェントから削除済み。Authoring / Localization は
+    auto-loaded rules が担うため個別記載は不要。完了時出力は
+    `## Required Output on Completion` の ≤6 行テンプレート形式）
   - `## Mission`
   - `## Input Requirements`
   - `## Analysis Procedure`（Step 1: 計測データ取り込み, Step 2: ボトルネック特定, Step 3: 改善案列挙, Step 4: trade-off 評価, Step 5: 期待効果推定）
@@ -422,8 +441,10 @@ maintenance-flow の編集は他の進行中 issue (#54 / #56 等) と
 ### 8.2 雛形にすべき既存 agent
 
 最も近い構造を持つのは `change-classifier.md` と `impact-analyzer.md`。
-- frontmatter / Project-Specific Behavior / sandbox-policy 参照の boilerplate は
-  そのままコピペでよい
+- frontmatter と sandbox-policy / denial-categories 参照行の boilerplate は、
+  **着手時点の** それらのファイルからコピーすること（本メモ執筆時のスナップショットを
+  再現しないこと）。`## Project-Specific Behavior` は #131 で削除済みのため、
+  コピー元にも存在しない
 - Mission, Procedure, Approval Gate, AGENT_RESULT の 4 セクションを差し替え
 
 ### 8.3 sandbox-policy の留意点
