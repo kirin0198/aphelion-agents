@@ -581,8 +581,17 @@ phases) is skipped in `autonomous` mode. Automatic quality checks are never bypa
 `APPROVAL_MODE` / `AUTO_APPROVE` are orchestrator session variables. Sub-agents run in
 independent contexts and cannot read them unless the orchestrator injects them into the
 spawn prompt (see "Phase Execution Loop" step 2 below). This section defines how sub-agent
-*internal* `AskUserQuestion` gates — distinct from the orchestrator's own phase approval
-gates — behave once the value is injected.
+*internal* approval gates — distinct from the orchestrator's own phase approval gates —
+behave once the value is injected.
+
+> **How a sub-agent "asks" (#181).** Claude Code strips `AskUserQuestion` from every
+> sub-agent, even when its `tools:` field lists it (`user-questions.md` §"Platform
+> constraint"). A spawned agent therefore **emits** its gate rather than rendering it: it
+> writes the question, options and recommended default as text, stops, and returns. The
+> orchestrator renders the `AskUserQuestion`, then re-spawns the agent with the answer.
+> The mode rules below are unchanged by this — they decide *whether* the gate stops at all.
+> When the mode says "skip and adopt the recommended option", nothing is rendered by either
+> side and the agent proceeds, which is why most runs never hit the round trip.
 
 **Gate types:**
 
