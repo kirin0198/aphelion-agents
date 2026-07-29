@@ -1,7 +1,8 @@
 # Git Rules
 
-> Last updated: 2026-05-30
+> Last updated: 2026-07-29
 > Update history:
+>   - 2026-07-29: assign commit responsibility for artifacts written by Bash-less agents; drop rules-designer from Applicable Agents (#187)
 >   - 2026-05-30: add Planning-tier legacy-resume responsibility matrix (#141)
 >   - 2026-04-26: Add Repository / Startup Probe / Branch & PR Strategy / Behavior by Remote Type sections (#73)
 
@@ -53,9 +54,14 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 ### Applicable Agents
 
 developer, scaffolder, infra-builder, db-ops, observability, releaser, analyst-intake,
-analyst-core, architect, codebase-analyzer, rules-designer, doc-writer, tester.
+analyst-core, architect, codebase-analyzer, doc-writer, tester, and the five flow
+orchestrators (discovery-flow, delivery-flow, operations-flow, maintenance-flow, doc-flow)
+when they commit on behalf of a Bash-less agent (see §"Artifacts written by Bash-less
+agents" below).
 
-(i.e., all agents owning `Bash` that may run `git commit`.)
+(i.e., all agents owning `Bash` that may run `git commit`. `rules-designer` was listed here
+until #187 but owns only `Read, Write, Glob, Grep` — it cannot commit, and
+`project-rules.md` is committed by its caller.)
 Note: `analyst` (top-level orchestrator) does not own Bash and does not commit directly.
 `analyst-intake` and `analyst-core` own Bash and commit on the work branch.
 
@@ -190,6 +196,31 @@ NO git operations in any case.** Branch creation always belongs to `analyst-inta
 
 > For agent-specific branch name derivation (e.g., slug from TASK.md or
 > ARCHITECT_BRIEF), see the individual agent definition file.
+
+### Artifacts written by Bash-less agents
+
+Most document-producing agents own `Read, Write, Glob, Grep` and **no `Bash`**:
+`spec-designer`, `ux-designer`, `visual-designer`, `test-designer`, `e2e-test-designer`,
+`interviewer`, `researcher`, `scope-planner`, `ops-planner`, `rules-designer`, the six
+doc-flow author agents, and `doc-reviewer` (read-only, writes nothing). They cannot commit
+their own output.
+
+**The commit belongs to the caller** — the flow orchestrator that spawned them, which owns
+`Bash`:
+
+1. After an agent's phase is approved at its gate, the orchestrator stages exactly the paths
+   listed in that agent's `ARTIFACT_PATHS` and commits them.
+2. One commit per phase, so the "one commit per task" granularity is preserved rather than
+   letting the artifacts ride along in a later `developer` commit.
+3. Message: `docs: add {artifact} ({agent-name} phase)` — prefix `docs:` for specification
+   and planning artifacts, `chore:` for configuration output such as `project-rules.md`.
+4. Push per §"Branch Lifecycle" (skipped when `REPO_STATE=local-only` / `none`).
+5. When such an agent is invoked **standalone** (no orchestrator), no commit happens
+   automatically. The agent reports the written paths in `ARTIFACT_PATHS` and tells the user
+   to commit them.
+
+This closes the gap where SPEC.md, UI_SPEC.md, TEST_PLAN.md, SCOPE_PLAN.md, OPS_PLAN.md and
+`project-rules.md` had no assigned committer at all (#187).
 
 ### Branch Naming
 

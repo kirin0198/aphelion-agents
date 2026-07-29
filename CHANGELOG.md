@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed (agent tools & responsibilities)
+
+- **doc-flow creates its output directory** (#185): the six author agents own `Write` but not
+  `Bash`, and each delegates `mkdir -p docs/deliverables/{slug}/` to the orchestrator — which
+  had no such step. The first `Write` of a fresh project failed. `doc-flow` now creates the
+  directory as soon as the slug is fixed.
+
+- **scaffolder owns branch creation** (#186): as the first implementation-tier agent on
+  Standard / Full it may run with no work branch open, yet its Git step went straight to
+  `git commit`, risking a scaffold committed to `main`. It now checks the current branch,
+  creates `feat/{slug}` when on `main`, pushes, and reports `BRANCH`.
+
+- **Artifacts of Bash-less agents have an owner** (#187): SPEC.md, UI_SPEC.md, VISUAL_SPEC.md,
+  TEST_PLAN.md, SCOPE_PLAN.md, OPS_PLAN.md and `project-rules.md` are written by agents with
+  no `Bash`, and no rule said who commits them — they were left uncommitted or swept into a
+  later `developer` commit, breaking the one-commit-per-task rule. `git-rules.md` now assigns
+  the commit to the spawning flow orchestrator (one commit per phase, staged from the agent's
+  `ARTIFACT_PATHS`), with a step in the Phase Execution Loop. `rules-designer` is no longer
+  listed as a committing agent — it owns no `Bash`.
+
+- **sandbox-runner matches sandbox-policy** (#188): the agent implemented host detection for
+  Copilot / Codex and an `advisory_only` mode that the policy — "Claude Code only … no
+  multi-platform detection" with a four-mode table — does not define. The detection step and
+  the fifth mode are gone; the wiki diagrams and mode lists follow.
+
+- **sandbox-runner placement names the right flow** (#193): both the orchestrator rules and
+  the policy placed `sandbox-runner` before `releaser` "in Operations Flow", but `releaser`
+  is a delivery-flow Full-plan agent and Operations has no such phase. Operations now lists
+  `db-ops` / `observability`; the `releaser` rule moves to Delivery.
+
+- **One PRODUCT_TYPE resolution chain** (#196): three flows used three different fallback
+  orders, and `operations-flow` skipped `SPEC.md` entirely — so a `cli` project declared in
+  SPEC but not in project-rules.md would have had Operations run against it. The canonical
+  chain now reads "entry handoff file → SPEC.md → project-rules.md → service", with the
+  per-flow difference limited to *which* handoff file step 1 consults.
+
 ### Fixed (triage / flow consistency)
 
 - **Minimal has no UI sub-flow** (#182): `delivery-flow`'s agent matrix said Minimal skips

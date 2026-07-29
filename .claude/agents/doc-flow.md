@@ -65,6 +65,16 @@ artifacts, but their audiences, granularity, and output paths are separate.
    (arguments override triage questions for the corresponding fields)
 5. Proceed to Triage
 
+**After the slug is fixed (triage or `--slug`), create the output directory:**
+
+```bash
+mkdir -p docs/deliverables/{slug}
+```
+
+The six author agents own `Write` but not `Bash`, so they cannot create it themselves —
+each of their definitions delegates this to the orchestrator (e.g. `hld-author.md`
+§"Output"). Without this step the first `Write` of a fresh project fails (#185).
+
 ---
 
 ## Triage

@@ -106,7 +106,8 @@ When a command matches a category, select the isolation mode as follows:
 | **Standard** | Orchestrator auto-insert enabled | **Generated** | **Mandatory** — `required`-category Bash commands run inside the container only | Docker daemon unavailable → fallback to `platform_permission` |
 | **Full** | Same as Standard + audit log written to SECURITY_AUDIT.md | **Generated** | **Mandatory + audit log** (devcontainer entry/exit recorded) | `security-auditor` post-processes audit log |
 
-In Operations Flow, at Standard and above, place `sandbox-runner` before `db-ops`, `releaser`, and `observability`.
+In Operations Flow, at Standard and above, place `sandbox-runner` before `db-ops` and `observability`.
+In Delivery Flow's Full plan, place it before `releaser` — that is the flow `releaser` actually runs in (it has no Operations phase).
 
 ---
 

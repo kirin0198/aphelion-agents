@@ -58,13 +58,12 @@ outputs:
   stderr: string
   exit_code: integer
   duration_ms: integer
-  sandbox_mode: enum         # container | platform_permission | advisory_only | blocked | bypassed
+  sandbox_mode: enum         # container | platform_permission | blocked | bypassed
   detected_risks: list       # Risk categories detected by policy
-  platform: string           # claude_code | copilot | codex | unknown
   decision: enum             # allowed | asked_and_allowed | denied | skipped
   fallback_reason: string    # Why container mode was not used (omitted when container succeeds):
                              #   docker_unavailable | devcontainer_missing | docker_info_timeout
-                             #   | daemon_error | platform_unknown | none
+                             #   | daemon_error | none
   notes: string              # Additional notes (user confirmation details, truncated output length, etc.)
 ```
 
@@ -104,45 +103,36 @@ Before platform detection, attempt to use container isolation (highest priority)
 
 | Situation | FALLBACK_REASON | Degraded SANDBOX_MODE |
 |-----------|----------------|-----------------------|
-| `.devcontainer/devcontainer.json` not found | `devcontainer_missing` | `platform_permission` (or `advisory_only` if platform unknown) |
+| `.devcontainer/devcontainer.json` not found | `devcontainer_missing` | `platform_permission` |
 | `docker info` exits non-zero | `docker_unavailable` | Same as above |
 | `docker info` times out (5 s) | `docker_info_timeout` | Same as above |
 | Docker daemon running but returns error | `daemon_error` | Same as above |
-| Platform detection fails | `platform_unknown` | `blocked` (for `required` categories) or `advisory_only` |
 
 Container mode succeeded → `FALLBACK_REASON` is **omitted** (not present = no fallback occurred).
 
-### Step 3: Detect the host platform (fallback path only)
+### Step 3: Select sandbox_mode per decision tree (fallback path only)
 
-Check environment variables:
-1. `$CLAUDE_CODE_*` present → `claude_code`
-2. `$GITHUB_COPILOT_*` present → `copilot`
-3. `$OPENAI_CODEX_*` present → `codex`
-4. None → `unknown`
+Aphelion is a **Claude Code-only project** (`sandbox-policy.md` §3), so there is no host
+detection step: the host is always Claude Code, and the only modes are the four defined in
+`sandbox-policy.md` §4 (`container` / `platform_permission` / `blocked` / `bypassed`).
 
-### Step 4: Select sandbox_mode per decision tree (fallback path only)
+| Category | sandbox_mode |
+|----------|-------------|
+| `required` | `platform_permission` (ask, or deny when settings.json denies it) |
+| `recommended` | `platform_permission` (ask) |
+| `optional` / no category match | `bypassed` |
+| Command matches a `required` category but the permission layer cannot be consulted | `blocked` |
 
-Follow the decision tree in `sandbox-policy.md §3`:
-
-| Platform + Category | sandbox_mode |
-|---------------------|-------------|
-| `claude_code` + `required` | `platform_permission` (ask or deny) |
-| `claude_code` + `recommended` | `platform_permission` (ask) |
-| `claude_code` + `optional` or no match | `bypassed` |
-| `copilot` or `codex` | `advisory_only` |
-| `unknown` | `blocked` |
-
-### Step 5: Execute or decline
+### Step 4: Execute or decline
 
 - **`container`**: Execute inside the container per the mount/network rules in Step 2. Set `decision: allowed`.
 - **`platform_permission` (ask)**: Display the command and detected risks to the user and ask for explicit approval before executing.
 - **`platform_permission` (deny)**: Refuse execution, set `decision: denied`, and explain why.
-- **`advisory_only`**: Display a warning, then execute. Set `decision: allowed` with a note about the advisory.
 - **`bypassed`**: Execute directly. Set `decision: allowed`.
 - **`blocked`**: Refuse execution, prompt the user to specify the platform or use Claude Code.
 - **`dry_run: true`**: Skip execution entirely and return classification results only. Set `decision: skipped`.
 
-### Step 6: Emit AGENT_RESULT
+### Step 5: Emit AGENT_RESULT
 
 Always emit the AGENT_RESULT block defined below.
 
@@ -151,7 +141,7 @@ Always emit the AGENT_RESULT block defined below.
 ## AGENT_RESULT Contract
 
 Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `DECISION`.
-Agent-specific fields: `SANDBOX_MODE` (container|platform_permission|advisory_only|blocked|bypassed), `EXIT_CODE`, `DETECTED_RISKS`, `CALLER`, `DURATION_MS`, `FALLBACK_REASON` (omit when container mode succeeded; use `none` when container was not attempted).
+Agent-specific fields: `SANDBOX_MODE` (container|platform_permission|blocked|bypassed), `EXIT_CODE`, `DETECTED_RISKS`, `CALLER`, `DURATION_MS`, `FALLBACK_REASON` (omit when container mode succeeded; use `none` when container was not attempted).
 See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
 `NEXT` = caller agent name when invoked by another agent; `done` when standalone; `suspended` on interruption.
 
