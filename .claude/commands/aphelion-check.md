@@ -62,13 +62,29 @@ All 7 checks are run sequentially. Each check is classified as:
    cat .claude/settings.json 2>/dev/null
    ```
 
-   Check that the file exists and contains references to all three Aphelion hooks:
-   - `aphelion-secrets-precommit`
-   - `aphelion-sensitive-file-guard`
-   - `aphelion-deps-postinstall`
+   Check that the file exists and contains references to all four Aphelion hooks:
+   - `aphelion-secrets-precommit` (PreToolUse)
+   - `aphelion-sensitive-file-guard` (PreToolUse)
+   - `aphelion-deps-postinstall` (PostToolUse)
+   - `aphelion-project-rules-check` (SessionStart — added in 0.3.2; installations that
+     predate it are exactly the case this check exists to catch)
 
-   Pass criterion: all three hook names appear in `.claude/settings.json`.
-   Remediation if file is missing: Re-run `npx aphelion-agents init` (init only copies settings.json if it does not already exist). If the file exists but hooks are absent: run `npx aphelion-agents update` to restore hook entries (note: settings.json is protected after init — check manually if update does not restore them).
+   Pass criterion: all four hook names appear in `.claude/settings.json`.
+
+   Remediation:
+   - **File missing, or hooks absent:** run `npx aphelion-agents update`. Since #114 the
+     CLI *merges* the hook template into an existing `settings.json` rather than skipping
+     it, so `update` restores missing entries while preserving your own settings.
+     `init` is not the right command here — it exits 1 when `.claude/` already exists
+     unless `--force` is passed.
+   - **A hook is missing on purpose:** since 0.3.9 the CLI remembers hooks you removed and
+     does not re-add them (`hooks-policy.md` §3). Report it as an intentional gap rather
+     than a failure — re-adding means restoring the entry by hand or running
+     `npx aphelion-agents init --force`.
+
+   Also report the presence of `.claude/.aphelion-manifest.json`. When it is absent, the
+   installation predates 0.3.9: hook-removal memory and removed-upstream file reporting are
+   both inactive until the next `update`.
 
 5. **`gh auth status` passes** (fail if not authenticated)
 

@@ -54,10 +54,19 @@ Major handoff targets Delivery Flow as a pre-processing stage.
 
 Agents that need PRODUCT_TYPE resolve it using the following fallback chain (highest priority first):
 
-1. `DISCOVERY_RESULT.md` — `PRODUCT_TYPE: ...` field (set by discovery-flow)
+1. The **handoff file this flow was entered through**, when it declares `PRODUCT_TYPE`:
+   `DISCOVERY_RESULT.md` (delivery-flow), `DELIVERY_RESULT.md` (operations-flow),
+   `MAINTENANCE_RESULT.md` (delivery-flow on a Maintenance Major handoff)
 2. `SPEC.md` — `## Product Type` section or `Product Type:` field (set by spec-designer)
 3. `.claude/rules/project-rules.md` — `## Project Overview` → `Product Type:` line (set by rules-designer)
 4. Default: `service`
+
+Step 1 differs per flow only in **which** handoff file is consulted — the file each flow
+actually receives. Steps 2-4 are identical everywhere, and **no flow may skip step 2**:
+`SPEC.md` is the project's own declaration and outranks the repo-wide default in
+project-rules.md. A flow that jumps from its handoff file straight to project-rules.md
+(as operations-flow used to) can silently run Operations for a `cli` project whose SPEC
+says so but whose project-rules.md does not (#196).
 
 This order ensures backward compatibility: existing projects without a `Product Type:` line in
 project-rules.md will default to `service`, preserving current behavior.

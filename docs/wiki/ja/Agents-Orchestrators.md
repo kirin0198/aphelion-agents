@@ -39,7 +39,7 @@ Flow Orchestrator はドメイン全体を管理します。トリアージで�
 - **責務**: 要件探索フロー全体を管理します。トリアージの実行、エージェントの順次起動、承認とロールバックの処理を担い、最終成果物として DISCOVERY_RESULT.md を生成します。
 - **入力**: ユーザーのプロジェクト説明（コマンド引数経由）
 - **出力**: DISCOVERY_RESULT.md（最終ハンドオフ）、INTERVIEW_RESULT.md、RESEARCH_RESULT.md、POC_RESULT.md、CONCEPT_VALIDATION.md、SCOPE_PLAN.md
-- **AGENT_RESTULTフィールド**: N/A（Flow Orchestrator は `AGENT_RESULT` を出力しない；ハンドオフファイルを生成する）
+- **AGENT_RESULTフィールド**: N/A（Flow Orchestrator は `AGENT_RESULT` を出力しない；ハンドオフファイルを生成する）
 - **NEXT条件**: 完了後、ユーザーに`/delivery-flow`の実行を促す
 
 ### delivery-flow
@@ -49,7 +49,7 @@ Flow Orchestrator はドメイン全体を管理します。トリアージで�
 - **責務**: 設計・実装・テスト・レビューフロー全体を管理します。DISCOVERY_RESULT.md（Maintenance Major の引き渡し時は MAINTENANCE_RESULT.md）を読み込んでトリアージを実行し、テスト/レビュー失敗時のロールバックを処理したうえで、DELIVERY_RESULT.md を生成します。
 - **入力**: DISCOVERY_RESULT.md（オプション）、MAINTENANCE_RESULT.md（オプション — Maintenance Major の引き渡し。DISCOVERY_RESULT.md より優先され、`architect` の差分モードからフローを開始する）、既存のSPEC.md / ARCHITECTURE.md
 - **出力**: DELIVERY_RESULT.md（最終ハンドオフ）、SPEC.md、ARCHITECTURE.md、実装コード、TEST_PLAN.md、SECURITY_AUDIT.md、README.md
-- **AGENT_RESTULTフィールド**: N/A
+- **AGENT_RESULTフィールド**: N/A
 - **NEXT条件**: 完了後、ユーザーに`/operations-flow`の実行を促す（serviceの場合）
 
 ### operations-flow
@@ -59,7 +59,7 @@ Flow Orchestrator はドメイン全体を管理します。トリアージで�
 - **責務**: デプロイと運用フローを管理します。PRODUCT_TYPE: serviceの場合のみ実行。DELIVERY_RESULT.mdを読み込み、トリアージを実行し、OPS_RESULT.mdを生成します。
 - **入力**: DELIVERY_RESULT.md（必須）、ARCHITECTURE.md、SPEC.md
 - **出力**: OPS_RESULT.md、Dockerfile、docker-compose.yml、CI/CDパイプライン、DB_OPS.md、OBSERVABILITY.md、OPS_PLAN.md
-- **AGENT_RESTULTフィールド**: N/A
+- **AGENT_RESULTフィールド**: N/A
 - **NEXT条件**: フロー完了（ユーザーがデプロイを処理）
 
 ### maintenance-flow
@@ -69,7 +69,7 @@ Flow Orchestrator はドメイン全体を管理します。トリアージで�
 - **責務**: 既存プロジェクトの保守ライフサイクルを管理します。トリガー (バグ / CVE / パフォーマンス / 技術的負債 / 機能追加) を受け取り、`change-classifier` で Patch / Minor / Major のトリアージを行い、対応するエージェントを順次起動します。Patch と Minor は単独完結、Major は `MAINTENANCE_RESULT.md` を生成して delivery-flow に引き渡します。
 - **入力**: ユーザーが指定するトリガー情報 (ログエラー / CVE 通知 / 機能要望 等)、SPEC.md、ARCHITECTURE.md
 - **出力**: GitHub issue、PR、テスト結果。Major のみ `MAINTENANCE_RESULT.md` を生成
-- **AGENT_RESTULTフィールド**: Patch/Minor は N/A (PR + issue で報告)。Major のみ: `PLAN`、`MAINTENANCE_RESULT`、`HANDOFF_TO`
+- **AGENT_RESULTフィールド**: Patch/Minor は N/A (PR + issue で報告)。Major のみ: `PLAN`、`MAINTENANCE_RESULT`、`HANDOFF_TO`
 - **NEXT 条件**:
   - Patch / Minor 完了 → `done`
   - Major 完了 → `delivery-flow` (ユーザーが `MAINTENANCE_RESULT.md` を確認後に `/delivery-flow` を手動実行)
@@ -111,7 +111,7 @@ Flow Orchestrator はドメイン全体を管理します。トリアージで�
   2. 5秒タイムアウトで `docker info` 実行
   3. 両方 OK → `container` モード（ワーキングディレクトリのみマウント；既定 `--network=none`；ホスト環境変数なし）
   4. いずれかNG → `FALLBACK_REASON` を記録して `platform_permission` にフォールバック
-- **AGENT_RESTULTフィールド**: `STATUS`、`SANDBOX_MODE`、`EXIT_CODE`、`DETECTED_RISKS`、`DECISION`、`CALLER`、`DURATION_MS`、`FALLBACK_REASON`（container モード成功時は省略）
+- **AGENT_RESULTフィールド**: `STATUS`、`SANDBOX_MODE`、`EXIT_CODE`、`DETECTED_RISKS`、`DECISION`、`CALLER`、`DURATION_MS`、`FALLBACK_REASON`（container モード成功時は省略）
 - **NEXT条件**:
   - 別エージェントから呼び出された場合 → 呼び出し元エージェントに返る
   - ユーザーがスタンドアロンで起動した場合 → `done`
@@ -209,7 +209,7 @@ Flow Orchestrator やメインセッションは `Agent(subagent_type="analyst")
 - **責務**: ドキュメントがない既存コードベースからSPEC.mdとARCHITECTURE.mdをリバースエンジニアリングします。analyst → delivery-flowを通じてプロジェクトが標準Aphelionワークフローに参加できるようにします。
 - **入力**: 既存コードベース（作業ディレクトリ内のソースファイル）
 - **出力**: SPEC.md、ARCHITECTURE.md（リバースエンジニアリング）
-- **AGENT_RESTULTフィールド**: `HAS_UI`、`PRODUCT_TYPE`、`LANGUAGE`、`FRAMEWORK`、`UC_COUNT`、`ENTITY_COUNT`、`TBD_COUNT`
+- **AGENT_RESULTフィールド**: `HAS_UI`、`PRODUCT_TYPE`、`LANGUAGE`、`FRAMEWORK`、`UC_COUNT`、`ENTITY_COUNT`、`TBD_COUNT`
 - **NEXT条件**: `done`（ユーザーが`/analyst`または`/delivery-flow`を実行）
 
 ---

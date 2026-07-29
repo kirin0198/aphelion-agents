@@ -1,7 +1,7 @@
 # Architecture: Operational Rules
 
 > **Language**: [English](../en/Architecture-Operational-Rules.md) | [日本語](../ja/Architecture-Operational-Rules.md)
-> **Last updated**: 2026-07-29 (2026-07-29: fix repository-root relative-link depth ../../ -> ../../../ (#169); updated 2026-04-30: doc-reviewer rollback references per #91 follow-up)
+> **Last updated**: 2026-07-29 (2026-07-29: sandbox decision tree — drop host detection and advisory_only, #188; 2026-07-29: fix repository-root relative-link depth ../../ -> ../../../ (#169); updated 2026-04-30: doc-reviewer rollback references per #91 follow-up)
 > **Audience**: Agent developers
 
 This page is one of three pages split from the original Architecture.md (#42). It covers runtime and operational behaviors: Auto-Approve Mode, the Phase Execution Loop, Triage Tiers, Rollback Rules, and Sandbox Defense Layers. See the sibling pages for conceptual model and protocols: [Domain Model](./Architecture-Domain-Model.md), [Protocols](./Architecture-Protocols.md).
@@ -199,18 +199,16 @@ flowchart TB
     Advisory --> FallbackCheck{"container\navailable?"}
 
     FallbackCheck -->|Yes| ContainerExec["container\nexecution"]
-    FallbackCheck -->|No| PlatformCheck{"platform\ndetected?"}
+    FallbackCheck -->|No| CategoryCheck{"required\ncategory?"}
 
-    PlatformCheck -->|claude_code| PlatformPerm["platform_permission\n(permission mode)"]
-    PlatformCheck -->|unknown| CategoryCheck{"required\ncategory?"}
-
-    CategoryCheck -->|No| Advisory2["advisory_only\n(warning only)"]
-    CategoryCheck -->|Yes| Blocked["blocked\n(execution denied)"]
+    CategoryCheck -->|No| Bypassed["bypassed\n(no category match)"]
+    CategoryCheck -->|Yes| PlatformPerm["platform_permission\n(permission mode)"]
+    PlatformPerm -->|permission layer\nunavailable| Blocked["blocked\n(execution denied)"]
 
     Enforcement -.->|provides| FallbackCheck
 ```
 
-> **Fallback order**: `container` → `platform_permission` → `advisory_only` → `blocked`
+> **Fallback order**: `container` → `platform_permission` → `blocked`. Aphelion is Claude Code-only, so there is no host-platform detection step and no `advisory_only` mode (#188).
 
 ---
 

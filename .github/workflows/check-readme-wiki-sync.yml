@@ -52,3 +52,13 @@ jobs:
 
       - name: Run README ↔ Wiki sync check
         run: bash scripts/check-readme-wiki-sync.sh
+
+      # scripts/check-archive-match.sh locks the issue-matching grep shared by
+      # archive-closed-plans.yml, archive-orphan-plans.yml and the script itself —
+      # the three are required to stay char-for-char identical. It implements six
+      # regression locks (including the #150 head-n-20 bug) but was wired into
+      # nothing, so a future drift would have gone undetected (#209). Same tier as
+      # the check above: fast, dependency-free, advisory until branch protection
+      # requires it.
+      - name: Run archive matching regression locks
+        run: bash scripts/check-archive-match.sh

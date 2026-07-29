@@ -21,6 +21,19 @@ on:
   pull_request:
     types: [opened, edited, synchronize]
 
+# Serialize per PR. `edited` and `synchronize` can land within seconds of each other,
+# and two concurrent jobs would both `git mv` + push onto the same PR branch, with the
+# loser failing on a non-fast-forward (#210). The move itself is idempotent, so the
+# failure was noise rather than corruption — but it was avoidable noise.
+# NOTE: a concurrency group does NOT serialize across workflows. This group only
+# orders this workflow's own runs; the weekly archive-orphan-plans.yml is a separate
+# workflow and can still overlap. That overlap is safe: both perform the same
+# idempotent `git mv`, and they push to different branches (this one to the PR branch,
+# the orphan sweeper to its own chore/ branch).
+concurrency:
+  group: archive-closed-plans-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
 jobs:
   archive:
     # Skip on fork PRs (GITHUB_TOKEN is read-only there) and on commits

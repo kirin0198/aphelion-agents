@@ -16,7 +16,7 @@ This page is one of five pages split from the original Agents-Reference.md (#42)
 
 ## Maintenance Domain
 
-The Maintenance domain (3 agents + orchestrator) handles bug fixes, CVE responses, performance improvements, tech-debt cleanup, and small feature extensions on existing projects. The orchestrator is documented under [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md); the two supporting agents are described here.
+The Maintenance domain (2 agents + orchestrator) handles bug fixes, CVE responses, performance improvements, tech-debt cleanup, and small feature extensions on existing projects. The orchestrator is documented under [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md); the two supporting agents are described here.
 
 ### change-classifier
 

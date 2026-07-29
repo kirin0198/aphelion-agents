@@ -3,6 +3,7 @@
 > **Language**: [English](../en/Rules-Reference.md) | [日本語](../ja/Rules-Reference.md)
 > **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: sandbox modes 5 -> 4 (advisory_only removed, no host detection) (#188)
 >   - 2026-07-29: fix repository-root relative-link depth ../../ -> ../../../ (#169)
 >   - 2026-05-12: add document-locations entry, sync rule count 13 → 14 (#117)
 >   - 2026-05-01: add hooks-policy entry, sync rule count 12 → 13 (#107)
@@ -132,13 +133,14 @@ For full details, follow the **Canonical** link to the source file.
   - Hook A fires before `git commit`, integrating with the `library-and-security-policy.md` secret-detection mandate.
   - Hook E fires after dependency installs, triggering the `/vuln-scan` workflow defined in `library-and-security-policy.md`.
   - `developer` should inform users about the `[skip-secrets-check]` bypass when hook A fires on a known-safe placeholder.
-- **Hook inventory (MVP)**:
+- **Hook inventory** (4 distributed hooks; three further hooks under `src/.claude/hooks/` are dogfooding-only and excluded from distribution, #197):
   - **A** `aphelion-secrets-precommit.sh` — `PreToolUse Bash(git commit*)` — scans staged diff for 8 secret patterns (P1–P8); exits 2 on match. Bypass: append `[skip-secrets-check]` to commit message.
   - **B** `aphelion-sensitive-file-guard.sh` — `PreToolUse Write|Edit` — blocks writes to conventional secret-file names (`.env*`, `*.pem`, `*.key`, etc.); allows `tests/`, `fixtures/`, and `.example`/`.template`/`.sample`/`.dist` suffixes. No bypass marker — edit `settings.json` to disable.
+  - **D** `aphelion-project-rules-check.sh` — `SessionStart` — warns when `.claude/rules/project-rules.md` is absent. Advisory only (always exits 0). Bypass: `APHELION_SKIP_RULES_CHECK=1`.
   - **E** `aphelion-deps-postinstall.sh` — `PostToolUse Bash(npm install*|uv add*|pip install*|cargo add*|go get*)` — non-blocking advisory; recommends `/vuln-scan` after dependency changes.
 - **Failure safety**: All hooks wrap their body in `trap ERR → exit 0` so an internal script error never blocks user work (fail-open).
-- **Distribution**: `src/.claude/hooks/` (canonical) deployed via `npx aphelion-agents init/update`. `settings.json` is protected after init (user customisations preserved); `hooks/` scripts are overlay-copied on every update.
-- **Summary**: Establishes that Aphelion's three MVP hooks act as a proactive content-scanning layer. Agents must know the bypass rules (hook A: `[skip-secrets-check]`; hook B: no bypass, `settings.json` edit required; hook E: no bypass needed). All hooks are fail-open by design. The canonical pattern library (`secret-patterns.sh`, IDs P1–P8) is the single source of truth shared by hook A and the `/secrets-scan` slash command.
+- **Distribution**: `src/.claude/hooks/` (canonical) deployed via `npx aphelion-agents init/update`. `settings.json` is **merged** on both init and update — user settings and hooks you deliberately removed are preserved (#114, #202); `hooks/` scripts are overlay-copied on every update.
+- **Summary**: Establishes that Aphelion's four distributed hooks act as a proactive content-scanning layer. Agents must know the bypass rules (hook A: `[skip-secrets-check]`; hook B: no bypass, `settings.json` edit required; hook D: `APHELION_SKIP_RULES_CHECK=1`; hook E: no bypass needed). All hooks are fail-open by design. The canonical pattern library (`secret-patterns.sh`, IDs P1–P8) is the single source of truth shared by hook A and the `/secrets-scan` slash command.
 
 ---
 
@@ -180,8 +182,8 @@ For full details, follow the **Canonical** link to the source file.
 - **Scope**: All agents that own the `Bash` tool: `developer`, `tester`, `poc-engineer`, `scaffolder`, `infra-builder`, `codebase-analyzer`, `security-auditor`, `db-ops`, `releaser`, `observability`. (`sandbox-runner` is the policy executor, not a subject.)
 - **Auto-load behavior**: Auto-loaded by Claude Code on every session start
 - **Interactions**: Defines the 5 dangerous command categories (`destructive_fs`, `prod_db`, `privilege_escalation`, `secret_access`, `external_net`) and 3 delegation tiers (`required`, `recommended`, `optional`). `sandbox-runner` reads this policy at startup to re-classify commands. Orchestrators reference the tier definitions to decide when to auto-insert `sandbox-runner` (Standard+ plans). Each Bash-owning agent definition file contains a one-line reference to this rule. `infra-builder` generates the devcontainer files referenced by the `container` isolation mode.
-- **Sandbox Modes (§4)**: Five modes in priority order: `container` (real physical isolation via devcontainer — highest priority), `platform_permission` (Claude Code permission gate), `advisory_only` (warning only), `blocked` (execution refused), `bypassed` (no category match). Container mode is effective even when the platform operates in `auto`/`allow` mode because it provides a structural boundary independent of permission settings.
-- **Decision Tree (§3)**: Container availability is checked **before** platform detection. If `.devcontainer/devcontainer.json` exists and `docker info` succeeds → `container` mode. Otherwise, fall through to platform detection and existing permission mode logic. Fallback order: `container` → `platform_permission` → `advisory_only` → `blocked`.
+- **Sandbox Modes (§4)**: Four modes in priority order: `container` (real physical isolation via devcontainer — highest priority), `platform_permission` (Claude Code permission gate), `blocked` (execution refused), `bypassed` (no category match). Container mode is effective even when the platform operates in `auto`/`allow` mode because it provides a structural boundary independent of permission settings.
+- **Decision Tree (§3)**: Container availability is checked first. If `.devcontainer/devcontainer.json` exists and `docker info` succeeds → `container` mode. Otherwise fall through to the permission-mode logic. Fallback order: `container` → `platform_permission` → `blocked`. Aphelion is Claude Code-only, so no host-platform detection is performed (#188).
 - **Triage × devcontainer (§5)**: Minimal = skip devcontainer generation; Light = generate, optional launch; Standard = generate, mandatory launch (required-category commands run inside container only); Full = generate, mandatory launch + audit log.
 - **Summary**: Establishes when Bash-owning agents must delegate command execution to `sandbox-runner`. Provides the isolation mode decision tree keyed on container availability and platform detection. `required`-tier commands must always be delegated; `recommended`-tier should be delegated with a recorded reason if skipped; `optional`-tier is advisory only. When delegation is unavailable (Minimal plan, standalone context), the agent must warn the user and ask for explicit confirmation.
 
@@ -209,7 +211,8 @@ For full details, follow the **Canonical** link to the source file.
 - **Canonical**: [src/.claude/rules/user-questions.md](../../../src/.claude/rules/user-questions.md)
 - **Scope**: All agents that need to ask the user for clarification or input
 - **Auto-load behavior**: Auto-loaded by Claude Code on every session start
-- **Interactions**: Flow orchestrators use `AskUserQuestion` for triage interviews, approval gates, and phase confirmations. Any agent (including `developer` when blocked) can use it to stop and ask rather than guessing.
+- **Interactions**: Flow orchestrators use `AskUserQuestion` for triage interviews, approval gates, and phase confirmations — they run as the top-level agent of their session, so the tool is available to them.
+- **Sub-agent constraint (#181)**: Claude Code strips `AskUserQuestion` from every sub-agent, **even when its `tools:` field lists it**. A spawned agent emits its question as text (and in `AGENT_RESULT`) and the caller renders the gate; only the main session and forks can prompt interactively. Never add `AskUserQuestion` to an agent's `tools:` list — it would be filtered out anyway.
 - **Summary**: Mandates stopping and asking when there are unclear points rather than guessing. Defines two question mechanisms: `AskUserQuestion` tool (preferred for 2-4 choice questions, multi-select, code comparisons) and text output fallback (for free-text-only questions). Usage guidelines: max 4 questions per call, bundle related questions, place recommended options first with `(推奨)` suffix. The `AskUserQuestion` tool supports `multiSelect: true` for multiple selection scenarios.
 
 ---

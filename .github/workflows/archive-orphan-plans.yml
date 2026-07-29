@@ -26,7 +26,11 @@ on:
         type: boolean
         default: false
 
-# Single run at a time. Avoid race vs the PR-driven workflow.
+# Single run of THIS workflow at a time (scheduled run vs manual workflow_dispatch).
+# A concurrency group does not span workflows, so this does NOT serialize against the
+# PR-driven archive-closed-plans.yml — the previous comment claimed it did (#210).
+# Overlap with that workflow is harmless: both do the same idempotent `git mv`, and the
+# two push to different branches.
 concurrency:
   group: archive-orphan-plans
   cancel-in-progress: false

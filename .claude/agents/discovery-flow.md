@@ -266,6 +266,21 @@ scope-planner (STATUS: blocked)
     → scope-planner (re-run)
 ```
 
+**Plan guard (Light).** `researcher` runs only on Standard and above
+(`researcher.md` §description). On the **Light** plan it is outside the approved
+tier, so do not launch it silently:
+
+1. Prefer rolling back to `interviewer` when the missing information is something
+   the user can answer directly (the usual case on Light — scope questions, not
+   market/domain research).
+2. If the gap genuinely requires research, surface it with `AskUserQuestion`
+   (options: "Run researcher once (tier exception)" / "Roll back to interviewer" /
+   "Escalate the plan to Standard"). Launch `researcher` only on explicit approval,
+   and log `TIER_EXCEPTION: researcher (plan=Light, approved by user)`.
+
+On Minimal, neither `scope-planner` nor `researcher` runs, so this pattern does not
+apply.
+
 Pass the following to `researcher` during rollback:
 
 ```
@@ -330,36 +345,18 @@ Limit: shared via `.claude/orchestrator-rules.md` "Rollback Limit (Common)".
 
 ---
 
-## DISCOVERY_RESULT.md (Final Output Template)
+## DISCOVERY_RESULT.md (Final Output)
 
-For the Minimal plan, the flow orchestrator generates this directly. For Light and above, scope-planner generates it.
+For the Minimal plan, the flow orchestrator generates this directly. For Light and above,
+scope-planner generates it.
 
-```markdown
-# Discovery Result: {Project Name}
+Use the **canonical template** in `.claude/orchestrator-rules.md` §"Handoff File
+Specification" → "DISCOVERY_RESULT.md" — do not restate it here. `delivery-flow` validates
+against that single definition.
 
-> Created: {YYYY-MM-DD}
-> Discovery Plan: {Minimal | Light | Standard | Full}
-
-## Project Overview
-{1–3 line summary}
-
-## Artifact Type
-PRODUCT_TYPE: {service | tool | library | cli}
-
-## Requirements Summary
-{Structured requirements summary}
-
-## Scope (if confirmed)
-- MVP: {minimum scope}
-- IN: {included}
-- OUT: {excluded}
-
-## Technical Risks / Constraints (if investigated)
-{PoC results, external dependency constraints, etc.}
-
-## Unresolved Items
-{Remaining issues to be resolved in Delivery}
-```
+`HAS_UI` / `UI_TYPE` come from the triage answers collected at flow start (§"Triage"), not
+from a later re-inference: this file is where the user's explicit answer is persisted across
+the flow boundary (#194). When `HAS_UI: false`, write `UI_TYPE: none`.
 
 ---
 

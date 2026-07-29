@@ -3,6 +3,7 @@
 > **Language**: [English](../en/Rules-Reference.md) | [日本語](../ja/Rules-Reference.md)
 > **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: サンドボックスモードを 5 → 4 に修正（advisory_only 廃止、ホスト検出なし）(#188)
 >   - 2026-07-29: リポジトリルート参照の相対リンク深さを修正 ../../ -> ../../../ (#169)
 >   - 2026-05-12: document-locations エントリ追加、ルール数 13 → 14 に更新 (#117)
 >   - 2026-05-01: hooks-policy エントリ追加、ルール数 12 → 13 に更新 (#107)
@@ -133,13 +134,14 @@
   - フック A は `git commit` の前に実行され、`library-and-security-policy.md` のシークレット検出要件と統合します。
   - フック E は依存関係インストール後に実行され、`library-and-security-policy.md` で定義された `/vuln-scan` ワークフローをトリガーします。
   - `developer` はフック A が安全なプレースホルダーで発動した場合、`[skip-secrets-check]` bypass をユーザーに案内してください。
-- **フック一覧（MVP）**:
+- **フック一覧**（配布される 4 フック。`src/.claude/hooks/` にはこのほかに dogfooding 専用の 3 本があり、配布対象外です、#197）:
   - **A** `aphelion-secrets-precommit.sh` — `PreToolUse Bash(git commit*)` — ステージ差分を 8 つのシークレットパターン（P1〜P8）でスキャン；マッチ時は exit 2。bypass: コミットメッセージに `[skip-secrets-check]` を追加。
   - **B** `aphelion-sensitive-file-guard.sh` — `PreToolUse Write|Edit` — 慣習的なシークレットファイル名（`.env*`・`*.pem`・`*.key` 等）への書き込みをブロック。`tests/`・`fixtures/` ディレクトリや `.example`/`.template`/`.sample`/`.dist` サフィックスは許可。bypass マーカーなし — 無効化には `settings.json` 編集が必要。
+  - **D** `aphelion-project-rules-check.sh` — `SessionStart` — `.claude/rules/project-rules.md` が無い場合に警告します。勧告のみ（常に exit 0）。bypass: `APHELION_SKIP_RULES_CHECK=1`。
   - **E** `aphelion-deps-postinstall.sh` — `PostToolUse Bash(npm install*|uv add*|pip install*|cargo add*|go get*)` — 非ブロッキングの勧告のみ；依存関係変更後に `/vuln-scan` を推奨。
 - **フェイルセーフ**: 全フックは `trap ERR → exit 0` でラップされており、スクリプト内部エラーがユーザーの作業を止めることはありません（フェイルオープン設計）。
-- **配布**: `src/.claude/hooks/`（正規）から `npx aphelion-agents init/update` で配布。`settings.json` は init 後は保護される（ユーザーのカスタマイズを保持）；`hooks/` スクリプトは毎回 update で上書きコピーされます。
-- **概要**: Aphelion の MVP 3 フックが積極的なコンテンツスキャン層として機能することを定めます。エージェントは bypass ルール（フック A: `[skip-secrets-check]`；フック B: bypass なし・`settings.json` 編集が必要；フック E: bypass 不要）を知っておく必要があります。全フックはフェイルオープン設計です。正規パターンライブラリ（`secret-patterns.sh`・ID P1〜P8）はフック A と `/secrets-scan` slash command が共有する単一の信頼ソースです。
+- **配布**: `src/.claude/hooks/`（正規）から `npx aphelion-agents init/update` で配布。`settings.json` は init / update の双方で**マージ**され、ユーザー設定と意図的に削除したフックは保持されます（#114、#202）；`hooks/` スクリプトは毎回 update で上書きコピーされます。
+- **概要**: Aphelion が配布する 4 フックが積極的なコンテンツスキャン層として機能することを定めます。エージェントは bypass ルール（フック A: `[skip-secrets-check]`；フック B: bypass なし・`settings.json` 編集が必要；フック D: `APHELION_SKIP_RULES_CHECK=1`；フック E: bypass 不要）を知っておく必要があります。全フックはフェイルオープン設計です。正規パターンライブラリ（`secret-patterns.sh`・ID P1〜P8）はフック A と `/secrets-scan` slash command が共有する単一の信頼ソースです。
 
 ---
 
@@ -181,8 +183,8 @@
 - **スコープ**: `Bash`ツールを持つ全エージェント：`developer`、`tester`、`poc-engineer`、`scaffolder`、`infra-builder`、`codebase-analyzer`、`security-auditor`、`db-ops`、`releaser`、`observability`。（`sandbox-runner`はポリシーの実行者であり対象外）
 - **自動ロードの動作**: Claude Codeが全セッション起動時に自動ロード
 - **インタラクション**: 5 つの危険コマンドカテゴリ（`destructive_fs`、`prod_db`、`privilege_escalation`、`secret_access`、`external_net`）と 3 つの委譲ティア（`required`、`recommended`、`optional`）を定義します。`sandbox-runner` はこのポリシーを起動時に読み込んでコマンドを再分類します。Flow Orchestrator はティア定義を参照して `sandbox-runner` をいつ自動挿入するか（Standard+ プラン）を決定します。Bash を持つ各エージェントの定義ファイルにはこのルールへの 1 行参照が含まれています。`infra-builder` は `container` 隔離モードが参照する devcontainer ファイルを生成します。
-- **サンドボックスモード（§4）**: 優先順位順に5つのモード：`container`（devcontainerによる実体的な物理的隔離 — 最高優先）、`platform_permission`（Claude Codeパーミッションゲート）、`advisory_only`（警告のみ）、`blocked`（実行拒否）、`bypassed`（カテゴリ非該当）。`container`モードはプラットフォームが`auto`/`allow`モードで動作していても有効です。パーミッション設定に依存しない構造的な境界を提供するためです。
-- **決定ツリー（§3）**: コンテナ利用可能性はプラットフォーム検出の**前**に確認されます。`.devcontainer/devcontainer.json`が存在し`docker info`が成功する場合 → `container`モード。そうでなければ、プラットフォーム検出と既存のパーミッションモードロジックに降格。フォールバック順：`container` → `platform_permission` → `advisory_only` → `blocked`。
+- **サンドボックスモード（§4）**: 優先順位順に4つのモード：`container`（devcontainerによる実体的な物理的隔離 — 最高優先）、`platform_permission`（Claude Codeパーミッションゲート）、`blocked`（実行拒否）、`bypassed`（カテゴリ非該当）。`container`モードはプラットフォームが`auto`/`allow`モードで動作していても有効です。パーミッション設定に依存しない構造的な境界を提供するためです。
+- **決定ツリー（§3）**: 最初にコンテナ利用可能性を確認します。`.devcontainer/devcontainer.json`が存在し`docker info`が成功する場合 → `container`モード。そうでなければパーミッションモードのロジックに降格。フォールバック順：`container` → `platform_permission` → `blocked`。Aphelion は Claude Code 専用のため、ホストプラットフォーム検出は行いません (#188)。
 - **トリアージ × devcontainer（§5）**: Minimal = devcontainer生成スキップ；Light = 生成・任意起動；Standard = 生成・必須起動（required カテゴリのコマンドはコンテナ内のみ実行）；Full = 生成・必須起動 + 監査ログ。
 - **概要**: Bashを持つエージェントがいつコマンド実行を`sandbox-runner`に委譲しなければならないかを確立します。コンテナ利用可能性とプラットフォーム検出に基づく隔離モード決定ツリーを提供します。`required`ティアのコマンドは常に委譲しなければなりません；`recommended`ティアはスキップ時に記録された理由とともに委譲すべきです；`optional`ティアはadvisoryのみです。委譲が利用できない場合（Minimalプラン、スタンドアロンコンテキスト）、エージェントはユーザーに警告し明示的な確認を求めなければなりません。
 
@@ -210,7 +212,8 @@
 - **正規**: [src/.claude/rules/user-questions.md](../../../src/.claude/rules/user-questions.md)
 - **スコープ**: ユーザーへの確認や入力を求める必要がある全エージェント
 - **自動ロードの動作**: Claude Codeが全セッション起動時に自動ロード
-- **インタラクション**: Flow Orchestrator はトリアージインタビュー、承認ゲート、フェーズ確認に `AskUserQuestion` を使用します。（`blocked` になった `developer` を含む）どのエージェントも推測するのではなく止まって質問するためにこれを使用できます。
+- **インタラクション**: Flow Orchestrator はトリアージインタビュー、承認ゲート、フェーズ確認に `AskUserQuestion` を使用します（セッションの最上位エージェントとして動作するため利用可能です）。
+- **サブエージェントの制約 (#181)**: Claude Code は `tools:` に列挙されていても、**すべてのサブエージェントから** `AskUserQuestion` を除去します。spawn されたエージェントは質問をテキスト（および `AGENT_RESULT`）として出力し、呼び出し側がゲートを描画します。対話的に質問できるのはメインセッションと fork のみです。エージェントの `tools:` に `AskUserQuestion` を追加しないでください（どのみち除去されます）。
 - **概要**: 不明な点がある場合は推測するのではなく止まって質問することを義務付けます。2つの質問メカニズムを定義します：`AskUserQuestion`ツール（2〜4択の質問、複数選択、コード比較に推奨）とテキスト出力のフォールバック（自由記述のみの質問に使用）。使用ガイドライン：1回の呼び出しで最大4問、関連する質問をまとめる、推奨オプションを先頭に`(推奨)`サフィックスをつけて配置。`AskUserQuestion`ツールは複数選択シナリオで`multiSelect: true`をサポートします。
 
 ---

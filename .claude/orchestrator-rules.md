@@ -21,11 +21,11 @@ Each orchestrator must `Read` this file at startup before beginning work.
 | Plan | Condition | Agents to Launch |
 |------|-----------|-----------------|
 | Minimal | Single-function tool | spec-designer → architect → developer → tester (test-designer integrated) → security-auditor |
-| Light | Personal side project | + ux-designer (if UI) + test-designer + reviewer |
+| Light | Personal side project | + ux-designer (if UI) + test-designer + e2e-test-designer (if UI) + reviewer |
 | Standard | Multi-file project | + scaffolder + visual-designer (if UI) + doc-writer |
 | Full | Public project / OSS | + releaser |
 
-`security-auditor` **must run on all plans**. `ux-designer` runs only for projects with UI. `visual-designer` runs only for projects with UI **and** plan ≥ Standard; on Minimal / Light it is skipped and `ux-designer` applies its lightweight visual default (see `.claude/agents/ux-designer.md` "Design Policy").
+`security-auditor` **must run on all plans**. `ux-designer` and `e2e-test-designer` run only for projects with UI, on Light and above — **Minimal skips the UI sub-flow entirely** (no `UI_SPEC.md` is produced, so `architect` designs the UI directly from SPEC.md). `visual-designer` runs only for projects with UI **and** plan ≥ Standard; on Light it is skipped and `ux-designer` applies its lightweight visual default (see `.claude/agents/ux-designer.md` "Design Policy").
 
 > **sandbox-runner placement**: In Standard and above, `sandbox-runner` is automatically inserted by the orchestrator when a `required`-tier command (per `sandbox-policy.md`) is detected. In Light, only explicit delegation from the calling agent is permitted. In Minimal, `sandbox-runner` is not used — policy violations trigger an advisory warning to the user only.
 
@@ -43,7 +43,7 @@ Each orchestrator must `Read` this file at startup before beginning work.
 
 > **Why no Minimal plan:** Deploying `PRODUCT_TYPE: service` requires at minimum infrastructure definitions (infra-builder) and an operations plan (ops-planner), so Operations uses Light as the minimum plan.
 
-> **sandbox-runner placement in Operations Flow**: At Standard and above, `sandbox-runner` is placed before `db-ops`, `releaser`, and `observability`. This ensures that destructive DB operations and deployment commands pass through risk classification before execution.
+> **sandbox-runner placement in Operations Flow**: At Standard and above, `sandbox-runner` is placed before `db-ops` and `observability` — the two Operations agents that run destructive or infrastructure-touching commands. (`releaser` belongs to delivery-flow's Full plan, not Operations; its placement rule lives with the Delivery triage above.)
 
 ### Maintenance Flow Triage
 
@@ -84,8 +84,10 @@ Each orchestrator must `Read` this file at startup before beginning work.
 |------|-----------|-------------------------|
 | Minimal | 1–2 doc types selected | selected authors only |
 | Light | 3–4 doc types selected | selected authors only |
-| Standard | 5–6 doc types selected | selected authors |
-| Full | All 6 + post-generation template_version verification | all 6 authors + verify step |
+| Standard | **5** doc types selected | selected authors |
+| Full | **All 6** doc types selected | all 6 authors + post-generation `template_version` verification |
+
+Tiers are mutually exclusive by count (1–2 / 3–4 / 5 / 6). Selecting all six is always Full; the verify step is what defines that tier and cannot be opted out of.
 
 > **About doc-flow**: Fifth flow independent from Discovery / Delivery /
 > Operations / Maintenance. Generates customer-deliverable docs (HLD / LLD
@@ -216,6 +218,9 @@ Each flow orchestrator validates required fields of the handoff file at startup.
 
 **DISCOVERY_RESULT.md required fields:**
 - `PRODUCT_TYPE` (one of: service / tool / library / cli)
+- `HAS_UI` (true / false) and `UI_TYPE` (web / desktop / cli-tui / none) — the user's
+  answer at Discovery triage. Downstream flows read these instead of re-inferring
+  (#194); `UI_TYPE: none` is required when `HAS_UI: false`.
 - "Project Overview" section (must not be empty)
 - "Requirements Summary" section (must not be empty)
 
@@ -252,6 +257,8 @@ Final output of Discovery Flow. Input for Delivery Flow's `spec-designer`.
 
 ## Artifact Type
 PRODUCT_TYPE: {service | tool | library | cli}
+HAS_UI: {true | false}
+UI_TYPE: {web | desktop | cli-tui | none}
 
 ## Requirements Summary
 {Structured requirements summary}
@@ -277,7 +284,7 @@ Final output of Delivery Flow. Input for Operations Flow (for service type).
 
 > Created: {YYYY-MM-DD}
 > Delivery Plan: {Minimal | Light | Standard | Full}
-> PRODUCT_TYPE: {service | tool}
+> PRODUCT_TYPE: {service | tool | library | cli}
 
 ## Artifacts
 - SPEC.md: {present/absent} (resolved path: {docs/SPEC.md | SPEC.md})
@@ -384,7 +391,7 @@ rather than restating it.
 - Additional notes: {considerations for delivery-flow execution}
 
 ## PRODUCT_TYPE
-{Resolve via: SPEC.md > project-rules.md (`Product Type:` line under `## Project Overview`) > default `service`}
+{Resolve via the canonical chain in `.claude/rules/aphelion-overview.md` §"PRODUCT_TYPE Resolution Order". Maintenance enters from an existing project, so step 1 (handoff file) does not apply: SPEC.md > project-rules.md > default `service`}
 ```
 
 ### DOC_FLOW_RESULT.md
@@ -574,8 +581,17 @@ phases) is skipped in `autonomous` mode. Automatic quality checks are never bypa
 `APPROVAL_MODE` / `AUTO_APPROVE` are orchestrator session variables. Sub-agents run in
 independent contexts and cannot read them unless the orchestrator injects them into the
 spawn prompt (see "Phase Execution Loop" step 2 below). This section defines how sub-agent
-*internal* `AskUserQuestion` gates — distinct from the orchestrator's own phase approval
-gates — behave once the value is injected.
+*internal* approval gates — distinct from the orchestrator's own phase approval gates —
+behave once the value is injected.
+
+> **How a sub-agent "asks" (#181).** Claude Code strips `AskUserQuestion` from every
+> sub-agent, even when its `tools:` field lists it (`user-questions.md` §"Platform
+> constraint"). A spawned agent therefore **emits** its gate rather than rendering it: it
+> writes the question, options and recommended default as text, stops, and returns. The
+> orchestrator renders the `AskUserQuestion`, then re-spawns the agent with the answer.
+> The mode rules below are unchanged by this — they decide *whether* the gate stops at all.
+> When the mode says "skip and adopt the recommended option", nothing is rendered by either
+> side and the agent proceeds, which is why most runs never hit the round trip.
 
 **Gate types:**
 
@@ -681,6 +697,13 @@ Each phase follows this common loop. Domain-specific steps (rollback checks, etc
        value is carried as the `approval_mode` field of `HANDOFF_PAYLOAD` rather than a
        bare prompt injection (see `agent-communication-protocol.md` §"Field Reference").
   3. Verify the agent's AGENT_RESULT block
+  3b. If the agent owns no `Bash` (spec-designer, ux-designer, visual-designer,
+      test-designer, e2e-test-designer, interviewer, researcher, scope-planner,
+      ops-planner, rules-designer, doc-flow authors), commit its artifacts on its
+      behalf after the phase gate is approved: stage exactly the paths in its
+      ARTIFACT_PATHS and make one commit for the phase
+      (see `git-rules.md` §"Artifacts written by Bash-less agents").
+      Skip push when REPO_STATE=local-only / none.
   4. Evaluate STATUS and handle error / blocked / failure
      (for failure, follow domain-specific rollback rules)
   5. Evaluate the approval decision using the following three-tier priority:

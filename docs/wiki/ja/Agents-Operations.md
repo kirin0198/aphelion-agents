@@ -26,7 +26,7 @@ Operationsドメイン（4エージェント）はデプロイインフラと運
 - **責務**: Dockerfile（マルチステージ）、docker-compose.yml、GitHub Actions CI/CD、.env.example、セキュリティヘッダー、および**sandbox インフラ**（コンテナ隔離実行のための `.devcontainer/devcontainer.json` と `docker-compose.dev.yml`）を生成します。全Operationsプランで実行されます。
 - **入力**: DELIVERY_RESULT.md、ARCHITECTURE.md、実装コード
 - **出力**: Dockerfile、.dockerignore、docker-compose.yml、docker-compose.override.yml、.github/workflows/ci.yml、.env.example、`.devcontainer/devcontainer.json`（Light以上）、`docker-compose.dev.yml`（Light以上、プロジェクトがComposeを使う場合）
-- **AGENT_RESTULTフィールド**: `FILES_CREATED`、`DOCKER_BUILD`、`SECURITY_HEADERS`、`DEVCONTAINER_GENERATED`、`DEV_COMPOSE_GENERATED`、`SANDBOX_INFRA_PATH`
+- **AGENT_RESULTフィールド**: `FILES_CREATED`、`DOCKER_BUILD`、`SECURITY_HEADERS`、`DEVCONTAINER_GENERATED`、`DEV_COMPOSE_GENERATED`、`SANDBOX_INFRA_PATH`
 - **sandbox インフラ生成ポリシー**: Minimal → スキップ；Light → 生成・任意起動；Standard → 生成・必須起動；Full → 生成・必須起動 + 監査ログ
 - **ディレクトリ分離**: 本番インフラ（`Dockerfile`、`docker-compose.yml`）はsandboxインフラ（`.devcontainer/`、`docker-compose.dev.yml`）を参照してはなりません。sandbox インフラからの本番参照は非推奨です。
 - **NEXT条件**:
@@ -40,7 +40,7 @@ Operationsドメイン（4エージェント）はデプロイインフラと運
 - **責務**: 本番DB設定、マイグレーション手順（ロールバック付き）、破壊的変更リスク評価、バックアップ/リストア手順、監視しきい値を定義します。StandardとFullプランで実行されます。
 - **入力**: ARCHITECTURE.md（データモデル、技術スタック）、マイグレーションファイル
 - **出力**: DB_OPS.md
-- **AGENT_RESTULTフィールド**: `MIGRATIONS`、`DESTRUCTIVE_CHANGES`、`DB_TYPE`、`BACKUP_STRATEGY`
+- **AGENT_RESULTフィールド**: `MIGRATIONS`、`DESTRUCTIVE_CHANGES`、`DB_TYPE`、`BACKUP_STRATEGY`
 - **NEXT条件**:
   - Fullプラン → `observability`
   - Standardプラン → `ops-planner`
@@ -52,7 +52,7 @@ Operationsドメイン（4エージェント）はデプロイインフラと運
 - **責務**: ヘルスチェック、構造化ログ、REDメトリクス、アラートルール、パフォーマンスベースラインを設計・実装します。Fullプランのみで実行されます。
 - **入力**: ARCHITECTURE.md、DELIVERY_RESULT.md、実装コード
 - **出力**: OBSERVABILITY.md、ヘルスチェック実装コード
-- **AGENT_RESTULTフィールド**: `HEALTH_CHECKS`、`ALERT_RULES`、`METRICS`
+- **AGENT_RESULTフィールド**: `HEALTH_CHECKS`、`ALERT_RULES`、`METRICS`
 - **NEXT条件**: `ops-planner`
 
 ### ops-planner
@@ -62,7 +62,7 @@ Operationsドメイン（4エージェント）はデプロイインフラと運
 - **責務**: デプロイ手順（ロールバックポイント付き）、ロールバックトリガー条件、インシデント対応プレイブック（P1-P4重大度）、メンテナンスチェックリストを作成します。OPS_RESULT.mdを生成します。
 - **入力**: ARCHITECTURE.md、DELIVERY_RESULT.md、infra-builder/db-ops/observabilityの成果物
 - **出力**: OPS_PLAN.md、OPS_RESULT.md
-- **AGENT_RESTULTフィールド**: `DEPLOY_READY`、`RUNBOOKS`、`MAINTENANCE_ITEMS`
+- **AGENT_RESULTフィールド**: `DEPLOY_READY`、`RUNBOOKS`、`MAINTENANCE_ITEMS`
 - **NEXT条件**: `done`
 
 ---

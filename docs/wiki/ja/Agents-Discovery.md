@@ -30,7 +30,7 @@ Discoveryドメイン（6エージェント）は要件探索を担当します�
 - **責務**: 要件インタビューを実施するエージェントです。暗黙の要件を発掘したうえで PRODUCT_TYPE と HAS_UI を決定し、その結果を INTERVIEW_RESULT.md として生成します。全 Discovery プランで実行されます。
 - **入力**: ユーザーのプロジェクト説明（discovery-flowから）
 - **出力**: INTERVIEW_RESULT.md
-- **AGENT_RESTULTフィールド**: `PRODUCT_TYPE`、`HAS_UI`、`REQUIREMENTS_COUNT`、`IMPLICIT_REQUIREMENTS`
+- **AGENT_RESULTフィールド**: `PRODUCT_TYPE`、`HAS_UI`、`REQUIREMENTS_COUNT`、`IMPLICIT_REQUIREMENTS`
 - **NEXT条件**:
   - Minimalプラン → `done`
   - Lightプラン → `rules-designer`
@@ -44,7 +44,7 @@ Discoveryドメイン（6エージェント）は要件探索を担当します�
 - **責務**: ドメイン知識、競合他社、外部API、技術的リスクを調査します。ユビキタス言語を定義します。StandardとFullプランで実行されます。
 - **入力**: INTERVIEW_RESULT.md
 - **出力**: RESEARCH_RESULT.md
-- **AGENT_RESTULTフィールド**: `RISKS_FOUND`、`EXTERNAL_DEPS`、`COMPETITORS_ANALYZED`、`UBIQUITOUS_TERMS`
+- **AGENT_RESULTフィールド**: `RISKS_FOUND`、`EXTERNAL_DEPS`、`COMPETITORS_ANALYZED`、`UBIQUITOUS_TERMS`
 - **NEXT条件**:
   - Standard / Fullプラン → `poc-engineer`
   - scope-plannerからのロールバック → `scope-planner`
@@ -56,7 +56,7 @@ Discoveryドメイン（6エージェント）は要件探索を担当します�
 - **責務**: 最小限のPoCコードで技術的実現可能性を検証します。実現不可能な要件を特定し、代替案を提案します。StandardとFullプランで実行されます。
 - **入力**: INTERVIEW_RESULT.md、RESEARCH_RESULT.md
 - **出力**: POC_RESULT.md、`poc/`ディレクトリ配下のコード
-- **AGENT_RESTULTフィールド**: `VERIFIED`、`BLOCKED_ITEMS`、`TECH_RECOMMENDATION`
+- **AGENT_RESULTフィールド**: `VERIFIED`、`BLOCKED_ITEMS`、`TECH_RECOMMENDATION`
 - **NEXT条件**:
   - 実現不可能な要件なし、Fullプラン + HAS_UI → `concept-validator`
   - 実現不可能な要件なし、それ以外 → `rules-designer`
@@ -69,7 +69,7 @@ Discoveryドメイン（6エージェント）は要件探索を担当します�
 - **責務**: ワイヤーフレームとユーザーフロー図を通じてUI/UXコンセプトを検証します。HAS_UI: trueのFullプランでのみ実行されます。
 - **入力**: INTERVIEW_RESULT.md、RESEARCH_RESULT.md（オプション）、POC_RESULT.md（オプション）
 - **出力**: CONCEPT_VALIDATION.md
-- **AGENT_RESTULTフィールド**: `SCREENS`、`UX_ISSUES`、`IMPROVEMENTS`
+- **AGENT_RESULTフィールド**: `SCREENS`、`UX_ISSUES`、`IMPROVEMENTS`
 - **NEXT条件**: `scope-planner`
 
 ### rules-designer
@@ -79,7 +79,7 @@ Discoveryドメイン（6エージェント）は要件探索を担当します�
 - **責務**: プロジェクト固有のコーディング規約、Gitワークフロー、ビルドコマンド、および **Repository 宣言**（`Remote type`: `github` | `gitlab` | `gitea` | `local-only` | `none`、`git-rules.md` の Startup Probe が参照）をインタラクティブに決定します。`.claude/rules/project-rules.md`を生成します。Light以上で実行されます。
 - **入力**: INTERVIEW_RESULT.md、RESEARCH_RESULT.md（オプション）、POC_RESULT.md（オプション）
 - **出力**: `.claude/rules/project-rules.md`
-- **AGENT_RESTULTフィールド**: `LANGUAGE`、`FRAMEWORK`、`COMMIT_STYLE`、`BRANCH_STRATEGY`、`REPO_REMOTE_TYPE`
+- **AGENT_RESULTフィールド**: `LANGUAGE`、`FRAMEWORK`、`COMMIT_STYLE`、`BRANCH_STRATEGY`、`REPO_REMOTE_TYPE`
 - **NEXT条件**: `scope-planner`
 
 ### scope-planner
@@ -89,7 +89,7 @@ Discoveryドメイン（6エージェント）は要件探索を担当します�
 - **責務**: MVP を定義するエージェントです。MoSCoW で要件に優先順位を付けたうえで、リスクとコストの評価およびハンドオフ準備状況の判定を行い、DISCOVERY_RESULT.md を生成します。Light 以上で実行されます。
 - **入力**: INTERVIEW_RESULT.md、RESEARCH_RESULT.md、POC_RESULT.md、CONCEPT_VALIDATION.md（利用可能なもの）
 - **出力**: SCOPE_PLAN.md、DISCOVERY_RESULT.md
-- **AGENT_RESTULTフィールド**: `MVP_SCOPE`、`MUST_COUNT`、`SHOULD_COUNT`、`RISKS`、`HANDOFF_READY`
+- **AGENT_RESULTフィールド**: `MVP_SCOPE`、`MUST_COUNT`、`SHOULD_COUNT`、`RISKS`、`HANDOFF_READY`
 - **NEXT条件**:
   - HANDOFF_READY: true → `done`
   - HANDOFF_READY: false → `researcher`（ロールバック、STATUS: blocked）

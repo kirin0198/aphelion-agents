@@ -30,7 +30,7 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 | Triage plan table (summary) | [Triage System](./Triage-System.md): selection logic, conditions, and agent matrices |
 | Agent list (names only) | Agents Reference (split by domain): [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md), [Doc](./Agents-Doc.md) — all 42 agents with inputs, outputs, NEXT conditions |
 | — | [Rules Reference](./Rules-Reference.md): 14 behavior rules with scope and customization notes |
-| — | [Hooks Reference](./Hooks-Reference.md): Claude Code hooks distributed by Aphelion (MVP 3 hooks) |
+| — | [Hooks Reference](./Hooks-Reference.md): Claude Code hooks distributed by Aphelion (4 hooks) |
 | — | [Contributing](./Contributing.md): how to add agents, rules, and maintain the wiki |
 
 ---
