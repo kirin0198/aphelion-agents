@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed (triage / flow consistency)
+
+- **Minimal has no UI sub-flow** (#182): `delivery-flow`'s agent matrix said Minimal skips
+  `ux-designer`, while another section told `ux-designer` to write a lightweight-default
+  block into `UI_SPEC.md` on "Minimal / Light" — a file Minimal never produces. Minimal now
+  consistently runs no UI agent (`architect` derives the UI from SPEC.md); the
+  lightweight-default path is Light-only. `ux-designer.md` and the wiki follow.
+
+- **`e2e-test-designer` restored to the canonical triage table** (#183): `orchestrator-rules.md`
+  listed it in no tier, so an orchestrator following the canonical table skipped E2E design
+  for Light UI projects even though `delivery-flow.md` runs it there.
+
+- **`tester`'s NEXT hints match real routing** (#189): the success hint always said
+  `reviewer` (wrong on Minimal, which has no reviewer), and the failure hint ignored the
+  `TC-E2E-` / `TC-GUI-` branch to `e2e-test-designer`. `maintenance-flow` also declared its
+  own "Max 3 retries" limit, which `orchestrator-rules.md` forbids; it now references the
+  single shared limit and states the test-designer-less chain explicitly.
+
+- **`security-auditor` position** (#190): its own description claimed it runs "in parallel
+  with or just before reviewer", the opposite of every flow, which places it after review.
+
+- **discovery Pattern 2 respects the plan tier** (#191): a blocked `scope-planner` rolled
+  back to `researcher` unconditionally, launching a Standard+ agent inside a Light run with
+  no user approval. Light now prefers `interviewer`, or asks before making a tier exception.
+
+- **DELIVERY_RESULT.md has one template** (#192): the producer's copy and the spec's copy had
+  drifted in both directions (missing resolved paths on one side, a two-value `PRODUCT_TYPE`
+  enum on the other that could not express the `library` / `cli` skip condition).
+  `delivery-flow` now references the canonical template, which carries the four-value enum.
+
+- **HAS_UI / UI_TYPE persist across the flow boundary** (#194): the Discovery triage asked the
+  user about UI, then dropped the answer — `delivery-flow` re-inferred it from
+  `spec-designer`. Both are now required fields of DISCOVERY_RESULT.md, and delivery-flow's
+  resolution order puts them above re-inference.
+
+- **doc-flow Standard/Full boundary is exclusive** (#195): "5–6 types" and "all 6" both
+  matched a six-type selection, leaving the promotion rule undefined. Standard is now exactly
+  5, Full is exactly 6, and the verification step is what defines Full.
+
 ### Fixed (analyst chain)
 
 - **Stale `analyst` references swept from rules and agents** (#175): flow orchestrators

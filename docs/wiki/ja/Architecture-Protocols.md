@@ -1,7 +1,7 @@
 # Architecture: Protocols
 
 > **Language**: [English](../en/Architecture-Protocols.md) | [日本語](../ja/Architecture-Protocols.md)
-> **Last updated**: 2026-07-29 (updated 2026-07-29: MAINTENANCE_RESULT.md のスキーマ節を追加, #168; 2026-04-25: terminology rebalance per #40)
+> **Last updated**: 2026-07-29 (updated 2026-07-29: DISCOVERY_RESULT.md に HAS_UI / UI_TYPE を永続化, #194; MAINTENANCE_RESULT.md のスキーマ節を追加, #168; 2026-04-25: terminology rebalance per #40)
 > **EN canonical**: 2026-07-29 of wiki/en/Architecture-Protocols.md
 > **Audience**: エージェント開発者
 
@@ -46,6 +46,7 @@ flowchart LR
 
 **必須フィールド：**
 - `PRODUCT_TYPE`（service / tool / library / cli のいずれか）
+- `HAS_UI`（true / false）と `UI_TYPE`（web / desktop / cli-tui / none）— Discovery トリアージでのユーザー回答を永続化し、`delivery-flow` が再推論しなくて済むようにするため (#194)
 - 「プロジェクト概要」セクション（空でないこと）
 - 「要件サマリー」セクション（空でないこと）
 
@@ -60,6 +61,8 @@ flowchart LR
 ## プロジェクト概要
 ## 成果物の性質
 PRODUCT_TYPE: {service | tool | library | cli}
+HAS_UI: {true | false}
+UI_TYPE: {web | desktop | cli-tui | none}
 ## 要件サマリー
 ## スコープ
 ## 技術リスク・制約

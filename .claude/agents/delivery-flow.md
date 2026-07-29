@@ -100,9 +100,9 @@ Otherwise, interview the user.
 | Standard | Multi-file project | spec-designer → [ux-designer → [visual-designer]] → architect → scaffolder → developer → test-designer → [e2e-test-designer] → tester → reviewer → security-auditor → doc-writer |
 | Full | Public project / OSS | spec-designer → [ux-designer → [visual-designer]] → architect → scaffolder → developer → test-designer → [e2e-test-designer] → tester → reviewer → security-auditor → doc-writer → releaser |
 
-- **[ux-designer]** runs only for projects that include a UI (`HAS_UI: true`)
-- **[visual-designer]** runs only for `HAS_UI: true` projects on **Standard or Full**. Minimal / Light skip it; in those plans, `ux-designer` applies the lightweight visual default documented in its definition file
-- **[e2e-test-designer]** runs only for projects that include a UI (`HAS_UI: true`)
+- **[ux-designer]** runs only for projects that include a UI (`HAS_UI: true`) **on Light and above** — Minimal has no UI sub-flow
+- **[visual-designer]** runs only for `HAS_UI: true` projects on **Standard or Full**. Light skips it and `ux-designer` applies the lightweight visual default documented in its definition file. Minimal runs no UI agent at all (see below)
+- **[e2e-test-designer]** runs only for projects that include a UI (`HAS_UI: true`) **on Light and above** (Minimal integrates test design into `tester` and runs no E2E design phase)
 - **security-auditor** **must run on all plans** (cannot be omitted)
 - **Minimal** integrates test-designer into tester and skips reviewer
 
@@ -116,7 +116,7 @@ When `HAS_UI: true`, the design phase expands as follows. When `HAS_UI: false`, 
 | visual-designer | ✗ | ✗ | ○ | ○ |
 | e2e-test-designer | ✗ | ○ | ○ | ○ |
 
-When `visual-designer` is skipped (Minimal / Light), the resulting `UI_SPEC.md`
+When `visual-designer` is skipped (Light), the resulting `UI_SPEC.md`
 includes an explicit lightweight-default block in its Section 1 stating
 that visual-designer was not launched (see `ux-designer.md` "Design Policy").
 This makes the visual decision auditable and lets a future Standard/Full
@@ -169,12 +169,23 @@ Phase 10: Security audit          → security-auditor    → ⏸ User approval
 Phase 11: Documentation           → doc-writer          → ⏸ User approval → Done
 ```
 
+**Resolving `HAS_UI` / `UI_TYPE`** (highest priority first):
+
+1. `DISCOVERY_RESULT.md` → `HAS_UI:` / `UI_TYPE:` (the user's explicit answer at Discovery
+   triage, persisted across the flow boundary — #194)
+2. `.aphelion-auto-approve` overrides, when present
+3. `spec-designer`'s `AGENT_RESULT` `HAS_UI` (re-inference — use only when 1 and 2 are absent)
+
+Never let step 3 override step 1. If they disagree, keep the DISCOVERY_RESULT value and
+surface the discrepancy at the next approval gate, since a silent flip changes which agents run.
+
 **Branching based on UI presence and plan tier:**
-- If `spec-designer`'s `AGENT_RESULT` contains `HAS_UI: true`:
+- If `HAS_UI: true` (resolved as above):
   - Execute Phase 2a (`ux-designer`)
   - Execute Phase 2b (`visual-designer`) **only if plan is Standard or Full**
   - Execute Phase 7 (`e2e-test-designer`)
-- If `HAS_UI: true` and plan is Minimal / Light: skip Phase 2b. `ux-designer` writes the lightweight-default block into `UI_SPEC.md` Section 1; downstream agents read that block instead of `VISUAL_SPEC.md`.
+- If `HAS_UI: true` and plan is **Light**: skip Phase 2b. `ux-designer` writes the lightweight-default block into `UI_SPEC.md` Section 1; downstream agents read that block instead of `VISUAL_SPEC.md`.
+- If `HAS_UI: true` and plan is **Minimal**: skip Phases 2a, 2b and 7 — Minimal runs no UI agent, so **no `UI_SPEC.md` is produced**. `architect` derives the UI directly from SPEC.md, and no agent should be told to read `UI_SPEC.md` or its Section 1 default block. Escalate to Light if the project needs a UI spec.
 - If `HAS_UI: false`: skip Phases 2a, 2b, and 7; proceed directly to next applicable phase.
 
 ### Side Entry: analyst chain (Joining via Issue)
@@ -446,36 +457,19 @@ Artifacts:
 
 ### Generating DELIVERY_RESULT.md
 
-After all phases are complete, generate the handoff file that serves as input for Operations.
+After all phases are complete, generate the handoff file that serves as input for Operations,
+**per the canonical template** in `.claude/orchestrator-rules.md` §"Handoff File Specification"
+→ "DELIVERY_RESULT.md". Do not restate the template here — `operations-flow` validates against
+that single definition, and a local copy is how the two drifted apart (#192).
 
-```markdown
-# Delivery Result: {Project Name}
+Write the file per `document-locations.md` (new file → `docs/DELIVERY_RESULT.md`).
 
-> Created: {YYYY-MM-DD}
-> Delivery Plan: {Minimal | Light | Standard | Full}
-> PRODUCT_TYPE: {service | tool | library | cli}
+Two fields need care:
 
-## Artifacts
-- SPEC.md: {present/absent}
-- ARCHITECTURE.md: {present/absent}
-- UI_SPEC.md: {present/absent/N/A}
-- VISUAL_SPEC.md: {present/absent/N/A}
-- TEST_PLAN.md: {present/absent}
-- Implementation code: {file count}
-- README.md: {present/absent}
-
-## Tech Stack
-{Summary of confirmed tech stack}
-
-## Test Results
-- Total: {N} / Pass: {N} / Fail: {N}
-
-## Security Audit Results
-- CRITICAL: {N} / WARNING: {N}
-
-## Handoff to Operations (for service type)
-{Information required for deployment, environment variable list, DB requirements, etc.}
-```
+| Field | Rule |
+|-------|------|
+| `PRODUCT_TYPE` | Four values (`service` / `tool` / `library` / `cli`). `operations-flow` skips itself for `tool` / `library` / `cli`, so a two-value enum cannot express the skip condition. |
+| `## Artifacts` entries | Record the **resolved path** for each artifact (`docs/SPEC.md` vs legacy `SPEC.md`), taken from the `ARTIFACT_PATHS` carried through the flow — never re-resolved here. |
 
 ---
 

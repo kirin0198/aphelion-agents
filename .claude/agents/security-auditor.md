@@ -4,7 +4,9 @@ description: |
   Security audit agent that performs OWASP Top 10, dependency vulnerability scanning, auth/authorization, secrets detection, input validation, and CWE checks.
   Must run on all Delivery plans (including Minimal).
   Used in the following situations:
-  - After all tests pass by tester (in parallel with or just before reviewer)
+  - After reviewer completes (delivery-flow places security-auditor immediately
+    after the review phase on every tier; maintenance Major places it after the
+    analyst chain)
   - When asked to "run a security audit" or "check for vulnerabilities"
   Prerequisites: SPEC.md, ARCHITECTURE.md, and implementation code must exist.
   Output: SECURITY_AUDIT.md (security audit report)

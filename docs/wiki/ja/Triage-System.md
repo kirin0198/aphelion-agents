@@ -3,6 +3,7 @@
 > **Language**: [English](../en/Triage-System.md) | [日本語](../ja/Triage-System.md)
 > **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: Minimal に UI サブフロー無しを明記、Light に e2e-test-designer を追加、doc-flow の Standard/Full 境界を排他化 (#182 #183 #195)
 >   - 2026-07-29: Major 引き渡し節に MAINTENANCE_RESULT.md の消費側契約を記載 (#168)
 >   - 2026-05-01: Delivery トリアージに visual-designer を追加（HAS_UI かつ Standard/Full のみ）(#109)
 >   - 2026-04-30: Doc フロートリアージセクション追加 (#54)
@@ -120,8 +121,8 @@ Phase 6: スコープ策定    → scope-planner     → doc-reviewer (auto) →
 | **Full** | 公開プロジェクト / OSS | + `releaser` |
 
 *Minimalプランでは `tester` がテスト設計を統合（TEST_PLAN.md が事前生成されない場合あり）
-†`HAS_UI: true` の場合のみ
-‡`HAS_UI: true` かつ プラン ≥ Standard の場合のみ。Minimal / Light では `visual-designer` をスキップし、`ux-designer` が軽量なビジュアルデフォルト（system-ui / モノクロ + 1 アクセント / 8px グリッド）を適用します。スキップ時に `UI_SPEC.md` Section 1 へ書き込まれるデフォルトブロックの仕様は `.claude/agents/ux-designer.md` "Design Policy" を参照してください。
+†`HAS_UI: true` かつ **Light 以上**の場合のみ — Minimal には UI サブフローが無く `UI_SPEC.md` も生成されません（`architect` が SPEC.md から直接 UI を設計します）
+‡`HAS_UI: true` かつ プラン ≥ Standard の場合のみ。Light では `visual-designer` をスキップし、`ux-designer` が軽量なビジュアルデフォルト（system-ui / モノクロ + 1 アクセント / 8px グリッド）を適用します。スキップ時に `UI_SPEC.md` Section 1 へ書き込まれるデフォルトブロックの仕様は `.claude/agents/ux-designer.md` "Design Policy" を参照してください。
 
 ### Delivery フェーズシーケンス（Standardの例）
 
@@ -231,8 +232,10 @@ Doc フローは **Discovery / Delivery / Operations / Maintenance から独立�
 |--------|------|----------------------|
 | **Minimal** | 1〜2 doc type 選択 | 選択した author エージェントのみ |
 | **Light** | 3〜4 doc type 選択 | 選択した author エージェントのみ |
-| **Standard** | 5〜6 doc type 選択 | 選択した全 author エージェント |
-| **Full** | 全 6 種 + 生成後の検証 | 全 6 種 author + `template_version` 整合チェック |
+| **Standard** | **5** doc type 選択 | 選択した全 author エージェント |
+| **Full** | **全 6 種**の doc type 選択 | 全 6 種 author + 生成後の `template_version` 整合チェック |
+
+ティアは選択数で排他です（1〜2 / 3〜4 / 5 / 6）。6 種すべての選択は常に Full になります。検証ステップがこのティアの定義であり、省略できません。
 
 **利用可能な doc type**: `hld` / `lld` / `api-reference` / `ops-manual` / `user-manual` / `handover`
 
