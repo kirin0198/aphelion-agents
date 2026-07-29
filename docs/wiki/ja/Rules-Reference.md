@@ -134,13 +134,14 @@
   - フック A は `git commit` の前に実行され、`library-and-security-policy.md` のシークレット検出要件と統合します。
   - フック E は依存関係インストール後に実行され、`library-and-security-policy.md` で定義された `/vuln-scan` ワークフローをトリガーします。
   - `developer` はフック A が安全なプレースホルダーで発動した場合、`[skip-secrets-check]` bypass をユーザーに案内してください。
-- **フック一覧（MVP）**:
+- **フック一覧**（配布される 4 フック。`src/.claude/hooks/` にはこのほかに dogfooding 専用の 3 本があり、配布対象外です、#197）:
   - **A** `aphelion-secrets-precommit.sh` — `PreToolUse Bash(git commit*)` — ステージ差分を 8 つのシークレットパターン（P1〜P8）でスキャン；マッチ時は exit 2。bypass: コミットメッセージに `[skip-secrets-check]` を追加。
   - **B** `aphelion-sensitive-file-guard.sh` — `PreToolUse Write|Edit` — 慣習的なシークレットファイル名（`.env*`・`*.pem`・`*.key` 等）への書き込みをブロック。`tests/`・`fixtures/` ディレクトリや `.example`/`.template`/`.sample`/`.dist` サフィックスは許可。bypass マーカーなし — 無効化には `settings.json` 編集が必要。
+  - **D** `aphelion-project-rules-check.sh` — `SessionStart` — `.claude/rules/project-rules.md` が無い場合に警告します。勧告のみ（常に exit 0）。bypass: `APHELION_SKIP_RULES_CHECK=1`。
   - **E** `aphelion-deps-postinstall.sh` — `PostToolUse Bash(npm install*|uv add*|pip install*|cargo add*|go get*)` — 非ブロッキングの勧告のみ；依存関係変更後に `/vuln-scan` を推奨。
 - **フェイルセーフ**: 全フックは `trap ERR → exit 0` でラップされており、スクリプト内部エラーがユーザーの作業を止めることはありません（フェイルオープン設計）。
-- **配布**: `src/.claude/hooks/`（正規）から `npx aphelion-agents init/update` で配布。`settings.json` は init 後は保護される（ユーザーのカスタマイズを保持）；`hooks/` スクリプトは毎回 update で上書きコピーされます。
-- **概要**: Aphelion の MVP 3 フックが積極的なコンテンツスキャン層として機能することを定めます。エージェントは bypass ルール（フック A: `[skip-secrets-check]`；フック B: bypass なし・`settings.json` 編集が必要；フック E: bypass 不要）を知っておく必要があります。全フックはフェイルオープン設計です。正規パターンライブラリ（`secret-patterns.sh`・ID P1〜P8）はフック A と `/secrets-scan` slash command が共有する単一の信頼ソースです。
+- **配布**: `src/.claude/hooks/`（正規）から `npx aphelion-agents init/update` で配布。`settings.json` は init / update の双方で**マージ**され、ユーザー設定と意図的に削除したフックは保持されます（#114、#202）；`hooks/` スクリプトは毎回 update で上書きコピーされます。
+- **概要**: Aphelion が配布する 4 フックが積極的なコンテンツスキャン層として機能することを定めます。エージェントは bypass ルール（フック A: `[skip-secrets-check]`；フック B: bypass なし・`settings.json` 編集が必要；フック D: `APHELION_SKIP_RULES_CHECK=1`；フック E: bypass 不要）を知っておく必要があります。全フックはフェイルオープン設計です。正規パターンライブラリ（`secret-patterns.sh`・ID P1〜P8）はフック A と `/secrets-scan` slash command が共有する単一の信頼ソースです。
 
 ---
 

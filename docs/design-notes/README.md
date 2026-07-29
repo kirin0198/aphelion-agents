@@ -28,14 +28,24 @@ without a backing issue, place it under `proposals/` instead.
 
 ## Evergreen notes
 
-A small number of files in this directory may lack a `> GitHub Issue:`
-header. These are **evergreen reference notes** — architectural overviews
-or standing guidelines that are not tied to any single issue. The archive
-automation skips these files safely (they contain no issue number to
-match). Do not move them unless the content has become stale or has been
-superseded by a wiki page.
+A file in this directory that lacks a `> GitHub Issue:` header is an
+**evergreen reference note** — an architectural overview or standing
+guideline not tied to any single issue. The archive automation skips those
+files because there is no issue number to match against. Do not move them
+unless the content has become stale or has been superseded by a wiki page.
 
-Current evergreen notes: `compliance-auditor.md`, `performance-optimizer.md`.
+**There are currently none.** `compliance-auditor.md` and
+`performance-optimizer.md` were listed here as evergreen until #208, but both
+carry a `> GitHub Issue:` header (`[#56]` and `[#58]`) on line 8 and therefore
+match the archive workflows' grep. They are ordinary active planning docs: the
+moment #56 / #58 close, they are moved to `archived/` — by
+`archive-closed-plans.yml` if the closing PR says `Closes #56`, or by the weekly
+`archive-orphan-plans.yml` otherwise. That is the intended lifecycle for a
+planning doc, so nothing needs protecting; what was wrong was calling them
+evergreen and implying the automation would leave them alone.
+
+To make a note genuinely evergreen, remove its `> GitHub Issue:` line — and
+accept that it then has no issue backing it.
 
 ## Lifecycle
 

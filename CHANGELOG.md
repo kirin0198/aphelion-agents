@@ -7,161 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed (commands & hook distribution)
-
-- **Dogfooding hooks are no longer shipped** (#197): three hooks whose own headers say
-  "this repo only, NOT shipped via bin/init" were copied into every user project by the
-  recursive `hooks/` overlay — inert (the settings template never registers them) but
-  present and executable. `init` / `update` now exclude them by name, `hooks-policy.md`
-  documents their existence and exclusion, and installations that already received them get
-  them reported as removed-upstream files by `update` (#207 machinery).
-
-- **`/aphelion-check` checks hook D and gives working remediation** (#205): it verified only
-  three hooks, so an installation missing the `SessionStart` hook D entry — precisely the
-  legacy case `hooks-policy.md` warns about — reported green. Its remediation was stale too:
-  it described `init` as copy-if-absent and `settings.json` as protected after init, both
-  untrue since the #114 merge implementation, and told users to re-run `init`, which exits 1
-  when `.claude/` exists. Now: four hooks, `update` as the fix, plus a note that a hook you
-  deliberately removed stays removed (0.3.9 behaviour) and a manifest-presence report.
-
-- **`/rules-designer` and `/aphelion-init` match the agent** (#204): the command file claimed
-  the agent generates `CLAUDE.md` in the project root (it writes
-  `.claude/rules/project-rules.md`), and `/aphelion-init` promised existing-file detection
-  and standalone support the agent did not implement. Since `/aphelion-init` is the mandatory
-  first-run command, "INTERVIEW_RESULT.md required" pushed brand-new users into `interviewer`
-  before they could configure anything. The agent now treats all Discovery artifacts as
-  optional (asking directly when absent, defaulting from what the repo shows) and detects an
-  existing `project-rules.md` to offer amend / recreate instead of overwriting it.
-
-- **Getting-Started stops advertising commands that do not exist** (#206): Scenario 5 told
-  users to run `/security-auditor` and `/doc-writer`; neither has a command file. It now
-  lists the standalone commands that do exist and explains that other agents are invoked in
-  plain language.
-
-### Fixed (agent tools & responsibilities)
-
-- **doc-flow creates its output directory** (#185): the six author agents own `Write` but not
-  `Bash`, and each delegates `mkdir -p docs/deliverables/{slug}/` to the orchestrator — which
-  had no such step. The first `Write` of a fresh project failed. `doc-flow` now creates the
-  directory as soon as the slug is fixed.
-
-- **scaffolder owns branch creation** (#186): as the first implementation-tier agent on
-  Standard / Full it may run with no work branch open, yet its Git step went straight to
-  `git commit`, risking a scaffold committed to `main`. It now checks the current branch,
-  creates `feat/{slug}` when on `main`, pushes, and reports `BRANCH`.
-
-- **Artifacts of Bash-less agents have an owner** (#187): SPEC.md, UI_SPEC.md, VISUAL_SPEC.md,
-  TEST_PLAN.md, SCOPE_PLAN.md, OPS_PLAN.md and `project-rules.md` are written by agents with
-  no `Bash`, and no rule said who commits them — they were left uncommitted or swept into a
-  later `developer` commit, breaking the one-commit-per-task rule. `git-rules.md` now assigns
-  the commit to the spawning flow orchestrator (one commit per phase, staged from the agent's
-  `ARTIFACT_PATHS`), with a step in the Phase Execution Loop. `rules-designer` is no longer
-  listed as a committing agent — it owns no `Bash`.
-
-- **sandbox-runner matches sandbox-policy** (#188): the agent implemented host detection for
-  Copilot / Codex and an `advisory_only` mode that the policy — "Claude Code only … no
-  multi-platform detection" with a four-mode table — does not define. The detection step and
-  the fifth mode are gone; the wiki diagrams and mode lists follow.
-
-- **sandbox-runner placement names the right flow** (#193): both the orchestrator rules and
-  the policy placed `sandbox-runner` before `releaser` "in Operations Flow", but `releaser`
-  is a delivery-flow Full-plan agent and Operations has no such phase. Operations now lists
-  `db-ops` / `observability`; the `releaser` rule moves to Delivery.
-
-- **One PRODUCT_TYPE resolution chain** (#196): three flows used three different fallback
-  orders, and `operations-flow` skipped `SPEC.md` entirely — so a `cli` project declared in
-  SPEC but not in project-rules.md would have had Operations run against it. The canonical
-  chain now reads "entry handoff file → SPEC.md → project-rules.md → service", with the
-  per-flow difference limited to *which* handoff file step 1 consults.
-
-### Fixed (triage / flow consistency)
-
-- **Minimal has no UI sub-flow** (#182): `delivery-flow`'s agent matrix said Minimal skips
-  `ux-designer`, while another section told `ux-designer` to write a lightweight-default
-  block into `UI_SPEC.md` on "Minimal / Light" — a file Minimal never produces. Minimal now
-  consistently runs no UI agent (`architect` derives the UI from SPEC.md); the
-  lightweight-default path is Light-only. `ux-designer.md` and the wiki follow.
-
-- **`e2e-test-designer` restored to the canonical triage table** (#183): `orchestrator-rules.md`
-  listed it in no tier, so an orchestrator following the canonical table skipped E2E design
-  for Light UI projects even though `delivery-flow.md` runs it there.
-
-- **`tester`'s NEXT hints match real routing** (#189): the success hint always said
-  `reviewer` (wrong on Minimal, which has no reviewer), and the failure hint ignored the
-  `TC-E2E-` / `TC-GUI-` branch to `e2e-test-designer`. `maintenance-flow` also declared its
-  own "Max 3 retries" limit, which `orchestrator-rules.md` forbids; it now references the
-  single shared limit and states the test-designer-less chain explicitly.
-
-- **`security-auditor` position** (#190): its own description claimed it runs "in parallel
-  with or just before reviewer", the opposite of every flow, which places it after review.
-
-- **discovery Pattern 2 respects the plan tier** (#191): a blocked `scope-planner` rolled
-  back to `researcher` unconditionally, launching a Standard+ agent inside a Light run with
-  no user approval. Light now prefers `interviewer`, or asks before making a tier exception.
-
-- **DELIVERY_RESULT.md has one template** (#192): the producer's copy and the spec's copy had
-  drifted in both directions (missing resolved paths on one side, a two-value `PRODUCT_TYPE`
-  enum on the other that could not express the `library` / `cli` skip condition).
-  `delivery-flow` now references the canonical template, which carries the four-value enum.
-
-- **HAS_UI / UI_TYPE persist across the flow boundary** (#194): the Discovery triage asked the
-  user about UI, then dropped the answer — `delivery-flow` re-inferred it from
-  `spec-designer`. Both are now required fields of DISCOVERY_RESULT.md, and delivery-flow's
-  resolution order puts them above re-inference.
-
-- **doc-flow Standard/Full boundary is exclusive** (#195): "5–6 types" and "all 6" both
-  matched a six-type selection, leaving the promotion rule undefined. Standard is now exactly
-  5, Full is exactly 6, and the verification step is what defines Full.
-
-### Fixed (analyst chain)
-
-- **Stale `analyst` references swept from rules and agents** (#175): flow orchestrators
-  document that `analyst` must never be spawned as a sub-agent (it uses the Agent tool
-  internally) and that `analyst-intake` → `analyst-core` is the only correct spawn path —
-  but `orchestrator-rules.md` (Maintenance triage, rollback targets), `change-classifier.md`
-  (`NEXT: analyst`), `impact-analyzer.md`, `architect.md`, `developer.md`,
-  `document-locations.md` and `agent-communication-protocol.md` still named the old agent.
-  Following them literally meant spawning a broken agent or misattributing git
-  responsibilities (`git-rules.md` assigns branch creation to `analyst-intake`; the
-  top-level `analyst` performs no git operations). Wiki-side occurrences are tracked
-  separately.
-
-- **`analyst-core.HANDOFF_TO` is plan-dependent** (#176): the contract emitted a fixed
-  `architect`, while `maintenance-flow` expected `architect | developer` — and the Patch
-  plan has no architect phase, so the routing hint pointed at a phase that does not exist.
-  `HANDOFF_TO` / `NEXT` now resolve to `developer` when the caller states the plan has no
-  architect phase, and `maintenance-flow` says so in the Patch spawn prompt.
-
-- **maintenance Patch's doc-reviewer condition is satisfiable** (#177): it required
-  `analyst-core.DOCS_UPDATED` to contain SPEC.md **or ARCHITECTURE.md**, but analyst-core
-  is explicitly forbidden from writing ARCHITECTURE.md and its DOCS_UPDATED schema has only
-  SPEC.md / UI_SPEC.md keys — half the condition could never hold. Now reads SPEC.md or
-  UI_SPEC.md, matching the emitter. (The third divergent wording in `orchestrator-rules.md`
-  was corrected in #224.)
-
-### Fixed (doc-reviewer contract)
-
-- **`DOC_REVIEW_RESULT` vocabulary unified on `pass` / `fail`** (#173): the canonical
-  Field Reference in `agent-communication-protocol.md` declared
-  `passed | has-inconsistencies`, while the emitter (`doc-reviewer.md`) and every parser
-  (`orchestrator-rules.md`, `discovery-flow.md`) used `pass | fail`. Anyone implementing
-  against the protocol table would have broken the rollback trigger. The wiki's third
-  value (`conditional`), which existed nowhere in the implementation, is gone too.
-
-- **`DOC_REVIEW_RESULT: fail` now requires `STATUS: failure`** (#174): the Doc Review FAIL
-  rollback fires on the AND of both fields, but `doc-reviewer.md` never said what STATUS to
-  emit when INCONSISTENCY_COUNT ≥ 1 — a `success` + `fail` pair silently skipped the
-  rollback chain. The pairing is now mandatory in the agent definition and the protocol
-  table, and `orchestrator-rules.md` treats a mismatched pair as a fail (safe side).
-
-- **doc-reviewer knows about visual-designer** (#184): the agent's own trigger list omitted
-  `visual-designer` even though both `orchestrator-rules.md` and `delivery-flow.md` insert it
-  there, and `VISUAL_SPEC.md` was missing from the read order — so a visual-designer-triggered
-  review never read the artifact under review. Adds the read-order entry (HAS_UI=true and
-  plan ≥ Standard), a TRIGGERED_BY → required-document table for the `STATUS: error` rule,
-  and corrects the stale `analyst` references to `analyst-core` (#139 split).
-
 ### Added
+
+- **README badge counts are checked in CI** (#198): `check-readme-wiki-sync.sh` gains
+  Check 5, comparing the agents / commands / rules / hooks badges in both READMEs against
+  the real file counts (hooks excluding the dogfooding scripts). The badges had drifted for
+  months precisely because nothing verified them.
+
+- **visual-designer agent** (#109): a dedicated visual-design layer for `HAS_UI: true`
+  projects on Standard / Full, producing `VISUAL_SPEC.md` (palette, typography, spacing,
+  design tokens, component-library selection, accessibility level, breakpoints). On Light
+  the layer is skipped and `ux-designer` writes a lightweight default into `UI_SPEC.md`
+  Section 1. Agent count 39 → 40 at the time. (Entry added retroactively in #200.)
+
+- **Hook D — `aphelion-project-rules-check`, plus `/aphelion-check`** (#130): a SessionStart
+  advisory that warns when `.claude/rules/project-rules.md` is absent (silenced with
+  `APHELION_SKIP_RULES_CHECK=1`), a health-check command covering agents / rules / hooks /
+  `gh auth` / git / Docker, and `/aphelion-init` promoted to the mandatory first-run step.
+  `update` merges the new `SessionStart` block into existing installations.
+  (Entry added retroactively in #200.)
+
+- **Planning-tier responsibility matrix in `git-rules.md`** (#141): defines, for the analyst
+  chain's three entry cases (fresh / resume / legacy resume), who creates the branch, who
+  makes the initial commit, and who injects the handoff block — and states that callers
+  perform no git operations on the chain's behalf. (Entry added retroactively in #200.)
+
+- **Approval mode (autonomous / interactive) with triage linkage and escalation** (#161):
+  `APPROVAL_MODE` resolved per triage tier, in-agent G1/G2/G3 gate taxonomy,
+  `ESCALATION_REQUIRED` / `ESCALATION_REASON` on the AGENT_RESULT contract, and a
+  `## Approval Mode` override key in `project-rules.md`. (Entry added retroactively in #200.)
 
 - **`update --prune`** (#207): `update` now compares the target `.claude/` against a
   distribution manifest (`.claude/.aphelion-manifest.json`, written by `init` / `update`)
@@ -170,104 +44,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   in place are carried in the manifest and reported again next run. `--prune` deletes them.
   Installations that predate the manifest are still covered for known removals (e.g. the
   `/pm` command dropped in #55 / #67, which kept appearing as a live skill).
-
-### Fixed
-
-- **`update` no longer revives hooks the user removed** (#202): `mergeSettingsJson()`
-  deleted every `aphelion-`-marked entry and re-added the full template, so disabling a
-  hook by removing its `settings.json` entry — the method `hooks-policy.md` documents as
-  the only bypass for hook B — was undone on the next `update`. The merge now refreshes
-  entries that are still present, adds hooks that are new since the last run, preserves
-  user-owned entries, and skips (with a printed notice) any template hook that was known
-  last run and is now absent. Pre-manifest installations get one transitional run where
-  all template hooks are re-added, then removals stick. `hooks-policy.md` §3 / §4.2 / §4.3
-  and `docs/wiki/{en,ja}/Hooks-Reference.md` updated to match the implementation.
-
-- **doc-flow templates reach npx installs** (#203): `.claude/templates` was missing from
-  `package.json` `files`, so the 12 doc-flow templates never shipped through
-  `npx aphelion-agents init`. Every author agent's template resolution (steps 1-4) failed
-  and silently degraded to `TEMPLATE_USED: agent-emit-fallback`, while a dev-checkout
-  install behaved differently. Added to `files`, with a smoke-test lock.
-
-- **architect can now perform its own git workflow** (#167): `architect.md`
-  declared `tools: Read, Write, Glob, Grep` while its body defined three
-  mandatory bash workflows (branch check, design-note commit + push, standalone
-  branch creation) and its completion checklist required "committed and pushed" —
-  the agent could not satisfy its own completion conditions. `Bash` is added to
-  its tools, along with the `sandbox-policy` / `denial-categories` reference
-  lines, `REPO_STATE=local-only` / `none` downgrade behaviour, and the
-  Planning-tier `BRANCH` field (never `PR_URL`) in `AGENT_RESULT`.
-  `docs/wiki/{en,ja}/Agents-Delivery.md` updated. (#167)
-
-- **MAINTENANCE_RESULT.md consumer contract** (#168): `maintenance-flow`'s Major
-  plan generated `MAINTENANCE_RESULT.md`, but `delivery-flow` never read it and
-  `orchestrator-rules.md`'s Handoff File Specification had no entry for it, so the
-  recommended plan, impact analysis, and pre-audit remediation items were silently
-  discarded. Adds the canonical template + required-field validation to
-  `orchestrator-rules.md`, makes `maintenance-flow.md` reference that single
-  definition instead of restating it, and gives `delivery-flow.md` handoff-file
-  precedence, required-field validation (`STATUS: error`, no interview fallback),
-  a field-to-phase mapping, `Recommended plan` as the triage proposal, and
-  start-from-`architect` in differential mode.
-  `docs/wiki/{en,ja}/{Architecture-Protocols,Agents-Orchestrators,Triage-System,Getting-Started}.md`
-  updated. (#168)
-
-- **Planning-doc-on-work-branch rule** (#136): `analyst` is now a
-  Planning-tier agent responsible for branch creation and committing the
-  planning doc + any SPEC/UI_SPEC edits immediately after `gh issue create`.
-  `architect` reuses that branch and commits the companion design note
-  (`<slug>-design.md`). `developer`'s Startup Probe detects untracked files
-  under `docs/design-notes/` and emits a warning (fail-safe; no auto-add).
-  `git-rules.md` §"Branch & PR Strategy" now defines the Planning-tier /
-  Implementation-tier split. `docs/design-notes/README.md` Lifecycle diagram
-  updated to show the full agent handoff chain. (#136)
-
-- **TASK.md reset enforcement** (#128): The `developer` agent now explicitly
-  resets `TASK.md` to an empty placeholder at phase completion, enforcing the
-  rule already stated in `document-versioning.md` §"TASK.md Lifecycle". Adds a
-  "Phase Completion Reset" procedure section (with bash snippet) and a new
-  Completion Conditions checkbox to `.claude/agents/developer.md`. Expands the
-  "Note on TASK.md" in `docs/wiki/{en,ja}/Getting-Started.md` to describe the
-  full 3-state lifecycle (generate → tick → reset). Updates developer row in
-  `docs/wiki/{en,ja}/Agents-Delivery.md` to document the reset responsibility.
-  Also resets the currently-stale `TASK.md` on `main` to the empty placeholder.
-  (#128)
-
-### Changed
-
-- **analyst split into analyst-intake (Sonnet) + analyst-core (Opus)** (#139):
-  `analyst` agent is split into three files. `analyst.md` is rewritten as a
-  top-level Sonnet orchestrator (~115 lines) that chains the two new sub-agents.
-  Pattern B (dual-path) design: standalone (`/analyst`) invocations use the
-  `analyst` orchestrator which spawns `analyst-intake` then `analyst-core` via
-  the Agent tool. Flow orchestrators (`delivery-flow`, `maintenance-flow`) spawn
-  `analyst-intake` and `analyst-core` directly in sequence (spawning `analyst.md`
-  as a sub-agent would fail because the Agent tool is unavailable in sub-agent
-  contexts). `analyst-intake` (Sonnet) handles structured intake questions,
-  planning doc §1-4 stub, GitHub issue initial creation, and work branch commit.
-  `analyst-core` (Opus) handles Steps 1-5: issue classification, deep analysis,
-  user approval gate, SPEC.md/UI_SPEC.md incremental updates, and GitHub issue
-  body refinement. Resume mechanism: `analyst-intake` embeds a
-  `<!-- analyst-handoff -->` YAML block in the planning doc; on re-invocation
-  `analyst` orchestrator detects this block and skips intake, resuming from core.
-  Per-invocation input cost ~24% reduction (intake phase moves from Opus to
-  Sonnet, 5:1 price ratio). `/analyst` skill name unchanged. `delivery-flow.md`
-  and `maintenance-flow.md` updated to spawn the intake→core chain directly.
-  Agent count 40 → 42. (#139)
-
-- **`aphelion-overview.md` slim** (#132 §B, PR-1 of 2): Removed duplicated
-  content that is already covered by dedicated auto-loaded rules or per-agent
-  definitions. Update history block compressed to 1-line git-log pointer (-7);
-  Cross-cutting agents table deleted (covered by sandbox-runner.md /
-  doc-reviewer.md) (-6); Doc Flow agents table deleted (covered by each
-  author agent file) (-11); Hook layer section compressed to 2-line pointer
-  to `hooks-policy.md` (-8); Document locations rule compressed to 2-line
-  pointer (-8); Tech Stack Flexibility compressed (-4); Domain Flow ASCII
-  diagram compressed while preserving all 5 flow names (-6). Total:
-  131 → 84 lines (-38%). The `### Project-rules consultation (all agents)`
-  section added by #131 §② is preserved verbatim. (#132)
-
-### Added
 
 - **Agent definition deduplication** (#131 §①+§②, ~1000+ lines net reduction):
   §② moves the repeated `## Project-Specific Behavior` boilerplate out of all 40
@@ -342,23 +118,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `license-MIT`) plus a Cloudflare Pages "Wiki" badge linking to https://aphelion-agents.com/.
   (#101, PR #102)
 
-### Changed
-
-- Agent count bumped 31 → 32 (`doc-reviewer`, #91) → 39 (`doc-flow` + 6 authors, #54).
-  Reflected in README.md / README.ja.md body, `aphelion-overview.md`, and
-  `docs/wiki/{en,ja}/Home.md`. (#54 / #91)
-- Aphelion expanded from 4-domain to 5-domain workflow (added Doc domain). (#54)
-- Agents Reference split from 5 pages to 6 pages (`agents-doc` added to wiki and sidebar). (#54)
-- `docs/wiki/{en,ja}/Home.md` rule count corrected 9 → 12 to match actual files in
-  `src/.claude/rules/` (catch-up after `denial-categories` #31 and
-  `localization-dictionary` addition). (#103)
-- `site/src/content/docs/{en,ja}/index.mdx` (Cloudflare Pages landing) refreshed for
-  39 agents / 5 flows / Doc domain card / doc-reviewer mention. (#103)
-- `site/astro.config.mjs` PAGES array: `Agents Reference` group now lists `agents-doc`
-  so the Doc domain page appears in the sidebar. (#103)
-
-### Added (continued)
-
 - `.github/workflows/check-readme-wiki-sync.yml` — advisory CI check for README ↔ Wiki
   drift; runs on every PR (`pull_request: [opened, edited, synchronize]`). Read-only
   check; does not block merge. Promotion to a required status check is a deliberate
@@ -370,26 +129,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Check 3; §3.4 `> EN canonical:` date marker deliberately not adopted for
   `README.ja.md`. Also updates `docs/wiki/{en,ja}/Rules-Reference.md` with
   a cross-reference bullet.
-
-### Changed
-
-- `.gitignore` — added `/.claude/worktrees/` entry to prevent untracked-directory
-  noise when the claude CLI creates this directory during local worktree sessions.
-  Anchored to root so only the repo-level copy is matched. (#80)
-- `docs/wiki/{en,ja}/Getting-Started.md` — added a "Note on `TASK.md`" paragraph
-  in the "What to Expect: A Typical Session" section (before "Session Resume")
-  clarifying that an empty `TASK.md` at the repository root is the correct idle
-  state between `developer` phases, not a sign of incomplete work. (#80)
-
-### Removed
-
-- `ISSUE.md` — deleted obsolete analyst v1-era issue draft (wiki-addition brief
-  from 2026-04-18). The file had been superseded since `9c2b200` (`refactor:
-  replace ISSUE.md file management with GitHub Issues`); `analyst.md:265` already
-  states "No local ISSUE.md file is created." Recovery is available from git
-  history. (#80)
-
-### Added
 
 - `scripts/check-readme-wiki-sync.sh` — new executable script that checks
   cross-source consistency for three items: (1) agent count parity across
@@ -422,6 +161,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `/aphelion-init` and `/aphelion-help` slash commands (#39 / #49)
 
 ### Changed
+
+- **`init` merges an existing `.claude/settings.json` instead of destroying it** (#114):
+  the CLI now parses the existing file, removes only Aphelion-managed hook entries, appends
+  the template's, and writes the result back — preserving user settings. A malformed JSON
+  file is skipped with a warning rather than overwritten. (Entry added retroactively in #200.)
+
+- **analyst split into analyst-intake (Sonnet) + analyst-core (Opus)** (#139):
+  `analyst` agent is split into three files. `analyst.md` is rewritten as a
+  top-level Sonnet orchestrator (~115 lines) that chains the two new sub-agents.
+  Pattern B (dual-path) design: standalone (`/analyst`) invocations use the
+  `analyst` orchestrator which spawns `analyst-intake` then `analyst-core` via
+  the Agent tool. Flow orchestrators (`delivery-flow`, `maintenance-flow`) spawn
+  `analyst-intake` and `analyst-core` directly in sequence (spawning `analyst.md`
+  as a sub-agent would fail because the Agent tool is unavailable in sub-agent
+  contexts). `analyst-intake` (Sonnet) handles structured intake questions,
+  planning doc §1-4 stub, GitHub issue initial creation, and work branch commit.
+  `analyst-core` (Opus) handles Steps 1-5: issue classification, deep analysis,
+  user approval gate, SPEC.md/UI_SPEC.md incremental updates, and GitHub issue
+  body refinement. Resume mechanism: `analyst-intake` embeds a
+  `<!-- analyst-handoff -->` YAML block in the planning doc; on re-invocation
+  `analyst` orchestrator detects this block and skips intake, resuming from core.
+  Per-invocation input cost ~24% reduction (intake phase moves from Opus to
+  Sonnet, 5:1 price ratio). `/analyst` skill name unchanged. `delivery-flow.md`
+  and `maintenance-flow.md` updated to spawn the intake→core chain directly.
+  Agent count 40 → 42. (#139)
+
+- **`aphelion-overview.md` slim** (#132 §B, PR-1 of 2): Removed duplicated
+  content that is already covered by dedicated auto-loaded rules or per-agent
+  definitions. Update history block compressed to 1-line git-log pointer (-7);
+  Cross-cutting agents table deleted (covered by sandbox-runner.md /
+  doc-reviewer.md) (-6); Doc Flow agents table deleted (covered by each
+  author agent file) (-11); Hook layer section compressed to 2-line pointer
+  to `hooks-policy.md` (-8); Document locations rule compressed to 2-line
+  pointer (-8); Tech Stack Flexibility compressed (-4); Domain Flow ASCII
+  diagram compressed while preserving all 5 flow names (-6). Total:
+  131 → 84 lines (-38%). The `### Project-rules consultation (all agents)`
+  section added by #131 §② is preserved verbatim. (#132)
+
+- Agent count bumped 31 → 32 (`doc-reviewer`, #91) → 39 (`doc-flow` + 6 authors, #54).
+  Reflected in README.md / README.ja.md body, `aphelion-overview.md`, and
+  `docs/wiki/{en,ja}/Home.md`. (#54 / #91)
+- Aphelion expanded from 4-domain to 5-domain workflow (added Doc domain). (#54)
+- Agents Reference split from 5 pages to 6 pages (`agents-doc` added to wiki and sidebar). (#54)
+- `docs/wiki/{en,ja}/Home.md` rule count corrected 9 → 12 to match actual files in
+  `src/.claude/rules/` (catch-up after `denial-categories` #31 and
+  `localization-dictionary` addition). (#103)
+- `site/src/content/docs/{en,ja}/index.mdx` (Cloudflare Pages landing) refreshed for
+  39 agents / 5 flows / Doc domain card / doc-reviewer mention. (#103)
+- `site/astro.config.mjs` PAGES array: `Agents Reference` group now lists `agents-doc`
+  so the Doc domain page appears in the sidebar. (#103)
+
+- `.gitignore` — added `/.claude/worktrees/` entry to prevent untracked-directory
+  noise when the claude CLI creates this directory during local worktree sessions.
+  Anchored to root so only the repo-level copy is matched. (#80)
+- `docs/wiki/{en,ja}/Getting-Started.md` — added a "Note on `TASK.md`" paragraph
+  in the "What to Expect: A Typical Session" section (before "Session Resume")
+  clarifying that an empty `TASK.md` at the repository root is the correct idle
+  state between `developer` phases, not a sign of incomplete work. (#80)
 
 - `docs/wiki/DESIGN.md` relocated to
   `docs/design-notes/archived/wiki-information-architecture.md`. The file
@@ -460,21 +257,269 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- `ISSUE.md` — deleted obsolete analyst v1-era issue draft (wiki-addition brief
+  from 2026-04-18). The file had been superseded since `9c2b200` (`refactor:
+  replace ISSUE.md file management with GitHub Issues`); `analyst.md:265` already
+  states "No local ISSUE.md file is created." Recovery is available from git
+  history. (#80)
+
 - `/issue-new` slash command (replaced by enhanced `/analyst`) (#62 / #63)
 - `/pm` slash command (functionally identical to `/delivery-flow`) (#55 / #67)
 
 ### Fixed
+
+- **Stale counts across README and wiki** (#198): `commands-14` (15 command files),
+  `hooks-3` (4 distributed hooks), "Delivery (12 agents)" ×4 (13 since visual-designer),
+  "MVP 3 hooks" in Home / Rules-Reference (4 since hook D, whose
+  `APHELION_SKIP_RULES_CHECK=1` bypass was also missing from the inventory), and
+  Agents-Maintenance's "3 agents + orchestrator" immediately followed by "the two supporting
+  agents" (there are two). Check 5 now guards the badge subset.
+
+- **`AGENT_RESTULT` typo ×18 in the JA wiki** (#201): four pages (Agents-Discovery,
+  Agents-Orchestrators, Agents-Operations, Agents-Maintenance) carried a misspelling of a
+  machine-readable protocol keyword that `language-rules.md` fixes as English. It had been
+  detected and deferred twice, and re-propagated into a page rewritten in 2026-05-30.
+
+- **CHANGELOG structure** (#199): `[Unreleased]` had accumulated duplicate `### Added` ×2,
+  `### Changed` ×3, `### Fixed` ×2 and an `### Added (continued)`, violating the Keep a
+  Changelog format the file declares. Merged to one heading per category, with a note
+  explaining why there are no version headings between 0.3.2 and today (the bumps invalidate
+  the npx cache; no releases were tagged).
+
+- **Missing CHANGELOG entries** (#200): #109, #114, #130, #141 and #161 changed
+  user-visible behaviour but were never recorded. Added retroactively, together with the
+  entry criterion that was previously applied inconsistently.
+
+- **design-notes/README's evergreen claim** (#208): it named `compliance-auditor.md` and
+  `performance-optimizer.md` as evergreen notes that "the archive automation skips safely"
+  and told maintainers not to move them — but both carry a `> GitHub Issue:` header and
+  will be archived the moment #56 / #58 close. The section now describes the real rule and
+  states that there are currently no evergreen notes.
+
+- **Dogfooding hooks are no longer shipped** (#197): three hooks whose own headers say
+  "this repo only, NOT shipped via bin/init" were copied into every user project by the
+  recursive `hooks/` overlay — inert (the settings template never registers them) but
+  present and executable. `init` / `update` now exclude them by name, `hooks-policy.md`
+  documents their existence and exclusion, and installations that already received them get
+  them reported as removed-upstream files by `update` (#207 machinery).
+
+- **`/aphelion-check` checks hook D and gives working remediation** (#205): it verified only
+  three hooks, so an installation missing the `SessionStart` hook D entry — precisely the
+  legacy case `hooks-policy.md` warns about — reported green. Its remediation was stale too:
+  it described `init` as copy-if-absent and `settings.json` as protected after init, both
+  untrue since the #114 merge implementation, and told users to re-run `init`, which exits 1
+  when `.claude/` exists. Now: four hooks, `update` as the fix, plus a note that a hook you
+  deliberately removed stays removed (0.3.9 behaviour) and a manifest-presence report.
+
+- **`/rules-designer` and `/aphelion-init` match the agent** (#204): the command file claimed
+  the agent generates `CLAUDE.md` in the project root (it writes
+  `.claude/rules/project-rules.md`), and `/aphelion-init` promised existing-file detection
+  and standalone support the agent did not implement. Since `/aphelion-init` is the mandatory
+  first-run command, "INTERVIEW_RESULT.md required" pushed brand-new users into `interviewer`
+  before they could configure anything. The agent now treats all Discovery artifacts as
+  optional (asking directly when absent, defaulting from what the repo shows) and detects an
+  existing `project-rules.md` to offer amend / recreate instead of overwriting it.
+
+- **Getting-Started stops advertising commands that do not exist** (#206): Scenario 5 told
+  users to run `/security-auditor` and `/doc-writer`; neither has a command file. It now
+  lists the standalone commands that do exist and explains that other agents are invoked in
+  plain language.
+
+- **doc-flow creates its output directory** (#185): the six author agents own `Write` but not
+  `Bash`, and each delegates `mkdir -p docs/deliverables/{slug}/` to the orchestrator — which
+  had no such step. The first `Write` of a fresh project failed. `doc-flow` now creates the
+  directory as soon as the slug is fixed.
+
+- **scaffolder owns branch creation** (#186): as the first implementation-tier agent on
+  Standard / Full it may run with no work branch open, yet its Git step went straight to
+  `git commit`, risking a scaffold committed to `main`. It now checks the current branch,
+  creates `feat/{slug}` when on `main`, pushes, and reports `BRANCH`.
+
+- **Artifacts of Bash-less agents have an owner** (#187): SPEC.md, UI_SPEC.md, VISUAL_SPEC.md,
+  TEST_PLAN.md, SCOPE_PLAN.md, OPS_PLAN.md and `project-rules.md` are written by agents with
+  no `Bash`, and no rule said who commits them — they were left uncommitted or swept into a
+  later `developer` commit, breaking the one-commit-per-task rule. `git-rules.md` now assigns
+  the commit to the spawning flow orchestrator (one commit per phase, staged from the agent's
+  `ARTIFACT_PATHS`), with a step in the Phase Execution Loop. `rules-designer` is no longer
+  listed as a committing agent — it owns no `Bash`.
+
+- **sandbox-runner matches sandbox-policy** (#188): the agent implemented host detection for
+  Copilot / Codex and an `advisory_only` mode that the policy — "Claude Code only … no
+  multi-platform detection" with a four-mode table — does not define. The detection step and
+  the fifth mode are gone; the wiki diagrams and mode lists follow.
+
+- **sandbox-runner placement names the right flow** (#193): both the orchestrator rules and
+  the policy placed `sandbox-runner` before `releaser` "in Operations Flow", but `releaser`
+  is a delivery-flow Full-plan agent and Operations has no such phase. Operations now lists
+  `db-ops` / `observability`; the `releaser` rule moves to Delivery.
+
+- **One PRODUCT_TYPE resolution chain** (#196): three flows used three different fallback
+  orders, and `operations-flow` skipped `SPEC.md` entirely — so a `cli` project declared in
+  SPEC but not in project-rules.md would have had Operations run against it. The canonical
+  chain now reads "entry handoff file → SPEC.md → project-rules.md → service", with the
+  per-flow difference limited to *which* handoff file step 1 consults.
+
+- **Minimal has no UI sub-flow** (#182): `delivery-flow`'s agent matrix said Minimal skips
+  `ux-designer`, while another section told `ux-designer` to write a lightweight-default
+  block into `UI_SPEC.md` on "Minimal / Light" — a file Minimal never produces. Minimal now
+  consistently runs no UI agent (`architect` derives the UI from SPEC.md); the
+  lightweight-default path is Light-only. `ux-designer.md` and the wiki follow.
+
+- **`e2e-test-designer` restored to the canonical triage table** (#183): `orchestrator-rules.md`
+  listed it in no tier, so an orchestrator following the canonical table skipped E2E design
+  for Light UI projects even though `delivery-flow.md` runs it there.
+
+- **`tester`'s NEXT hints match real routing** (#189): the success hint always said
+  `reviewer` (wrong on Minimal, which has no reviewer), and the failure hint ignored the
+  `TC-E2E-` / `TC-GUI-` branch to `e2e-test-designer`. `maintenance-flow` also declared its
+  own "Max 3 retries" limit, which `orchestrator-rules.md` forbids; it now references the
+  single shared limit and states the test-designer-less chain explicitly.
+
+- **`security-auditor` position** (#190): its own description claimed it runs "in parallel
+  with or just before reviewer", the opposite of every flow, which places it after review.
+
+- **discovery Pattern 2 respects the plan tier** (#191): a blocked `scope-planner` rolled
+  back to `researcher` unconditionally, launching a Standard+ agent inside a Light run with
+  no user approval. Light now prefers `interviewer`, or asks before making a tier exception.
+
+- **DELIVERY_RESULT.md has one template** (#192): the producer's copy and the spec's copy had
+  drifted in both directions (missing resolved paths on one side, a two-value `PRODUCT_TYPE`
+  enum on the other that could not express the `library` / `cli` skip condition).
+  `delivery-flow` now references the canonical template, which carries the four-value enum.
+
+- **HAS_UI / UI_TYPE persist across the flow boundary** (#194): the Discovery triage asked the
+  user about UI, then dropped the answer — `delivery-flow` re-inferred it from
+  `spec-designer`. Both are now required fields of DISCOVERY_RESULT.md, and delivery-flow's
+  resolution order puts them above re-inference.
+
+- **doc-flow Standard/Full boundary is exclusive** (#195): "5–6 types" and "all 6" both
+  matched a six-type selection, leaving the promotion rule undefined. Standard is now exactly
+  5, Full is exactly 6, and the verification step is what defines Full.
+
+- **Stale `analyst` references swept from rules and agents** (#175): flow orchestrators
+  document that `analyst` must never be spawned as a sub-agent (it uses the Agent tool
+  internally) and that `analyst-intake` → `analyst-core` is the only correct spawn path —
+  but `orchestrator-rules.md` (Maintenance triage, rollback targets), `change-classifier.md`
+  (`NEXT: analyst`), `impact-analyzer.md`, `architect.md`, `developer.md`,
+  `document-locations.md` and `agent-communication-protocol.md` still named the old agent.
+  Following them literally meant spawning a broken agent or misattributing git
+  responsibilities (`git-rules.md` assigns branch creation to `analyst-intake`; the
+  top-level `analyst` performs no git operations). Wiki-side occurrences are tracked
+  separately.
+
+- **`analyst-core.HANDOFF_TO` is plan-dependent** (#176): the contract emitted a fixed
+  `architect`, while `maintenance-flow` expected `architect | developer` — and the Patch
+  plan has no architect phase, so the routing hint pointed at a phase that does not exist.
+  `HANDOFF_TO` / `NEXT` now resolve to `developer` when the caller states the plan has no
+  architect phase, and `maintenance-flow` says so in the Patch spawn prompt.
+
+- **maintenance Patch's doc-reviewer condition is satisfiable** (#177): it required
+  `analyst-core.DOCS_UPDATED` to contain SPEC.md **or ARCHITECTURE.md**, but analyst-core
+  is explicitly forbidden from writing ARCHITECTURE.md and its DOCS_UPDATED schema has only
+  SPEC.md / UI_SPEC.md keys — half the condition could never hold. Now reads SPEC.md or
+  UI_SPEC.md, matching the emitter. (The third divergent wording in `orchestrator-rules.md`
+  was corrected in #224.)
+
+- **`DOC_REVIEW_RESULT` vocabulary unified on `pass` / `fail`** (#173): the canonical
+  Field Reference in `agent-communication-protocol.md` declared
+  `passed | has-inconsistencies`, while the emitter (`doc-reviewer.md`) and every parser
+  (`orchestrator-rules.md`, `discovery-flow.md`) used `pass | fail`. Anyone implementing
+  against the protocol table would have broken the rollback trigger. The wiki's third
+  value (`conditional`), which existed nowhere in the implementation, is gone too.
+
+- **`DOC_REVIEW_RESULT: fail` now requires `STATUS: failure`** (#174): the Doc Review FAIL
+  rollback fires on the AND of both fields, but `doc-reviewer.md` never said what STATUS to
+  emit when INCONSISTENCY_COUNT ≥ 1 — a `success` + `fail` pair silently skipped the
+  rollback chain. The pairing is now mandatory in the agent definition and the protocol
+  table, and `orchestrator-rules.md` treats a mismatched pair as a fail (safe side).
+
+- **doc-reviewer knows about visual-designer** (#184): the agent's own trigger list omitted
+  `visual-designer` even though both `orchestrator-rules.md` and `delivery-flow.md` insert it
+  there, and `VISUAL_SPEC.md` was missing from the read order — so a visual-designer-triggered
+  review never read the artifact under review. Adds the read-order entry (HAS_UI=true and
+  plan ≥ Standard), a TRIGGERED_BY → required-document table for the `STATUS: error` rule,
+  and corrects the stale `analyst` references to `analyst-core` (#139 split).
+
+- **`update` no longer revives hooks the user removed** (#202): `mergeSettingsJson()`
+  deleted every `aphelion-`-marked entry and re-added the full template, so disabling a
+  hook by removing its `settings.json` entry — the method `hooks-policy.md` documents as
+  the only bypass for hook B — was undone on the next `update`. The merge now refreshes
+  entries that are still present, adds hooks that are new since the last run, preserves
+  user-owned entries, and skips (with a printed notice) any template hook that was known
+  last run and is now absent. Pre-manifest installations get one transitional run where
+  all template hooks are re-added, then removals stick. `hooks-policy.md` §3 / §4.2 / §4.3
+  and `docs/wiki/{en,ja}/Hooks-Reference.md` updated to match the implementation.
+
+- **doc-flow templates reach npx installs** (#203): `.claude/templates` was missing from
+  `package.json` `files`, so the 12 doc-flow templates never shipped through
+  `npx aphelion-agents init`. Every author agent's template resolution (steps 1-4) failed
+  and silently degraded to `TEMPLATE_USED: agent-emit-fallback`, while a dev-checkout
+  install behaved differently. Added to `files`, with a smoke-test lock.
+
+- **architect can now perform its own git workflow** (#167): `architect.md`
+  declared `tools: Read, Write, Glob, Grep` while its body defined three
+  mandatory bash workflows (branch check, design-note commit + push, standalone
+  branch creation) and its completion checklist required "committed and pushed" —
+  the agent could not satisfy its own completion conditions. `Bash` is added to
+  its tools, along with the `sandbox-policy` / `denial-categories` reference
+  lines, `REPO_STATE=local-only` / `none` downgrade behaviour, and the
+  Planning-tier `BRANCH` field (never `PR_URL`) in `AGENT_RESULT`.
+  `docs/wiki/{en,ja}/Agents-Delivery.md` updated. (#167)
+
+- **MAINTENANCE_RESULT.md consumer contract** (#168): `maintenance-flow`'s Major
+  plan generated `MAINTENANCE_RESULT.md`, but `delivery-flow` never read it and
+  `orchestrator-rules.md`'s Handoff File Specification had no entry for it, so the
+  recommended plan, impact analysis, and pre-audit remediation items were silently
+  discarded. Adds the canonical template + required-field validation to
+  `orchestrator-rules.md`, makes `maintenance-flow.md` reference that single
+  definition instead of restating it, and gives `delivery-flow.md` handoff-file
+  precedence, required-field validation (`STATUS: error`, no interview fallback),
+  a field-to-phase mapping, `Recommended plan` as the triage proposal, and
+  start-from-`architect` in differential mode.
+  `docs/wiki/{en,ja}/{Architecture-Protocols,Agents-Orchestrators,Triage-System,Getting-Started}.md`
+  updated. (#168)
+
+- **Planning-doc-on-work-branch rule** (#136): `analyst` is now a
+  Planning-tier agent responsible for branch creation and committing the
+  planning doc + any SPEC/UI_SPEC edits immediately after `gh issue create`.
+  `architect` reuses that branch and commits the companion design note
+  (`<slug>-design.md`). `developer`'s Startup Probe detects untracked files
+  under `docs/design-notes/` and emits a warning (fail-safe; no auto-add).
+  `git-rules.md` §"Branch & PR Strategy" now defines the Planning-tier /
+  Implementation-tier split. `docs/design-notes/README.md` Lifecycle diagram
+  updated to show the full agent handoff chain. (#136)
+
+- **TASK.md reset enforcement** (#128): The `developer` agent now explicitly
+  resets `TASK.md` to an empty placeholder at phase completion, enforcing the
+  rule already stated in `document-versioning.md` §"TASK.md Lifecycle". Adds a
+  "Phase Completion Reset" procedure section (with bash snippet) and a new
+  Completion Conditions checkbox to `.claude/agents/developer.md`. Expands the
+  "Note on TASK.md" in `docs/wiki/{en,ja}/Getting-Started.md` to describe the
+  full 3-state lifecycle (generate → tick → reset). Updates developer row in
+  `docs/wiki/{en,ja}/Agents-Delivery.md` to document the reset responsibility.
+  Also resets the currently-stale `TASK.md` on `main` to the empty placeholder.
+  (#128)
 
 - Committed orphan design notes for #53–#58 that were never `git add`-ed by
   the legacy `/issue-new` (#61 / #64)
 
 ### Notes
 
-- `package.json` version bumped 0.3.2 → 0.3.3 because `src/.claude/rules/
-  language-rules.md` was modified, which is one of the four canonical sources
-  gated by the bumping policy. The earlier "no version bump" note in this
-  Unreleased section pre-dated the language-rules.md edit and no longer
-  applies to the release as a whole.
+- **Why everything since 0.3.2 sits in `[Unreleased]`** (#199): `package.json` has moved
+  0.3.2 → 0.3.14, but each bump exists to invalidate the downstream `npx` cache (see
+  `wiki/en/Contributing.md` §"Version bumping policy"), not to cut a release — the
+  repository has no git tags. Entries therefore accumulate here until a release is
+  actually tagged, at which point this section is split into version headings. The
+  duplicate `### Added` / `### Changed` / `### Fixed` headings this section had collected
+  (two Added, three Changed, two Fixed, plus an "Added (continued)") have been merged into
+  one heading per category, as Keep a Changelog requires.
+
+- **What gets an entry** (#200): user-visible changes — agent / rule / command behaviour,
+  CLI behaviour, distributed files, and anything that changes what an operator must do.
+  Wiki-only and CI-only changes are recorded in git history rather than here, unless they
+  change a documented contract users rely on. Earlier entries were inconsistent on this
+  point (#80 and #103 were listed, #77 / #105 / #146 were not); the rule above is the one
+  applied from now on.
 
 ## 0.3.2 - 2026-04-25
 
