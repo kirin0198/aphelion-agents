@@ -1,4 +1,7 @@
-> Last updated: 2026-06-14
+> Last updated: 2026-07-29
+> Update history:
+>   - 2026-07-29: PR テンプレートが agent PR ではバイパスされる問題と、document-locations / language-rules の未分類を §3/§4 に追記 (#214)
+>   - 2026-06-14: 初版
 > GitHub Issue: [#163](https://github.com/kirin0198/aphelion-agents/issues/163)
 > Authored by: analyst-intake (2026-06-14)
 > Analysis by: analyst-core (2026-06-14)
@@ -70,6 +73,9 @@ Aphelion には設計思想を明文化したドキュメントが存在しな�
 | `.github/PULL_REQUEST_TEMPLATE.md` | チェックボックス 1 行追加 | 既存ファイル更新 |
 | 原則本文 | **対象外** | follow-up issue |
 | `.claude/rules/` への追加 | **対象外** | トークンコスト増のため不採用 |
+| `src/.claude/rules/git-rules.md` | 案 A 採用時は PR body テンプレートに確認行を追加 | §4「PR テンプレートは大半の PR に表示されない」参照 (#214) |
+| `src/.claude/rules/document-locations.md` | `PRINCIPLES.md` を NOT covered（ルート固定）に明記 | 同上 |
+| `src/.claude/rules/language-rules.md` | `PRINCIPLES.md` の正典言語を宣言 | 同上 |
 
 ## §4 Constraints / Open Questions
 
@@ -81,6 +87,34 @@ Aphelion には設計思想を明文化したドキュメントが存在しな�
   → **解決（§5）**: ルート直下に CONTRIBUTING.md は存在せず、正本は `docs/wiki/{en,ja}/Contributing.md`。両ファイルを参照追記対象とする。
 - ~~**Open question**: PR テンプレートが既存の場合は追記・新規の場合は新設~~
   → **解決（§5）**: `.github/PULL_REQUEST_TEMPLATE.md` は存在しないため**新規作成**。
+
+### PR テンプレートは大半の PR に表示されない（#214、2026-07-29 追記）
+
+**問題**: 本メモは HITL 担保を PR テンプレートのチェックボックスに置いているが、
+`src/.claude/rules/git-rules.md` §"Branch & PR Strategy" は全実装 tier エージェントに
+`gh pr create --title … --body "$(cat <<'EOF' … EOF)"` を実行させる。`--body` を明示した
+`gh pr create` は **PULL_REQUEST_TEMPLATE.md を完全にバイパスする**（テンプレートは body 未指定時の
+初期値としてのみ使われる）。このリポジトリの PR の大半はエージェント作成であるため、
+チェックボックスは一度も表示されない。
+
+**必要な対応（実装時）**: 次のいずれかを選ぶこと。本メモの §3 Scope は `git-rules.md` を
+変更対象に含めていないため、そのままでは担保が成立しない。
+
+| 案 | 内容 | トレードオフ |
+|----|------|-------------|
+| A（推奨） | `git-rules.md` の PR body テンプレートに「PRINCIPLES.md に照らして確認済み」行を追加し、`.github/PULL_REQUEST_TEMPLATE.md` は人間が手で開く PR 用に併置する | エージェント PR / 人間 PR の双方をカバー。§3 Scope に `git-rules.md` の追加が必要 |
+| B | チェックボックスを廃し、PRINCIPLES.md 準拠は `reviewer` / 人間レビューの観点として記述する | 変更ファイルは減るが、機械的な担保はゼロになる |
+| C | CI チェック（PR body に確認行があるか）を追加する | 実効性は最も高いが、エージェント PR が落ちる運用コストを伴う |
+
+**付随して未解決の 2 点**（実装前に決めること）:
+
+1. ルート直下の `PRINCIPLES.md` は `src/.claude/rules/document-locations.md` の Covered
+   artifacts 表にも「NOT covered」リストにも無い。同ルールは「新規は `docs/` に書く」と
+   定めているため、将来のエージェントが `docs/PRINCIPLES.md` へ移動させ得る。
+   `README.md` / `CHANGELOG.md` と同じ「NOT covered（ルート固定）」に明記すること。
+2. `src/.claude/rules/language-rules.md` §"Hand-authored canonical narrative" は
+   `docs/wiki/`・`docs/design-notes/`・README ペアの正典言語を宣言しているが、ルート直下の
+   `PRINCIPLES.md` に該当する区分が無い。bilingual にするのか単一言語かを宣言すること。
 
 ---
 
