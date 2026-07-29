@@ -274,6 +274,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Sub-agents cannot call `AskUserQuestion` — documented, not "fixed" by adding it to
+  `tools:`** (#181): none of the ~15 agents whose bodies mandate `AskUserQuestion` listed it
+  in their `tools:` whitelist. The obvious repair would have been to add it everywhere — but
+  Claude Code's subagent documentation states that its first tool filter "removes these
+  tools, even when listed in the `tools` field", and `AskUserQuestion` is on that list. Only
+  the main conversation and forks can prompt interactively. Adding the entry would have been
+  a no-op that encoded a false expectation. Instead `user-questions.md` gains a platform-
+  constraint section (spawned agents emit the question as text and the caller renders the
+  gate), `orchestrator-rules.md` §"In-agent Approval Gates" states the emit-and-return
+  contract, and the wiki records the rule with an explicit "never add it to `tools:`".
+
 - **Archive workflow concurrency** (#210): `archive-closed-plans.yml` had no `concurrency:`
   key, so a rapid `edited` + `synchronize` pair could run two jobs that both `git mv` and
   push to the same PR branch, one failing on a non-fast-forward. It now serializes per PR.

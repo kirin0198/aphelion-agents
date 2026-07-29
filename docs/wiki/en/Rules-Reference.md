@@ -211,7 +211,8 @@ For full details, follow the **Canonical** link to the source file.
 - **Canonical**: [src/.claude/rules/user-questions.md](../../../src/.claude/rules/user-questions.md)
 - **Scope**: All agents that need to ask the user for clarification or input
 - **Auto-load behavior**: Auto-loaded by Claude Code on every session start
-- **Interactions**: Flow orchestrators use `AskUserQuestion` for triage interviews, approval gates, and phase confirmations. Any agent (including `developer` when blocked) can use it to stop and ask rather than guessing.
+- **Interactions**: Flow orchestrators use `AskUserQuestion` for triage interviews, approval gates, and phase confirmations — they run as the top-level agent of their session, so the tool is available to them.
+- **Sub-agent constraint (#181)**: Claude Code strips `AskUserQuestion` from every sub-agent, **even when its `tools:` field lists it**. A spawned agent emits its question as text (and in `AGENT_RESULT`) and the caller renders the gate; only the main session and forks can prompt interactively. Never add `AskUserQuestion` to an agent's `tools:` list — it would be filtered out anyway.
 - **Summary**: Mandates stopping and asking when there are unclear points rather than guessing. Defines two question mechanisms: `AskUserQuestion` tool (preferred for 2-4 choice questions, multi-select, code comparisons) and text output fallback (for free-text-only questions). Usage guidelines: max 4 questions per call, bundle related questions, place recommended options first with `(推奨)` suffix. The `AskUserQuestion` tool supports `multiSelect: true` for multiple selection scenarios.
 
 ---
