@@ -3,6 +3,7 @@
 > **Language**: [English](../en/Triage-System.md) | [日本語](../ja/Triage-System.md)
 > **Last updated**: 2026-07-29
 > **Update history**:
+>   - 2026-07-29: Minimal has no UI sub-flow; e2e-test-designer added to Light; doc-flow Standard/Full boundary made exclusive (#182 #183 #195)
 >   - 2026-07-29: describe the MAINTENANCE_RESULT.md consumer contract in the Major handoff section (#168)
 >   - 2026-05-01: Add visual-designer to Delivery triage (HAS_UI + Standard/Full only) (#109)
 >   - 2026-04-30: Add Doc Flow Triage section (#54)
@@ -119,8 +120,8 @@ Phase 6: Scope planning          → scope-planner     → doc-reviewer (auto) �
 | **Full** | Public project / OSS | + `releaser` |
 
 *In Minimal plan, `tester` integrates test design (TEST_PLAN.md may not be pre-generated)
-†Only when `HAS_UI: true`
-‡Only when `HAS_UI: true` AND plan ≥ Standard. On Minimal / Light, `visual-designer` is skipped and `ux-designer` applies its lightweight visual default (system-ui / monochrome + 1 accent / 8px grid). See `.claude/agents/ux-designer.md` "Design Policy" for the default block written into `UI_SPEC.md` Section 1 in that case.
+†Only when `HAS_UI: true`, **on Light and above** — Minimal has no UI sub-flow and produces no `UI_SPEC.md`; `architect` derives the UI directly from SPEC.md
+‡Only when `HAS_UI: true` AND plan ≥ Standard. On Light, `visual-designer` is skipped and `ux-designer` applies its lightweight visual default (system-ui / monochrome + 1 accent / 8px grid). See `.claude/agents/ux-designer.md` "Design Policy" for the default block written into `UI_SPEC.md` Section 1 in that case.
 
 ### Delivery Phase Sequence (Standard Example)
 
@@ -230,8 +231,10 @@ Doc Flow is a **fifth flow independent from Discovery / Delivery / Operations / 
 |------|-----------|----------------------|
 | **Minimal** | 1–2 doc types selected | Selected author agents only |
 | **Light** | 3–4 doc types selected | Selected author agents only |
-| **Standard** | 5–6 doc types selected | All selected author agents |
-| **Full** | All 6 types + post-generation verification | All 6 authors + `template_version` consistency check |
+| **Standard** | **5** doc types selected | All selected author agents |
+| **Full** | **All 6** doc types selected | All 6 authors + post-generation `template_version` consistency check |
+
+Tiers are mutually exclusive by selected-type count (1–2 / 3–4 / 5 / 6). Selecting all six is always Full; the verification step defines that tier and is not optional.
 
 **Available doc types**: `hld` / `lld` / `api-reference` / `ops-manual` / `user-manual` / `handover`
 

@@ -21,11 +21,11 @@ Each orchestrator must `Read` this file at startup before beginning work.
 | Plan | Condition | Agents to Launch |
 |------|-----------|-----------------|
 | Minimal | Single-function tool | spec-designer → architect → developer → tester (test-designer integrated) → security-auditor |
-| Light | Personal side project | + ux-designer (if UI) + test-designer + reviewer |
+| Light | Personal side project | + ux-designer (if UI) + test-designer + e2e-test-designer (if UI) + reviewer |
 | Standard | Multi-file project | + scaffolder + visual-designer (if UI) + doc-writer |
 | Full | Public project / OSS | + releaser |
 
-`security-auditor` **must run on all plans**. `ux-designer` runs only for projects with UI. `visual-designer` runs only for projects with UI **and** plan ≥ Standard; on Minimal / Light it is skipped and `ux-designer` applies its lightweight visual default (see `.claude/agents/ux-designer.md` "Design Policy").
+`security-auditor` **must run on all plans**. `ux-designer` and `e2e-test-designer` run only for projects with UI, on Light and above — **Minimal skips the UI sub-flow entirely** (no `UI_SPEC.md` is produced, so `architect` designs the UI directly from SPEC.md). `visual-designer` runs only for projects with UI **and** plan ≥ Standard; on Light it is skipped and `ux-designer` applies its lightweight visual default (see `.claude/agents/ux-designer.md` "Design Policy").
 
 > **sandbox-runner placement**: In Standard and above, `sandbox-runner` is automatically inserted by the orchestrator when a `required`-tier command (per `sandbox-policy.md`) is detected. In Light, only explicit delegation from the calling agent is permitted. In Minimal, `sandbox-runner` is not used — policy violations trigger an advisory warning to the user only.
 
@@ -84,8 +84,10 @@ Each orchestrator must `Read` this file at startup before beginning work.
 |------|-----------|-------------------------|
 | Minimal | 1–2 doc types selected | selected authors only |
 | Light | 3–4 doc types selected | selected authors only |
-| Standard | 5–6 doc types selected | selected authors |
-| Full | All 6 + post-generation template_version verification | all 6 authors + verify step |
+| Standard | **5** doc types selected | selected authors |
+| Full | **All 6** doc types selected | all 6 authors + post-generation `template_version` verification |
+
+Tiers are mutually exclusive by count (1–2 / 3–4 / 5 / 6). Selecting all six is always Full; the verify step is what defines that tier and cannot be opted out of.
 
 > **About doc-flow**: Fifth flow independent from Discovery / Delivery /
 > Operations / Maintenance. Generates customer-deliverable docs (HLD / LLD
@@ -216,6 +218,9 @@ Each flow orchestrator validates required fields of the handoff file at startup.
 
 **DISCOVERY_RESULT.md required fields:**
 - `PRODUCT_TYPE` (one of: service / tool / library / cli)
+- `HAS_UI` (true / false) and `UI_TYPE` (web / desktop / cli-tui / none) — the user's
+  answer at Discovery triage. Downstream flows read these instead of re-inferring
+  (#194); `UI_TYPE: none` is required when `HAS_UI: false`.
 - "Project Overview" section (must not be empty)
 - "Requirements Summary" section (must not be empty)
 
@@ -252,6 +257,8 @@ Final output of Discovery Flow. Input for Delivery Flow's `spec-designer`.
 
 ## Artifact Type
 PRODUCT_TYPE: {service | tool | library | cli}
+HAS_UI: {true | false}
+UI_TYPE: {web | desktop | cli-tui | none}
 
 ## Requirements Summary
 {Structured requirements summary}
@@ -277,7 +284,7 @@ Final output of Delivery Flow. Input for Operations Flow (for service type).
 
 > Created: {YYYY-MM-DD}
 > Delivery Plan: {Minimal | Light | Standard | Full}
-> PRODUCT_TYPE: {service | tool}
+> PRODUCT_TYPE: {service | tool | library | cli}
 
 ## Artifacts
 - SPEC.md: {present/absent} (resolved path: {docs/SPEC.md | SPEC.md})

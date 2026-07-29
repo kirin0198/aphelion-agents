@@ -202,7 +202,7 @@ Inherits `.claude/orchestrator-rules.md` Rollback Rules with the following maint
 
 | Trigger | Roll Back To | Notes |
 |---------|-------------|-------|
-| tester failure | developer | Max 3 retries |
+| tester failure | developer | maintenance has no test-designer phase, so the common tester → test-designer → developer chain collapses to tester → developer. Shares the single Rollback Limit (Common) in `orchestrator-rules.md`; this flow declares no limit of its own |
 | reviewer CRITICAL | developer | Minor only (Patch has no reviewer) |
 | security-auditor CRITICAL | developer | Major only (pre-audit detection) |
 | developer blocked | architect (differential mode) | Minor only. Patch rolls back to analyst-intake → analyst-core chain |
@@ -334,7 +334,7 @@ See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for cano
 - [ ] Mandatory HITL Gate #1 (change plan approval after change-classifier) was executed
 - [ ] All plan-appropriate phases completed successfully
 - [ ] User approval was obtained at each phase
-- [ ] Rollback rules were applied when tester/reviewer/security-auditor reported failures (max 3 retries)
+- [ ] Rollback rules were applied when tester/reviewer/security-auditor reported failures (within the shared Rollback Limit defined in `orchestrator-rules.md`)
 - [ ] Mandatory HITL Gate #2 (final completion confirmation) was executed
 - [ ] For Major: MAINTENANCE_RESULT.md was generated
 - [ ] Completion summary was output

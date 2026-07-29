@@ -237,8 +237,9 @@ The flow orchestrator includes this content in the rollback instructions to `tes
 - **Error output:**
 
 ### Next Steps
-→ If all tests pass: launch `reviewer`
-→ If there are failures: `test-designer` will analyze the root cause, then fix with `developer`
+→ If all tests pass: launch `reviewer` (Minimal plan has no reviewer — launch `security-auditor`)
+→ If a failed test id starts with `TC-E2E-` or `TC-GUI-`: `e2e-test-designer` analyses the root cause first
+→ Otherwise, on failure: `test-designer` analyses the root cause, then `developer` fixes (Minimal has no test-designer — go straight to `developer`)
 ```
 
 ---
@@ -248,7 +249,7 @@ The flow orchestrator includes this content in the rollback instructions to `tes
 Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`.
 Agent-specific fields: `TOTAL`, `PASSED`, `FAILED`, `SKIPPED`, `FAILED_TESTS` (list).
 See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
-STATUS: `failure` when FAILED>0; NEXT: `test-designer` (or `developer` in Minimal plan where test-designer is unavailable); `reviewer` on success.
+STATUS: `failure` when FAILED>0. `NEXT` on failure: `e2e-test-designer` when any failed test id starts with `TC-E2E-` / `TC-GUI-` (per `delivery-flow.md` §"Rollback Flow on E2E Test Failure"); otherwise `test-designer`, or `developer` on Minimal / in maintenance-flow, where no test-designer phase exists. `NEXT` on success: `reviewer`, or `security-auditor` on Minimal (no reviewer phase).
 
 **ESCALATION_REQUIRED (autonomous mode):** per the trigger table in
 `agent-communication-protocol.md`, set `ESCALATION_REQUIRED: true` only when a test reveals a
