@@ -46,6 +46,17 @@ output_language: ja
 
 # 承認モード（autonomous / interactive）のトリアージ連動とエスカレーション機構
 
+> **実装後の注記（2026-07-29, #213(b)）— Field Reference の行数予算。**
+> 本メモの実装で追加した `ESCALATION_REQUIRED` / `ESCALATION_REASON` の 2 行により、
+> `agent-communication-protocol.md` の Field Reference ブロックは #131 の受け入れ基準
+> （`archived/agent-definition-simplification-design.md` の「28 行以内、§11 ゲートは ≤32」）を
+> 超過しました。**この予算は正式に緩和します**: #131 の 28 行はエージェント定義ファイル内に
+> 重複していた AGENT_RESULT 記述を削るための基準であり、canonical な protocol 表そのものの
+> 上限として設定されたものではありません。protocol 表は「2 エージェント以上が出す、または
+> オーケストレーターが routing に使うフィールド」を列挙する索引であり、フィールドが増えれば
+> 行も増えるのが正しい振る舞いです。削るべきなのは各エージェント側の重複であり、索引側では
+> ありません。
+
 ## §1 背景・動機
 
 grill-me 強化（#160）により Aphelion の上流エージェント（interviewer / analyst）で不確定要素を
@@ -615,6 +626,12 @@ deploy のみ。編集は src を正とする）。
     2. 実装後検証（TASK-001〜008 完了後）:
        - `APPROVAL_MODE` は常にキー＝大文字スネーク、値＝小文字 `autonomous` / `interactive`。
        - `AUTONOMOUS` / `INTERACTIVE`（大文字値）が新規混入していないこと（= 0 件）。
+         **判定範囲の明確化（2026-07-29, #213）**: このチェックは `APPROVAL_MODE` の**値**に
+         限定されます。§9.3 が定義する状態機械ラベル `RUNNING_AUTONOMOUS` は値ではなく状態名で
+         あり、`.claude/orchestrator-rules.md` に 3 箇所存在しますが違反ではありません。裸の
+         grep `AUTONOMOUS` では両者を区別できないため、検証時は
+         `grep -n "APPROVAL_MODE:\s*\(AUTONOMOUS\|INTERACTIVE\)"` のように値の位置で照合して
+         ください。コミット 5ab52a3 の「5 チェック全て pass」はこの限定読みでの主張です。
        - 既存 `AUTO_APPROVE` の出現数・文言が改修前と一致（改名されていない）。
        - `.aphelion-auto-approve` / `.telescope-auto-approve` ファイル名文字列が不変。
        - スコープ外で `AUTO_APPROVE` を参照する `.claude/agents/analyst-intake.md:78` が**未改変**で

@@ -335,6 +335,11 @@ Before opening a PR, verify:
       bash scripts/check-readme-wiki-sync.sh
       ```
       and confirm no diffs are reported.
+- [ ] `bash scripts/check-archive-match.sh` exits 0 — required whenever you touch the
+      issue-matching grep in `scripts/check-archive-match.sh`,
+      `.github/workflows/archive-closed-plans.yml`, or
+      `.github/workflows/archive-orphan-plans.yml` (the three must stay char-for-char
+      identical). Also run by CI on every PR (#209).
 - [ ] `bash scripts/smoke-update.sh` exits 0 (release-time gate; run before tagging)
 
 ### Version bumping policy

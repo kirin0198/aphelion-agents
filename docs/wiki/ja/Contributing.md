@@ -321,6 +321,10 @@ PRを開く前に確認してください：
       bash scripts/check-readme-wiki-sync.sh
       ```
       差分が報告されないことを確認します。
+- [ ] `bash scripts/check-archive-match.sh` が正常終了する — `scripts/check-archive-match.sh`・
+      `.github/workflows/archive-closed-plans.yml`・`.github/workflows/archive-orphan-plans.yml`
+      の issue マッチング grep に触れた場合は必須（3 箇所は文字単位で一致させる必要があります）。
+      CI でも全 PR で実行されます (#209)。
 - [ ] `bash scripts/smoke-update.sh` が正常終了する（リリース前ゲート）
 
 ### バージョンbumpポリシー

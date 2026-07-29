@@ -2,10 +2,20 @@
 > GitHub Issue: [#132](https://github.com/kirin0198/aphelion-agents/issues/132)
 > Authored by: analyst (2026-05-15, refined 2026-05-16 post-#131 merge)
 > Promoted from: docs/design-notes/proposals/token-reduction-memo.md
-> Related: [agent-definition-simplification.md](./archived/agent-definition-simplification.md) (#131, closed) — §B baseline 確定
+> Related: [agent-definition-simplification.md](./agent-definition-simplification.md) (#131, closed) — §B baseline 確定
 > Next: developer for PR-1 (§B mechanical), architect for PR-2 (§C model split)
 
 # トークン消費削減
+
+> **実装後の注記（2026-07-29, #216）。** PR-1 の受け入れ基準「`aphelion-overview.md` ≤ 85 行」は
+> **一度きりの着地基準**であり、恒常的な行数予算ではありません。同ファイルはその後の別マージ
+> （#148 の PRODUCT_TYPE Resolution Order 追加、#196 でのその修正）により約 105 行まで再成長して
+> います。この数値を強制する仕組みは無く、また設けるべきでもありません — ≤85 という値は本 PR が
+> 実施した特定の削除（エージェント一覧表 → ポインタ化）を測ったものであり、無関係な追記の後に
+> 予算を引き直すのは恣意的です。恒常的な上限を設けたい場合は、何を数えるかの定義と CI チェックを
+> 伴う独立した issue が必要で、現時点ではどちらも存在しません。あわせて、下記の相対リンクが
+> `archived/` 内から `./archived/…` を指して `archived/archived/…` に解決される壊れた状態だった
+> ため、同時に修正しました。
 
 本書は user 起票の proposal を analyst が promotion したもの。
 proposal 段階で「設計確定・未着手」と評価されていたため、内容は元メモを保持し、
