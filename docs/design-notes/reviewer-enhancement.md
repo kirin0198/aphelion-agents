@@ -4,6 +4,52 @@
 > Promoted from: docs/design-notes/proposals/reviewer-enhancement-memo.md
 > Next: architect (mandatory — 3 新 agent + delivery-flow triage/rollback への横断的影響)
 
+<!-- analyst-handoff
+planning_doc_path: docs/design-notes/reviewer-enhancement.md
+slug: reviewer-enhancement
+branch_name: fix/reviewer-enhancement-memo-refresh
+issue_url: https://github.com/kirin0198/aphelion-agents/issues/211
+issue_number: 211
+issue_title: review: reviewer-enhancement メモの前提が stale（agent 数・rules パス・orchestrator-rules 欠落・autonomous 未対応）
+issue_type: refactor
+intake_summary: |
+  本セッションの対象は #133 の新機能スコープではなく、#211 が指摘した
+  reviewer-enhancement.md の前提陳腐化の refresh である（#133 は着手前のまま
+  オープンで継続追跡、#211 はその memo に対するレビュー指摘）。
+  #211 が検出した stale な前提は5件:
+  1. L15「agent count 39→42」— analyst 分割 + visual-designer で現42まで
+     消費済み。正しくは 42→45 へ更新し、README バッジ等の伝播数値も再導出。
+  2. L20 が `.claude/rules/aphelion-overview.md` を指すが canonical は
+     `src/.claude/rules/` 配下（かつ #132 スリム化後は per-agent 表が
+     overview から既に除去されている）。
+  3. L66,74「delivery-flow が CRITICAL_COUNT>0 を一元判定」との記述は
+     不正確 — CRITICAL_COUNT はどの orchestrator ファイルにも存在せず
+     （reviewer.md:175 / security-auditor.md:234 の agent 固有フィールド
+     のみ）、Review CRITICAL Rollback Flow の実体は共有の
+     `.claude/orchestrator-rules.md:680-683` にあるが、これが本メモの
+     変更対象スコープに含まれていない。
+  4. L44-62 の新設3レビュアーが、実装済みの autonomous invariant
+     （doc-reviewer / security-auditor / reviewer の3エージェント名指し）
+     にも escalation Route B にも未反映で、autonomous モードで CRITICAL
+     が停止もpauseもしない。
+  5. performance-optimizer メモ（#58）の performance-reviewer との境界が
+     未定義（役割分担表に行が無い）。dependency-reviewer と
+     library-and-security-policy の責任分担表への追記も変更対象から漏れている。
+  次工程（analyst-core）でのタスク: 上記5件を現行リポジトリツリーに対して
+  検証した上で、agent count 数値・rules パス・orchestrator-rules.md への
+  変更 scope 追加・autonomous invariant/Route B 拡張の設計・#58 との境界行
+  追加を含めてメモ本文を refresh する。
+proposals_source: null
+repo_state: github
+artifact_paths:
+  - SPEC: missing
+  - UI_SPEC: missing
+  - ARCHITECTURE: missing
+auto_approve: false
+approval_mode: interactive
+output_language: ja
+-->
+
 # 専門レビュアー追加 — ui-reviewer / performance-reviewer / dependency-reviewer
 
 本書は user 起票の proposal を analyst が promotion したもの。
