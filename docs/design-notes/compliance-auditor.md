@@ -4,12 +4,13 @@
 > Update history:
 >   - 2026-08-02: レビュー指摘 #212 に基づく前提 refresh — rules canonical パス / Operations Flow 実態 / #132 決定順守 / autonomous escalation 配線を追加
 >   - 2026-04-26: 初版 (#56)
-> Reference: current `main` (HEAD `9bc00e5`, 2026-04-26)
+> Reference: current `main` (HEAD `7a903c8`, 2026-08-02)
 > Created: 2026-04-26
 > Analyzed by: analyst (2026-04-26)
 > Author: analyst (design-only phase — no implementation yet)
 > Scope: design / planning document; the change will be executed in a follow-up `developer` phase
 > GitHub Issue: [#56](https://github.com/kirin0198/aphelion-agents/issues/56)
+> Next: developer (§8 Handoff brief — Phase 1 は NIST CSF v2.0 のみ)
 > Implemented in: TBD
 
 <!--
