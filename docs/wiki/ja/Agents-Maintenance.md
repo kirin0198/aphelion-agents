@@ -17,7 +17,7 @@
 
 ## Maintenance Domain
 
-Maintenance ドメイン（3 エージェント + Flow Orchestrator）はバグ修正・CVE 対応・パフォーマンス改善・技術的負債解消・既存機能の小規模拡張を担当します。Flow Orchestrator（フローオーケストレーター）は [Flow Orchestrator・横断系](./Agents-Orchestrators.md) セクションに記載しています。本セクションではそれを支える 2 つのエージェントを説明します。
+Maintenance ドメイン（2 エージェント + Flow Orchestrator）はバグ修正・CVE 対応・パフォーマンス改善・技術的負債解消・既存機能の小規模拡張を担当します。Flow Orchestrator（フローオーケストレーター）は [Flow Orchestrator・横断系](./Agents-Orchestrators.md) セクションに記載しています。本セクションではそれを支える 2 つのエージェントを説明します。
 
 ### change-classifier
 
@@ -26,7 +26,7 @@ Maintenance ドメイン（3 エージェント + Flow Orchestrator）はバグ�
 - **責務**: 入ってきた保守トリガーを Patch / Minor / Major プランに分類するとともに、P1–P4 の緊急度スコアリングを行います。トリガー種別 (bug / feature / tech_debt / performance / security) の識別、影響ファイル数の推定、破壊的変更の検出、SPEC.md への影響度評価を実施します。SPEC.md / ARCHITECTURE.md が存在しない場合は codebase-analyzer の起動を提案します。
 - **入力**: ユーザーのトリガー説明、SPEC.md、ARCHITECTURE.md、パッケージメタ情報 (package.json / pyproject.toml)
 - **出力**: 構造化された分類結果 (テキスト)
-- **AGENT_RESTULTフィールド**: `TRIGGER_TYPE`、`PLAN`、`PRIORITY`、`ESTIMATED_FILES`、`BREAKING_CHANGE`、`SPEC_IMPACT`、`DOCS_PRESENT`、`REQUIRES_CODEBASE_ANALYZER`、`RATIONALE`
+- **AGENT_RESULTフィールド**: `TRIGGER_TYPE`、`PLAN`、`PRIORITY`、`ESTIMATED_FILES`、`BREAKING_CHANGE`、`SPEC_IMPACT`、`DOCS_PRESENT`、`REQUIRES_CODEBASE_ANALYZER`、`RATIONALE`
 - **NEXT 条件**:
   - `REQUIRES_CODEBASE_ANALYZER: true` → `codebase-analyzer` (完了後に change-classifier を再実行)
   - `PLAN: Patch` → `analyst` (impact-analyzer はスキップ)
@@ -39,7 +39,7 @@ Maintenance ドメイン（3 エージェント + Flow Orchestrator）はバグ�
 - **責務**: 変更対象ファイルを具体的に特定して依存グラフをたどります。破壊的 API / DB スキーマ変更の検出、リグレッションリスク (low / medium / high) の評価、推奨テスト範囲 (unit / integration / e2e) の提示を行います。
 - **入力**: `change-classifier` の AGENT_RESULT、ユーザーのトリガー説明、SPEC.md、ARCHITECTURE.md
 - **出力**: 影響レポート (テキスト)。対象ファイル・依存ファイル・破壊的変更・リグレッション評価を含む
-- **AGENT_RESTULTフィールド**: `TARGET_FILES`、`DEPENDENCY_FILES`、`BREAKING_API_CHANGES`、`DB_SCHEMA_CHANGES`、`REGRESSION_RISK`、`RECOMMENDED_TEST_SCOPE`、`IMPACT_SUMMARY`
+- **AGENT_RESULTフィールド**: `TARGET_FILES`、`DEPENDENCY_FILES`、`BREAKING_API_CHANGES`、`DB_SCHEMA_CHANGES`、`REGRESSION_RISK`、`RECOMMENDED_TEST_SCOPE`、`IMPACT_SUMMARY`
 - **NEXT 条件**: `analyst` (常に。Minor / Major いずれでも analyst が次。プランの差は analyst 以降のフェーズ構成に現れる)
 
 ---

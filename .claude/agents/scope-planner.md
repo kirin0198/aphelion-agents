@@ -97,7 +97,7 @@ If any item is unmet, explain the reason via text output and use `AskUserQuestio
     "header": "Handoff",
     "options": [
       {"label": "Proceed to Delivery", "description": "There are unmet items, but address them in Delivery"},
-      {"label": "Roll back to researcher", "description": "Conduct additional research on missing information"},
+      {"label": "Roll back to researcher", "description": "Conduct additional research on missing information (Standard+; on Light the orchestrator asks before launching a tier-external agent)"},
       {"label": "Abort", "description": "Stop the Discovery flow"}
     ],
     "multiSelect": false
@@ -235,7 +235,7 @@ PRODUCT_TYPE: {service | tool | library | cli}
 Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
 Agent-specific fields: `MVP_SCOPE`, `MUST_COUNT`, `SHOULD_COUNT`, `RISKS`, `HANDOFF_READY` (true|false).
 See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
-STATUS: `blocked` (rollback to researcher — insufficient info); when HANDOFF_READY=false, explain the reason to the user.
+STATUS: `blocked` (insufficient info). The orchestrator resolves the rollback target: `researcher` on Standard / Full, and on Light either `interviewer` or an explicitly approved tier exception (see `discovery-flow.md` §"Pattern 2"). When HANDOFF_READY=false, explain the reason to the user.
 
 ## Completion Conditions
 

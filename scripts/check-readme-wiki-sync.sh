@@ -8,6 +8,8 @@
 #   3. ^## heading count + order match between README.md and README.ja.md
 #   4. Every relative markdown link in docs/wiki/{en,ja}/*.md resolves to an
 #      existing file (guards the ../ depth regression fixed in #169)
+#   5. README badge counts (agents / commands / rules / hooks) match the real
+#      file counts (guards the drift fixed in #198)
 #
 # Usage: bash scripts/check-readme-wiki-sync.sh
 # Exit 0 on success (silent), exit 1 on any failure with stderr message.
@@ -133,5 +135,38 @@ if [ "$broken_links" -ne 0 ]; then
   echo "$broken_links broken relative link(s) in docs/wiki/ — repository-root references need ../../../ (see #169)" >&2
   fail=1
 fi
+
+# ---------------------------------------------------------------------------
+# Check 5: README badge counts match reality
+#
+# The badges drifted for months because nothing checked them: commands-14 with
+# 15 command files, hooks-3 with 4 distributed hooks (#198). Counted here from
+# the filesystem, in both README.md and README.ja.md.
+#
+# hooks: distributed hooks only — the three dogfooding scripts under
+# src/.claude/hooks/ are excluded from init/update (#197), so they must not be
+# counted. Identified by the DOGFOODING_HOOKS list in bin/aphelion-agents.mjs.
+# ---------------------------------------------------------------------------
+AGENTS_COUNT=$(ls "$REPO_ROOT/.claude/agents/" | wc -l | tr -d ' ')
+COMMANDS_COUNT=$(ls "$REPO_ROOT/.claude/commands/" | wc -l | tr -d ' ')
+RULES_COUNT=$(ls "$REPO_ROOT/src/.claude/rules/" | wc -l | tr -d ' ')
+HOOKS_TOTAL=$(ls "$REPO_ROOT/src/.claude/hooks/"*.sh 2>/dev/null | wc -l | tr -d ' ')
+DOGFOOD_COUNT=$(grep -c '^  "aphelion-.*\.sh",$' "$REPO_ROOT/bin/aphelion-agents.mjs" || true)
+HOOKS_COUNT=$((HOOKS_TOTAL - DOGFOOD_COUNT))
+
+for readme in README.md README.ja.md; do
+  for pair in "agents=$AGENTS_COUNT" "commands=$COMMANDS_COUNT" "rules=$RULES_COUNT" "hooks=$HOOKS_COUNT"; do
+    badge="${pair%%=*}"
+    expected="${pair#*=}"
+    actual=$(grep -oE "badge/${badge}-[0-9]+-" "$REPO_ROOT/$readme" | grep -oE '[0-9]+' | head -1)
+    if [ -z "$actual" ]; then
+      echo "badge missing: $readme has no '${badge}' badge" >&2
+      fail=1
+    elif [ "$actual" != "$expected" ]; then
+      echo "badge count mismatch: $readme '${badge}' badge reports $actual, actual=$expected" >&2
+      fail=1
+    fi
+  done
+done
 
 exit $fail

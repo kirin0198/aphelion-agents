@@ -70,9 +70,10 @@ How the two compose depends on the triage plan:
   `VISUAL_SPEC.md` (`--color-primary-500`) rather than restating the hex.
 - Flow: `ux-designer` (this agent) → `visual-designer` → `architect`.
 
-### Minimal / Light plans (visual-designer is skipped)
+### Light plan (visual-designer is skipped)
 
-`visual-designer` does **not** run on Minimal / Light. To keep `UI_SPEC.md`
+`visual-designer` does **not** run on Light. (`ux-designer` itself does not run on
+Minimal — that plan has no UI sub-flow and produces no `UI_SPEC.md`.) To keep `UI_SPEC.md`
 self-sufficient in those plans, this agent applies a **lightweight visual
 default** and records it inline:
 
@@ -92,7 +93,7 @@ When using these defaults, `UI_SPEC.md` Section 1 must include the explicit
 line:
 
 > Visual design follows the lightweight default applied because
-> `visual-designer` was not launched in this plan (Minimal / Light). When
+> `visual-designer` was not launched in this plan (Light). When
 > the project upgrades to Standard or Full, regenerate `VISUAL_SPEC.md` via
 > `visual-designer` and migrate references in Sections 2–8 to the canonical
 > tokens.
@@ -113,7 +114,7 @@ Step 2. Review handoff items from CONCEPT_VALIDATION.md (if it exists)
 
 Step 3. Resolve visual policy
   - Standard / Full: defer to visual-designer (write the deferral line in Section 1)
-  - Minimal / Light: apply the lightweight default above and record it in Section 1
+  - Light: apply the lightweight default above and record it in Section 1
 
 Step 4. Design screen composition
   - Derive required screens from use cases
@@ -146,9 +147,9 @@ Step 5. Design interactions and states
 > accessibility, responsive breakpoints, tone & manner) are defined in
 > `VISUAL_SPEC.md`. Refer to that document for canonical values.
 
-{Minimal / Light:}
+{Light:}
 > Visual design follows the lightweight default applied because
-> `visual-designer` was not launched in this plan ({Minimal | Light}). The
+> `visual-designer` was not launched in this plan (Light). The
 > values used are: system-ui font stack, monochrome + 1 accent color
 > (`#3B82F6`), 8px spacing grid, default radius 8px, WCAG AA. When the
 > project upgrades to Standard or Full, regenerate `VISUAL_SPEC.md` via
@@ -208,7 +209,7 @@ Step 5. Design interactions and states
 > Sections 6 (Responsive) and 7 (Accessibility) record only the per-screen
 > behavioural specifics. The canonical breakpoint values and WCAG level
 > live in `VISUAL_SPEC.md` (Standard / Full) or in the lightweight default
-> declared in Section 1 (Minimal / Light).
+> declared in Section 1 (Light).
 
 ---
 
@@ -218,7 +219,7 @@ Step 5. Design interactions and states
 2. **Specificity** -- Not "a nice UI" but specific values like "8px grid, border-radius 8px, shadow: 0 2px 4px rgba(0,0,0,0.1)"
 3. **State coverage** -- All states described: default / hover / active / disabled / loading / error / empty
 4. **Responsive** -- Device-specific layout changes specified for each screen
-5. **Token references** -- Where a visual property is needed (color, type size, spacing), reference the token name (e.g., `--color-primary-500`) rather than restating raw values; the canonical values live in `VISUAL_SPEC.md` (Standard / Full) or in the Section 1 default block (Minimal / Light)
+5. **Token references** -- Where a visual property is needed (color, type size, spacing), reference the token name (e.g., `--color-primary-500`) rather than restating raw values; the canonical values live in `VISUAL_SPEC.md` (Standard / Full) or in the Section 1 default block (Light)
 
 ---
 
@@ -226,14 +227,14 @@ Step 5. Design interactions and states
 
 1. **Thorough reading of SPEC.md** -- Extract UI requirements from use cases, personas, and non-functional requirements
 2. **Review CONCEPT_VALIDATION.md** (if it exists) -- Understand handoff items and UX issues
-3. **Resolve visual policy** -- Standard / Full: write the `VISUAL_SPEC.md` deferral line; Minimal / Light: write the lightweight-default block
+3. **Resolve visual policy** -- Standard / Full: write the `VISUAL_SPEC.md` deferral line; Light: write the lightweight-default block
 4. **Identify screens** -- Derive required screens from use cases and create screen transition flow
 5. **Create wireframes** -- Design layout of each screen in ASCII art
 6. **Component details** -- Describe components, interactions, and validation for each screen
 7. **Extract shared components** -- Consolidate components shared across multiple screens
-8. **Responsive and accessibility** -- Describe per-screen responsive behaviour and accessibility specifics; reference canonical breakpoints / WCAG level via `VISUAL_SPEC.md` (Standard / Full) or the Section 1 default (Minimal / Light)
+8. **Responsive and accessibility** -- Describe per-screen responsive behaviour and accessibility specifics; reference canonical breakpoints / WCAG level via `VISUAL_SPEC.md` (Standard / Full) or the Section 1 default (Light)
 9. **Generate UI_SPEC.md** -- Record the reference version at the top
-10. **Report summary** -- Communicate design highlights and hand off to `visual-designer` (Standard / Full) or `architect` (Minimal / Light)
+10. **Report summary** -- Communicate design highlights and hand off to `visual-designer` (Standard / Full) or `architect` (Light)
 
 ---
 
@@ -242,14 +243,14 @@ Step 5. Design interactions and states
 Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
 Agent-specific fields: `SCREENS`, `COMPONENTS`, `RESPONSIVE` (true|false), `ACCESSIBILITY` (WCAG AA|AAA|none), `VISUAL_POLICY` (deferred-to-visual-designer|lightweight-default).
 See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
-NEXT: Standard/Full plan → `visual-designer`; Minimal/Light plan → `architect`.
+NEXT: Standard/Full plan → `visual-designer`; Light plan → `architect`. (Minimal does not run this agent.)
 
 ## Completion Conditions
 
 - [ ] All of `SPEC.md` has been read
 - [ ] `CONCEPT_VALIDATION.md` has been reviewed (if it exists)
 - [ ] `UI_SPEC.md` has been generated or updated
-- [ ] Section 1 contains either the `VISUAL_SPEC.md` deferral line (Standard / Full) or the lightweight-default block with the explicit "visual-designer was not launched" notice (Minimal / Light)
+- [ ] Section 1 contains either the `VISUAL_SPEC.md` deferral line (Standard / Full) or the lightweight-default block with the explicit "visual-designer was not launched" notice (Light)
 - [ ] Screens are defined for all use cases
 - [ ] Each screen includes a wireframe (ASCII art)
 - [ ] Per-screen responsive behaviour is documented

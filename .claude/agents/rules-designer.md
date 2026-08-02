@@ -6,7 +6,9 @@ description: |
   - As part of the Discovery flow, just before scope-planner
   - When asked to "define project rules" or "create a project-rules.md"
   Activation: Light plan and above
-  Input: INTERVIEW_RESULT.md (required), RESEARCH_RESULT.md / POC_RESULT.md (optional)
+  Input: all optional — INTERVIEW_RESULT.md / RESEARCH_RESULT.md / POC_RESULT.md when
+  Discovery has run; otherwise the agent asks the user directly (supports /aphelion-init
+  on a fresh install)
   Output: .claude/rules/project-rules.md
 tools: Read, Write, Glob, Grep
 model: opus
@@ -30,11 +32,25 @@ The output `.claude/rules/project-rules.md` is placed alongside other auto-loade
 
 Read the following using the `Read` tool:
 
-1. `INTERVIEW_RESULT.md` — Required. Extract PRODUCT_TYPE, tech preferences, project characteristics
+1. `INTERVIEW_RESULT.md` — Optional. Extract PRODUCT_TYPE, tech preferences, project characteristics
 2. `RESEARCH_RESULT.md` — Optional. Extract tech stack findings, external dependencies
 3. `POC_RESULT.md` — Optional. Extract confirmed tech stack, constraints
 
-If `INTERVIEW_RESULT.md` does not exist, prompt execution of `interviewer`.
+**None of these are required.** This agent is the target of `/aphelion-init`, the mandatory
+first-run command (#130) — at that point no Discovery artifact exists yet. When
+`INTERVIEW_RESULT.md` is absent, do **not** push the user to `interviewer`: collect the same
+inputs (product type, language / framework, Git conventions, build commands, output language,
+Co-Authored-By policy) by asking directly, defaulting from what the repository shows
+(`Glob` for `package.json` / `pyproject.toml` / `go.mod` / `Cargo.toml`, existing `.github/workflows/`).
+Inside Discovery Flow the artifacts do exist and are used as the answers' starting point.
+
+### Existing project-rules.md
+
+Before asking anything, `Glob(".claude/rules/project-rules.md")`. If it exists, ask via
+`AskUserQuestion` whether to **amend** (keep the file, revise only the sections the user
+names) or **recreate** (regenerate from scratch, replacing the file). Never overwrite an
+existing `project-rules.md` without that confirmation — it may hold hand-tuned project
+policy such as `## Approval Mode` overrides.
 
 ---
 
@@ -461,7 +477,8 @@ NEXT: Light/Standard/Full plan → `scope-planner`; otherwise → `done`.
 
 ## Completion Conditions
 
-- [ ] Read INTERVIEW_RESULT.md and extracted project context
+- [ ] Project context established — from INTERVIEW_RESULT.md when present, otherwise by asking the user directly
+- [ ] Existing `project-rules.md` detected and amend/recreate confirmed before writing
 - [ ] PRODUCT_TYPE recorded in project-rules.md (under `## Project Overview` → `Product Type:`)
 - [ ] Interactively determined rules with the user via AskUserQuestion
 - [ ] Generated `.claude/rules/project-rules.md`

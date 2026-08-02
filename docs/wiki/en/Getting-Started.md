@@ -1,7 +1,7 @@
 # Getting Started
 
 > **Language**: [English](../en/Getting-Started.md) | [日本語](../ja/Getting-Started.md)
-> **Last updated**: 2026-07-29 (updated 2026-07-29: replace the broken `cp -r .claude/` manual install with the local-clone CLI path, #170; fix repository-root relative-link depth, #169; correct the "Major hands off automatically" claim, #168; 2026-05-31: force CF Pages asset re-hash to recover /getting-started/ HTTP 500, #156; 2026-05-28: add existing-project Quick Start + --user guide, #130 PR-3)
+> **Last updated**: 2026-07-29 (updated 2026-07-29: Scenario 5 no longer lists non-existent commands, #206; replace the broken `cp -r .claude/` manual install with the local-clone CLI path, #170; fix repository-root relative-link depth, #169; correct the "Major hands off automatically" claim, #168; 2026-05-31: force CF Pages asset re-hash to recover /getting-started/ HTTP 500, #156; 2026-05-28: add existing-project Quick Start + --user guide, #130 PR-3)
 > **Audience**: New users
 
 This page covers everything you need to start using Aphelion: Claude Code setup, first-run walkthrough, usage scenarios, command reference, and troubleshooting.
@@ -285,13 +285,19 @@ including when to run `/codebase-analyzer` and how to proceed to `/analyst` or `
 
 ### Scenario 5: Standalone Agents
 
-You can invoke any agent directly without a flow:
+Some agents ship a slash command and can be invoked directly, without a flow:
 
 ```
-/security-auditor  (run security audit on existing code)
-/reviewer          (run code review only)
-/doc-writer        (generate README and CHANGELOG)
+/reviewer            (run code review only)
+/tester              (run the test suite)
+/codebase-analyzer   (reverse-engineer SPEC.md / ARCHITECTURE.md)
+/analyst             (analyse one issue and decide the approach)
 ```
+
+Agents without a slash command — `security-auditor`, `doc-writer`, `architect`,
+`spec-designer` and the rest — are launched by asking for them in plain language, e.g.
+"run security-auditor on this repository". Run `/aphelion-help` for the current command
+list; anything not listed there has no slash command.
 
 ---
 

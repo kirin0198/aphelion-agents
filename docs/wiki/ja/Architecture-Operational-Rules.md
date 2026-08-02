@@ -1,7 +1,7 @@
 # Architecture: Operational Rules
 
 > **Language**: [English](../en/Architecture-Operational-Rules.md) | [日本語](../ja/Architecture-Operational-Rules.md)
-> **Last updated**: 2026-07-29 (2026-07-29: リポジトリルート参照の相対リンク深さを修正 ../../ -> ../../../ (#169); updated 2026-04-30: doc-reviewer ロールバック参照を反映 (#91 follow-up))
+> **Last updated**: 2026-07-29 (2026-07-29: サンドボックス決定ツリーからホスト検出と advisory_only を削除, #188; 2026-07-29: リポジトリルート参照の相対リンク深さを修正 ../../ -> ../../../ (#169); updated 2026-04-30: doc-reviewer ロールバック参照を反映 (#91 follow-up))
 > **EN canonical**: 2026-07-29 of wiki/en/Architecture-Operational-Rules.md
 > **Audience**: エージェント開発者
 
@@ -201,18 +201,16 @@ flowchart TB
     Advisory --> FallbackCheck{"container\navailable?"}
 
     FallbackCheck -->|Yes| ContainerExec["container\nexecution"]
-    FallbackCheck -->|No| PlatformCheck{"platform\ndetected?"}
+    FallbackCheck -->|No| CategoryCheck{"required\ncategory?"}
 
-    PlatformCheck -->|claude_code| PlatformPerm["platform_permission\n(permission mode)"]
-    PlatformCheck -->|unknown| CategoryCheck{"required\ncategory?"}
-
-    CategoryCheck -->|No| Advisory2["advisory_only\n(warning only)"]
-    CategoryCheck -->|Yes| Blocked["blocked\n(execution denied)"]
+    CategoryCheck -->|No| Bypassed["bypassed\n(no category match)"]
+    CategoryCheck -->|Yes| PlatformPerm["platform_permission\n(permission mode)"]
+    PlatformPerm -->|permission layer\nunavailable| Blocked["blocked\n(execution denied)"]
 
     Enforcement -.->|provides| FallbackCheck
 ```
 
-> **フォールバック順**: `container` → `platform_permission` → `advisory_only` → `blocked`
+> **フォールバック順**: `container` → `platform_permission` → `blocked`。Aphelion は Claude Code 専用のため、ホストプラットフォーム検出のステップも `advisory_only` モードも存在しません (#188)。
 
 ---
 

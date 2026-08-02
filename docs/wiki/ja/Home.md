@@ -31,7 +31,7 @@ Aphelion のリポジトリの README はクイックスタートと概要をカ
 | トリアージプラン表（概要） | [Triage System](./Triage-System.md): 選択ロジック、条件、エージェントマトリクス |
 | エージェント一覧（名前のみ） | Agents Reference（ドメイン別）: [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md), [Doc](./Agents-Doc.md) — 42 エージェントの入出力と NEXT 条件 |
 | — | [Rules Reference](./Rules-Reference.md): 14 つの行動ルールのスコープとカスタマイズ方法 |
-| — | [Hooks Reference](./Hooks-Reference.md): Aphelion が配布する Claude Code フック（MVP 3 フック） |
+| — | [Hooks Reference](./Hooks-Reference.md): Aphelion が配布する Claude Code フック（4 フック） |
 | — | [Contributing](./Contributing.md): エージェント・ルールの追加方法、Wiki メンテナンス |
 
 ---

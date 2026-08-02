@@ -65,6 +65,16 @@ artifacts, but their audiences, granularity, and output paths are separate.
    (arguments override triage questions for the corresponding fields)
 5. Proceed to Triage
 
+**After the slug is fixed (triage or `--slug`), create the output directory:**
+
+```bash
+mkdir -p docs/deliverables/{slug}
+```
+
+The six author agents own `Write` but not `Bash`, so they cannot create it themselves —
+each of their definitions delegates this to the orchestrator (e.g. `hld-author.md`
+§"Output"). Without this step the first `Write` of a fresh project fails (#185).
+
 ---
 
 ## Triage
@@ -117,8 +127,12 @@ corresponding argument was already passed.
 |----------|----------------------------------|--------------------------------------|
 | Minimal  | 1–2 doc types selected           | selected authors only                |
 | Light    | 3–4 doc types selected           | selected authors only                |
-| Standard | 5–6 doc types selected           | selected authors                     |
-| Full     | All 6 + post-generation verify   | all 6 authors + template_version verify step |
+| Standard | **5** doc types selected         | selected authors                     |
+| Full     | **All 6** doc types selected     | all 6 authors + post-generation `template_version` verify step |
+
+The tiers are mutually exclusive by selected-type count: 1–2 / 3–4 / 5 / 6. Selecting all
+six always means Full — the verify step is what distinguishes it, and it is not optional.
+A user who wants five documents without the verify step selects five types (Standard).
 
 ### Triage Result Presentation
 

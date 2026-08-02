@@ -44,7 +44,7 @@ Verify the following before starting work:
 1. Does `DELIVERY_RESULT.md` exist? If not, prompt the user to complete Delivery Flow first
 2. Validate required fields of `DELIVERY_RESULT.md`:
    - Is `PRODUCT_TYPE` set to `service`? If `tool` / `library` / `cli`, report that Operations is not needed and stop
-     If `DELIVERY_RESULT.md` lacks `PRODUCT_TYPE`, fall back to: `project-rules.md` → `## Project Overview` → `Product Type:` line. If still absent, default to `service`.
+     If `DELIVERY_RESULT.md` lacks `PRODUCT_TYPE`, follow the canonical chain in `.claude/rules/aphelion-overview.md` §"PRODUCT_TYPE Resolution Order": `SPEC.md` → `project-rules.md` → default `service`. Do not skip `SPEC.md` (#196).
    - "Artifacts" section (must include SPEC.md and ARCHITECTURE.md status)
    - "Tech stack" section (must not be empty)
    - "Test results" section

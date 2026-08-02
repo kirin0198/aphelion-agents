@@ -129,6 +129,23 @@ Run a build verification appropriate for the tech stack:
 
 ### 8. Git Commit
 
+`scaffolder` is the **first implementation-tier agent** on Standard / Full plans, so it
+owns branch creation when no work branch exists yet (`git-rules.md` §"Branch Lifecycle").
+Never commit the scaffold to `main`.
+
+```bash
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+if [ "$current_branch" = "main" ]; then
+  # No analyst chain / architect ran before this phase — create the work branch here.
+  # Derive {slug} from the ARCHITECT_BRIEF, the issue title, or the project name.
+  git checkout -b "feat/{slug}"
+  current_branch="feat/{slug}"
+fi
+# else: reuse the branch analyst-intake / architect already opened
+```
+
+Report `current_branch` as the `BRANCH` field of `AGENT_RESULT`.
+
 ```bash
 git add {created files}
 git commit -m "chore: initialize project (scaffolder)
@@ -137,7 +154,13 @@ git commit -m "chore: initialize project (scaffolder)
 - define and install dependency packages
 - place configuration files
 - create entry point"
+
+git push -u origin "$current_branch"   # skip when REPO_STATE=local-only / none
 ```
+
+**If `REPO_STATE=local-only`:** skip `git push`.
+**If `REPO_STATE=none`:** skip all git operations and report `BRANCH: n/a (REPO_STATE=none)`.
+Opening the PR is `developer`'s job — `scaffolder` never runs `gh pr create`.
 
 ---
 
